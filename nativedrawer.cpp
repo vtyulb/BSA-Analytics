@@ -21,7 +21,8 @@ void NativeDrawer::setRayVisibles(QVector<bool> v) {
 
 void NativeDrawer::paintEvent(QPaintEvent *event) {
     QPainter p(this);
-    p.drawImage(0, 0, *art);
+    if (art)
+        p.drawImage(QRect(0, 0, width(), height()), *art);
 
     p.setPen(QColor("black"));
     p.setBrush(QBrush(QColor(0, 50, 200, 100)));
@@ -38,6 +39,9 @@ void NativeDrawer::nativePaint() {
 
     delete art;
     qDebug() << screen.bottomLeft() << screen.topRight();
+    if (width() < 100 || height() < 100)
+        return;
+
     art = new QImage(this->width(), this->height(), QImage::Format_RGB32);
 
     QPainter p(art);
@@ -116,6 +120,9 @@ void NativeDrawer::mouseMoveEvent(QMouseEvent *event) {
 
 void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
     mousePressed = false;
+
+    if (mouseRect.width() < 10 || mouseRect.height() < 10)
+        return;
 
     if (mouseClicked.x() > event->pos().x()) {
         QRect c;

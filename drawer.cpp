@@ -74,6 +74,7 @@ Drawer::Drawer(const Data data, QWidget *parent) :
     controlFrame->setMaximumWidth(188);
     controlFrame->setMinimumWidth(188);
     rays = data[0].size();
+    show();
     draw();
 }
 
@@ -103,10 +104,8 @@ void Drawer::saveFile(QString file) {
 
 void Drawer::draw() {
     QVector<QString> v;
-    for (int i = 0; i < rays; i++) {
+    for (int i = 0; i < rays; i++)
         v.push_back(colors[i]->text());
-//        colors[i]->setTextBackGroundColor(colors[i]->text())
-    }
 
     drawer->setColors(v);
     drawer->allowDrawing = true;

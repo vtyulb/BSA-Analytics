@@ -7,7 +7,7 @@
 const char* colorNames[16] = {"FF0000",
                               "00FF00",
                               "0000FF",
-                              "FFFFFF",
+                              "000000",
                               "FFFF00",
                               "00FFFF",
                               "FF00FF",
@@ -16,9 +16,9 @@ const char* colorNames[16] = {"FF0000",
                               "000080",
                               "808000",
                               "800080",
-                              "008080",
-                              "0000D0",
-                              "D00000",
+                              "D0A080",
+                              "00D0D0",
+                              "D000C0",
                               "00D000"};
 
 Drawer::Drawer(const Data data, QWidget *parent) :

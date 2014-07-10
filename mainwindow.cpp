@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
+    QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
 }
 
 MainWindow::~MainWindow()
@@ -29,6 +30,7 @@ void MainWindow::openFile() {
         const Data data = reader.readFile(path);
         statusBar()->showMessage("Done", 2000);
         if (data.size()) {
+            ui->label->hide();
             delete ui->frame->layout();
             QHBoxLayout *layout = new QHBoxLayout(ui->frame);
             drawer = new Drawer(data, this);
@@ -49,4 +51,8 @@ void MainWindow::saveFile() {
     if (path != "") {
         drawer->saveFile(path);
     }
+}
+
+void MainWindow::autoDraw(bool b) {
+    drawer->drawer->autoDrawing = b;
 }

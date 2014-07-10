@@ -9,6 +9,7 @@
 #include <QRect>
 #include <QImage>
 #include <QDebug>
+#include <QMutex>
 
 class NativeDrawer : public QWidget
 {
@@ -22,6 +23,8 @@ public:
     void nativePaint();
 
     bool allowDrawing;
+    bool autoDrawing;
+    QMutex drawing;
 
 private:
     QVector<bool> rayVisibles;

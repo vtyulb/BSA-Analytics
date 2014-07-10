@@ -24,6 +24,7 @@ private slots:
     void openFile();
     void readProgressChanged(double);
     void saveFile();
+    void autoDraw(bool);
 };
 
 #endif // MAINWINDOW_H

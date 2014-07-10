@@ -1,12 +1,14 @@
 #include "nativedrawer.h"
 #include <QRgb>
+#include <QApplication>
 
 NativeDrawer::NativeDrawer(const Data data, QWidget *parent) :
     QWidget(parent),
     art(NULL),
     data(data),
     mousePressed(false),
-    allowDrawing(false)
+    allowDrawing(false),
+    autoDrawing(true)
 {
     for (int i = 0; i < data[0].size(); i++)
         rayVisibles.push_back(true);
@@ -21,8 +23,13 @@ void NativeDrawer::setRayVisibles(QVector<bool> v) {
 
 void NativeDrawer::paintEvent(QPaintEvent *event) {
     QPainter p(this);
-    if (art)
-        p.drawImage(QRect(0, 0, width(), height()), *art);
+    if (!art || !drawing.tryLock()) {
+        p.setBrush(QBrush(QColor("brown")));
+        p.drawEllipse(0, 0, width(), height());
+        return;
+    }
+
+    p.drawImage(QRect(0, 0, width(), height()), *art);
 
     p.setPen(QColor("black"));
     p.setBrush(QBrush(QColor(0, 50, 200, 100)));
@@ -31,16 +38,23 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
 
     p.end();
     event->accept();
+
+    drawing.unlock();
 }
 
 void NativeDrawer::nativePaint() {
     if (!allowDrawing)
         return;
 
+    if (!drawing.tryLock())
+        return;
+
     delete art;
     qDebug() << screen.bottomLeft() << screen.topRight();
-    if (width() < 100 || height() < 100)
+    if (width() < 100 || height() < 100) {
+        drawing.unlock();
         return;
+    }
 
     art = new QImage(this->width(), this->height(), QImage::Format_RGB32);
 
@@ -55,7 +69,7 @@ void NativeDrawer::nativePaint() {
     for (int j = 0; j < rays; j++) {
         QByteArray c = QByteArray::fromHex(colors[j].toUtf8());
         p.setPen(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
-
+        repaint();
         if (rayVisibles[j])
             for (int i = 1; i < data.size(); i++)
                 p.drawLine(newCoord(i, data[i][j]), newCoord(i - 1, data[i - 1][j]));
@@ -63,6 +77,8 @@ void NativeDrawer::nativePaint() {
 
     p.end();
     reflect();
+
+    drawing.unlock();
     repaint();
 }
 
@@ -121,7 +137,7 @@ void NativeDrawer::mouseMoveEvent(QMouseEvent *event) {
 void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
     mousePressed = false;
 
-    if (mouseRect.width() < 10 || mouseRect.height() < 10)
+    if (abs(mouseRect.width()) < 10 || abs(mouseRect.height()) < 10)
         return;
 
     if (mouseClicked.x() > event->pos().x()) {
@@ -148,7 +164,8 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
 }
 
 void NativeDrawer::resizeEvent(QResizeEvent *event) {
-    nativePaint();
+    if (autoDrawing)
+        nativePaint();
 }
 
 void NativeDrawer::saveFile(QString file) {

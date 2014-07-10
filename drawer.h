@@ -16,6 +16,8 @@ class Drawer : public QWidget
 public:
     explicit Drawer(const Data data, QWidget *parent = 0);
     void saveFile(QString);
+    NativeDrawer *drawer;
+
 private:
     QFrame *controlFrame;
     QPushButton *resetButton;
@@ -25,7 +27,6 @@ private:
     QVector<QCheckBox* > checkBoxes;
     QVector<QLineEdit* > colors;
     int rays;
-    NativeDrawer *drawer;
 signals:
 
 private slots:

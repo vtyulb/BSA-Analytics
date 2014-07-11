@@ -23,6 +23,8 @@ private:
     Drawer *drawer;
     QProgressBar *progress;
 
+    QString lastOpenPath;
+
     void saveSettings();
     void loadSettings();
 

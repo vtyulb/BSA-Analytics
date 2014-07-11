@@ -35,7 +35,13 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::openFile() {
-    QString path = QFileDialog::getOpenFileName(this);
+    QString path = QFileDialog::getOpenFileName(this, "void", lastOpenPath);
+
+    for (int i = path.length() - 1; i; i--)
+        if (path[i] == '/' || path[i] == '\\') {
+            lastOpenPath = path.left(i);
+            break;
+        }
 
     if (path != "") {
         Reader reader;
@@ -96,10 +102,12 @@ void MainWindow::saveSettings() {
     QSettings s("settings.ini", QSettings::IniFormat);
     s.setValue("geometry", QVariant(saveGeometry()));
     s.setValue("autoDraw", QVariant(ui->actionAutoDraw->isChecked()));
+    s.setValue("openPath", QVariant(lastOpenPath));
 }
 
 void MainWindow::loadSettings() {
     QSettings s("settings.ini", QSettings::IniFormat);
     restoreGeometry(s.value("geometry").toByteArray());
     ui->actionAutoDraw->setChecked(s.value("autoDraw", true).toBool());
+    lastOpenPath = s.value("openPath").toString();
 }

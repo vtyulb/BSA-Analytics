@@ -4,7 +4,7 @@
 Controller::Controller(QWidget *parent) :
     QFrame(parent)
 {
-    setFrameStyle(2);
+    setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
 
     QVBoxLayout *layout = new QVBoxLayout(this);
 

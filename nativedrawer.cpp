@@ -26,11 +26,7 @@ void NativeDrawer::setRayVisibles(QVector<bool> v) {
 
 void NativeDrawer::paintEvent(QPaintEvent *event) {
     QPainter p(this);
-   /* if (!art || !drawing.tryLock()) {
-        p.setBrush(QBrush(QColor("brown")));
-        p.drawEllipse(0, 0, width(), height());
-        return;
-    }*/
+
     if (art)
         p.drawImage(QRect(0, 0, width(), height()), *art);
 
@@ -41,8 +37,6 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
 
     p.end();
     event->accept();
-
-    drawing.unlock();
 }
 
 void NativeDrawer::nativePaint() {
@@ -71,6 +65,7 @@ void NativeDrawer::nativePaint() {
     int rays = data[0].size();
     for (int k = 0; k < data.size() / 50000 + 1; k++) {
         repaint();
+//        qApp->processEvents();
         emit progress(5000000*k/data.size());
         for (int j = 0; j < rays; j++) {
             QByteArray c = QByteArray::fromHex(colors[j].toUtf8());
@@ -146,7 +141,7 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
     if (abs(mouseRect.width()) < 10 || abs(mouseRect.height()) < 10)
         return;
 
-    if (mouseClicked.x() > event->pos().x()) {
+    if (mouseClicked.x() > event->pos().x() || mouseClicked.y() > event->pos().y()) {
         int h = abs(screen.height()) / 2;
         int w = screen.width() / 2;
         screen.setRight(screen.right() + w);

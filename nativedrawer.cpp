@@ -8,12 +8,15 @@ NativeDrawer::NativeDrawer(const Data data, QWidget *parent) :
     data(data),
     mousePressed(false),
     allowDrawing(false),
-    autoDrawing(true)
+    autoDrawing(true),
+    drawAxesFlag(true),
+    drawNet(false)
 {
     for (int i = 0; i < data[0].size(); i++)
         rayVisibles.push_back(true);
 
     resetVisibleRectangle();
+    setMouseTracking(true);
 }
 
 void NativeDrawer::setRayVisibles(QVector<bool> v) {
@@ -23,13 +26,13 @@ void NativeDrawer::setRayVisibles(QVector<bool> v) {
 
 void NativeDrawer::paintEvent(QPaintEvent *event) {
     QPainter p(this);
-    if (!art || !drawing.tryLock()) {
+   /* if (!art || !drawing.tryLock()) {
         p.setBrush(QBrush(QColor("brown")));
         p.drawEllipse(0, 0, width(), height());
         return;
-    }
-
-    p.drawImage(QRect(0, 0, width(), height()), *art);
+    }*/
+    if (art)
+        p.drawImage(QRect(0, 0, width(), height()), *art);
 
     p.setPen(QColor("black"));
     p.setBrush(QBrush(QColor(0, 50, 200, 100)));
@@ -66,30 +69,30 @@ void NativeDrawer::nativePaint() {
     qDebug() << width() << height();
 
     int rays = data[0].size();
-    for (int j = 0; j < rays; j++) {
-        QByteArray c = QByteArray::fromHex(colors[j].toUtf8());
-        p.setPen(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
+    for (int k = 0; k < data.size() / 50000 + 1; k++) {
         repaint();
-        if (rayVisibles[j])
-            for (int i = 1; i < data.size(); i++)
-                p.drawLine(newCoord(i, data[i][j]), newCoord(i - 1, data[i - 1][j]));
+        emit progress(5000000*k/data.size());
+        for (int j = 0; j < rays; j++) {
+            QByteArray c = QByteArray::fromHex(colors[j].toUtf8());
+            p.setPen(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
+
+            if (rayVisibles[j])
+                for (int i = k * 50000 + 1; i < minimum(data.size(), (k + 1)*50000 + 1); i++) {
+                    int x = newCoord(i, 0).x();
+                    if (x < 0 || x > art->width())
+                        continue;
+
+                    p.drawLine(mirr(newCoord(i, data[i][j])), mirr(newCoord(i - 1, data[i - 1][j])));
+                }
+        }
     }
 
+    emit progress(100);
     p.end();
-    reflect();
+    drawAxes();
 
     drawing.unlock();
     repaint();
-}
-
-void NativeDrawer::reflect() {
-    for (int i = 0; i < width(); i++)
-        for (int j = 0; j < height() / 2; j++) {
-            QRgb c1 = art->pixel(i, j);
-            QRgb c2 = art->pixel(i, art->height() - j - 1);
-            art->setPixel(i, j, c2);
-            art->setPixel(i, height() - 1 - j, c1);
-        }
 }
 
 void NativeDrawer::resetVisibleRectangle() {
@@ -148,11 +151,13 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
     } else {
         QRect c;
         //WTF How it works?!
-        int top = mouseRect.top();
-        int bot = mouseRect.bottom();
+        int top = mouseRect.top() + 10;
+        int bot = mouseRect.bottom() - 10;
 
         mouseRect.setTop(height() - bot);
         mouseRect.setBottom(height() - top);
+        mouseRect.setLeft(mouseRect.left() - 10);
+        mouseRect.setRight(mouseRect.right() + 10);
 
         c.setTopLeft(backwardCoord(mouseRect.bottomLeft()));
         c.setBottomRight(backwardCoord(mouseRect.topRight()));
@@ -166,6 +171,8 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
 void NativeDrawer::resizeEvent(QResizeEvent *event) {
     if (autoDrawing)
         nativePaint();
+
+    event->accept();
 }
 
 void NativeDrawer::saveFile(QString file) {
@@ -174,4 +181,44 @@ void NativeDrawer::saveFile(QString file) {
 
 void NativeDrawer::setColors(QVector<QString> c) {
     colors = c;
+}
+
+void NativeDrawer::drawAxes() {
+    if (!drawAxesFlag)
+        return;
+
+    QPainter p(art);
+
+    p.setPen(QPen(QColor("white")));
+    p.setBrush(QBrush(QColor("white")));
+    p.drawRect(0, 0, 46, art->height());
+    p.drawRect(0, height() - 25, art->width(), height());
+
+    p.setPen(QColor("black"));
+
+    p.drawLine(QPoint(0, art->height() - 3), QPoint(art->width(), art->height() - 3));
+    for (int i = 1; i <= 25; i++) {
+        p.drawLine(QPoint(art->width() / 26 * i, art->height()), QPoint(art->width() / 26 * i, art->height() - 6 - (4 + art->height() * drawNet) * ((i-1)%5 == 0)));
+        if ((i - 1)%5==0)
+            p.drawText(QPoint(art->width() / 26 * i + 1, art->height() - 12), QString::number(backwardCoord(QPoint(art->width()/26 * i, 0)).x()));
+    }
+
+    p.drawLine(QPoint(3, 0), QPoint(3, art->height()));
+    for (int i = 1; i <= 25; i++) {
+        p.drawLine(QPoint(0, art->height() / 26 * i), QPoint(6 + (4 + art->width() * drawNet) * (i%5==0), art->height() / 26 * i));
+        if (i%5==0)
+            p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(QPoint(0,art->height()/26*i)).y()));
+    }
+}
+
+int NativeDrawer::minimum(int a, int b) {
+    if (a < b)
+        return a;
+    else
+        return b;
+}
+
+QPoint NativeDrawer::mirr(QPoint p) {
+    p.setY(art->height() - p.y());
+    return p;
 }

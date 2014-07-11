@@ -24,6 +24,8 @@ public:
 
     bool allowDrawing;
     bool autoDrawing;
+    bool drawAxesFlag;
+    bool drawNet;
     QMutex drawing;
 
 private:
@@ -47,12 +49,17 @@ private:
     QPoint mouseClicked;
     QRect mouseRect;
 
-    void reflect();
+    void drawAxes();
+    int minimum(int, int);
+
+    QPoint mirr(QPoint);
 
 signals:
+    void progress(int);
 
 public slots:
     void resetVisibleRectangle();
+
 
 };
 

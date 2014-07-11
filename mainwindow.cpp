@@ -3,6 +3,7 @@
 
 #include <QFileDialog>
 #include <QHBoxLayout>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -14,6 +15,16 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
+    QObject::connect(ui->actionAxes, SIGNAL(triggered(bool)), this, SLOT(drawAxes(bool)));
+    QObject::connect(ui->actionNet, SIGNAL(triggered(bool)), this, SLOT(drawNet(bool)));
+    QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
+    QObject::connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(showAboutQt()));
+
+    progress = new QProgressBar(this);
+    progress->setRange(0, 100);
+    statusBar()->addPermanentWidget(progress);
+    ui->actionAutoDraw->setChecked(true);
+    ui->actionAxes->setChecked(true);
 }
 
 MainWindow::~MainWindow()
@@ -26,7 +37,7 @@ void MainWindow::openFile() {
 
     if (path != "") {
         Reader reader;
-        QObject::connect(&reader, SIGNAL(progress(double)), this, SLOT(readProgressChanged(double)));
+        QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
         const Data data = reader.readFile(path);
         statusBar()->showMessage("Done", 2000);
         if (data.size()) {
@@ -36,6 +47,8 @@ void MainWindow::openFile() {
             drawer = new Drawer(data, this);
             layout->addWidget(drawer);
             ui->frame->setLayout(layout);
+
+            QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
         }
     }
 }
@@ -55,4 +68,20 @@ void MainWindow::saveFile() {
 
 void MainWindow::autoDraw(bool b) {
     drawer->drawer->autoDrawing = b;
+}
+
+void MainWindow::drawAxes(bool b) {
+    drawer->drawer->drawAxesFlag = b;
+}
+
+void MainWindow::drawNet(bool b) {
+    drawer->drawer->drawNet = b;
+}
+
+void MainWindow::showAboutQt() {
+    QMessageBox::aboutQt(this);
+}
+
+void MainWindow::showAbout() {
+    QMessageBox::about(this, "About", "Written specially for PRAO\nby V.S.Tyulbashev\n<vtyulb@vtyulb.ru>");
 }

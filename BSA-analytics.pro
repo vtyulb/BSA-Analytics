@@ -17,13 +17,15 @@ SOURCES += main.cpp\
     drawer.cpp \
     reader.cpp \
     nativedrawer.cpp \
-    colorwidget.cpp
+    colorwidget.cpp \
+    controller.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
     data.h \
     reader.h \
     nativedrawer.h \
-    colorwidget.h
+    colorwidget.h \
+    controller.h
 
 FORMS    += mainwindow.ui

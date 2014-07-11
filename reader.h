@@ -16,7 +16,7 @@ private:
     int number(QByteArray&);
 
 signals:
-    void progress(double);
+    void progress(int);
 };
 
 #endif // READER_H

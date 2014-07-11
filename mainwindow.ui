@@ -62,12 +62,16 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionAbout_Qt"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
      <string>Edit</string>
     </property>
     <addaction name="actionAutoDraw"/>
+    <addaction name="actionAxes"/>
+    <addaction name="actionNet"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -96,6 +100,9 @@
    <property name="text">
     <string>Save</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actionAutoDraw">
    <property name="checkable">
@@ -103,6 +110,32 @@
    </property>
    <property name="text">
     <string>AutoDraw</string>
+   </property>
+  </action>
+  <action name="actionAxes">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Axes</string>
+   </property>
+  </action>
+  <action name="actionNet">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Net</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionAbout_Qt">
+   <property name="text">
+    <string>About Qt</string>
    </property>
   </action>
  </widget>

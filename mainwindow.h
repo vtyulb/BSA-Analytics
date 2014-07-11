@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QProgressBar>
 #include <reader.h>
 #include <drawer.h>
 
@@ -20,11 +21,16 @@ public:
 private:
     Ui::MainWindow *ui;
     Drawer *drawer;
+    QProgressBar *progress;
 private slots:
     void openFile();
     void readProgressChanged(double);
     void saveFile();
     void autoDraw(bool);
+    void drawAxes(bool);
+    void drawNet(bool);
+    void showAbout();
+    void showAboutQt();
 };
 
 #endif // MAINWINDOW_H

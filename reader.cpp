@@ -43,9 +43,11 @@ Data Reader::readFile(QString fileName) {
             break;
         readed += s.size();
 
-        if (line % 50000 == 0)
-            emit progress(readed/total);
+        if (line % 10000 == 0)
+            emit progress(100*readed/total);
     }
+
+    emit progress(100);
 
     qDebug() << "readed" << data.size() << "lines with" << data[0].size() << "rays";
 

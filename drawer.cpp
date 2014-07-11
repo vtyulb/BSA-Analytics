@@ -32,7 +32,7 @@ Drawer::Drawer(const Data data, QWidget *parent) :
 
     QVBoxLayout *l = new QVBoxLayout(controlFrame);
     for (int i = 0; i < data[0].size(); i++) {
-        checkBoxes.push_back(new QCheckBox(QString("%1 ray").arg(QString::number(i + 1)), this));
+        checkBoxes.push_back(new QCheckBox(QString("ray %1%2").arg(QString::number((i + 1)/10), QString::number((i + 1)%10)), this));
         checkBoxes[i]->setChecked(true);
         QObject::connect(checkBoxes[i], SIGNAL(clicked()), this, SLOT(checkBoxStateChanged()));
 
@@ -49,6 +49,7 @@ Drawer::Drawer(const Data data, QWidget *parent) :
         lay->addWidget(checkBoxes[i]);
         lay->addWidget(w);
         lay->addWidget(colors[i]);
+        lay->setContentsMargins(1, 1, 1, 1);
         l->addWidget(widget);
     }
 

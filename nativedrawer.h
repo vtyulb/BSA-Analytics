@@ -56,6 +56,7 @@ private:
 
 signals:
     void progress(int);
+    void coordsChanged(QPoint);
 
 public slots:
     void resetVisibleRectangle();

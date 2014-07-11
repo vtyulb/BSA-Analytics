@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QMessageBox>
+#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -23,12 +24,13 @@ MainWindow::MainWindow(QWidget *parent) :
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
     statusBar()->addPermanentWidget(progress);
-    ui->actionAutoDraw->setChecked(true);
     ui->actionAxes->setChecked(true);
+    loadSettings();
 }
 
 MainWindow::~MainWindow()
 {
+    saveSettings();
     delete ui;
 }
 
@@ -49,6 +51,10 @@ void MainWindow::openFile() {
             ui->frame->setLayout(layout);
 
             QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
+
+            autoDraw(ui->actionAutoDraw->isChecked());
+            drawAxes(ui->actionAxes->isChecked());
+            drawNet(ui->actionNet->isChecked());
         }
     }
 }
@@ -84,4 +90,16 @@ void MainWindow::showAboutQt() {
 
 void MainWindow::showAbout() {
     QMessageBox::about(this, "About", "Written specially for PRAO\nby V.S.Tyulbashev\n<vtyulb@vtyulb.ru>");
+}
+
+void MainWindow::saveSettings() {
+    QSettings s("settings.ini", QSettings::IniFormat);
+    s.setValue("geometry", QVariant(saveGeometry()));
+    s.setValue("autoDraw", QVariant(ui->actionAutoDraw->isChecked()));
+}
+
+void MainWindow::loadSettings() {
+    QSettings s("settings.ini", QSettings::IniFormat);
+    restoreGeometry(s.value("geometry").toByteArray());
+    ui->actionAutoDraw->setChecked(s.value("autoDraw", true).toBool());
 }

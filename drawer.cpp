@@ -74,6 +74,14 @@ Drawer::Drawer(const Data data, QWidget *parent) :
 
     controlFrame->setMaximumWidth(188);
     controlFrame->setMinimumWidth(188);
+
+    controller = new Controller(this);
+    controller->setPoints(data.size());
+    controller->setRays(data[0].size());
+    l->addWidget(controller);
+
+    QObject::connect(drawer, SIGNAL(coordsChanged(QPoint)), controller, SLOT(setCoords(QPoint)));
+
     rays = data[0].size();
     show();
     draw();

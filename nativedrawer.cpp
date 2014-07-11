@@ -134,7 +134,10 @@ void NativeDrawer::mousePressEvent(QMouseEvent *event) {
 
 void NativeDrawer::mouseMoveEvent(QMouseEvent *event) {
     mouseRect = QRect(mouseClicked, event->pos());
-    repaint();
+    if (mousePressed)
+        repaint();
+
+    emit coordsChanged(backwardCoord(mirr(event->pos())));
 }
 
 void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
@@ -144,10 +147,13 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
         return;
 
     if (mouseClicked.x() > event->pos().x()) {
-        QRect c;
-        c.setBottomLeft(backwardCoord(QPoint(-width(), -height())));
-        c.setTopRight(backwardCoord(QPoint(width() * 2, height() * 2)));
-        screen = c;
+        int h = abs(screen.height()) / 2;
+        int w = screen.width() / 2;
+        screen.setRight(screen.right() + w);
+        screen.setLeft(screen.left() - w);
+        screen.setBottom(screen.bottom() - h);
+        screen.setTop(screen.top() + h);
+        qDebug() << screen;
     } else {
         QRect c;
         //WTF How it works?!
@@ -207,7 +213,7 @@ void NativeDrawer::drawAxes() {
     for (int i = 1; i <= 25; i++) {
         p.drawLine(QPoint(0, art->height() / 26 * i), QPoint(6 + (4 + art->width() * drawNet) * (i%5==0), art->height() / 26 * i));
         if (i%5==0)
-            p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(QPoint(0,art->height()/26*i)).y()));
+            p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(mirr(QPoint(0,art->height()/26*i))).y()));
     }
 }
 

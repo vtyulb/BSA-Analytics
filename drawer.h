@@ -5,6 +5,7 @@
 #include <QFrame>
 #include <data.h>
 #include <nativedrawer.h>
+#include <controller.h>
 #include <QCheckBox>
 #include <QPushButton>
 #include <QCommandLinkButton>
@@ -26,6 +27,7 @@ private:
     QCommandLinkButton *drawButton;
     QVector<QCheckBox* > checkBoxes;
     QVector<QLineEdit* > colors;
+    Controller *controller;
     int rays;
 signals:
 

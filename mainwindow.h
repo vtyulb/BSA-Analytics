@@ -22,6 +22,10 @@ private:
     Ui::MainWindow *ui;
     Drawer *drawer;
     QProgressBar *progress;
+
+    void saveSettings();
+    void loadSettings();
+
 private slots:
     void openFile();
     void readProgressChanged(double);

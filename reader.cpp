@@ -6,11 +6,14 @@ Reader::Reader(QObject *parent) :
 {
 }
 
-Data Reader::readFile(QString fileName) {
+Data Reader::readFile(QString fileName, int skip, int firstColumn) {
     Data data;
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return data;
+
+    while (skip--)
+        file.readLine();
 
     QByteArray s;
     while (!file.atEnd()) {
@@ -23,6 +26,11 @@ Data Reader::readFile(QString fileName) {
     QList<QByteArray> res = s.split(' ');
     if (number(res[0]) == 1)
         disableFirstRay = true;
+
+    if (firstColumn == 0)
+        disableFirstRay = true;
+    else if (firstColumn == 1)
+        disableFirstRay = false;
 
     double readed = 0;
     double total = file.size();

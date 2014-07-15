@@ -2,6 +2,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QCheckBox>
+#include <QTimer>
 #include <colorwidget.h>
 
 const char* colorNames[16] = {"FF0000",
@@ -84,7 +85,8 @@ Drawer::Drawer(const Data data, QWidget *parent) :
 
     rays = data[0].size();
     show();
-    draw();
+
+    QTimer::singleShot(10, this, SLOT(draw()));
 }
 
 void Drawer::checkBoxStateChanged() {

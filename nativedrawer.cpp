@@ -123,8 +123,12 @@ QPoint NativeDrawer::backwardCoord(QPoint p) {
 }
 
 void NativeDrawer::mousePressEvent(QMouseEvent *event) {
+    if (!drawing.tryLock())
+        return;
+
     mousePressed = true;
     mouseClicked = event->pos();
+    drawing.unlock();
 }
 
 void NativeDrawer::mouseMoveEvent(QMouseEvent *event) {

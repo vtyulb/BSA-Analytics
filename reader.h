@@ -11,7 +11,7 @@ class Reader : public QObject
 public:
     explicit Reader(QObject *parent = 0);
 
-    Data readFile(QString);
+    Data readFile(QString, int skip, int firstColumn); // 0 - true; 1 - false; 2 - autodetect
 private:
     int number(QByteArray&);
 

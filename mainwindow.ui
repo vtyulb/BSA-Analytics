@@ -55,6 +55,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionCustom_open"/>
     <addaction name="actionSave"/>
     <addaction name="actionExit"/>
    </widget>
@@ -128,6 +129,11 @@
   <action name="actionAbout_Qt">
    <property name="text">
     <string>About Qt</string>
+   </property>
+  </action>
+  <action name="actionCustom_open">
+   <property name="text">
+    <string>Custom open</string>
    </property>
   </action>
  </widget>

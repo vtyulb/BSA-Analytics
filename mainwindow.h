@@ -30,6 +30,9 @@ private:
 
 private slots:
     void openFile();
+    void customOpen();
+
+    void nativeOpenFile(QString fileName, int skip = 0, int skipFirstRay = 2);
     void readProgressChanged(double);
     void saveFile();
     void autoDraw(bool);

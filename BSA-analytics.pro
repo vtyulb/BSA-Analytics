@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     reader.cpp \
     nativedrawer.cpp \
     colorwidget.cpp \
-    controller.cpp
+    controller.cpp \
+    customopendialog.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -26,6 +27,8 @@ HEADERS  += mainwindow.h \
     reader.h \
     nativedrawer.h \
     colorwidget.h \
-    controller.h
+    controller.h \
+    customopendialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    customopendialog.ui

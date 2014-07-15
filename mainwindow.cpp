@@ -5,14 +5,17 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QSettings>
+#include <customopendialog.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    drawer(NULL)
 {
     ui->setupUi(this);
 
     QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
+    QObject::connect(ui->actionCustom_open, SIGNAL(triggered()), this, SLOT(customOpen()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
@@ -37,31 +40,36 @@ MainWindow::~MainWindow()
 void MainWindow::openFile() {
     QString path = QFileDialog::getOpenFileName(this, "void", lastOpenPath);
 
+    if (path == "")
+        return;
+
     for (int i = path.length() - 1; i; i--)
         if (path[i] == '/' || path[i] == '\\') {
             lastOpenPath = path.left(i);
             break;
         }
 
-    if (path != "") {
-        Reader reader;
-        QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
-        const Data data = reader.readFile(path);
-        statusBar()->showMessage("Done", 2000);
-        if (data.size()) {
-            ui->label->hide();
-            delete ui->frame->layout();
-            QHBoxLayout *layout = new QHBoxLayout(ui->frame);
-            drawer = new Drawer(data, this);
-            layout->addWidget(drawer);
-            ui->frame->setLayout(layout);
+    nativeOpenFile(path);
+}
 
-            QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
+void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay) {
+    Reader reader;
+    QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
+    const Data data = reader.readFile(fileName, skip, skipFirstRay);
+    statusBar()->showMessage("Done", 2000);
+    if (data.size()) {
+        ui->label->hide();
+        delete ui->frame->layout();
+        QHBoxLayout *layout = new QHBoxLayout(ui->frame);
+        drawer = new Drawer(data, this);
+        layout->addWidget(drawer);
+        ui->frame->setLayout(layout);
 
-            autoDraw(ui->actionAutoDraw->isChecked());
-            drawAxes(ui->actionAxes->isChecked());
-            drawNet(ui->actionNet->isChecked());
-        }
+        QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
+
+        autoDraw(ui->actionAutoDraw->isChecked());
+        drawAxes(ui->actionAxes->isChecked());
+        drawNet(ui->actionNet->isChecked());
     }
 }
 
@@ -74,20 +82,26 @@ void MainWindow::saveFile() {
     QString path = QFileDialog::getSaveFileName(this);
 
     if (path != "") {
+        if (path.indexOf('c') == -1)
+            path += ".png";
+
         drawer->saveFile(path);
     }
 }
 
 void MainWindow::autoDraw(bool b) {
-    drawer->drawer->autoDrawing = b;
+    if (drawer)
+        drawer->drawer->autoDrawing = b;
 }
 
 void MainWindow::drawAxes(bool b) {
-    drawer->drawer->drawAxesFlag = b;
+    if (drawer)
+        drawer->drawer->drawAxesFlag = b;
 }
 
 void MainWindow::drawNet(bool b) {
-    drawer->drawer->drawNet = b;
+    if (drawer)
+        drawer->drawer->drawNet = b;
 }
 
 void MainWindow::showAboutQt() {
@@ -110,4 +124,10 @@ void MainWindow::loadSettings() {
     restoreGeometry(s.value("geometry").toByteArray());
     ui->actionAutoDraw->setChecked(s.value("autoDraw", true).toBool());
     lastOpenPath = s.value("openPath").toString();
+}
+
+void MainWindow::customOpen() {
+    CustomOpenDialog *dialog = new CustomOpenDialog(this);
+    QObject::connect(dialog, SIGNAL(customOpen(QString, int, int)), this, SLOT(nativeOpenFile(QString, int, int)));
+    dialog->show();
 }

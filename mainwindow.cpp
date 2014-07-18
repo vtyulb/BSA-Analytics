@@ -83,6 +83,7 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, bo
         autoDraw(ui->actionAutoDraw->isChecked());
         drawAxes(ui->actionAxes->isChecked());
         drawNet(ui->actionNet->isChecked());
+        drawFast(ui->actionFast->isChecked());
     }
 }
 

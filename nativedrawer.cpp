@@ -74,12 +74,12 @@ void NativeDrawer::nativePaint() {
             p.setPen(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
 
             if (rayVisibles[j])
-                for (int i = k * 50000 + 1; i < minimum(data[0][channel].size(), (k + 1)*50000 + 1); i += 1 + drawFast * 5) {
+                for (int i = k * 50000 + 1 + drawFast * 5; i < minimum(data[0][channel].size(), (k + 1)*50000 + 1); i += 1 + drawFast * 5) {
                     int x = newCoord(i, 0).x();
                     if (x < 0 || x > art->width())
                         continue;
 
-                    p.drawLine(mirr(newCoord(i, data[module][channel][i][j])), mirr(newCoord(i - 1, data[module][channel][i - 1][j])));
+                    p.drawLine(mirr(newCoord(i, data[module][channel][i][j])), mirr(newCoord(i - 1 - drawFast * 5, data[module][channel][i - 1][j])));
                 }
         }
     }
@@ -92,7 +92,7 @@ void NativeDrawer::nativePaint() {
     repaint();
 }
 
-void NativeDrawer::resetVisibleRectangle() {
+void NativeDrawer::resetVisibleRectangle(bool repaint) {
     int min = 1000 * 1000 * 1000;
     int max = -min;
 
@@ -110,7 +110,8 @@ void NativeDrawer::resetVisibleRectangle() {
 
     screen.setBottomLeft(QPoint(0 - deltaX, min - deltaY));
     screen.setTopRight(QPoint(data[module][channel].size() + deltaX, max + deltaY));
-    nativePaint();
+    if (repaint)
+        nativePaint();
 }
 
 QPoint NativeDrawer::newCoord(int x, int y) {

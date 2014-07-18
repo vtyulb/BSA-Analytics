@@ -63,7 +63,7 @@ signals:
     void coordsChanged(QPoint);
 
 public slots:
-    void resetVisibleRectangle();
+    void resetVisibleRectangle(bool repaint = true);
 
 
 };

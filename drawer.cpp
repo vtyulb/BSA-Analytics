@@ -60,35 +60,39 @@ Drawer::Drawer(const Data data, QWidget *parent) :
     hline->setFrameStyle(QFrame::HLine);
     l->addWidget(hline);
 
-    channel = new QSpinBox(this);
-    channel->setMinimum(1);
-    channel->setMaximum(data[0].size());
-    channel->setValue(data[0].size());
-    QObject::connect(channel, SIGNAL(valueChanged(int)), this, SLOT(channelChanged(int)));
+    if (data[0].size() > 1) {
+        channel = new QSpinBox(this);
+        channel->setMinimum(1);
+        channel->setMaximum(data[0].size());
+        channel->setValue(data[0].size());
+        QObject::connect(channel, SIGNAL(valueChanged(int)), this, SLOT(channelChanged(int)));
 
-    QWidget *channelWidget = new QWidget(this);
-    QHBoxLayout *channelWidgetLayout = new QHBoxLayout(channelWidget);
-    QLabel *channelLabel = new QLabel("Channel", this);
-    channelWidgetLayout->addWidget(channelLabel);
-    channelWidgetLayout->addWidget(channel);
+        QWidget *channelWidget = new QWidget(this);
+        QHBoxLayout *channelWidgetLayout = new QHBoxLayout(channelWidget);
+        QLabel *channelLabel = new QLabel("Channel", this);
+        channelWidgetLayout->addWidget(channelLabel);
+        channelWidgetLayout->addWidget(channel);
 
-    l->addWidget(channelWidget);
-
-    QFrame *moduleFrame = new QFrame(this);
-    moduleFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
-    QVBoxLayout *modulesLayout = new QVBoxLayout(moduleFrame);
-    modulesLayout->setContentsMargins(1, 1, 1, 1);
-    QButtonGroup *randomGroup = new QButtonGroup(this);
-    for (int i = 0; i < data.size(); i++) {
-        modules.push_back(new QRadioButton(QString("module %1").arg(QString::number(i + 1))));
-        modulesLayout->addWidget(modules[i]);
-        randomGroup->addButton(modules[i]);
-
-        QObject::connect(modules[i], SIGNAL(clicked()), this, SLOT(moduleChanged()));
+        l->addWidget(channelWidget);
     }
 
-    modules[0]->setChecked(true);
-    l->addWidget(moduleFrame);
+    if (data.size() > 1) {
+        QFrame *moduleFrame = new QFrame(this);
+        moduleFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
+        QVBoxLayout *modulesLayout = new QVBoxLayout(moduleFrame);
+        modulesLayout->setContentsMargins(1, 1, 1, 1);
+        QButtonGroup *randomGroup = new QButtonGroup(this);
+        for (int i = 0; i < data.size(); i++) {
+            modules.push_back(new QRadioButton(QString("module %1").arg(QString::number(i + 1))));
+            modulesLayout->addWidget(modules[i]);
+            randomGroup->addButton(modules[i]);
+
+            QObject::connect(modules[i], SIGNAL(clicked()), this, SLOT(moduleChanged()));
+        }
+
+        modules[0]->setChecked(true);
+        l->addWidget(moduleFrame);
+    }
 
     l->addStretch(10);
     resetButton = new QPushButton(this);
@@ -127,15 +131,7 @@ Drawer::Drawer(const Data data, QWidget *parent) :
     QTimer::singleShot(10, this, SLOT(draw()));
 }
 
-Drawer::~Drawer() {
-//    delete drawer;
-//    delete controlFrame;
-//    delete resetButton;
-//    delete disableAll;
-//    delete enableAll;
-//    delete drawButton;
-//    delete controller;
-}
+Drawer::~Drawer() {}
 
 void Drawer::checkBoxStateChanged() {
     QVector<bool> v;

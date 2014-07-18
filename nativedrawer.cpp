@@ -162,6 +162,10 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
     if (mouseClicked.x() > event->pos().x() || mouseClicked.y() > event->pos().y()) {
         if (screens.size())
             screen = screens.pop();
+        else {
+            repaint();
+            return;
+        }
     } else {
         QRect c;
         //WTF How it works?!
@@ -240,6 +244,7 @@ QPoint NativeDrawer::mirr(QPoint p) {
 }
 
 void NativeDrawer::leaveEvent(QEvent *event) {
+    qDebug() << "leave event";
     mousePressed = false;
     repaint();
     event->accept();

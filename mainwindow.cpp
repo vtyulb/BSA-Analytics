@@ -149,6 +149,6 @@ void MainWindow::loadSettings() {
 
 void MainWindow::customOpen() {
     CustomOpenDialog *dialog = new CustomOpenDialog(this);
-    QObject::connect(dialog, SIGNAL(customOpen(QString, int, int)), this, SLOT(nativeOpenFile(QString, int, int)));
+    QObject::connect(dialog, SIGNAL(customOpen(QString, int, int, bool)), this, SLOT(nativeOpenFile(QString, int, int, bool)));
     dialog->show();
 }

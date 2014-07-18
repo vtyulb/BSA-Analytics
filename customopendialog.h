@@ -19,7 +19,7 @@ private:
     Ui::CustomOpenDialog *ui;
 
 signals:
-    void customOpen(QString fileName, int skip, int skipFirstRay);
+    void customOpen(QString fileName, int skip, int skipFirstRay, bool binary);
 
 private slots:
     void openClicked();

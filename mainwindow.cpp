@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
+    QObject::connect(ui->actionOpen_Binary, SIGNAL(triggered()), this, SLOT(openBinaryFile()));
     QObject::connect(ui->actionCustom_open, SIGNAL(triggered()), this, SLOT(customOpen()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
@@ -43,19 +44,32 @@ void MainWindow::openFile() {
     if (path == "")
         return;
 
+    decodeLastPath(path);
+    nativeOpenFile(path);
+}
+
+void MainWindow::openBinaryFile() {
+    QString path = QFileDialog::getOpenFileName(this, "void", lastOpenPath);
+
+    if (path == "")
+        return;
+
+    decodeLastPath(path);
+    nativeOpenFile(path, 0, 0, true);
+}
+
+void MainWindow::decodeLastPath(QString path) {
     for (int i = path.length() - 1; i; i--)
         if (path[i] == '/' || path[i] == '\\') {
             lastOpenPath = path.left(i);
             break;
         }
-
-    nativeOpenFile(path);
 }
 
-void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay) {
+void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, bool binary) {
     Reader reader;
     QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
-    const Data data = reader.readFile(fileName, skip, skipFirstRay);
+    const Data data = reader.readFile(fileName, skip, skipFirstRay, binary);
     statusBar()->showMessage("Done", 2000);
     if (data.size()) {
         ui->label->hide();

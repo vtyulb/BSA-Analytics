@@ -10,6 +10,8 @@
 #include <QPushButton>
 #include <QCommandLinkButton>
 #include <QLineEdit>
+#include <QRadioButton>
+#include <QButtonGroup>
 
 class Drawer : public QWidget
 {
@@ -27,12 +29,14 @@ private:
     QCommandLinkButton *drawButton;
     QVector<QCheckBox* > checkBoxes;
     QVector<QLineEdit* > colors;
+    QVector<QRadioButton* > channels;
     Controller *controller;
-    int rays;
+    int rays, numberChannels;
 signals:
 
 private slots:
     void checkBoxStateChanged();
+    void channelChanged();
     void enableAllRays();
     void disableAllRays();
     void draw();

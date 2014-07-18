@@ -11,8 +11,10 @@ Controller::Controller(QWidget *parent) :
     coords = new QLabel(this);
     rays = new QLabel(this);
     points = new QLabel(this);
+    channels = new QLabel(this);
 
     layout->addWidget(rays);
+    layout->addWidget(channels);
     layout->addWidget(points);
     layout->addWidget(coords);
     layout->addStretch(5);
@@ -28,4 +30,8 @@ void Controller::setRays(int r) {
 
 void Controller::setPoints(int p) {
     points->setText(QString("%1 points on ray").arg(QString::number(p)));
+}
+
+void Controller::setChannels(int c) {
+    channels->setText(QString("%1 channels").arg(QString::number(c)));
 }

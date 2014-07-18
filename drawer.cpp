@@ -23,7 +23,8 @@ const char* colorNames[16] = {"FF0000",
                               "00D000"};
 
 Drawer::Drawer(const Data data, QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent),
+    numberChannels(data.size())
 {
     QHBoxLayout *layout = new QHBoxLayout(this);
     controlFrame = new QFrame(this);
@@ -32,7 +33,7 @@ Drawer::Drawer(const Data data, QWidget *parent) :
     layout->addWidget(controlFrame);
 
     QVBoxLayout *l = new QVBoxLayout(controlFrame);
-    for (int i = 0; i < data[0].size(); i++) {
+    for (int i = 0; i < data[0][0].size(); i++) {
         checkBoxes.push_back(new QCheckBox(QString("ray %1%2").arg(QString::number((i + 1)/10), QString::number((i + 1)%10)), this));
         checkBoxes[i]->setChecked(true);
         QObject::connect(checkBoxes[i], SIGNAL(clicked()), this, SLOT(checkBoxStateChanged()));
@@ -53,6 +54,22 @@ Drawer::Drawer(const Data data, QWidget *parent) :
         lay->setContentsMargins(1, 1, 1, 1);
         l->addWidget(widget);
     }
+
+    QFrame *channelsFrame = new QFrame(this);
+    channelsFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
+    QVBoxLayout *channelsLayout = new QVBoxLayout(channelsFrame);
+    channelsLayout->setContentsMargins(1, 1, 1, 1);
+    QButtonGroup *chan = new QButtonGroup(this);
+    for (int i = 0; i < data.size(); i++) {
+        channels.push_back(new QRadioButton(QString("channel %1").arg(QString::number(i+1))));
+        channelsLayout->addWidget(channels[i]);
+        chan->addButton(channels[i]);
+
+        QObject::connect(channels[i], SIGNAL(clicked()), this, SLOT(channelChanged()));
+    }
+
+    channels[data.size() - 1]->setChecked(true);
+    l->addWidget(channelsFrame);
 
     l->addStretch(10);
     resetButton = new QPushButton(this);
@@ -77,13 +94,14 @@ Drawer::Drawer(const Data data, QWidget *parent) :
     controlFrame->setMinimumWidth(188);
 
     controller = new Controller(this);
-    controller->setPoints(data.size());
-    controller->setRays(data[0].size());
+    controller->setChannels(data.size());
+    controller->setPoints(data[0].size());
+    controller->setRays(data[0][0].size());
     l->addWidget(controller);
 
     QObject::connect(drawer, SIGNAL(coordsChanged(QPoint)), controller, SLOT(setCoords(QPoint)));
 
-    rays = data[0].size();
+    rays = data[0][0].size();
     show();
 
     QTimer::singleShot(10, this, SLOT(draw()));
@@ -95,6 +113,14 @@ void Drawer::checkBoxStateChanged() {
         v.push_back(checkBoxes[i]->isChecked());
 
     drawer->setRayVisibles(v);
+}
+
+void Drawer::channelChanged() {
+    for (int i = 0; i < numberChannels; i++)
+        if (channels[i]->isChecked())
+            drawer->channel = i;
+
+    drawer->nativePaint();
 }
 
 void Drawer::enableAllRays() {

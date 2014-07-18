@@ -28,6 +28,8 @@ public:
     bool drawNet;
     QMutex drawing;
 
+    int channel;
+
 private:
     QVector<bool> rayVisibles;
     QVector<QString> colors;

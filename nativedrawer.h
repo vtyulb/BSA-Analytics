@@ -10,6 +10,7 @@
 #include <QImage>
 #include <QDebug>
 #include <QMutex>
+#include <QStack>
 
 class NativeDrawer : public QWidget
 {
@@ -35,6 +36,7 @@ public:
 private:
     QVector<bool> rayVisibles;
     QVector<QString> colors;
+    QStack<QRect> screens;
     QRect screen;
     QImage *art;
     const Data data;
@@ -48,6 +50,7 @@ private:
     void mouseMoveEvent(QMouseEvent *event);
     void mouseReleaseEvent(QMouseEvent *event);
     void resizeEvent(QResizeEvent *event);
+    void leaveEvent(QEvent *event);
 
     bool mousePressed;
     QPoint mouseClicked;

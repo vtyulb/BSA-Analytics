@@ -146,19 +146,19 @@ void NativeDrawer::mouseMoveEvent(QMouseEvent *event) {
 }
 
 void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
-    mousePressed = false;
-
-    if (abs(mouseRect.width()) < 10 || abs(mouseRect.height()) < 10)
+    if (!mousePressed)
         return;
 
+    mousePressed = false;
+
+    if (abs(mouseRect.width()) < 80 || abs(mouseRect.height()) < 80) {
+        repaint();
+        return;
+    }
+
     if (mouseClicked.x() > event->pos().x() || mouseClicked.y() > event->pos().y()) {
-        int h = abs(screen.height()) / 2;
-        int w = screen.width() / 2;
-        screen.setRight(screen.right() + w);
-        screen.setLeft(screen.left() - w);
-        screen.setBottom(screen.bottom() - h);
-        screen.setTop(screen.top() + h);
-        qDebug() << screen;
+        if (screens.size())
+            screen = screens.pop();
     } else {
         QRect c;
         //WTF How it works?!
@@ -172,6 +172,8 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
 
         c.setTopLeft(backwardCoord(mouseRect.bottomLeft()));
         c.setBottomRight(backwardCoord(mouseRect.topRight()));
+
+        screens.push_back(screen);
         screen = c;
     }
 
@@ -232,4 +234,9 @@ int NativeDrawer::minimum(int a, int b) {
 QPoint NativeDrawer::mirr(QPoint p) {
     p.setY(art->height() - p.y());
     return p;
+}
+
+void NativeDrawer::leaveEvent(QEvent *event) {
+    mousePressed = false;
+    repaint();
 }

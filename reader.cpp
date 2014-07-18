@@ -87,7 +87,7 @@ Data Reader::readBinaryFile(QString file) {
         header[data.left(data.indexOf(' '))] = data.right(data.size() - data.indexOf(' '));
     }
 
-    int npoints = header["npoints"].toInt();
+    qint64 npoints = header["npoints"].toInt();
     int channels = header["nbands"].toInt();
     int rays = 8;
     int modulus = 6;
@@ -96,21 +96,25 @@ Data Reader::readBinaryFile(QString file) {
     data.resize(modulus);
     for (int j = 0; j < modulus; j++) {
         data[j].resize(channels + 1);
-        for (int i = 0; i < channels + 1; i++)
+        for (int i = 0; i < channels + 1; i++) {
             data[j][i].resize(npoints);
+            for (int k = 0; k < npoints; k++)
+                data[j][i][k].resize(rays);
+        }
     }
 
-    QByteArray a = f.readAll();
+    QByteArray a(npoints * modulus * rays * (channels + 1) * 4, ' ');
+    f.read(a.data(), npoints * modulus * rays * (channels + 1) * 4);
 
     float *source = (float*)(void*)a.data();
     for (int i = 0; i < npoints; i++) {
         if (i % 1000 == 0)
-            emit progress(((char*)source - a.data()) * 400 / a.size());
+            emit progress(((char*)source - a.data()) * 100 / a.size());
 
         for (int m = 0; m < modulus; m++)
             for (int j = 0; j < rays; j++)
                 for (int k = 0; k < channels + 1; k++) {
-                    data[m][k][i].push_back(*source * 1000000);
+                    data[m][k][i][j] = *source * 1000000;
                     source++;
                 }
         }

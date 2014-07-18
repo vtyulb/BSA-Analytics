@@ -4,9 +4,10 @@
 #include <QFileDialog>
 #include <QButtonGroup>
 
-CustomOpenDialog::CustomOpenDialog(QWidget *parent) :
+CustomOpenDialog::CustomOpenDialog(QString lastOpenPath, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::CustomOpenDialog)
+    ui(new Ui::CustomOpenDialog),
+    lastOpenPath(lastOpenPath)
 {
     ui->setupUi(this);
 
@@ -18,6 +19,11 @@ CustomOpenDialog::CustomOpenDialog(QWidget *parent) :
     group->addButton(ui->radioButton_2);
     group->addButton(ui->radioButton_3);
 
+    QButtonGroup *group2 = new QButtonGroup(ui->groupBox_2);
+    group2->addButton(ui->binary);
+    group2->addButton(ui->text);
+
+    ui->text->setChecked(true);
     ui->radioButton_3->setChecked(true);
     ui->checkBox->setChecked(true);
 }
@@ -28,7 +34,7 @@ CustomOpenDialog::~CustomOpenDialog()
 }
 
 void CustomOpenDialog::openClicked() {
-    QString path = QFileDialog::getOpenFileName(this);
+    QString path = QFileDialog::getOpenFileName(this, "", lastOpenPath);
     ui->lineEdit->setText(path);
 }
 

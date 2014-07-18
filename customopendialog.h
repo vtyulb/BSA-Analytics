@@ -12,11 +12,12 @@ class CustomOpenDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CustomOpenDialog(QWidget *parent = 0);
+    explicit CustomOpenDialog(QString lastOpenPath, QWidget *parent = 0);
     ~CustomOpenDialog();
 
 private:
     Ui::CustomOpenDialog *ui;
+    QString lastOpenPath;
 
 signals:
     void customOpen(QString fileName, int skip, int skipFirstRay, bool binary);

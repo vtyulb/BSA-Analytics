@@ -95,10 +95,10 @@ Drawer::Drawer(const Data data, QWidget *parent) :
     resetButton->setText("reset");
     l->addWidget(resetButton);
     enableAll = new QPushButton(this);
-    enableAll->setText("Enable all");
+    enableAll->setText("Enable all rays");
     l->addWidget(enableAll);
     disableAll = new QPushButton(this);
-    disableAll->setText("Disable all");
+    disableAll->setText("Disable all rays");
     l->addWidget(disableAll);
     drawButton = new QCommandLinkButton(this);
     drawButton->setText("Draw");

@@ -5,6 +5,7 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QSettings>
+#include <QTimer>
 #include <customopendialog.h>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -31,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent) :
     statusBar()->addPermanentWidget(progress);
     ui->actionAxes->setChecked(true);
     loadSettings();
+
+    QTimer::singleShot(400, this, SLOT(customOpen()));
 }
 
 MainWindow::~MainWindow()
@@ -45,7 +48,6 @@ void MainWindow::openFile() {
     if (path == "")
         return;
 
-    decodeLastPath(path);
     nativeOpenFile(path);
 }
 
@@ -55,7 +57,6 @@ void MainWindow::openBinaryFile() {
     if (path == "")
         return;
 
-    decodeLastPath(path);
     nativeOpenFile(path, 0, 0, true);
 }
 
@@ -68,6 +69,7 @@ void MainWindow::decodeLastPath(QString path) {
 }
 
 void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, bool binary) {
+    decodeLastPath(fileName);
     Reader reader;
     QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
     const Data data = reader.readFile(fileName, skip, skipFirstRay, binary);
@@ -148,7 +150,7 @@ void MainWindow::loadSettings() {
 }
 
 void MainWindow::customOpen() {
-    CustomOpenDialog *dialog = new CustomOpenDialog(this);
+    CustomOpenDialog *dialog = new CustomOpenDialog(lastOpenPath, this);
     QObject::connect(dialog, SIGNAL(customOpen(QString, int, int, bool)), this, SLOT(nativeOpenFile(QString, int, int, bool)));
     dialog->show();
 }

@@ -81,6 +81,7 @@
     <addaction name="actionAutoDraw"/>
     <addaction name="actionAxes"/>
     <addaction name="actionNet"/>
+    <addaction name="actionFast"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -147,6 +148,14 @@
   <action name="actionOpen_Binary">
    <property name="text">
     <string>Open Binary</string>
+   </property>
+  </action>
+  <action name="actionFast">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Fast</string>
    </property>
   </action>
  </widget>

@@ -22,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
     QObject::connect(ui->actionAxes, SIGNAL(triggered(bool)), this, SLOT(drawAxes(bool)));
     QObject::connect(ui->actionNet, SIGNAL(triggered(bool)), this, SLOT(drawNet(bool)));
+    QObject::connect(ui->actionFast, SIGNAL(triggered(bool)), this, SLOT(drawFast(bool)));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
     QObject::connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(showAboutQt()));
 
@@ -116,6 +117,11 @@ void MainWindow::drawNet(bool b) {
         drawer->drawer->drawNet = b;
 }
 
+void MainWindow::drawFast(bool b) {
+    if (drawer)
+        drawer->drawer->drawFast = b;
+}
+
 void MainWindow::showAboutQt() {
     QMessageBox::aboutQt(this);
 }
@@ -129,12 +135,14 @@ void MainWindow::saveSettings() {
     s.setValue("geometry", QVariant(saveGeometry()));
     s.setValue("autoDraw", QVariant(ui->actionAutoDraw->isChecked()));
     s.setValue("openPath", QVariant(lastOpenPath));
+    s.setValue("fast", QVariant(ui->actionFast->isChecked()));
 }
 
 void MainWindow::loadSettings() {
     QSettings s("settings.ini", QSettings::IniFormat);
     restoreGeometry(s.value("geometry").toByteArray());
     ui->actionAutoDraw->setChecked(s.value("autoDraw", true).toBool());
+    ui->actionFast->setChecked(s.value("fast", false).toBool());
     lastOpenPath = s.value("openPath").toString();
 }
 

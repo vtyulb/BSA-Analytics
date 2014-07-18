@@ -12,6 +12,7 @@
 #include <QLineEdit>
 #include <QRadioButton>
 #include <QButtonGroup>
+#include <QSpinBox>
 
 class Drawer : public QWidget
 {
@@ -31,7 +32,7 @@ private:
     QCommandLinkButton *drawButton;
     QVector<QCheckBox* > checkBoxes;
     QVector<QLineEdit* > colors;
-    QVector<QRadioButton* > channels;
+    QSpinBox *channel;
     QVector<QRadioButton* > modules;
     Controller *controller;
     int rays, numberChannels, numberModules;
@@ -39,7 +40,7 @@ signals:
 
 private slots:
     void checkBoxStateChanged();
-    void channelChanged();
+    void channelChanged(int);
     void moduleChanged();
     void enableAllRays();
     void disableAllRays();

@@ -26,6 +26,7 @@ public:
     bool autoDrawing;
     bool drawAxesFlag;
     bool drawNet;
+    bool drawFast;
     QMutex drawing;
 
     int channel;

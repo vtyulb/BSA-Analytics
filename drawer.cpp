@@ -56,21 +56,23 @@ Drawer::Drawer(const Data data, QWidget *parent) :
         l->addWidget(widget);
     }
 
-    QFrame *channelsFrame = new QFrame(this);
-    channelsFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
-    QVBoxLayout *channelsLayout = new QVBoxLayout(channelsFrame);
-    channelsLayout->setContentsMargins(1, 1, 1, 1);
-    QButtonGroup *chan = new QButtonGroup(this);
-    for (int i = 0; i < data[0].size(); i++) {
-        channels.push_back(new QRadioButton(QString("channel %1").arg(QString::number(i+1))));
-        channelsLayout->addWidget(channels[i]);
-        chan->addButton(channels[i]);
+    QFrame *hline = new QFrame(this);
+    hline->setFrameStyle(QFrame::HLine);
+    l->addWidget(hline);
 
-        QObject::connect(channels[i], SIGNAL(clicked()), this, SLOT(channelChanged()));
-    }
+    channel = new QSpinBox(this);
+    channel->setMinimum(1);
+    channel->setMaximum(data[0].size());
+    channel->setValue(data[0].size());
+    QObject::connect(channel, SIGNAL(valueChanged(int)), this, SLOT(channelChanged(int)));
 
-    channels[data[0].size() - 1]->setChecked(true);
-    l->addWidget(channelsFrame);
+    QWidget *channelWidget = new QWidget(this);
+    QHBoxLayout *channelWidgetLayout = new QHBoxLayout(channelWidget);
+    QLabel *channelLabel = new QLabel("Channel", this);
+    channelWidgetLayout->addWidget(channelLabel);
+    channelWidgetLayout->addWidget(channel);
+
+    l->addWidget(channelWidget);
 
     QFrame *moduleFrame = new QFrame(this);
     moduleFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
@@ -143,11 +145,8 @@ void Drawer::checkBoxStateChanged() {
     drawer->setRayVisibles(v);
 }
 
-void Drawer::channelChanged() {
-    for (int i = 0; i < numberChannels; i++)
-        if (channels[i]->isChecked())
-            drawer->channel = i;
-
+void Drawer::channelChanged(int channel) {
+    drawer->channel = channel - 1;
     drawer->resetVisibleRectangle();
     drawer->nativePaint();
 }

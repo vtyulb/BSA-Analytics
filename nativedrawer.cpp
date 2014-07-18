@@ -74,7 +74,7 @@ void NativeDrawer::nativePaint() {
             p.setPen(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
 
             if (rayVisibles[j])
-                for (int i = k * 50000 + 1; i < minimum(data[0][channel].size(), (k + 1)*50000 + 1); i++) {
+                for (int i = k * 50000 + 1; i < minimum(data[0][channel].size(), (k + 1)*50000 + 1); i += 1 + drawFast * 5) {
                     int x = newCoord(i, 0).x();
                     if (x < 0 || x > art->width())
                         continue;

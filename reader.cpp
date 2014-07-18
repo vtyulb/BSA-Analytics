@@ -121,14 +121,3 @@ Data Reader::readBinaryFile(QString file) {
 
     return data;
 }
-
-float Reader::decode(char *c) {
-    float res = *((float *)(void *)c);
-    char t[4];
-    t[0] = c[3];
-    t[1] = c[2];
-    t[2] = c[1];
-    t[3] = c[0];
-    res = *((float *)(void *)t);
-    return res * 1000000;
-}

@@ -1,5 +1,6 @@
 #include "colorwidget.h"
 #include <QTimer>
+#include <QPaintEvent>
 
 ColorWidget::ColorWidget(QLineEdit *l, QWidget *parent) :
     QWidget(parent),
@@ -17,4 +18,5 @@ void ColorWidget::paintEvent(QPaintEvent *event) {
     p.setBrush(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
     p.drawRect(0, 0, width(), height());
     p.end();
+    event->accept();
 }

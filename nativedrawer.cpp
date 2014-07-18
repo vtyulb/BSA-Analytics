@@ -4,15 +4,15 @@
 
 NativeDrawer::NativeDrawer(const Data data, QWidget *parent) :
     QWidget(parent),
-    data(data),
-    mousePressed(false),
     allowDrawing(false),
     autoDrawing(true),
     drawAxesFlag(true),
     drawNet(false),
     channel(0),
     module(0),
-    art(new QImage(100, 100, QImage::Format_ARGB32))
+    art(new QImage(100, 100, QImage::Format_ARGB32)),
+    data(data),
+    mousePressed(false)
 {
     for (int i = 0; i < data[0][channel][0].size(); i++)
         rayVisibles.push_back(true);
@@ -66,9 +66,12 @@ void NativeDrawer::nativePaint() {
 
     int rays = data[module][channel][0].size();
     for (int k = 0; k < data[module][channel].size() / 50000 + 1; k++) {
-        repaint();
-//        qApp->processEvents();
+        if (k)
+            repaint();
+
         emit progress(5000000*k/data[module][channel].size());
+
+
         for (int j = 0; j < rays; j++) {
             QByteArray c = QByteArray::fromHex(colors[j].toUtf8());
             p.setPen(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
@@ -239,4 +242,5 @@ QPoint NativeDrawer::mirr(QPoint p) {
 void NativeDrawer::leaveEvent(QEvent *event) {
     mousePressed = false;
     repaint();
+    event->accept();
 }

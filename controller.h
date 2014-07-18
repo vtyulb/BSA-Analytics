@@ -14,12 +14,14 @@ public:
     void setRays(int);
     void setPoints(int);
     void setChannels(int);
+    void setModules(int);
 
 private:
     QLabel *coords;
     QLabel *rays;
     QLabel *points;
     QLabel *channels;
+    QLabel *modules;
 
 
 signals:

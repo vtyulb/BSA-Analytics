@@ -12,9 +12,11 @@ Controller::Controller(QWidget *parent) :
     rays = new QLabel(this);
     points = new QLabel(this);
     channels = new QLabel(this);
+    modules = new QLabel(this);
 
     layout->addWidget(rays);
     layout->addWidget(channels);
+    layout->addWidget(modules);
     layout->addWidget(points);
     layout->addWidget(coords);
     layout->addStretch(5);
@@ -34,4 +36,8 @@ void Controller::setPoints(int p) {
 
 void Controller::setChannels(int c) {
     channels->setText(QString("%1 channels").arg(QString::number(c)));
+}
+
+void Controller::setModules(int m) {
+    modules->setText(QString("%1 modules").arg(QString::number(m)));
 }

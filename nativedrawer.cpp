@@ -4,16 +4,17 @@
 
 NativeDrawer::NativeDrawer(const Data data, QWidget *parent) :
     QWidget(parent),
-    art(NULL),
     data(data),
     mousePressed(false),
     allowDrawing(false),
     autoDrawing(true),
     drawAxesFlag(true),
     drawNet(false),
-    channel(0)
+    channel(0),
+    module(0),
+    art(new QImage(100, 100, QImage::Format_ARGB32))
 {
-    for (int i = 0; i < data[channel][0].size(); i++)
+    for (int i = 0; i < data[0][channel][0].size(); i++)
         rayVisibles.push_back(true);
 
     resetVisibleRectangle();
@@ -63,22 +64,22 @@ void NativeDrawer::nativePaint() {
     p.setPen(QPen("black"));
     qDebug() << width() << height();
 
-    int rays = data[channel][0].size();
-    for (int k = 0; k < data[channel].size() / 50000 + 1; k++) {
+    int rays = data[module][channel][0].size();
+    for (int k = 0; k < data[module][channel].size() / 50000 + 1; k++) {
         repaint();
 //        qApp->processEvents();
-        emit progress(5000000*k/data[channel].size());
+        emit progress(5000000*k/data[module][channel].size());
         for (int j = 0; j < rays; j++) {
             QByteArray c = QByteArray::fromHex(colors[j].toUtf8());
             p.setPen(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
 
             if (rayVisibles[j])
-                for (int i = k * 50000 + 1; i < minimum(data[channel].size(), (k + 1)*50000 + 1); i++) {
+                for (int i = k * 50000 + 1; i < minimum(data[0][channel].size(), (k + 1)*50000 + 1); i++) {
                     int x = newCoord(i, 0).x();
                     if (x < 0 || x > art->width())
                         continue;
 
-                    p.drawLine(mirr(newCoord(i, data[channel][i][j])), mirr(newCoord(i - 1, data[channel][i - 1][j])));
+                    p.drawLine(mirr(newCoord(i, data[module][channel][i][j])), mirr(newCoord(i - 1, data[module][channel][i - 1][j])));
                 }
         }
     }
@@ -95,17 +96,20 @@ void NativeDrawer::resetVisibleRectangle() {
     int min = 1000 * 1000 * 1000;
     int max = -min;
 
-    for (int i = 0; i < data[channel].size(); i++)
-        for (int j = 0; j < data[channel][i].size(); j++) {
-            if (data[channel][i][j] > max)
-                max = data[channel][i][j];
+    for (int i = 0; i < data[module][channel].size(); i++)
+        for (int j = 0; j < data[module][channel][i].size(); j++) {
+            if (data[module][channel][i][j] > max)
+                max = data[module][channel][i][j];
 
-            if (data[channel][i][j] < min)
-                min = data[channel][i][j];
+            if (data[module][channel][i][j] < min)
+                min = data[module][channel][i][j];
         }
 
-    screen.setBottomLeft(QPoint(0, min));
-    screen.setTopRight(QPoint(data[channel].size(), max));
+    int deltaX = data[module][channel].size() * 0.05;
+    int deltaY = (max - min) * 0.05;
+
+    screen.setBottomLeft(QPoint(0 - deltaX, min - deltaY));
+    screen.setTopRight(QPoint(data[module][channel].size() + deltaX, max + deltaY));
     nativePaint();
 }
 

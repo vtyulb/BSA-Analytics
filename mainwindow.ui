@@ -16,27 +16,34 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QFrame" name="frame">
-      <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+     <widget class="QScrollArea" name="frame">
+      <property name="widgetResizable">
+       <bool>true</bool>
       </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
-       <item>
-        <widget class="QLabel" name="label">
-         <property name="font">
-          <font>
-           <pointsize>48</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Waiting for data input...</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>902</width>
+         <height>554</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QLabel" name="label">
+          <property name="font">
+           <font>
+            <pointsize>48</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Waiting for data input...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>

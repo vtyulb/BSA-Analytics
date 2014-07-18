@@ -73,11 +73,9 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, bo
     statusBar()->showMessage("Done", 2000);
     if (data.size()) {
         ui->label->hide();
-        delete ui->frame->layout();
-        QHBoxLayout *layout = new QHBoxLayout(ui->frame);
+        delete drawer;
         drawer = new Drawer(data, this);
-        layout->addWidget(drawer);
-        ui->frame->setLayout(layout);
+        ui->scrollAreaWidgetContents->layout()->addWidget(drawer);
 
         QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
 

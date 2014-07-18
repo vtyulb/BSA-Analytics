@@ -2,6 +2,6 @@
 #define DATA_H
 
 #include <QVector>
-typedef QVector<QVector<QVector<float> > > Data;
+typedef QVector<QVector<QVector<QVector<float> > > > Data;
 
 #endif // DATA_H

@@ -29,6 +29,7 @@ public:
     QMutex drawing;
 
     int channel;
+    int module;
 
 private:
     QVector<bool> rayVisibles;

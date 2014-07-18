@@ -12,6 +12,7 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) 
 
     Data data;
     data.resize(1);
+    data[0].resize(1);
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return data;
@@ -48,7 +49,7 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) 
             if (i != 0 || !disableFirstRay)
                 layer.push_back(number(res[i]));
 
-        data[0].push_back(layer);
+        data[0][0].push_back(layer);
 
         s = file.readLine();
         if (s[0] == '@')
@@ -60,9 +61,6 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) 
     }
 
     emit progress(100);
-
-    qDebug() << "readed" << data.size() << "lines with" << data[0].size() << "rays";
-
     return data;
 }
 
@@ -92,29 +90,41 @@ Data Reader::readBinaryFile(QString file) {
     int npoints = header["npoints"].toInt();
     int channels = header["nbands"].toInt();
     int rays = 8;
+    int modulus = 6;
 
     Data data;
-    data.resize(channels + 1);
-    for (int i = 0; i < channels + 1; i++)
-        data[i].resize(npoints);
+    data.resize(modulus);
+    for (int j = 0; j < modulus; j++) {
+        data[j].resize(channels + 1);
+        for (int i = 0; i < channels + 1; i++)
+            data[j][i].resize(npoints);
+    }
 
     QByteArray a = f.readAll();
-    char *source = a.data();
+
+    float *source = (float*)(void*)a.data();
     for (int i = 0; i < npoints; i++) {
         if (i % 1000 == 0)
-            emit progress((source - a.data()) * 400 / a.size());
+            emit progress(((char*)source - a.data()) * 400 / a.size());
 
-        for (int j = 0; j < rays; j++)
-            for (int k = 0; k < channels + 1; k++) {
-                data[k][i].push_back(decode(source));
-                source += 4;
-            }
-    }
+        for (int m = 0; m < modulus; m++)
+            for (int j = 0; j < rays; j++)
+                for (int k = 0; k < channels + 1; k++) {
+                    data[m][k][i].push_back(*source * 1000000);
+                    source++;
+                }
+        }
 
     return data;
 }
 
 float Reader::decode(char *c) {
     float res = *((float *)(void *)c);
+    char t[4];
+    t[0] = c[3];
+    t[1] = c[2];
+    t[2] = c[1];
+    t[3] = c[0];
+    res = *((float *)(void *)t);
     return res * 1000000;
 }

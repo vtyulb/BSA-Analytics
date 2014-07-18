@@ -18,6 +18,8 @@ class Drawer : public QWidget
     Q_OBJECT
 public:
     explicit Drawer(const Data data, QWidget *parent = 0);
+    ~Drawer();
+
     void saveFile(QString);
     NativeDrawer *drawer;
 
@@ -30,13 +32,15 @@ private:
     QVector<QCheckBox* > checkBoxes;
     QVector<QLineEdit* > colors;
     QVector<QRadioButton* > channels;
+    QVector<QRadioButton* > modules;
     Controller *controller;
-    int rays, numberChannels;
+    int rays, numberChannels, numberModules;
 signals:
 
 private slots:
     void checkBoxStateChanged();
     void channelChanged();
+    void moduleChanged();
     void enableAllRays();
     void disableAllRays();
     void draw();

@@ -102,8 +102,8 @@ void NativeDrawer::nativePaint() {
 }
 
 void NativeDrawer::resetVisibleRectangle(bool repaint) {
-    int min = 1000 * 1000 * 1000;
-    int max = -min;
+    float min = 1e+30;
+    float max = -min;
 
     for (int i = 0; i < data.npoints; i++)
         for (int j = 0; j < data.rays; j++) {
@@ -114,24 +114,24 @@ void NativeDrawer::resetVisibleRectangle(bool repaint) {
                 min = data.data[module][channel][j][i];
         }
 
-    int deltaX = data.npoints * 0.05;
-    int deltaY = (max - min) * 0.05;
+    float deltaX = data.npoints * 0.05;
+    float deltaY = (max - min) * 0.05;
 
-    screen.setBottomLeft(QPoint(0 - deltaX, min - deltaY));
-    screen.setTopRight(QPoint(data.npoints + deltaX, max + deltaY));
+    screen.setBottomLeft(QPointF(0 - deltaX, min - deltaY));
+    screen.setTopRight(QPointF(data.npoints + deltaX, max + deltaY));
     if (repaint)
         nativePaint();
 }
 
-QPoint NativeDrawer::newCoord(int x, int y) {
+QPoint NativeDrawer::newCoord(float x, float y) {
     QPoint res;
     res.setX((x - screen.left())*art->width()/(screen.right()-screen.left()));
     res.setY((y - screen.bottom())*art->height()/(screen.top()-screen.bottom()));
     return res;
 }
 
-QPoint NativeDrawer::backwardCoord(QPoint p) {
-    QPoint res;
+QPointF NativeDrawer::backwardCoord(QPointF p) {
+    QPointF res;
     res.setX(screen.left() + (screen.right()-screen.left())*p.x()/art->width());
     res.setY(screen.bottom() + (screen.top()-screen.bottom())*p.y()/art->height());
     return res;
@@ -160,7 +160,7 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
 
     mousePressed = false;
 
-    if (abs(mouseRect.width()) < 80 || abs(mouseRect.height()) < 80) {
+    if (abs(mouseRect.width()) < 50 || abs(mouseRect.height()) < 50) {
         repaint();
         return;
     }
@@ -173,18 +173,24 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
             return;
         }
     } else {
-        QRect c;
+        QRectF c;
         //WTF How it works?!
-        int top = mouseRect.top() + 10;
-        int bot = mouseRect.bottom() - 10;
+        int top = mouseRect.top();
+        int bot = mouseRect.bottom();
 
         mouseRect.setTop(height() - bot);
         mouseRect.setBottom(height() - top);
-        mouseRect.setLeft(mouseRect.left() - 10);
-        mouseRect.setRight(mouseRect.right() + 10);
 
         c.setTopLeft(backwardCoord(mouseRect.bottomLeft()));
         c.setBottomRight(backwardCoord(mouseRect.topRight()));
+
+        float deltaY = (c.top() - c.bottom()) * 0.05;
+        float deltaX = (c.right() - c.left()) * 0.05;
+
+        c.setTop(c.top() + deltaY);
+        c.setBottom(c.bottom() - deltaY);
+        c.setLeft(c.left() - deltaX);
+        c.setRight(c.right() + deltaX);
 
         screens.push_back(screen);
         screen = c;
@@ -233,7 +239,7 @@ void NativeDrawer::drawAxes() {
     for (int i = 1; i <= 25; i++) {
         p.drawLine(QPoint(0, art->height() / 26 * i), QPoint(6 + (4 + art->width() * drawNet) * (i%5==0), art->height() / 26 * i));
         if (i%5==0)
-            p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(mirr(QPoint(0,art->height()/26*i))).y()/(999999.0 * (data.modules != 1) + 1)));
+            p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(mirr(QPoint(0,art->height()/26*i))).y()));
     }
 }
 

@@ -150,7 +150,7 @@ Data Reader::readBinaryFile(QString file) {
                         source = (float*)(void*)input.data();
                     }
 
-                    data.data[m][k][j][i] = (*source) * 1000000;
+                    data.data[m][k][j][i] = (*source);
                     source++;
                     remaining--;
                 }

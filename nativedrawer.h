@@ -37,15 +37,15 @@ public:
 private:
     QVector<bool> rayVisibles;
     QVector<QString> colors;
-    QStack<QRect> screens;
-    QRect screen;
+    QStack<QRectF> screens;
+    QRectF screen;
     QImage *art;
     Data data;
 
     void paintEvent(QPaintEvent *);
 
-    QPoint newCoord(int x, int y);
-    QPoint backwardCoord(QPoint);
+    QPoint newCoord(float x, float y);
+    QPointF backwardCoord(QPointF);
 
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -64,7 +64,7 @@ private:
 
 signals:
     void progress(int);
-    void coordsChanged(QPoint);
+    void coordsChanged(QPointF);
 
 public slots:
     void resetVisibleRectangle(bool repaint = true);

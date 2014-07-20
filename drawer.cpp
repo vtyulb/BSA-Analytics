@@ -124,7 +124,7 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     controller->setRays(data.rays);
     l->addWidget(controller);
 
-    QObject::connect(drawer, SIGNAL(coordsChanged(QPoint)), controller, SLOT(setCoords(QPoint)));
+    QObject::connect(drawer, SIGNAL(coordsChanged(QPointF)), controller, SLOT(setCoords(QPointF)));
 
     show();
 

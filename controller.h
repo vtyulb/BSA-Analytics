@@ -27,7 +27,7 @@ private:
 signals:
 
 public slots:
-    void setCoords(QPoint);
+    void setCoords(QPointF);
 };
 
 #endif // CONTROLLER_H

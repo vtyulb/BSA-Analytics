@@ -22,7 +22,7 @@ Controller::Controller(QWidget *parent) :
     layout->addStretch(5);
 }
 
-void Controller::setCoords(QPoint p) {
+void Controller::setCoords(QPointF p) {
     coords->setText(QString("X: %1; Y: %2").arg(QString::number(p.x()), QString::number(p.y())));
 }
 

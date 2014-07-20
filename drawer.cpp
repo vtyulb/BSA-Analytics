@@ -129,6 +129,10 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     show();
 
     QTimer::singleShot(10, this, SLOT(draw()));
+    QTimer *timer = new QTimer(this);
+    timer->setInterval(5000);
+    QObject::connect(timer, SIGNAL(timeout()), this, SLOT(timeToDie()));
+    timer->start();
 }
 
 void Drawer::checkBoxStateChanged() {
@@ -192,4 +196,9 @@ void Drawer::keyPressEvent(QKeyEvent *event) {
 
             event->accept();
         }
+}
+
+void Drawer::timeToDie() {
+    if (!isVisible())
+        deleteLater();
 }

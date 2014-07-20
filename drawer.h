@@ -45,6 +45,7 @@ private slots:
     void moduleChanged();
     void enableAllRays();
     void disableAllRays();
+    void timeToDie();
     void draw();
 };
 

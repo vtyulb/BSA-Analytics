@@ -22,19 +22,20 @@ const char* colorNames[16] = {"FF0000",
                               "D000C0",
                               "00D000"};
 
-Drawer::Drawer(const Data data, QWidget *parent) :
+Drawer::Drawer(const Data &data, QWidget *parent) :
     QWidget(parent),
-    numberChannels(data[0].size()),
-    numberModules(data.size())
+    numberChannels(data.channels),
+    numberModules(data.modules),
+    rays(data.rays)
 {
     QHBoxLayout *layout = new QHBoxLayout(this);
     controlFrame = new QFrame(this);
-    drawer = new NativeDrawer(data);
+    drawer = new NativeDrawer(data, this);
     layout->addWidget(drawer);
     layout->addWidget(controlFrame);
 
     QVBoxLayout *l = new QVBoxLayout(controlFrame);
-    for (int i = 0; i < data[0][0][0].size(); i++) {
+    for (int i = 0; i < data.rays; i++) {
         checkBoxes.push_back(new QCheckBox(QString("ray %1%2").arg(QString::number((i + 1)/10), QString::number((i + 1)%10)), this));
         checkBoxes[i]->setChecked(true);
         QObject::connect(checkBoxes[i], SIGNAL(clicked()), this, SLOT(checkBoxStateChanged()));
@@ -60,11 +61,11 @@ Drawer::Drawer(const Data data, QWidget *parent) :
     hline->setFrameStyle(QFrame::HLine);
     l->addWidget(hline);
 
-    if (data[0].size() > 1) {
+    if (data.channels > 1) {
         channel = new QSpinBox(this);
         channel->setMinimum(1);
-        channel->setMaximum(data[0].size());
-        channel->setValue(data[0].size());
+        channel->setMaximum(data.channels);
+        channel->setValue(data.channels);
         QObject::connect(channel, SIGNAL(valueChanged(int)), this, SLOT(channelChanged(int)));
 
         QWidget *channelWidget = new QWidget(this);
@@ -76,14 +77,14 @@ Drawer::Drawer(const Data data, QWidget *parent) :
         l->addWidget(channelWidget);
     }
 
-    if (data.size() > 1) {
+    if (data.modules > 1) {
         QFrame *moduleFrame = new QFrame(this);
         moduleFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
         QVBoxLayout *modulesLayout = new QVBoxLayout(moduleFrame);
         modulesLayout->setContentsMargins(1, 1, 1, 1);
         QButtonGroup *randomGroup = new QButtonGroup(this);
-        for (int i = 0; i < data.size(); i++) {
-            modules.push_back(new QRadioButton(QString("module %1").arg(QString::number(i + 1))));
+        for (int i = 0; i < data.modules; i++) {
+            modules.push_back(new QRadioButton(QString("module %1").arg(QString::number(i + 1)), this));
             modulesLayout->addWidget(modules[i]);
             randomGroup->addButton(modules[i]);
 
@@ -117,21 +118,18 @@ Drawer::Drawer(const Data data, QWidget *parent) :
     controlFrame->setMinimumWidth(188);
 
     controller = new Controller(this);
-    controller->setModules(data.size());
-    controller->setChannels(data[0].size());
-    controller->setPoints(data[0][0].size());
-    controller->setRays(data[0][0][0].size());
+    controller->setModules(data.modules);
+    controller->setChannels(data.channels);
+    controller->setPoints(data.npoints);
+    controller->setRays(data.rays);
     l->addWidget(controller);
 
     QObject::connect(drawer, SIGNAL(coordsChanged(QPoint)), controller, SLOT(setCoords(QPoint)));
 
-    rays = data[0][0][0].size();
     show();
 
     QTimer::singleShot(10, this, SLOT(draw()));
 }
-
-Drawer::~Drawer() {}
 
 void Drawer::checkBoxStateChanged() {
     QVector<bool> v;

@@ -13,6 +13,7 @@ CustomOpenDialog::CustomOpenDialog(QString lastOpenPath, QWidget *parent) :
 
     QObject::connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(openClicked()));
     QObject::connect(this, SIGNAL(accepted()), this, SLOT(successFinish()));
+    QObject::connect(this, SIGNAL(rejected()), this, SLOT(deleteLater()));
 
     QButtonGroup *group = new QButtonGroup(ui->groupBox);
     group->addButton(ui->radioButton);
@@ -41,4 +42,5 @@ void CustomOpenDialog::openClicked() {
 void CustomOpenDialog::successFinish() {
     int skip = ui->spinBox->value() * ui->checkBox->isChecked();
     emit customOpen(ui->lineEdit->text(), skip, ui->radioButton_2->isChecked() + ui->radioButton_3->isChecked() * 2, ui->binary->isChecked());
+    deleteLater();
 }

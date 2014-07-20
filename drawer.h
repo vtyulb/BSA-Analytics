@@ -18,8 +18,7 @@ class Drawer : public QWidget
 {
     Q_OBJECT
 public:
-    explicit Drawer(const Data data, QWidget *parent = 0);
-    ~Drawer();
+    explicit Drawer(const Data &data, QWidget *parent = 0);
 
     void saveFile(QString);
     NativeDrawer *drawer;

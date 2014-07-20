@@ -2,7 +2,7 @@
 #include <QRgb>
 #include <QApplication>
 
-NativeDrawer::NativeDrawer(const Data data, QWidget *parent) :
+NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     QWidget(parent),
     allowDrawing(false),
     autoDrawing(true),
@@ -14,11 +14,17 @@ NativeDrawer::NativeDrawer(const Data data, QWidget *parent) :
     data(data),
     mousePressed(false)
 {
-    for (int i = 0; i < data[0][channel][0].size(); i++)
+    for (int i = 0; i < data.rays; i++)
         rayVisibles.push_back(true);
 
     resetVisibleRectangle();
     setMouseTracking(true);
+}
+
+NativeDrawer::~NativeDrawer() {
+    delete art;
+    data.releaseData();
+    qDebug() << "data released";
 }
 
 void NativeDrawer::setRayVisibles(QVector<bool> v) {
@@ -48,13 +54,13 @@ void NativeDrawer::nativePaint() {
     if (!drawing.tryLock())
         return;
 
-    delete art;
     qDebug() << screen.bottomLeft() << screen.topRight();
     if (width() < 100 || height() < 100) {
         drawing.unlock();
         return;
     }
 
+    delete art;
     art = new QImage(this->width(), this->height(), QImage::Format_RGB32);
 
     QPainter p(art);
@@ -64,12 +70,12 @@ void NativeDrawer::nativePaint() {
     p.setPen(QPen("black"));
     qDebug() << width() << height();
 
-    int rays = data[module][channel][0].size();
-    for (int k = 0; k < data[module][channel].size() / 50000 + 1; k++) {
+    int rays = data.rays;
+    for (int k = 0; k < data.npoints / 50000 + 1; k++) {
         if (k)
             repaint();
 
-        emit progress(5000000*k/data[module][channel].size());
+        emit progress(5000000*k/data.npoints);
 
 
         for (int j = 0; j < rays; j++) {
@@ -77,12 +83,12 @@ void NativeDrawer::nativePaint() {
             p.setPen(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
 
             if (rayVisibles[j])
-                for (int i = k * 50000 + 1 + drawFast * 5; i < minimum(data[0][channel].size(), (k + 1)*50000 + 1); i += 1 + drawFast * 5) {
+                for (int i = k * 50000 + 1 + drawFast * 5; i < minimum(data.npoints, (k + 1)*50000 + 1); i += 1 + drawFast * 5) {
                     int x = newCoord(i, 0).x();
                     if (x < 0 || x > art->width())
                         continue;
 
-                    p.drawLine(mirr(newCoord(i, data[module][channel][i][j])), mirr(newCoord(i - 1 - drawFast * 5, data[module][channel][i - 1][j])));
+                    p.drawLine(mirr(newCoord(i, data.data[module][channel][j][i])), mirr(newCoord(i - 1 - drawFast * 5, data.data[module][channel][j][i - 1])));
                 }
         }
     }
@@ -99,20 +105,20 @@ void NativeDrawer::resetVisibleRectangle(bool repaint) {
     int min = 1000 * 1000 * 1000;
     int max = -min;
 
-    for (int i = 0; i < data[module][channel].size(); i++)
-        for (int j = 0; j < data[module][channel][i].size(); j++) {
-            if (data[module][channel][i][j] > max)
-                max = data[module][channel][i][j];
+    for (int i = 0; i < data.npoints; i++)
+        for (int j = 0; j < data.rays; j++) {
+            if (data.data[module][channel][j][i] > max)
+                max = data.data[module][channel][j][i];
 
-            if (data[module][channel][i][j] < min)
-                min = data[module][channel][i][j];
+            if (data.data[module][channel][j][i] < min)
+                min = data.data[module][channel][j][i];
         }
 
-    int deltaX = data[module][channel].size() * 0.05;
+    int deltaX = data.npoints * 0.05;
     int deltaY = (max - min) * 0.05;
 
     screen.setBottomLeft(QPoint(0 - deltaX, min - deltaY));
-    screen.setTopRight(QPoint(data[module][channel].size() + deltaX, max + deltaY));
+    screen.setTopRight(QPoint(data.npoints + deltaX, max + deltaY));
     if (repaint)
         nativePaint();
 }
@@ -227,7 +233,7 @@ void NativeDrawer::drawAxes() {
     for (int i = 1; i <= 25; i++) {
         p.drawLine(QPoint(0, art->height() / 26 * i), QPoint(6 + (4 + art->width() * drawNet) * (i%5==0), art->height() / 26 * i));
         if (i%5==0)
-            p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(mirr(QPoint(0,art->height()/26*i))).y()/(999999.0 * (data.size() != 1) + 1)));
+            p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(mirr(QPoint(0,art->height()/26*i))).y()/(999999.0 * (data.modules != 1) + 1)));
     }
 }
 

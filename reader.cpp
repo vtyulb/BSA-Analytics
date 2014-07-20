@@ -1,4 +1,5 @@
 #include "reader.h"
+#include <malloc.h>
 #include <QFile>
 
 Reader::Reader(QObject *parent) :
@@ -11,8 +12,10 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) 
         return readBinaryFile(fileName);
 
     Data data;
-    data.resize(1);
-    data[0].resize(1);
+    data.channels = 1;
+    data.modules = 1;
+
+
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return data;
@@ -41,23 +44,27 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) 
     double total = file.size();
     int line = 0;
 
+    QVector<QString> input;
     while (s.size()) {
-        line++;
-        QList<QByteArray> res = s.split(' ');
-        QVector<float> layer;
-        for (int i = 0; i < res.size(); i++)
-            if (i != 0 || !disableFirstRay)
-                layer.push_back(number(res[i]));
-
-        data[0][0].push_back(layer);
-
+        input.push_back(s);
         s = file.readLine();
-        if (s[0] == '@')
-            break;
-        readed += s.size();
+    }
 
-        if (line % 10000 == 0)
-            emit progress(100*readed/total);
+    data.npoints = input.size();
+    data.rays = input[0].split(' ').size() - disableFirstRay;
+    data.data = new float***;
+    data.data[0] = new float**;
+    data.data[0][0] = new float*[data.rays];
+    for (int i = 0; i < data.rays; i++)
+        data.data[0][0][i] = new float[data.npoints];
+
+    for (int i = 0; i < data.npoints; i++) {
+        QStringList l = input[i].split(' ');
+        for (int j = disableFirstRay; j < data.rays + disableFirstRay; j++)
+            data.data[0][0][j - disableFirstRay][i] = number(l[j].toUtf8());
+
+        if (i % 1000 == 0)
+            emit progress(i * 100 / data.npoints);
     }
 
     emit progress(100);
@@ -92,19 +99,25 @@ Data Reader::readBinaryFile(QString file) {
     int rays = 8;
     int modulus = 6;
 
+    QByteArray a(npoints * modulus * rays * (channels + 1) * 4, ' ');
+    f.read(a.data(), npoints * modulus * rays * (channels + 1) * 4);
+
     Data data;
-    data.resize(modulus);
+    data.channels = channels + 1;
+    data.modules = modulus;
+    data.rays = rays;
+    data.npoints = npoints;
+    data.data = new float***[modulus];
     for (int j = 0; j < modulus; j++) {
-        data[j].resize(channels + 1);
+        data.data[j] = new float**[channels + 1];
         for (int i = 0; i < channels + 1; i++) {
-            data[j][i].resize(npoints);
-            for (int k = 0; k < npoints; k++)
-                data[j][i][k].resize(rays);
+            data.data[j][i] = new float*[rays];
+            for (int k = 0; k < rays; k++)
+                data.data[j][i][k] = new float[npoints];
         }
     }
 
-    QByteArray a(npoints * modulus * rays * (channels + 1) * 4, ' ');
-    f.read(a.data(), npoints * modulus * rays * (channels + 1) * 4);
+    qDebug() << mallinfo().uordblks;
 
     float *source = (float*)(void*)a.data();
     for (int i = 0; i < npoints; i++) {
@@ -114,7 +127,7 @@ Data Reader::readBinaryFile(QString file) {
         for (int m = 0; m < modulus; m++)
             for (int j = 0; j < rays; j++)
                 for (int k = 0; k < channels + 1; k++) {
-                    data[m][k][i][j] = *source * 1000000;
+                    data.data[m][k][j][i] = *source * 1000000;
                     source++;
                 }
         }

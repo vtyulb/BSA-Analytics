@@ -72,9 +72,9 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, bo
     decodeLastPath(fileName);
     Reader reader;
     QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
-    const Data data = reader.readFile(fileName, skip, skipFirstRay, binary);
+    Data data = reader.readFile(fileName, skip, skipFirstRay, binary);
     statusBar()->showMessage("Done", 2000);
-    if (data.size()) {
+    if (data.npoints) {
         ui->label->hide();
         delete drawer;
         drawer = new Drawer(data, this);

@@ -16,7 +16,8 @@ class NativeDrawer : public QWidget
 {
     Q_OBJECT
 public:
-    explicit NativeDrawer(const Data data, QWidget *parent = 0);
+    explicit NativeDrawer(const Data &data, QWidget *parent = 0);
+    ~NativeDrawer();
 
     void setRayVisibles(QVector<bool>);
     void setColors(QVector<QString>);
@@ -39,7 +40,7 @@ private:
     QStack<QRect> screens;
     QRect screen;
     QImage *art;
-    const Data data;
+    Data data;
 
     void paintEvent(QPaintEvent *);
 

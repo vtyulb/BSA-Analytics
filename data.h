@@ -2,6 +2,30 @@
 #define DATA_H
 
 #include <QVector>
-typedef QVector<QVector<QVector<QVector<float> > > > Data;
+struct Data {
+    int npoints;
+    int modules;
+    int channels;
+    int rays;
+    float ****data;
+
+    void releaseData() {
+        for (int i = 0; i < modules; i++)
+            for (int j = 0; j < channels; j++)
+                for (int k = 0; k < rays; k++)
+                    delete data[i][j][k];
+
+        for (int i = 0; i < modules; i++)
+            for (int j = 0; j < channels; j++)
+                delete data[i][j];
+
+        for (int i = 0; i < modules; i++)
+            delete data[i];
+
+        delete data;
+    }
+};
+
+
 
 #endif // DATA_H

@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <colorwidget.h>
 
-const char* colorNames[16] = {"FF0000",
+const char* colorNames[17] = {"FF0000",
                               "00FF00",
                               "0000FF",
                               "000000",
@@ -20,7 +20,8 @@ const char* colorNames[16] = {"FF0000",
                               "D0A080",
                               "00D0D0",
                               "D000C0",
-                              "00D000"};
+                              "00D000",
+                              "WTF???"};
 
 Drawer::Drawer(const Data &data, QWidget *parent) :
     QWidget(parent),

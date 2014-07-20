@@ -82,6 +82,7 @@
     <addaction name="actionAxes"/>
     <addaction name="actionNet"/>
     <addaction name="actionFast"/>
+    <addaction name="actionClone"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -156,6 +157,14 @@
    </property>
    <property name="text">
     <string>Fast</string>
+   </property>
+  </action>
+  <action name="actionClone">
+   <property name="text">
+    <string>Clone</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>

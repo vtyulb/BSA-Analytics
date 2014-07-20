@@ -44,6 +44,8 @@ private slots:
     void drawFast(bool);
     void showAbout();
     void showAboutQt();
+
+    void clone();
 };
 
 #endif // MAINWINDOW_H

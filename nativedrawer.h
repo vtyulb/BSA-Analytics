@@ -5,6 +5,7 @@
 #include <data.h>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QKeyEvent>
 #include <QPainter>
 #include <QRect>
 #include <QImage>

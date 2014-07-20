@@ -179,3 +179,17 @@ void Drawer::moduleChanged() {
 
     drawer->resetVisibleRectangle();
 }
+
+
+
+void Drawer::keyPressEvent(QKeyEvent *event) {
+    if (event->text() == "f")
+        if (parent() == NULL) {
+            if (this->isFullScreen())
+                showNormal();
+            else
+                showFullScreen();
+
+            event->accept();
+        }
+}

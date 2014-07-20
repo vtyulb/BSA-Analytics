@@ -35,6 +35,8 @@ private:
     QVector<QRadioButton* > modules;
     Controller *controller;
     int rays, numberChannels, numberModules;
+
+    void keyPressEvent(QKeyEvent *);
 signals:
 
 private slots:

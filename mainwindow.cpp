@@ -26,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionFast, SIGNAL(triggered(bool)), this, SLOT(drawFast(bool)));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
     QObject::connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(showAboutQt()));
+    QObject::connect(ui->actionClone, SIGNAL(triggered()), this, SLOT(clone()));
 
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
@@ -153,4 +154,17 @@ void MainWindow::customOpen() {
     CustomOpenDialog *dialog = new CustomOpenDialog(lastOpenPath, this);
     QObject::connect(dialog, SIGNAL(customOpen(QString, int, int, bool)), this, SLOT(nativeOpenFile(QString, int, int, bool)));
     dialog->show();
+}
+
+void MainWindow::clone() {
+    customOpen();
+
+    qApp->processEvents();
+
+    drawer->setParent(NULL);
+    drawer->setWindowFlags(Qt::SubWindow);
+    drawer->show();
+    autoDraw(false);
+
+    drawer = NULL;
 }

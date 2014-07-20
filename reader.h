@@ -15,6 +15,7 @@ public:
     Data readFile(QString, int skip, int firstColumn, bool binary = false); // 0 - true; 1 - false; 2 - autodetect
 private:
     int number(QByteArray);
+    float slowNumber(QByteArray);
 
     Data readBinaryFile(QString);
 

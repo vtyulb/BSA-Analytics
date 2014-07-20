@@ -51,7 +51,9 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) 
     }
 
     data.npoints = input.size();
-    data.rays = input[0].split(' ').size() - disableFirstRay;
+    QStringList l = input[0].split(' ');
+    l.removeAll("");
+    data.rays = l.size() - disableFirstRay;
     data.data = new float***;
     data.data[0] = new float**;
     data.data[0][0] = new float*[data.rays];
@@ -60,8 +62,9 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) 
 
     for (int i = 0; i < data.npoints; i++) {
         QStringList l = input[i].split(' ');
+        l.removeAll("");
         for (int j = disableFirstRay; j < data.rays + disableFirstRay; j++)
-            data.data[0][0][j - disableFirstRay][i] = number(l[j].toUtf8());
+            data.data[0][0][j - disableFirstRay][i] = slowNumber(l[j].toUtf8());
 
         if (i % 1000 == 0)
             emit progress(i * 100 / data.npoints);
@@ -83,6 +86,13 @@ int Reader::number(QByteArray a) {
     return QString(a.right(a.size() - i)).toInt();
 }
 
+float Reader::slowNumber(QByteArray a) {
+    if (a[a.size() - 1] == '\n')
+        a.resize(a.size() - 1);
+
+    return QString(a).toFloat();
+}
+
 Data Reader::readBinaryFile(QString file) {
     QFile f(file);
     f.open(QIODevice::ReadOnly);
@@ -99,9 +109,6 @@ Data Reader::readBinaryFile(QString file) {
     int rays = 8;
     int modulus = 6;
 
-    QByteArray a(npoints * modulus * rays * (channels + 1) * 4, ' ');
-    f.read(a.data(), npoints * modulus * rays * (channels + 1) * 4);
-
     Data data;
     data.channels = channels + 1;
     data.modules = modulus;
@@ -117,18 +124,29 @@ Data Reader::readBinaryFile(QString file) {
         }
     }
 
-    qDebug() << mallinfo().uordblks;
 
-    float *source = (float*)(void*)a.data();
+
+    QByteArray input;
+    input.resize(4 * 1024 * 1024);
+    int remaining = 0;
+
+    float *source;
     for (int i = 0; i < npoints; i++) {
         if (i % 1000 == 0)
-            emit progress(((char*)source - a.data()) * 100 / a.size());
+            emit progress(i * 100 / npoints);
 
         for (int m = 0; m < modulus; m++)
             for (int j = 0; j < rays; j++)
                 for (int k = 0; k < channels + 1; k++) {
-                    data.data[m][k][j][i] = *source * 1000000;
+                    if (!remaining) {
+                        f.read(input.data(), 4 * 1024 * 1024);
+                        remaining = 1024 * 1024;
+                        source = (float*)(void*)input.data();
+                    }
+
+                    data.data[m][k][j][i] = (*source) * 1000000;
                     source++;
+                    remaining--;
                 }
         }
 

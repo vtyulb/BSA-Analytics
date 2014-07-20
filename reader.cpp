@@ -20,19 +20,25 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return data;
 
-    while (skip--)
-        file.readLine();
-
     QByteArray s;
-    while (!file.atEnd()) {
+
+    if (skip) {
+        while (skip--)
+            file.readLine();
+
         s = file.readLine();
-        if (s[0] >= '0' && s[0] <= '9')
-            break;
+    } else {
+        while (!file.atEnd()) {
+            s = file.readLine();
+            if (s[0] >= '0' && s[0] <= '9')
+                break;
+        }
     }
 
     bool disableFirstRay = false;
     QList<QByteArray> res = s.split(' ');
-    if (number(res[0]) == 1)
+    res.removeAll("");
+    if (int(slowNumber(res[0])) == 1)
         disableFirstRay = true;
 
     if (firstColumn == 0)

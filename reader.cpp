@@ -113,7 +113,9 @@ Data Reader::readBinaryFile(QString file) {
     qint64 npoints = header["npoints"].toInt();
     int channels = header["nbands"].toInt();
     int rays = 8;
-    int modulus = 6;
+    QStringList t = header["modulus"].split(" ");
+    t.removeAll("");
+    int modulus = t.size();
 
     Data data;
     data.channels = channels + 1;

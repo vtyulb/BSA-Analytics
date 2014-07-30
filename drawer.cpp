@@ -25,9 +25,9 @@ const char* colorNames[17] = {"FF0000",
 
 Drawer::Drawer(const Data &data, QWidget *parent) :
     QWidget(parent),
+    rays(data.rays),
     numberChannels(data.channels),
-    numberModules(data.modules),
-    rays(data.rays)
+    numberModules(data.modules)
 {
     QHBoxLayout *layout = new QHBoxLayout(this);
     controlFrame = new QFrame(this);

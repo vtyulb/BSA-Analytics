@@ -46,10 +46,6 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) 
     else if (firstColumn == 1)
         disableFirstRay = false;
 
-    double readed = 0;
-    double total = file.size();
-    int line = 0;
-
     QVector<QString> input;
     while (s.size()) {
         input.push_back(s);

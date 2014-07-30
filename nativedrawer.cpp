@@ -1,6 +1,8 @@
 #include "nativedrawer.h"
 #include <QRgb>
 #include <QApplication>
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrintDialog>
 
 NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     QWidget(parent),
@@ -47,28 +49,28 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
     event->accept();
 }
 
-void NativeDrawer::nativePaint() {
+void NativeDrawer::nativePaint(bool forPrinter) {
     if (!allowDrawing)
         return;
 
     if (!drawing.tryLock())
         return;
 
-    qDebug() << screen.bottomLeft() << screen.topRight();
     if (width() < 100 || height() < 100) {
         drawing.unlock();
         return;
     }
 
-    delete art;
-    art = new QImage(this->width(), this->height(), QImage::Format_RGB32);
+    if (!forPrinter) {
+        delete art;
+        art = new QImage(this->width(), this->height(), QImage::Format_RGB32);
+    }
 
     QPainter p(art);
     p.setBrush(QBrush(QColor("white")));
     p.setPen(QColor("white"));
-    p.drawRect(0, 0, width(), height());
+    p.drawRect(0, 0, art->width(), art->height());
     p.setPen(QPen("black"));
-    qDebug() << width() << height();
 
     int rays = data.rays;
     for (int k = 0; k < data.npoints / 50000 + 1; k++) {
@@ -249,6 +251,8 @@ void NativeDrawer::drawAxes() {
         if (i%5==0)
             p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(mirr(QPoint(0,art->height()/26*i))).y()));
     }
+
+    p.end();
 }
 
 int NativeDrawer::minimum(int a, int b) {
@@ -264,8 +268,33 @@ QPoint NativeDrawer::mirr(QPoint p) {
 }
 
 void NativeDrawer::leaveEvent(QEvent *event) {
-    qDebug() << "leave event";
     mousePressed = false;
     repaint();
     event->accept();
+}
+
+void NativeDrawer::print() {
+    QPrintDialog *dialog = new QPrintDialog(this);
+    QObject::connect(dialog, SIGNAL(accepted(QPrinter*)), this, SLOT(nativePrint(QPrinter*)));
+    dialog->exec();
+}
+
+void NativeDrawer::nativePrint(QPrinter *printer) {
+    printer->setOrientation(QPrinter::Landscape);
+    printer->setColorMode(QPrinter::Color);
+    bool tmp = live;
+    live = false;
+    QImage *tmpArt = art;
+    art = new QImage(printer->width(), printer->height(), QImage::Format_ARGB32);
+    nativePaint(true);
+    live = tmp;
+
+    QPainter painter(printer);
+    painter.drawImage(QRect(0, 0, art->width() - 1, art->height() - 1), *art);
+    painter.end();
+
+    delete art;
+    art = tmpArt;
+
+    repaint();
 }

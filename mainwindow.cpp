@@ -83,6 +83,7 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, bo
         ui->scrollAreaWidgetContents->layout()->addWidget(drawer);
 
         QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
+        QObject::connect(ui->actionPrint, SIGNAL(triggered()), drawer->drawer, SLOT(print()));
 
         autoDraw(ui->actionAutoDraw->isChecked());
         drawAxes(ui->actionAxes->isChecked());

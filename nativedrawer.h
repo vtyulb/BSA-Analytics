@@ -12,6 +12,7 @@
 #include <QDebug>
 #include <QMutex>
 #include <QStack>
+#include <QtPrintSupport/QPrinter>
 
 class NativeDrawer : public QWidget
 {
@@ -23,7 +24,7 @@ public:
     void setRayVisibles(QVector<bool>);
     void setColors(QVector<QString>);
     void saveFile(QString);
-    void nativePaint();
+    void nativePaint(bool forPrinter = false);
 
     bool allowDrawing;
     bool autoDrawing;
@@ -70,7 +71,10 @@ signals:
 
 public slots:
     void resetVisibleRectangle(bool repaint = true);
+    void print();
 
+private slots:
+    void nativePrint(QPrinter *);
 
 };
 

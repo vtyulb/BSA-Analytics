@@ -65,6 +65,7 @@
     <addaction name="actionOpen_Binary"/>
     <addaction name="actionCustom_open"/>
     <addaction name="actionSave"/>
+    <addaction name="actionPrint"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
@@ -174,6 +175,14 @@
    </property>
    <property name="text">
     <string>Live</string>
+   </property>
+  </action>
+  <action name="actionPrint">
+   <property name="text">
+    <string>Print</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>

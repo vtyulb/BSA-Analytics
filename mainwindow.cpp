@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
     QObject::connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(showAboutQt()));
     QObject::connect(ui->actionClone, SIGNAL(triggered()), this, SLOT(clone()));
+    QObject::connect(ui->actionLive, SIGNAL(triggered(bool)), this, SLOT(drawLive(bool)));
 
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
@@ -87,6 +88,7 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, bo
         drawAxes(ui->actionAxes->isChecked());
         drawNet(ui->actionNet->isChecked());
         drawFast(ui->actionFast->isChecked());
+        drawLive(ui->actionLive->isChecked());
     }
 }
 
@@ -121,6 +123,11 @@ void MainWindow::drawNet(bool b) {
         drawer->drawer->drawNet = b;
 }
 
+void MainWindow::drawLive(bool b) {
+    if (drawer)
+        drawer->drawer->live = b;
+}
+
 void MainWindow::drawFast(bool b) {
     if (drawer)
         drawer->drawer->drawFast = b;
@@ -140,6 +147,7 @@ void MainWindow::saveSettings() {
     s.setValue("autoDraw", QVariant(ui->actionAutoDraw->isChecked()));
     s.setValue("openPath", QVariant(lastOpenPath));
     s.setValue("fast", QVariant(ui->actionFast->isChecked()));
+    s.setValue("live", QVariant(ui->actionLive->isChecked()));
 }
 
 void MainWindow::loadSettings() {
@@ -147,6 +155,7 @@ void MainWindow::loadSettings() {
     restoreGeometry(s.value("geometry").toByteArray());
     ui->actionAutoDraw->setChecked(s.value("autoDraw", true).toBool());
     ui->actionFast->setChecked(s.value("fast", false).toBool());
+    ui->actionLive->setChecked(s.value("live", true).toBool());
     lastOpenPath = s.value("openPath").toString();
 }
 

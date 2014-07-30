@@ -81,6 +81,7 @@
     <addaction name="actionAutoDraw"/>
     <addaction name="actionAxes"/>
     <addaction name="actionNet"/>
+    <addaction name="actionLive"/>
     <addaction name="actionFast"/>
     <addaction name="actionClone"/>
    </widget>
@@ -165,6 +166,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionLive">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Live</string>
    </property>
   </action>
  </widget>

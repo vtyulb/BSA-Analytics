@@ -73,7 +73,8 @@ void NativeDrawer::nativePaint() {
     int rays = data.rays;
     for (int k = 0; k < data.npoints / 50000 + 1; k++) {
         if (k)
-            repaint();
+            if (live)
+                repaint();
 
         emit progress(5000000*k/data.npoints);
 
@@ -143,6 +144,7 @@ void NativeDrawer::mousePressEvent(QMouseEvent *event) {
 
     mousePressed = true;
     mouseClicked = event->pos();
+    mouseRect = QRect(mouseClicked, mouseClicked);
     drawing.unlock();
 }
 
@@ -224,20 +226,26 @@ void NativeDrawer::drawAxes() {
     p.setPen(QPen(QColor("white")));
     p.setBrush(QBrush(QColor("white")));
     p.drawRect(0, 0, 46, art->height());
+    p.drawRect(0, 0, art->width(), 25);
     p.drawRect(0, height() - 25, art->width(), height());
+    p.drawRect(art->width() - 25, 0, art->width(), art->height());
 
     p.setPen(QColor("black"));
 
     p.drawLine(QPoint(0, art->height() - 3), QPoint(art->width(), art->height() - 3));
+    p.drawLine(QPoint(0, 3), QPoint(art->width(), 3));
     for (int i = 1; i <= 25; i++) {
         p.drawLine(QPoint(art->width() / 26 * i, art->height()), QPoint(art->width() / 26 * i, art->height() - 6 - (4 + art->height() * drawNet) * ((i-1)%5 == 0)));
+        p.drawLine(QPoint(art->width() / 26 * i, 0), QPoint(art->width() / 26 * i, 6 + 4 * ((i-1)%5 == 0)));
         if ((i - 1)%5==0)
             p.drawText(QPoint(art->width() / 26 * i + 1, art->height() - 12), QString::number(backwardCoord(QPoint(art->width()/26 * i, 0)).x()));
     }
 
     p.drawLine(QPoint(3, 0), QPoint(3, art->height()));
+    p.drawLine(QPoint(art->width() - 3, 0), QPoint(art->width() - 3, art->height()));
     for (int i = 1; i <= 25; i++) {
         p.drawLine(QPoint(0, art->height() / 26 * i), QPoint(6 + (4 + art->width() * drawNet) * (i%5==0), art->height() / 26 * i));
+        p.drawLine(QPoint(art->width() - 6 - 4 * (i%5==0), art->height() / 26 * i), QPoint(art->width(), art->height() / 26 * i));
         if (i%5==0)
             p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(mirr(QPoint(0,art->height()/26*i))).y()));
     }

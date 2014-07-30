@@ -30,6 +30,7 @@ public:
     bool drawAxesFlag;
     bool drawNet;
     bool drawFast;
+    bool live;
     QMutex drawing;
 
     int channel;

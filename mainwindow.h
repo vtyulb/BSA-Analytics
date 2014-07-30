@@ -42,6 +42,7 @@ private slots:
     void drawAxes(bool);
     void drawNet(bool);
     void drawFast(bool);
+    void drawLive(bool);
     void showAbout();
     void showAboutQt();
 

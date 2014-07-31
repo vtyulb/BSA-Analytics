@@ -20,8 +20,6 @@ void restart(int signal = 0) {
 
 int main(int argc, char *argv[])
 {
-    qDebug() << sizeof(QVector<float>);
-
     signal(SIGABRT, restart);
     signal(SIGSEGV, restart);
 

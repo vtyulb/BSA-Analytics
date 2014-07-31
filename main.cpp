@@ -26,6 +26,9 @@ int main(int argc, char *argv[])
     signal(SIGSEGV, restart);
 
     QApplication a(argc, argv);
+    a.setApplicationName("BSA-Analytics");
+    a.setOrganizationName("vtyulb");
+    a.setOrganizationDomain("bsa.vtyulb.ru");
 
     mainSpace::program = QString(argv[0]);
     mainSpace::w = new MainWindow;
@@ -33,9 +36,11 @@ int main(int argc, char *argv[])
 
     try {
         a.exec();
+        delete mainSpace::w;
     } catch (...) {
         restart();
     }
+
 
     return 0;
 }

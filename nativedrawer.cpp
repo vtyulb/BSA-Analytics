@@ -281,7 +281,7 @@ void NativeDrawer::print() {
 
 void NativeDrawer::nativePrint(QPrinter *printer) {
     printer->setOrientation(QPrinter::Landscape);
-    printer->setColorMode(QPrinter::Color);
+//    print 5er->setColorMode(QPrinter::Color);
     bool tmp = live;
     live = false;
     QImage *tmpArt = art;

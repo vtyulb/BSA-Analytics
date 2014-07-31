@@ -143,7 +143,7 @@ void MainWindow::showAbout() {
 }
 
 void MainWindow::saveSettings() {
-    QSettings s("settings.ini", QSettings::IniFormat);
+    QSettings s;
     s.setValue("geometry", QVariant(saveGeometry()));
     s.setValue("autoDraw", QVariant(ui->actionAutoDraw->isChecked()));
     s.setValue("openPath", QVariant(lastOpenPath));
@@ -152,7 +152,7 @@ void MainWindow::saveSettings() {
 }
 
 void MainWindow::loadSettings() {
-    QSettings s("settings.ini", QSettings::IniFormat);
+    QSettings s;
     restoreGeometry(s.value("geometry").toByteArray());
     ui->actionAutoDraw->setChecked(s.value("autoDraw", true).toBool());
     ui->actionFast->setChecked(s.value("fast", false).toBool());

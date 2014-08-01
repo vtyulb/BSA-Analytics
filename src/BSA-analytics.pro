@@ -32,3 +32,5 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     customopendialog.ui
+
+win32:RC_FILE = icon.rc

@@ -13,7 +13,6 @@ namespace mainSpace {
 void restart(int signal = 0) {
     qDebug() << "restarting";
     QMessageBox::about(mainSpace::w, "Critical error", "Wrong file format or any other critical error...");
-    delete mainSpace::w;
     QProcess::startDetached(mainSpace::program);
     exit(0);
 }

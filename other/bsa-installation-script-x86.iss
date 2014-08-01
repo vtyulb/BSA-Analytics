@@ -23,7 +23,7 @@ DefaultDirName={pf}\BSA-Analytics
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=C:\BSA-Analytics\LICENSE
-OutputBaseFilename=BSA-Analytics-x32
+OutputBaseFilename=BSA-Analytics-x86
 Compression=lzma
 SolidCompression=yes
 

@@ -236,20 +236,34 @@ void NativeDrawer::drawAxes() {
 
     p.drawLine(QPoint(0, art->height() - 3), QPoint(art->width(), art->height() - 3));
     p.drawLine(QPoint(0, 3), QPoint(art->width(), 3));
-    for (int i = 1; i <= 25; i++) {
-        p.drawLine(QPoint(art->width() / 26 * i, art->height()), QPoint(art->width() / 26 * i, art->height() - 6 - (4 + art->height() * drawNet) * ((i-1)%5 == 0)));
-        p.drawLine(QPoint(art->width() / 26 * i, 0), QPoint(art->width() / 26 * i, 6 + 4 * ((i-1)%5 == 0)));
-        if ((i - 1)%5==0)
-            p.drawText(QPoint(art->width() / 26 * i + 1, art->height() - 12), QString::number(backwardCoord(QPoint(art->width()/26 * i, 0)).x()));
+    for (int i = 50; i < art->width() - 20; i+=50) {
+        if (drawNet) {
+            QPen backup = p.pen();
+            p.setPen(Qt::DotLine);
+            p.drawLine(QPoint(i, 0), QPoint(i, height()));
+            p.setPen(backup);
+        }
+
+        p.drawLine(QPoint(i, art->height()), QPoint(i, art->height() - 6 - (4 + art->height() * drawNet) * (i%250 == 0)));
+        p.drawLine(QPoint(i, 0), QPoint(i, 6 + 4 * (i%250 == 0)));
+        if (i%250==0)
+            p.drawText(QPoint(i + 1, art->height() - 12), QString::number(backwardCoord(QPoint(i, 0)).x()));
     }
 
     p.drawLine(QPoint(3, 0), QPoint(3, art->height()));
     p.drawLine(QPoint(art->width() - 3, 0), QPoint(art->width() - 3, art->height()));
-    for (int i = 1; i <= 25; i++) {
-        p.drawLine(QPoint(0, art->height() / 26 * i), QPoint(6 + (4 + art->width() * drawNet) * (i%5==0), art->height() / 26 * i));
-        p.drawLine(QPoint(art->width() - 6 - 4 * (i%5==0), art->height() / 26 * i), QPoint(art->width(), art->height() / 26 * i));
-        if (i%5==0)
-            p.drawText(QPoint(5, art->height() / 26 * i + 12), QString::number(backwardCoord(mirr(QPoint(0,art->height()/26*i))).y()));
+    for (int i = 50; i < art->height() - 20; i+=50) {
+        if (drawNet) {
+            QPen backup = p.pen();
+            p.setPen(Qt::DotLine);
+            p.drawLine(QPoint(0, i), QPoint(width(), i));
+            p.setPen(backup);
+        }
+
+        p.drawLine(QPoint(0, i), QPoint(6 + (4 + art->width() * drawNet) * (i%250==0), i));
+        p.drawLine(QPoint(art->width() - 6 - 4 * (i%250==0), i), QPoint(art->width(), i));
+        if (i%250==0)
+            p.drawText(QPoint(5, i + 12), QString::number(backwardCoord(mirr(QPoint(0,i))).y()));
     }
 
     p.end();

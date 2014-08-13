@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     nativedrawer.cpp \
     colorwidget.cpp \
     controller.cpp \
-    customopendialog.cpp
+    customopendialog.cpp \
+    startime.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -28,7 +29,8 @@ HEADERS  += mainwindow.h \
     nativedrawer.h \
     colorwidget.h \
     controller.h \
-    customopendialog.h
+    customopendialog.h \
+    startime.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui

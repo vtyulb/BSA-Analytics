@@ -58,10 +58,6 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
         l->addWidget(widget);
     }
 
-    QFrame *hline = new QFrame(this);
-    hline->setFrameStyle(QFrame::HLine);
-    l->addWidget(hline);
-
     if (data.channels > 1) {
         channel = new QSpinBox(this);
         channel->setMinimum(1);
@@ -69,13 +65,14 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
         channel->setValue(data.channels);
         QObject::connect(channel, SIGNAL(valueChanged(int)), this, SLOT(channelChanged(int)));
 
-        QWidget *channelWidget = new QWidget(this);
-        QHBoxLayout *channelWidgetLayout = new QHBoxLayout(channelWidget);
+        QFrame *channelFrame = new QFrame(this);
+        channelFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
+        QHBoxLayout *channelFrameLayout = new QHBoxLayout(channelFrame);
         QLabel *channelLabel = new QLabel("Channel", this);
-        channelWidgetLayout->addWidget(channelLabel);
-        channelWidgetLayout->addWidget(channel);
+        channelFrameLayout->addWidget(channelLabel);
+        channelFrameLayout->addWidget(channel);
 
-        l->addWidget(channelWidget);
+        l->addWidget(channelFrame);
     }
 
     if (data.modules > 1) {
@@ -95,6 +92,19 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
         modules[0]->setChecked(true);
         l->addWidget(moduleFrame);
     }
+
+    delta = new QDoubleSpinBox(this);
+    delta->setValue(data.delta_lucha);
+    QObject::connect(delta, SIGNAL(valueChanged(double)), this, SLOT(deltaChanged(double)));
+    QFrame *deltaFrame = new QFrame(this);
+    deltaFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);
+    QHBoxLayout *deltaLayout = new QHBoxLayout(deltaFrame);
+    QLabel *deltaLabel = new QLabel(this);
+    deltaLabel->setText("delta");
+    deltaLayout->addWidget(deltaLabel);
+    deltaLayout->addWidget(delta);
+
+    l->addWidget(deltaFrame);
 
     l->addStretch(10);
     resetButton = new QPushButton(this);
@@ -134,6 +144,8 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     timer->setInterval(5000);
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(timeToDie()));
     timer->start();
+
+    deltaChanged(delta->value());
 }
 
 void Drawer::checkBoxStateChanged() {
@@ -202,4 +214,11 @@ void Drawer::keyPressEvent(QKeyEvent *event) {
 void Drawer::timeToDie() {
     if (!isVisible())
         deleteLater();
+}
+
+void Drawer::deltaChanged(double d) {
+    drawer->data.delta_lucha = d;
+    controller->resetSky(drawer->data);
+    drawer->drawAxes();
+    drawer->repaint();
 }

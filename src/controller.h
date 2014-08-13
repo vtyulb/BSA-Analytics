@@ -4,6 +4,7 @@
 #include <QFrame>
 #include <QLabel>
 #include <QPoint>
+#include <data.h>
 
 class Controller : public QFrame
 {
@@ -22,12 +23,15 @@ private:
     QLabel *points;
     QLabel *channels;
     QLabel *modules;
+    QLabel *sky;
 
+    Data data;
 
 signals:
 
 public slots:
     void setCoords(QPointF);
+    void resetSky(Data newData);
 };
 
 #endif // CONTROLLER_H

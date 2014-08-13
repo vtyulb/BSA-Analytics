@@ -35,7 +35,7 @@ private slots:
     void openBinaryFile();
     void customOpen();
 
-    void nativeOpenFile(QString fileName, int skip = 0, int skipFirstRay = 2, bool binary = false);
+    void nativeOpenFile(QString fileName, int skip = 0, int skipFirstRay = 2, QDateTime = QDateTime(), bool binary = false);
     void readProgressChanged(double);
     void saveFile();
     void autoDraw(bool);

@@ -12,7 +12,7 @@ class Reader : public QObject
 public:
     explicit Reader(QObject *parent = 0);
 
-    Data readFile(QString, int skip, int firstColumn, bool binary = false); // 0 - true; 1 - false; 2 - autodetect
+    Data readFile(QString, int skip, int firstColumn, QDateTime = QDateTime(), bool binary = false); // 0 - true; 1 - false; 2 - autodetect
 private:
     int number(QByteArray);
     float slowNumber(QByteArray);

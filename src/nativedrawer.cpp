@@ -4,6 +4,9 @@
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
 
+#include <startime.h>
+#include <math.h>
+
 NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     QWidget(parent),
     allowDrawing(false),
@@ -229,7 +232,7 @@ void NativeDrawer::drawAxes() {
     p.setBrush(QBrush(QColor("white")));
     p.drawRect(0, 0, 46, art->height());
     p.drawRect(0, 0, art->width(), 25);
-    p.drawRect(0, height() - 25, art->width(), height());
+    p.drawRect(0, height() - 34, art->width(), height());
     p.drawRect(art->width() - 25, 0, art->width(), art->height());
 
     p.setPen(QColor("black"));
@@ -246,8 +249,10 @@ void NativeDrawer::drawAxes() {
 
         p.drawLine(QPoint(i, art->height()), QPoint(i, art->height() - 6 - (4 + art->height() * drawNet) * (i%250 == 0)));
         p.drawLine(QPoint(i, 0), QPoint(i, 6 + 4 * (i%250 == 0)));
-        if (i%250==0)
+        if (i%250==0) {
             p.drawText(QPoint(i + 1, art->height() - 12), QString::number(backwardCoord(QPoint(i, 0)).x()));
+            p.drawText(QPoint(i + 1, art->height() - 24), StarTime::StarTime(data, backwardCoord(QPointF(i, 0)).x()));
+        }
     }
 
     p.drawLine(QPoint(3, 0), QPoint(3, art->height()));

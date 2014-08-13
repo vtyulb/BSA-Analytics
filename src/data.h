@@ -1,13 +1,17 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <QVector>
+#include <QDateTime>
 struct Data {
     int npoints;
     int modules;
     int channels;
     int rays;
     float ****data;
+
+    QDateTime time;
+    double oneStep;
+    double delta_lucha;
 
     void releaseData() {
         for (int i = 0; i < modules; i++)

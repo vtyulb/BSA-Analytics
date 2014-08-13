@@ -28,6 +28,7 @@ private:
     QPushButton *resetButton;
     QPushButton *disableAll;
     QPushButton *enableAll;
+    QDoubleSpinBox *delta;
     QCommandLinkButton *drawButton;
     QVector<QCheckBox* > checkBoxes;
     QVector<QLineEdit* > colors;
@@ -47,6 +48,7 @@ private slots:
     void disableAllRays();
     void timeToDie();
     void draw();
+    void deltaChanged(double);
 };
 
 #endif // DRAWER_H

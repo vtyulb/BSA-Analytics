@@ -25,6 +25,7 @@ public:
     void setColors(QVector<QString>);
     void saveFile(QString);
     void nativePaint(bool forPrinter = false);
+    void drawAxes();
 
     bool allowDrawing;
     bool autoDrawing;
@@ -32,10 +33,13 @@ public:
     bool drawNet;
     bool drawFast;
     bool live;
+
     QMutex drawing;
 
     int channel;
     int module;
+
+    Data data;
 
 private:
     QVector<bool> rayVisibles;
@@ -43,7 +47,6 @@ private:
     QStack<QRectF> screens;
     QRectF screen;
     QImage *art;
-    Data data;
 
     void paintEvent(QPaintEvent *);
 
@@ -60,7 +63,6 @@ private:
     QPoint mouseClicked;
     QRect mouseRect;
 
-    void drawAxes();
     int minimum(int, int);
 
     QPoint mirr(QPoint);

@@ -1,4 +1,5 @@
 #include "controller.h"
+#include <startime.h>
 #include <QVBoxLayout>
 
 Controller::Controller(QWidget *parent) :
@@ -13,17 +14,19 @@ Controller::Controller(QWidget *parent) :
     points = new QLabel(this);
     channels = new QLabel(this);
     modules = new QLabel(this);
+    sky = new QLabel(this);
 
     layout->addWidget(rays);
     layout->addWidget(channels);
     layout->addWidget(modules);
     layout->addWidget(points);
+    layout->addWidget(sky);
     layout->addWidget(coords);
     layout->addStretch(5);
 }
 
 void Controller::setCoords(QPointF p) {
-    coords->setText(QString("X: %1; Y: %2").arg(QString::number(p.x()), QString::number(p.y())));
+    coords->setText(QString("X: %1; Y: %2").arg(StarTime::StarTime(data, p.x()), QString::number(p.y())));
 }
 
 void Controller::setRays(int r) {
@@ -40,4 +43,9 @@ void Controller::setChannels(int c) {
 
 void Controller::setModules(int m) {
     modules->setText(QString("%1 modules").arg(QString::number(m)));
+}
+
+void Controller::resetSky(Data newData) {
+    data = newData;
+    sky->setText(StarTime::StarTime(data));
 }

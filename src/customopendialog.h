@@ -2,6 +2,7 @@
 #define CUSTOMOPENDIALOG_H
 
 #include <QDialog>
+#include <QDateTime>
 
 namespace Ui {
 class CustomOpenDialog;
@@ -20,7 +21,7 @@ private:
     QString lastOpenPath;
 
 signals:
-    void customOpen(QString fileName, int skip, int skipFirstRay, bool binary);
+    void customOpen(QString fileName, int skip, int skipFirstRay, QDateTime, bool binary);
 
 private slots:
     void openClicked();

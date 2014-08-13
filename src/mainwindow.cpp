@@ -59,7 +59,7 @@ void MainWindow::openBinaryFile() {
     if (path == "")
         return;
 
-    nativeOpenFile(path, 0, 0, true);
+    nativeOpenFile(path, 0, 0, QDateTime(), true);
 }
 
 void MainWindow::decodeLastPath(QString path) {
@@ -70,11 +70,11 @@ void MainWindow::decodeLastPath(QString path) {
         }
 }
 
-void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, bool binary) {
+void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QDateTime time, bool binary) {
     decodeLastPath(fileName);
     Reader reader;
     QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
-    Data data = reader.readFile(fileName, skip, skipFirstRay, binary);
+    Data data = reader.readFile(fileName, skip, skipFirstRay, time, binary);
     statusBar()->showMessage("Done", 2000);
     if (data.npoints) {
         ui->label->hide();
@@ -162,7 +162,7 @@ void MainWindow::loadSettings() {
 
 void MainWindow::customOpen() {
     CustomOpenDialog *dialog = new CustomOpenDialog(lastOpenPath, this);
-    QObject::connect(dialog, SIGNAL(customOpen(QString, int, int, bool)), this, SLOT(nativeOpenFile(QString, int, int, bool)));
+    QObject::connect(dialog, SIGNAL(customOpen(QString, int, int, QDateTime, bool)), this, SLOT(nativeOpenFile(QString, int, int, QDateTime, bool)));
     dialog->show();
 }
 

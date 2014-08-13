@@ -27,6 +27,10 @@ CustomOpenDialog::CustomOpenDialog(QString lastOpenPath, QWidget *parent) :
     ui->text->setChecked(true);
     ui->radioButton_3->setChecked(true);
     ui->checkBox->setChecked(true);
+
+    ui->dateTimeEdit->setMinimumDate(QDate(1900, 1, 1));
+    ui->dateTimeEdit->setMaximumDate(QDate::currentDate());
+    ui->dateTimeEdit->setDisplayFormat("dd.MM.yyyy hh:mm:ss");
 }
 
 CustomOpenDialog::~CustomOpenDialog()
@@ -41,6 +45,6 @@ void CustomOpenDialog::openClicked() {
 
 void CustomOpenDialog::successFinish() {
     int skip = ui->spinBox->value() * ui->checkBox->isChecked();
-    emit customOpen(ui->lineEdit->text(), skip, ui->radioButton_2->isChecked() + ui->radioButton_3->isChecked() * 2, ui->binary->isChecked());
+    emit customOpen(ui->lineEdit->text(), skip, ui->radioButton_2->isChecked() + ui->radioButton_3->isChecked() * 2, ui->dateTimeEdit->dateTime(), ui->binary->isChecked());
     deleteLater();
 }

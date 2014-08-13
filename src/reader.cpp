@@ -7,14 +7,15 @@ Reader::Reader(QObject *parent) :
 {
 }
 
-Data Reader::readFile(QString fileName, int skip, int firstColumn, bool binary) {
+Data Reader::readFile(QString fileName, int skip, int firstColumn, QDateTime time, bool binary) {
     if (binary)
         return readBinaryFile(fileName);
 
     Data data;
     data.channels = 1;
     data.modules = 1;
-
+    data.oneStep = 0.1;
+    data.time = time;
 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -103,7 +104,12 @@ Data Reader::readBinaryFile(QString file) {
     QMap<QString, QString> header;
     for (int i = 1; i < n; i++) {
         QString data = f.readLine();
-        header[data.left(data.indexOf(' '))] = data.right(data.size() - data.indexOf(' '));
+        QString value = data.right(data.size() - data.indexOf(' '));
+        value = value.left(value.size() - 1);
+        while (value[0] == ' ')
+            value = value.right(value.size() - 1);
+
+        header[data.left(data.indexOf(' '))] = value;
     }
 
     qint64 npoints = header["npoints"].toInt();
@@ -114,6 +120,11 @@ Data Reader::readBinaryFile(QString file) {
     int modulus = t.size();
 
     Data data;
+    data.time.setDate(QDate::fromString(header["date_begin"].right(10), QString("dd.MM.yyyy")));
+    data.time.setTime(QTime::fromString(header["time_begin"].right(8).replace(' ', ""), QString("h:mm:ss")));
+    data.oneStep = QTime::fromString(header["time_begin"].left(8).replace(' ', ""), QString("h:mm:ss")).secsTo(QTime::fromString(header["time_end"].right(8).replace(' ', ""), QString("h:mm:ss"))) / double(npoints);
+    data.delta_lucha = 0.89;
+
     data.channels = channels + 1;
     data.modules = modulus;
     data.rays = rays;

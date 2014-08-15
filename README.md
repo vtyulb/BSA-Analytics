@@ -4,10 +4,10 @@ BSA-Analytics
 BSA graphics generator
 
 BUILD:
-1. mkdir build
-2. cd build
-3. qmake ../src/
-4. make
+ - mkdir build
+ - cd build
+ - qmake ../src/
+ - make
 
 Simple installation script:  
 other/*.iss (InnoSetup)  

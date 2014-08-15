@@ -15,6 +15,7 @@ Controller::Controller(QWidget *parent) :
     channels = new QLabel(this);
     modules = new QLabel(this);
     sky = new QLabel(this);
+    fileName = new QLabel(this);
 
     layout->addWidget(rays);
     layout->addWidget(channels);
@@ -22,6 +23,7 @@ Controller::Controller(QWidget *parent) :
     layout->addWidget(points);
     layout->addWidget(sky);
     layout->addWidget(coords);
+    layout->addWidget(fileName);
     layout->addStretch(5);
 }
 
@@ -48,4 +50,8 @@ void Controller::setModules(int m) {
 void Controller::resetSky(Data newData) {
     data = newData;
     sky->setText(StarTime::StarTime(data));
+}
+
+void Controller::setFileName(QString s) {
+    fileName->setText(s);
 }

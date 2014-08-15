@@ -58,6 +58,13 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
         l->addWidget(widget);
     }
 
+    disableAll = new QPushButton(this);
+    disableAll->setText("Disable all rays");
+    l->addWidget(disableAll);
+    enableAll = new QPushButton(this);
+    enableAll->setText("Enable all rays");
+    l->addWidget(enableAll);
+
     if (data.channels > 1) {
         channel = new QSpinBox(this);
         channel->setMinimum(1);
@@ -110,12 +117,6 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     resetButton = new QPushButton(this);
     resetButton->setText("reset");
     l->addWidget(resetButton);
-    enableAll = new QPushButton(this);
-    enableAll->setText("Enable all rays");
-    l->addWidget(enableAll);
-    disableAll = new QPushButton(this);
-    disableAll->setText("Disable all rays");
-    l->addWidget(disableAll);
     drawButton = new QCommandLinkButton(this);
     drawButton->setText("Draw");
     l->addWidget(drawButton);
@@ -133,6 +134,7 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     controller->setChannels(data.channels);
     controller->setPoints(data.npoints);
     controller->setRays(data.rays);
+    controller->setFileName(data.name);
     l->addWidget(controller);
 
     QObject::connect(drawer, SIGNAL(coordsChanged(QPointF)), controller, SLOT(setCoords(QPointF)));

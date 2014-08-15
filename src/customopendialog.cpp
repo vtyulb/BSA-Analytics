@@ -15,6 +15,17 @@ CustomOpenDialog::CustomOpenDialog(QString lastOpenPath, QWidget *parent) :
     QObject::connect(this, SIGNAL(accepted()), this, SLOT(successFinish()));
     QObject::connect(this, SIGNAL(rejected()), this, SLOT(deleteLater()));
 
+    QObject::connect(ui->binary, SIGNAL(clicked(bool)), ui->groupBox, SLOT(setDisabled(bool)));
+    QObject::connect(ui->binary, SIGNAL(clicked(bool)), ui->dateTimeEdit, SLOT(setDisabled(bool)));
+    QObject::connect(ui->binary, SIGNAL(clicked(bool)), ui->spinBox, SLOT(setDisabled(bool)));
+    QObject::connect(ui->binary, SIGNAL(clicked(bool)), ui->checkBox, SLOT(setDisabled(bool)));
+
+    QObject::connect(ui->text, SIGNAL(clicked(bool)), ui->groupBox, SLOT(setEnabled(bool)));
+    QObject::connect(ui->text, SIGNAL(clicked(bool)), ui->dateTimeEdit, SLOT(setEnabled(bool)));
+    QObject::connect(ui->text, SIGNAL(clicked(bool)), ui->spinBox, SLOT(setEnabled(bool)));
+    QObject::connect(ui->text, SIGNAL(clicked(bool)), ui->checkBox, SLOT(setEnabled(bool)));
+
+
     QButtonGroup *group = new QButtonGroup(ui->groupBox);
     group->addButton(ui->radioButton);
     group->addButton(ui->radioButton_2);
@@ -31,6 +42,8 @@ CustomOpenDialog::CustomOpenDialog(QString lastOpenPath, QWidget *parent) :
     ui->dateTimeEdit->setMinimumDate(QDate(1900, 1, 1));
     ui->dateTimeEdit->setMaximumDate(QDate::currentDate());
     ui->dateTimeEdit->setDisplayFormat("dd.MM.yyyy hh:mm:ss");
+
+    ui->binary->click();
 }
 
 CustomOpenDialog::~CustomOpenDialog()

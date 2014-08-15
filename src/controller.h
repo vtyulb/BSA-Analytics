@@ -16,6 +16,7 @@ public:
     void setPoints(int);
     void setChannels(int);
     void setModules(int);
+    void setFileName(QString);
 
 private:
     QLabel *coords;
@@ -24,6 +25,7 @@ private:
     QLabel *channels;
     QLabel *modules;
     QLabel *sky;
+    QLabel *fileName;
 
     Data data;
 

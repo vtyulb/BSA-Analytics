@@ -2,6 +2,8 @@
 #define DATA_H
 
 #include <QDateTime>
+#include <QString>
+
 struct Data {
     int npoints;
     int modules;
@@ -10,6 +12,7 @@ struct Data {
     float ****data;
 
     QDateTime time;
+    QString name;
     double oneStep;
     double delta_lucha;
 
@@ -27,6 +30,18 @@ struct Data {
             delete data[i];
 
         delete data;
+    }
+
+    void init() {
+        data = new float***[modules];
+        for (int j = 0; j < modules; j++) {
+            data[j] = new float**[channels];
+            for (int i = 0; i < channels; i++) {
+                data[j][i] = new float*[rays];
+                for (int k = 0; k < rays; k++)
+                    data[j][i][k] = new float[npoints];
+            }
+        }
     }
 };
 

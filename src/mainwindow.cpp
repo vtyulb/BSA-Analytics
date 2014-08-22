@@ -101,12 +101,8 @@ void MainWindow::readProgressChanged(double progress) {
 void MainWindow::saveFile() {
     QString path = QFileDialog::getSaveFileName(this);
 
-    if (path != "") {
-        if (path.indexOf('c') == -1)
-            path += ".png";
-
+    if (path != "")
         drawer->saveFile(path);
-    }
 }
 
 void MainWindow::autoDraw(bool b) {

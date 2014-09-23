@@ -20,7 +20,9 @@ SOURCES += main.cpp\
     colorwidget.cpp \
     controller.cpp \
     customopendialog.cpp \
-    startime.cpp
+    startime.cpp \
+    pulsarsearcher.cpp \
+    pulsarprocess.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -30,7 +32,9 @@ HEADERS  += mainwindow.h \
     colorwidget.h \
     controller.h \
     customopendialog.h \
-    startime.h
+    startime.h \
+    pulsarsearcher.h \
+    pulsarprocess.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui

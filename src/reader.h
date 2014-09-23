@@ -13,11 +13,11 @@ public:
     explicit Reader(QObject *parent = 0);
 
     Data readFile(QString, int skip, int firstColumn, QDateTime = QDateTime(), bool binary = false); // 0 - true; 1 - false; 2 - autodetect
+    Data readBinaryFile(QString);
+
 private:
     int number(QByteArray);
     float slowNumber(QByteArray);
-
-    Data readBinaryFile(QString);
 
 signals:
     void progress(int);

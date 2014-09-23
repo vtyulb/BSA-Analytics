@@ -1,5 +1,7 @@
-#include "mainwindow.h"
+#include <mainwindow.h>
+#include <pulsarsearcher.h>
 #include <QApplication>
+#include <QCoreApplication>
 #include <QMessageBox>
 #include <QProcess>
 #include <QVector>
@@ -17,8 +19,32 @@ void restart(int signal = 0) {
     exit(0);
 }
 
+int pulsarEngine(int argc, char **argv) {
+    if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
+        printf("\t-h --help  for this message\n");
+        printf("\t--pulsar-search /path/to/daily/data\n");
+        printf("\nWritten by Vladislav Tyulbashev.\n");
+        printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
+        return 0;
+    }
+
+    if (strcmp(argv[1], "--pulsar-search") == 0) {
+        QCoreApplication a(argc, argv);
+        a.setOrganizationDomain("bsa.vtyulb.ru");
+        a.setOrganizationName("vtyulb");
+        a.setApplicationName("BSA-Analytics");
+
+        PulsarSearcher searcher(QString::fromUtf8(argv[2]));
+        searcher.start();
+        return a.exec();
+    }
+}
+
 int main(int argc, char *argv[])
 {
+    if (argc > 1)
+        return pulsarEngine(argc, argv);
+
     signal(SIGABRT, restart);
     signal(SIGSEGV, restart);
 
@@ -37,7 +63,6 @@ int main(int argc, char *argv[])
     } catch (...) {
         restart();
     }
-
 
     return 0;
 }

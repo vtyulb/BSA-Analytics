@@ -151,7 +151,7 @@ void PulsarProcess::clearAverange() {
                     sum = fabs(sum);
 
                     if (sum > noise * 3) {
-                        for (int j = i - little * 2; j < i + 60 / data.oneStep; j++)
+                        for (int j = i - little * 2; j < i + 60 / data.oneStep && j < data.npoints; j++)
                             data.data[module][channel][ray][j] = 0;
 
                         break;

@@ -15,6 +15,7 @@ struct Data {
     QString name;
     double oneStep;
     double delta_lucha;
+    double *fbands;
 
     void releaseData() {
         for (int i = 0; i < modules; i++)
@@ -30,10 +31,12 @@ struct Data {
             delete data[i];
 
         delete data;
+        delete fbands;
     }
 
     void init() {
         data = new float***[modules];
+        fbands = new double[channels - 1];
         for (int j = 0; j < modules; j++) {
             data[j] = new float**[channels];
             for (int i = 0; i < channels; i++) {

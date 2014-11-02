@@ -98,7 +98,11 @@ float Reader::slowNumber(QByteArray a) {
 
 Data Reader::readBinaryFile(QString file) {
     QFile f(file);
-    f.open(QIODevice::ReadOnly);
+    if (!f.open(QIODevice::ReadOnly)) {
+        qDebug() << "can't open file" << file << "for reading";
+        Data sample;
+        return sample;
+    }
 
     int n = number(f.readLine());
     QMap<QString, QString> header;
@@ -134,6 +138,10 @@ Data Reader::readBinaryFile(QString file) {
     data.rays = rays;
     data.npoints = npoints;
     data.init();
+
+    QStringList fbands = header["fbands"].split(" ");
+    for (int i = 0; i < channels - 1; i++)
+        data.fbands[i] = fbands[i].toDouble();
 
     QByteArray input;
     input.resize(4 * 1024 * 1024);

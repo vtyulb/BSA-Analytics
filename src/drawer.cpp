@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QCheckBox>
 #include <QTimer>
+#include <pulsarprocess.h>
 #include <colorwidget.h>
 
 const char* colorNames[17] = {"FF0000",
@@ -189,6 +190,15 @@ void Drawer::draw() {
     drawer->setColors(v);
     drawer->allowDrawing = true;
     drawer->nativePaint();
+
+    static int one = 0;
+    qDebug() << "debugging pulsar feauture enabled!!! Don't forget to delete" << one;
+    if (one++ < 2)
+        return;
+
+    PulsarProcess *p = new PulsarProcess("wrong name :-)", this);
+    p->data = drawer->data;
+    p->start();
 }
 
 void Drawer::moduleChanged() {

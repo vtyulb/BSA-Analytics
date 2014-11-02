@@ -5,6 +5,7 @@
 #include <QString>
 #include <data.h>
 #include <reader.h>
+#include <pulsar.h>
 
 class PulsarProcess : public QThread
 {
@@ -12,12 +13,17 @@ class PulsarProcess : public QThread
 public:
     explicit PulsarProcess(QString file, QObject *parent = 0);
 
-private:
     QString file;
     Data data;
 
-    double noise[33][60];
+private:
     void run();
+    void clearAverange();
+    QVector<double> applyDispersion(int module, int ray, int D);
+    QVector<Pulsar> searchIn(int module, int ray, int D);
+
+    QVector<Pulsar> removeDuplicates(QVector<Pulsar>);
+    bool equalPulsars(Pulsar, Pulsar);
 
 signals:
 

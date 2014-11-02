@@ -3,7 +3,8 @@
 
 using std::min;
 
-int INTERVAL = 5; // in seconds
+const int INTERVAL = 5; // in seconds
+const double EPS = 1e-4;
 
 PulsarProcess::PulsarProcess(QString file, QObject *parent):
     QThread(parent),
@@ -14,21 +15,22 @@ PulsarProcess::PulsarProcess(QString file, QObject *parent):
 }
 
 void PulsarProcess::run() {
-   clearAverange();
+    clearAverange();
+    QVector<Pulsar> pulsars;
+    for (int D = 0; D < 50; D += 6)
+        for (int i = 0; i < data.modules; i++)
+            for (int j = 0; j < data.rays; j++)
+                pulsars += removeDuplicates(searchIn(i, j, D));
 
-   static int D = 0;
-   D++;
-   QVector<Pulsar> pulsars = removeDuplicates(searchIn(5, 6, 26));
-   for (int i = 0; i < pulsars.size(); i++)
-       qDebug() << pulsars[i].print();
-   qDebug() << "disp" << D;
+    for (int i = 0; i < pulsars.size(); i++)
+        qDebug() << pulsars[i].print();
 }
 
 QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
     QVector<Pulsar> pulsars;
     QVector<double> res = applyDispersion(module, ray, D); // module 6, ray 7
-    for (int i = 0; i < data.npoints; i++)
-        data.data[0][0][0][i] = res[i];
+//    for (int i = 0; i < data.npoints; i++)
+//        data.data[0][0][0][i] = res[i];
 
     double noise = 0;
     for (int i = 0; i < data.npoints; i++)
@@ -39,7 +41,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
 
     for (double period = 5; period < 100; period += 0.2) {
         const int duration = 120 / data.oneStep / period;
-        for (int i = 0; i < res.size() - duration * period; i++) {
+        for (int i = 0; i < res.size() - duration * period; i += period / 3) {
             double sum = 0;
             double j = i;
             for (int k = 0; k < duration; j += period, k++)
@@ -47,13 +49,13 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
 
             sum /= duration;
 
-            if (sum > noise) {
+            if (sum > 1.5 * noise) {
                 Pulsar pulsar;
                 pulsar.data = data;
                 pulsar.module = module;
                 pulsar.ray = ray;
                 pulsar.firstPoint = i;
-                pulsar.period = period;
+                pulsar.period = period * data.oneStep;
                 pulsar.dispersion = D;
                 pulsar.valid = true;
                 pulsars.push_back(pulsar);
@@ -65,7 +67,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
 }
 
 bool PulsarProcess::equalPulsars(Pulsar a, Pulsar b) {
-    if (abs(a.firstPoint - b.firstPoint) < 60 / data.oneStep) {
+    if (abs(a.firstPoint - b.firstPoint) < (180 / data.oneStep)) {
         if (a.period > b.period)
             a.valid = false;
         else if (a.period < b.period)
@@ -101,7 +103,7 @@ void PulsarProcess::clearAverange() {
     const int step = INTERVAL / data.oneStep;
     for (int channel = 0; channel < data.channels; channel++)
         for (int ray = 0; ray < data.rays; ray++)
-            for (int module = 0; module < data.modules; module++)
+            for (int module = 0; module < data.modules; module++) {
                 for (int i = 0; i < data.npoints; i += step) {
                     double sum = 0;
                     for (int j = i; j < i + step && j < data.npoints; j++)
@@ -112,6 +114,32 @@ void PulsarProcess::clearAverange() {
                     for (int j = i; j < i + step && j < data.npoints; j++)
                         data.data[module][channel][ray][j] -= sum;
                 }
+
+                double noise = 0;
+                for (int i = 0; i < data.npoints; i++)
+                    noise += pow(data.data[module][channel][ray][i], 2);
+
+                noise /= data.npoints;
+                noise = pow(noise, 0.5);
+
+                const int little = 12;
+
+                for (int i = 0; i < data.npoints - little; i += little) {
+                    double sum = 0;
+                    for (int j = i; j < i + little; j++)
+                        sum += data.data[module][channel][ray][j];
+
+                    sum /= little;
+                    sum = fabs(sum);
+
+                    if (sum > noise * 3) {
+                        for (int j = i - little * 2; j < i + 60 / data.oneStep; j++)
+                            data.data[module][channel][ray][j] = 0;
+
+                        break;
+                    }
+                }
+            }
 }
 
 QVector<double> PulsarProcess::applyDispersion(int module, int ray, int D) {

@@ -16,6 +16,7 @@ struct Data {
     double oneStep;
     double delta_lucha;
     double *fbands;
+    double stairSize;
 
     void releaseData() {
         for (int i = 0; i < modules; i++)
@@ -35,6 +36,7 @@ struct Data {
     }
 
     void init() {
+        stairSize = 0;
         data = new float***[modules];
         fbands = new double[channels - 1];
         for (int j = 0; j < modules; j++) {

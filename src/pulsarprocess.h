@@ -24,6 +24,7 @@ private:
 
     QVector<Pulsar> removeDuplicates(QVector<Pulsar>);
     bool equalPulsars(Pulsar, Pulsar);
+    bool goodDoubles(double, double);
 
 signals:
 

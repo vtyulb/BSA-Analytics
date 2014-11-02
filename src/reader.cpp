@@ -1,6 +1,7 @@
 #include "reader.h"
 #include <malloc.h>
 #include <QFile>
+#include <QStringList>
 
 Reader::Reader(QObject *parent) :
     QObject(parent)

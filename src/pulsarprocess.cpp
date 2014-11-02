@@ -20,7 +20,10 @@ void PulsarProcess::run() {
     for (int D = 0; D < 50; D += 6)
         for (int i = 0; i < data.modules; i++)
             for (int j = 0; j < data.rays; j++)
+//{        int i = 5;
+//        int j = 6;
                 pulsars += removeDuplicates(searchIn(i, j, D));
+//}
 
     for (int i = 0; i < pulsars.size(); i++)
         qDebug() << pulsars[i].print();
@@ -39,7 +42,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
     noise /= data.npoints;
     noise = pow(noise, 0.5);
 
-    for (double period = 5; period < 100; period += 0.2) {
+    for (double period = 5; period < 100; period += 0.01) {
         const int duration = 120 / data.oneStep / period;
         for (int i = 0; i < res.size() - duration * period; i += period / 3) {
             double sum = 0;
@@ -49,7 +52,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
 
             sum /= duration;
 
-            if (sum > 1.5 * noise) {
+            if (sum > 4 * noise) {
                 Pulsar pulsar;
                 pulsar.data = data;
                 pulsar.module = module;
@@ -58,6 +61,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
                 pulsar.period = period * data.oneStep;
                 pulsar.dispersion = D;
                 pulsar.valid = true;
+                pulsar.snr = sum / noise;
                 pulsars.push_back(pulsar);
             }
         }
@@ -66,8 +70,22 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
     return  pulsars;
 }
 
+bool PulsarProcess::goodDoubles(double a, double b) {
+    if (a > b)
+        a /= b;
+    else
+        a = b / a;
+
+    for (int i = 1; i < 100; i++)
+        if (fabs(a - i) < 0.2)
+            return true;
+
+    return false;
+}
+
 bool PulsarProcess::equalPulsars(Pulsar a, Pulsar b) {
-    if (abs(a.firstPoint - b.firstPoint) < (180 / data.oneStep)) {
+    if ((abs(a.firstPoint - b.firstPoint) < (180 / data.oneStep) && (goodDoubles(a.period, b.period))) ||
+            (fabs(a.period - b.period) < 0.1)) {
         if (a.period > b.period)
             a.valid = false;
         else if (a.period < b.period)

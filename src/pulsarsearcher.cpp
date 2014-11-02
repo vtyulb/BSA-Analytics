@@ -9,8 +9,10 @@ PulsarSearcher::PulsarSearcher(QString dir, QObject *parent) :
 }
 
 void PulsarSearcher::start() {
-    for (int i = 0; i < files.size(); i++) {
-        PulsarProcess *p = new PulsarProcess(files[i].absoluteFilePath());
-        p->start();
-    }
+    for (int i = 0; i < files.size(); i++)
+        if (files[i].isFile()) {
+            qDebug() << "searching on file" << files[i].absoluteFilePath();
+            PulsarProcess *p = new PulsarProcess(files[i].absoluteFilePath());
+            p->start();
+        }
 }

@@ -4,7 +4,6 @@
 using std::min;
 
 const int INTERVAL = 5; // in seconds
-const double EPS = 1e-4;
 
 PulsarProcess::PulsarProcess(QString file, QObject *parent):
     QThread(parent),
@@ -42,7 +41,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
     noise /= data.npoints;
     noise = pow(noise, 0.5);
 
-    for (double period = 5; period < 100; period += 0.01) {
+    for (double period = 5; period < 100; period += 0.005) {
         const int duration = 120 / data.oneStep / period;
         for (int i = 0; i < res.size() - duration * period; i += period / 3) {
             double sum = 0;
@@ -62,6 +61,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
                 pulsar.dispersion = D;
                 pulsar.valid = true;
                 pulsar.snr = sum / noise;
+                pulsar.name = data.name;
                 pulsars.push_back(pulsar);
             }
         }
@@ -77,7 +77,7 @@ bool PulsarProcess::goodDoubles(double a, double b) {
         a = b / a;
 
     for (int i = 1; i < 100; i++)
-        if (fabs(a - i) < 0.2)
+        if (fabs(a - i) < 0.05)
             return true;
 
     return false;

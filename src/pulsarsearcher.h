@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QFileInfoList>
+#include <QVector>
+#include <pulsarprocess.h>
 
 class PulsarSearcher : public QObject
 {
@@ -13,10 +15,10 @@ public:
 
 private:
     QFileInfoList files;
+    QVector<PulsarProcess*> workers;
 
-signals:
-
-public slots:
+private slots:
+    void checkIfCalculated();
 
 };
 

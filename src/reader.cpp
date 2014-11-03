@@ -127,7 +127,8 @@ Data Reader::readBinaryFile(QString file) {
     Data data;
     data.time.setDate(QDate::fromString(header["date_begin"].right(10), QString("dd.MM.yyyy")));
     data.time.setTime(QTime::fromString(header["time_begin"].right(8).replace(' ', ""), QString("h:mm:ss")));
-    data.oneStep = QTime::fromString(header["time_begin"].left(8).replace(' ', ""), QString("h:mm:ss")).secsTo(QTime::fromString(header["time_end"].right(8).replace(' ', ""), QString("h:mm:ss"))) / double(npoints);
+//    data.oneStep = data.time.time().secsTo(QTime::fromString(header["time_end"].right(8).replace(' ', ""), QString("h:mm:ss"))) / double(npoints);
+    data.oneStep = 1 / header["tresolution"].toDouble();
     data.delta_lucha = 0.89;
 
     for (int i = 0; i < file.size(); i++)

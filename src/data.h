@@ -12,6 +12,7 @@ struct Data {
     float ****data;
 
     QDateTime time;
+
     QString name;
     double oneStep;
     double delta_lucha;

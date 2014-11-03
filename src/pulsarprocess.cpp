@@ -84,7 +84,7 @@ bool PulsarProcess::goodDoubles(double a, double b) {
     return false;
 }
 
-bool PulsarProcess::equalPulsars(Pulsar a, Pulsar b) {
+bool PulsarProcess::equalPulsars(Pulsar &a, Pulsar &b) {
     if (goodDoubles(a.period, b.period) && a.dispersion == b.dispersion && a.ray == b.ray && a.module == b.module) {
         if (a.snr > b.snr)
             b.valid = false;

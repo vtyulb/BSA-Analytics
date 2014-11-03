@@ -31,8 +31,8 @@ void PulsarProcess::run() {
 QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
     QVector<Pulsar> pulsars;
     QVector<double> res = applyDispersion(module, ray, D); // module 6, ray 7
-//    for (int i = 0; i < data.npoints; i++)
-//        data.data[0][0][0][i] = res[i];
+    for (int i = 0; i < data.npoints; i++)
+        data.data[0][0][0][i] = res[i];
 
     double noise = 0;
     for (int i = 0; i < data.npoints; i++)
@@ -41,7 +41,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
     noise /= data.npoints;
     noise = pow(noise, 0.5);
 
-    for (double period = 5; period < 100; period += 0.005) {
+    for (double period = 5; period < 100; period += 0.01) {
         const int duration = 120 / data.oneStep / period;
         for (int i = 0; i < res.size() - duration * period; i += period / 3) {
             double sum = 0;
@@ -50,6 +50,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
                 sum += res[int(j)];
 
             sum /= duration;
+            sum *= sqrt(120 / period);
 
             if (sum > 4 * noise) {
                 Pulsar pulsar;
@@ -84,22 +85,11 @@ bool PulsarProcess::goodDoubles(double a, double b) {
 }
 
 bool PulsarProcess::equalPulsars(Pulsar a, Pulsar b) {
-    if ((abs(a.firstPoint - b.firstPoint) < (180 / data.oneStep) && (goodDoubles(a.period, b.period))) ||
-            (fabs(a.period - b.period) < 0.1)) {
-        if (a.period > b.period)
-            a.valid = false;
-        else if (a.period < b.period)
-            b.valid = false;
-        else if (a.firstPoint < b.firstPoint)
+    if (goodDoubles(a.period, b.period)) {
+        if (a.snr > b.snr)
             b.valid = false;
         else
             a.valid = false;
-
-        if (a.valid && b.snr > a.snr)
-            return false;
-
-        if (b.valid && a.snr > b.snr)
-            return false;
 
         return true;
     }
@@ -110,15 +100,13 @@ bool PulsarProcess::equalPulsars(Pulsar a, Pulsar b) {
 QVector<Pulsar> PulsarProcess::removeDuplicates(QVector<Pulsar> pulsars) {
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = i + 1; j < pulsars.size(); j++)
-            if (equalPulsars(pulsars[i], pulsars[j])) {
-                if (pulsars[i].valid)
-                    pulsars.remove(j);
-                else
-                    pulsars.remove(i);
+            equalPulsars(pulsars[i], pulsars[j]);
 
-                i--;
-                break;
-            }
+    for (int i = 0; i < pulsars.size(); i++)
+        if (!pulsars[i].valid) {
+            pulsars.remove(i);
+            i--;
+        }
 
 
     for (int i = 0; i < pulsars.size(); i++)
@@ -172,6 +160,14 @@ void PulsarProcess::clearAverange() {
                         break;
                     }
                 }
+
+                for (int i = 0; i < data.npoints; i++)
+                    if (fabs(data.data[module][channel][ray][i]) >  noise * 11) {
+                        if (data.data[module][channel][ray][i] > 0)
+                            data.data[module][channel][ray][i] = noise * 11;
+                        else
+                            data.data[module][channel][ray][i] = -noise * 11;
+                    }
             }
 }
 

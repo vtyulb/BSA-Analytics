@@ -38,6 +38,8 @@ int pulsarEngine(int argc, char **argv) {
         searcher.start();
         return a.exec();
     }
+
+    return 0;
 }
 
 int main(int argc, char *argv[])

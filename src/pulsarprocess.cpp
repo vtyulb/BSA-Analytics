@@ -95,6 +95,12 @@ bool PulsarProcess::equalPulsars(Pulsar a, Pulsar b) {
         else
             a.valid = false;
 
+        if (a.valid && b.snr > a.snr)
+            return false;
+
+        if (b.valid && a.snr > b.snr)
+            return false;
+
         return true;
     }
 
@@ -112,6 +118,15 @@ QVector<Pulsar> PulsarProcess::removeDuplicates(QVector<Pulsar> pulsars) {
 
                 i--;
                 break;
+            }
+
+
+    for (int i = 0; i < pulsars.size(); i++)
+        for (int j = i + 1; j < pulsars.size(); j++)
+            if (pulsars[i].snr < pulsars[j].snr) {
+                Pulsar p = pulsars[i];
+                pulsars[i] = pulsars[j];
+                pulsars[j] = p;
             }
 
     return pulsars;

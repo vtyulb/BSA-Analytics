@@ -41,7 +41,7 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
     noise /= data.npoints;
     noise = pow(noise, 0.5);
 
-    for (double period = 5; period < 100; period += 0.01) {
+    for (double period = 5; period < 15; period += 0.01) {
         const int duration = 120 / data.oneStep / period;
         for (int i = 0; i < res.size() - duration * period; i += period / 3) {
             double sum = 0;

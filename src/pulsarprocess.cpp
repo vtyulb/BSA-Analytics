@@ -19,10 +19,7 @@ void PulsarProcess::run() {
     for (int D = 0; D < 50; D += 6)
         for (int i = 0; i < data.modules; i++)
             for (int j = 0; j < data.rays; j++)
-//{        int i = 5;
-//        int j = 6;
                 pulsars += removeDuplicates(searchIn(i, j, D));
-//}
 
     for (int i = 0; i < pulsars.size(); i++)
         qDebug() << pulsars[i].print();
@@ -31,8 +28,8 @@ void PulsarProcess::run() {
 QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
     QVector<Pulsar> pulsars;
     QVector<double> res = applyDispersion(module, ray, D); // module 6, ray 7
-    for (int i = 0; i < data.npoints; i++)
-        data.data[0][0][0][i] = res[i];
+//    for (int i = 0; i < data.npoints; i++)
+//        data.data[0][0][0][i] = res[i];
 
     double noise = 0;
     for (int i = 0; i < data.npoints; i++)

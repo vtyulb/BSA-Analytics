@@ -16,7 +16,7 @@ PulsarProcess::PulsarProcess(QString file, QObject *parent):
 void PulsarProcess::run() {
     clearAverange();
     QVector<Pulsar> pulsars;
-    for (int D = 0; D < 50; D += 6)
+    for (int D = 0; D < 80; D += 6)
         for (int i = 0; i < data.modules; i++)
             for (int j = 0; j < data.rays; j++)
                 pulsars += removeDuplicates(searchIn(i, j, D));

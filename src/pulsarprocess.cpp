@@ -85,6 +85,12 @@ bool PulsarProcess::goodDoubles(double a, double b) {
 }
 
 bool PulsarProcess::equalPulsars(Pulsar &a, Pulsar &b) {
+    if (fabs(a.period - INTERVAL) < 0.02)
+        a.valid = false;
+
+    if (fabs(b.period - INTERVAL) < 0.02)
+        b.valid = false;
+
     if (goodDoubles(a.period, b.period) && a.dispersion == b.dispersion && a.ray == b.ray && a.module == b.module) {
         if (a.snr > b.snr)
             b.valid = false;
@@ -162,11 +168,11 @@ void PulsarProcess::clearAverange() {
                 }
 
                 for (int i = 0; i < data.npoints; i++)
-                    if (fabs(data.data[module][channel][ray][i]) >  noise * 11) {
+                    if (fabs(data.data[module][channel][ray][i]) >  noise * 5) {
                         if (data.data[module][channel][ray][i] > 0)
-                            data.data[module][channel][ray][i] = noise * 11;
+                            data.data[module][channel][ray][i] = noise * 5;
                         else
-                            data.data[module][channel][ray][i] = -noise * 11;
+                            data.data[module][channel][ray][i] = -noise * 5;
                     }
             }
 }

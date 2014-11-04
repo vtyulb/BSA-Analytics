@@ -38,9 +38,12 @@ QVector<Pulsar> PulsarProcess::searchIn(int module, int ray, int D) {
     noise /= data.npoints;
     noise = pow(noise, 0.5);
 
-    for (double period = 5; period < 15; period += 0.01) {
+    for (double period = 5; period < 100; period += 0.01) {
+//        if (int(period) == int(period + 0.999))
+//            printf("calculation period %.2g\n", period);
+
         const int duration = 120 / data.oneStep / period;
-        for (int i = 0; i < res.size() - duration * period; i++) {
+        for (int i = 0; i < res.size() - duration * period; i % int(period * 100 + 0.001) == 0 ? i += 60 /data.oneStep : i++) {
             double sum = 0;
             double j = i;
             for (int k = 0; k < duration; j += period, k++)

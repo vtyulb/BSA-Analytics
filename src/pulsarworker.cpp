@@ -89,21 +89,33 @@ bool PulsarWorker::equalPulsars(Pulsar &a, Pulsar &b) {
 
 QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
     qDebug() << "removing duplicates. Total found" << pulsars.size();
-    for (int i = pulsars.size() - 1; i >= 0; i--)
-        if (goodDoubles(5, pulsars[i].period))
-            pulsars.remove(i);
-
+    QList<Pulsar> l;
     for (int i = 0; i < pulsars.size(); i++)
-        for (int j = i + 1; j < pulsars.size(); j++) {
-            equalPulsars(pulsars[i], pulsars[j]);
-            if (!pulsars[i].valid) {
-                pulsars.remove(i);
-                j = i;
-            } else if (!pulsars[j].valid) {
-                pulsars.remove(j);
-                j--;
-            }
+        l.push_back(pulsars[i]);
+
+    pulsars.clear();
+
+    for (QList<Pulsar>::Iterator i = l.begin(); i != l.end();i=i)
+        if (goodDoubles(5, (*i).valid))
+            i = l.erase(i);
+        else
+            i++;
+
+    for (QList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
+        for (QList<Pulsar>::iterator j = l.begin(); j != l.end();j=j) {
+            equalPulsars(*i, *j);
+            if (!(*i).valid) {
+                i = l.erase(i);
+                j = l.begin();
+            } else if (!(*j).valid)
+                j = l.erase(j);
+            else
+                j++;
         }
+
+
+    for (QList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
+        pulsars.push_back(*i);
 
     qDebug() << "removed. Total:" << pulsars.size();
 

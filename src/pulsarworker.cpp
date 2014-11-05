@@ -96,12 +96,10 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
     pulsars.clear();
 
     for (QList<Pulsar>::Iterator i = l.begin(); i != l.end();)
-        if (goodDoubles(5, (*i).valid))
+        if (goodDoubles(5.0, (*i).period))
             i = l.erase(i);
         else
             i++;
-
-    qDebug() <<"5th cleared" << l.size();
 
     for (QList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
         for (QList<Pulsar>::iterator j = i + 1; j != l.end();) {

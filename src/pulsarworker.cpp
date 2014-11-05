@@ -34,7 +34,7 @@ QVector<Pulsar> PulsarWorker::searchIn(int module, int ray, int D) {
 //            printf("calculation period %.2g\n", period);
 
         const int duration = 120 / data.oneStep / period;
-        for (int i = 0; i < res.size() - duration * period; /*i % int(period * 100 + 0.001) == 0 ? i += 60 /data.oneStep : */i++) {
+        for (int i = 0; i < res.size() - duration * period; i % int(period * 10 + 0.001) == 0 ? i += 60 /data.oneStep : i++) {
             double sum = 0;
             double j = i;
             for (int k = 0; k < duration; j += period, k++)
@@ -43,7 +43,7 @@ QVector<Pulsar> PulsarWorker::searchIn(int module, int ray, int D) {
             sum /= duration;
             sum *= sqrt(120 / period);
 
-            if (sum > 5 * noise) {
+            if (sum > 4 * noise) {
                 Pulsar pulsar;
                 pulsar.data = data;
                 pulsar.module = module;

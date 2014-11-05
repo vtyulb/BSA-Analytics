@@ -32,8 +32,8 @@ void PulsarProcess::run() {
 
     pool.waitForDone();
     for (int i = 0; i < workers.size(); i++)
-        for (int j = 0; j < workers[i]->res.size(); i++)
-            qDebug() << workers[i]->res[i].print();
+        for (int j = 0; j < workers[i]->res.size(); j++)
+            qDebug() << workers[i]->res[j].print();
 
     qDebug() << data.name << "finished";
 }

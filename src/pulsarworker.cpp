@@ -68,18 +68,17 @@ bool PulsarWorker::goodDoubles(double a, double b) {
     else
         a = b / a;
 
-    for (int i = 1; i < 100; i++)
-        if (fabs(a - i) < 0.05)
+    if (a - int(a) < 0.05)
             return true;
 
     return false;
 }
 
 bool PulsarWorker::equalPulsars(Pulsar &a, Pulsar &b) {
-    if (fabs(a.period - 5) < 0.02)
+    if (goodDoubles(a.period, 5))
         a.valid = false;
 
-    if (fabs(b.period - 5) < 0.02)
+    if (goodDoubles(b.period, 5))
         b.valid = false;
 
     if (goodDoubles(a.period, b.period) && a.dispersion == b.dispersion && a.ray == b.ray && a.module == b.module) {

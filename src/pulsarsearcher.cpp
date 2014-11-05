@@ -16,6 +16,7 @@ void PulsarSearcher::start() {
             workers.push_back(p);
             QObject::connect(p, SIGNAL(finished()), this, SLOT(checkIfCalculated()));
             p->start();
+            p->wait();
         }
 }
 

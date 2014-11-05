@@ -70,8 +70,8 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
         channel = new QSpinBox(this);
         channel->setMinimum(1);
         channel->setMaximum(data.channels);
-        channel->setValue(data.channels);
         QObject::connect(channel, SIGNAL(valueChanged(int)), this, SLOT(channelChanged(int)));
+        channel->setValue(data.channels);
 
         QFrame *channelFrame = new QFrame(this);
         channelFrame->setFrameStyle(QFrame::StyledPanel | QFrame::Raised);

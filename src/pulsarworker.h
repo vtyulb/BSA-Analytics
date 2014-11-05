@@ -21,7 +21,7 @@ private:
     QVector<Pulsar> searchIn(int module, int ray, int D);
 
     QVector<Pulsar> removeDuplicates(QVector<Pulsar>);
-    bool equalPulsars(Pulsar&, Pulsar&);
+    bool equalPulsars(Pulsar*, Pulsar*);
     bool goodDoubles(double, double);
 
     Data data;

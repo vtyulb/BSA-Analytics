@@ -74,12 +74,12 @@ bool PulsarWorker::goodDoubles(double a, double b) {
     return false;
 }
 
-bool PulsarWorker::equalPulsars(Pulsar &a, Pulsar &b) {
-    if (goodDoubles(a.period, b.period)) {
-        if (a.snr > b.snr)
-            b.valid = false;
+bool PulsarWorker::equalPulsars(Pulsar *a, Pulsar *b) {
+    if (goodDoubles(a->period, b->period)) {
+        if (a->snr > b->snr)
+            b->valid = false;
         else
-            a.valid = false;
+            a->valid = false;
 
         return true;
     }
@@ -102,16 +102,15 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
             i++;
 
     for (QList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
-        for (QList<Pulsar>::iterator j = i + 1; j != l.end();) {
-            equalPulsars(*i, *j);
-            if (!(*i).valid) {
-                i = l.erase(i);
-                j = i + 1;
-            } else if (!(*j).valid)
-                j = l.erase(j);
-            else
-                j++;
-        }
+        for (QList<Pulsar>::Iterator j = i + 1; j != l.end(); j++)
+            if ((*i).valid && (*j).valid)
+                equalPulsars(&*i, &*j);
+
+    for (QList<Pulsar>::Iterator i = l.begin(); i != l.end();)
+        if (!(*i).valid)
+            i = l.erase(i);
+        else
+            i++;
 
 
     for (QList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)

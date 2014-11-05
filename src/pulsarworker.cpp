@@ -1,5 +1,6 @@
 #include "pulsarworker.h"
 #include <math.h>
+#include <QDebug>
 
 PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
     QObject(),
@@ -94,6 +95,7 @@ bool PulsarWorker::equalPulsars(Pulsar &a, Pulsar &b) {
 }
 
 QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
+    qDebug() << "removing duplicates. Total found" << pulsars.size();
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = i + 1; j < pulsars.size(); j++)
             equalPulsars(pulsars[i], pulsars[j]);
@@ -113,6 +115,7 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
                 pulsars[j] = p;
             }
 
+    qDebug() << "removed. Total:" << pulsars.size();
     return pulsars;
 }
 

@@ -89,7 +89,7 @@ bool PulsarWorker::equalPulsars(Pulsar &a, Pulsar &b) {
 
 QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
     qDebug() << "removing duplicates. Total found" << pulsars.size();
-    for (int i = pulsars.size() - 1; i >= 0; i++)
+    for (int i = pulsars.size() - 1; i >= 0; i--)
         if (goodDoubles(5, pulsars[i].period))
             pulsars.remove(i);
 

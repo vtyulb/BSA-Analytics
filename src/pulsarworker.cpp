@@ -102,7 +102,7 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
             i++;
 
     for (QList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
-        for (QList<Pulsar>::iterator j = l.begin(); j != l.end();j=j) {
+        for (QList<Pulsar>::iterator j = i + 1; j != l.end();j=j) {
             equalPulsars(*i, *j);
             if (!(*i).valid) {
                 i = l.erase(i);

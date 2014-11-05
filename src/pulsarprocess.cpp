@@ -34,6 +34,8 @@ void PulsarProcess::run() {
     for (int i = 0; i < workers.size(); i++)
         for (int j = 0; j < workers[i]->res.size(); i++)
             qDebug() << workers[i]->res[i].print();
+
+    qDebug() << data.name << "finished";
 }
 
 void PulsarProcess::clearAverange() {

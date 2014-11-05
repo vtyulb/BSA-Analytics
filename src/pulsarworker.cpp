@@ -106,7 +106,7 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
             equalPulsars(*i, *j);
             if (!(*i).valid) {
                 i = l.erase(i);
-                j = l.begin();
+                j = i + 1;
             } else if (!(*j).valid)
                 j = l.erase(j);
             else

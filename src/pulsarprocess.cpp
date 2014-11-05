@@ -21,6 +21,7 @@ void PulsarProcess::run() {
     QThreadPool pool;
     QVector<PulsarWorker*> workers;
     QVector<Pulsar> pulsars;
+    qDebug() << "splitting to" << pool.maxThreadCount() << "processes";
     for (int D = 0; D < 80; D += 6)
         for (int i = 0; i < data.modules; i++)
             for (int j = 0; j < data.rays; j++) {

@@ -75,13 +75,7 @@ bool PulsarWorker::goodDoubles(double a, double b) {
 }
 
 bool PulsarWorker::equalPulsars(Pulsar &a, Pulsar &b) {
-    if (goodDoubles(a.period, 5))
-        a.valid = false;
-
-    if (goodDoubles(b.period, 5))
-        b.valid = false;
-
-    if (goodDoubles(a.period, b.period) && a.dispersion == b.dispersion && a.ray == b.ray && a.module == b.module) {
+    if (goodDoubles(a.period, b.period)) {
         if (a.snr > b.snr)
             b.valid = false;
         else
@@ -95,12 +89,16 @@ bool PulsarWorker::equalPulsars(Pulsar &a, Pulsar &b) {
 
 QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
     qDebug() << "removing duplicates. Total found" << pulsars.size();
+    for (int i = pulsars.size() - 1; i >= 0; i++)
+        if (goodDoubles(5, pulsars[i].period))
+            pulsars.remove(i);
+
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = i + 1; j < pulsars.size(); j++) {
             equalPulsars(pulsars[i], pulsars[j]);
             if (!pulsars[i].valid) {
                 pulsars.remove(i);
-                i--;
+                j = i;
             } else if (!pulsars[j].valid) {
                 pulsars.remove(j);
                 j--;

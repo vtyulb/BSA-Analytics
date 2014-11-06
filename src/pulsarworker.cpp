@@ -29,8 +29,7 @@ QVector<Pulsar> PulsarWorker::searchIn(int module, int ray, int D) {
     for (int i = 0; i < data.npoints; i++)
         noise += res[i] * res[i];
 
-    noise /= data.npoints;
-    noise = pow(noise, 0.5);
+    noise = pow(noise, 0.5) /  data.npoints;
 
     for (double period = 5; period < 100; period += 0.01) {
 //        if (int(period) == int(period + 0.999))

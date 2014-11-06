@@ -1,19 +1,22 @@
 #include "pulsarworker.h"
 #include <math.h>
 #include <QDebug>
+#include <QTimer>
 
 PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
     QObject(),
     QRunnable(),
+    data(data),
     module(module),
     ray(ray),
-    D(D),
-    data(data)
+    D(D)
 {
 }
 
 void PulsarWorker::run() {
+    QTime t = QTime::currentTime();
     res = removeDuplicates(searchIn(module, ray, D));
+    qDebug() << "process" << module << ray << D << "finished at" << QTime::currentTime().toString() << "total time: " << t.secsTo(QTime::currentTime()) << "s , found" << res.size() << "pulsars";
 }
 
 QVector<Pulsar> PulsarWorker::searchIn(int module, int ray, int D) {

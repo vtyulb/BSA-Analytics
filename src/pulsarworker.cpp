@@ -68,8 +68,8 @@ bool PulsarWorker::goodDoubles(double a, double b) {
     else
         a = b / a;
 
-    if (a - int(a) < 0.05)
-            return true;
+    if (fabs(a - int(a + 0.5)) < 0.05)
+        return true;
 
     return false;
 }

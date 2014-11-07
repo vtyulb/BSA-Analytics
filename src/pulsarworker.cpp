@@ -46,7 +46,7 @@ QVector<Pulsar> PulsarWorker::searchIn(int module, int ray, int D) {
             sum /= duration;
             sum *= sqrt(120 / period);
 
-            if (sum > 2 * noise) {
+            if (sum > 4 * noise) {
                 Pulsar pulsar;
                 pulsar.data = data;
                 pulsar.module = module;

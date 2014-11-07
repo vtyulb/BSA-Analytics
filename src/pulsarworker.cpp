@@ -151,5 +151,8 @@ QVector<double> PulsarWorker::applyDispersion(int module, int ray, int D) {
         for (int j = 0; j < data.channels - 1; j++)
             res[i] += data.data[module][j][ray][i];
 
+    for (int i = 0; i < res.size(); i++)
+        res[i] /= (data.channels - 1);
+
     return res;
 }

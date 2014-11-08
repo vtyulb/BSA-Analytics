@@ -226,7 +226,7 @@ void PulsarWorker::clearAverange() {
 //                qDebug() << "clearing stair" << i;
 
                 for (int j = i - little * 5; j < i + 60 / data.oneStep && j < data.npoints; j++)
-                    data.data[module][channel][ray][j] = 0;
+                    data.data[module][channel][ray][j] = qrand() / double(RAND_MAX) * noise - noise / 2;
 
                 break;
             }

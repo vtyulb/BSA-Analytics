@@ -1,5 +1,6 @@
 #include "pulsarworker.h"
 #include <math.h>
+#include <algorithm>
 #include <QDebug>
 #include <QTimer>
 
@@ -31,12 +32,20 @@ QVector<Pulsar> PulsarWorker::searchIn() {
 
     QVector<Pulsar> pulsars;
     QVector<double> res = applyDispersion();
-    double noise = 0;
-    for (int i = res.size() / 2; i < res.size() / 2 + interval / data.oneStep; i++)
-        noise += res[i] * res[i];
+    QVector<double> noises;
 
-    noise /= (interval / data.oneStep);
-    noise = pow(noise, 0.5);
+    for (int i = 0; i < res.size() - interval / data.oneStep; i++) {
+        double noise = 0;
+        for (int j = 0; j < interval / data.oneStep; j++)
+            noise += res[i + j] * res[i + j];
+
+        noise /= (interval / data.oneStep);
+        noises.push_back(noise);
+    }
+
+    std::sort(noises.begin(), noises.end());
+
+    double noise = noises[noises.size() / 2];
 
     for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += PERIOD_STEP) {
         const int duration = interval / data.oneStep / period;
@@ -47,13 +56,6 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                 i += interval / 2 /data.oneStep;
                 if (i >= res.size() - interval / data.oneStep - 1)
                     break;
-
-                noise = 0;
-                for (int j = 0; j < interval / data.oneStep; j++)
-                    noise += res[i + j] * res[i + j];
-
-                noise /= (interval / data.oneStep);
-                noise = pow(noise, 0.5);
             }
 
             double sum = 0;
@@ -226,7 +228,7 @@ void PulsarWorker::clearAverange() {
 //                qDebug() << "clearing stair" << i;
 
                 for (int j = i - little * 5; j < i + 60 / data.oneStep && j < data.npoints; j++)
-                    data.data[module][channel][ray][j] = qrand() / double(RAND_MAX) * noise - noise / 2;
+                    data.data[module][channel][ray][j] = (qrand() / double(RAND_MAX) * noise - noise / 2) / 4   ;
 
                 break;
             }

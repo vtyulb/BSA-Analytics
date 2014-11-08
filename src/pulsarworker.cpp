@@ -40,6 +40,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             noise += res[i + j] * res[i + j];
 
         noise /= (interval / data.oneStep);
+        noise = pow(noise, 0.5);
         noises.push_back(noise);
     }
 

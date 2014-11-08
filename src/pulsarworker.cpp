@@ -42,7 +42,17 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
         pulsar.snr = 0;
-        for (int i = 0; i < res.size() - duration * period; i % int(period / data.oneStep + 0.5) == 0 ? i += interval / 2 /data.oneStep : i++) {
+        for (int i = 0; i < res.size() - duration * period; i++) {
+            if (i % int(period / data.oneStep + 0.5) == 0) {
+                i += interval / 2 /data.oneStep;
+                noise = 0;
+                for (int j = 0; j < interval / data.oneStep; j++)
+                    noise += res[i + j] * res[i + j];
+
+                noise /= (interval / data.oneStep);
+                noise = pow(noise, 0.5);
+            }
+
             double sum = 0;
             double j = i;
             for (int k = 0; k < duration; j += period, k++)
@@ -96,7 +106,6 @@ bool PulsarWorker::equalPulsars(Pulsar *a, Pulsar *b) {
 }
 
 QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
-//    qDebug() << "removing duplicates. Total found" << pulsars.size();
     QList<Pulsar> l;
     for (int i = 0; i < pulsars.size(); i++)
         l.push_back(pulsars[i]);
@@ -124,7 +133,6 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
     for (QList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
         pulsars.push_back(*i);
 
-//    qDebug() << "removed. Total:" << pulsars.size();
 
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = i + 1; j < pulsars.size(); j++)

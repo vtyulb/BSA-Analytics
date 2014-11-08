@@ -45,7 +45,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         for (int i = 0; i < res.size() - duration * period; i++) {
             if (i % int(period / data.oneStep + 0.5) == 0) {
                 i += interval / 2 /data.oneStep;
-                if (i >= res.size() - duration * period)
+                if (i >= res.size() - interval / data.oneStep - 1)
                     break;
 
                 noise = 0;
@@ -222,7 +222,9 @@ void PulsarWorker::clearAverange() {
             sum /= little;
             sum = fabs(sum);
 
-            if (sum > noise * 3) {
+            if (sum > noise * 2) {
+//                qDebug() << "clearing stair" << i;
+
                 for (int j = i - little * 5; j < i + 60 / data.oneStep && j < data.npoints; j++)
                     data.data[module][channel][ray][j] = 0;
 

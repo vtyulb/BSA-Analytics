@@ -15,7 +15,6 @@ PulsarProcess::PulsarProcess(QString file, QObject *parent):
 void PulsarProcess::run() {
     QThreadPool pool;
     QVector<PulsarWorker*> workers;
-    QVector<Pulsar> pulsars;
     qDebug() << "splitting to" << pool.maxThreadCount() << "processes";
     for (int D = 0; D < 80; D += 6)
         for (int i = 0; i < data.modules; i++)
@@ -26,9 +25,21 @@ void PulsarProcess::run() {
             }
 
     pool.waitForDone();
+    QVector<Pulsar> pulsars;
     for (int i = 0; i < workers.size(); i++)
         for (int j = 0; j < workers[i]->res.size(); j++)
-            printf("%s\n", workers[i]->res[j].print().toUtf8().constData());
+            pulsars.push_back(workers[i]->res[j]);
+
+    for (int i = 0; i < pulsars.size(); i++)
+        for (int j = i + 1; j < pulsars.size(); j++)
+            if (pulsars[i].firstPoint > pulsars[j].firstPoint) {
+                Pulsar p = pulsars[i];
+                pulsars[i] = pulsars[j];
+                pulsars[j] = p;
+            }
+
+    for (int i = 0; i < pulsars.size(); i++)
+        printf("%s\n", pulsars[i].print().toUtf8().constData());
 
     qDebug() << data.name << "finished";
 }

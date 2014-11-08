@@ -64,7 +64,8 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             }
         }
 
-        pulsars.push_back(pulsar);
+        if (pulsar.snr > 5)
+            pulsars.push_back(pulsar);
     }
 
     return  pulsars;

@@ -45,8 +45,11 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         for (int i = 0; i < res.size() - duration * period; i++) {
             if (i % int(period / data.oneStep + 0.5) == 0) {
                 i += interval / 2 /data.oneStep;
+                if (i >= res.size() - duration * period)
+                    break;
+
                 noise = 0;
-                for (int j = 0; j < interval / data.oneStep; j++)
+                for (int j = 0; j < interval / data.oneStep && i + j < res.size(); j++)
                     noise += res[i + j] * res[i + j];
 
                 noise /= (interval / data.oneStep);

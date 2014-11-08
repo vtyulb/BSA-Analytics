@@ -173,8 +173,8 @@ QVector<double> PulsarWorker::applyDispersion() {
         else if (res[i] < -noise * 5)
             res[i] = -noise * 5;
 
-    for (int i = 0; i < res.size(); i++)
-        data.data[module][6][ray][i] = res[i];
+//    for (int i = 0; i < res.size(); i++)
+//        data.data[module][6][ray][i] = res[i];
 
     return res;
 }

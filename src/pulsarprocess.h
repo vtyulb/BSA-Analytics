@@ -18,7 +18,6 @@ public:
 
 private:
     void run();
-    void clearAverange();
 
 signals:
 

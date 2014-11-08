@@ -17,8 +17,9 @@ public:
     void run();
 
 private:
-    QVector<double> applyDispersion(int module, int ray, int D);
-    QVector<Pulsar> searchIn(int module, int ray, int D);
+    QVector<double> applyDispersion();
+    QVector<Pulsar> searchIn();
+    void clearAverange();
 
     QVector<Pulsar> removeDuplicates(QVector<Pulsar>);
     bool equalPulsars(Pulsar*, Pulsar*);

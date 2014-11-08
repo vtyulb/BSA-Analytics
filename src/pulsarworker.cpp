@@ -3,6 +3,12 @@
 #include <QDebug>
 #include <QTimer>
 
+const int INTERVAL = 5;
+const double MINIMUM_PERIOD = 0.5;
+const double MAXIMUM_PERIOD = 10;
+const double PERIOD_STEP = 0.01;
+using std::min;
+
 PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
     QObject(),
     QRunnable(),
@@ -15,39 +21,37 @@ PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
 
 void PulsarWorker::run() {
     QTime t = QTime::currentTime();
-    res = removeDuplicates(searchIn(module, ray, D));
+    clearAverange();
+    res = removeDuplicates(searchIn());
     qDebug() << "process" << module << ray << D << "finished at" << QTime::currentTime().toString() << "total time: " << t.secsTo(QTime::currentTime()) << "s , found" << res.size() << "pulsars";
 }
 
-QVector<Pulsar> PulsarWorker::searchIn(int module, int ray, int D) {
-    QVector<Pulsar> pulsars;
-    QVector<double> res = applyDispersion(module, ray, D); // module 6, ray 7
-//    for (int i = 0; i < data.npoints; i++)
-//        data.data[0][0][0][i] = res[i];
+QVector<Pulsar> PulsarWorker::searchIn() {
+    const int interval = 180;
 
+    QVector<Pulsar> pulsars;
+    QVector<double> res = applyDispersion();
     double noise = 0;
-    for (int i = 0; i < data.npoints; i++)
+    for (int i = res.size() / 2; i < res.size() / 2 + interval / data.oneStep; i++)
         noise += res[i] * res[i];
 
-    noise /= data.npoints;
+    noise /= (interval / data.oneStep);
     noise = pow(noise, 0.5);
 
-    for (double period = 5; period < 100; period += 0.01) {
-//        if (int(period) == int(period + 0.999))
-//            printf("calculation period %.2g\n", period);
-
-        const int duration = 120 / data.oneStep / period;
-        for (int i = 0; i < res.size() - duration * period; i % int(period * 10 + 0.001) == 0 ? i += 60 /data.oneStep : i++) {
+    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += PERIOD_STEP) {
+        const int duration = interval / data.oneStep / period;
+        Pulsar pulsar;
+        pulsar.snr = 0;
+        for (int i = 0; i < res.size() - duration * period; i % int(period / data.oneStep + 0.5) == 0 ? i += interval / 2 /data.oneStep : i++) {
             double sum = 0;
             double j = i;
             for (int k = 0; k < duration; j += period, k++)
                 sum += res[int(j)];
 
             sum /= duration;
-            sum *= sqrt(120 / period);
+            sum *= sqrt(interval / period);
 
-            if (sum > 5 * noise) {
-                Pulsar pulsar;
+            if (sum / noise > pulsar.snr) {
                 pulsar.data = data;
                 pulsar.module = module;
                 pulsar.ray = ray;
@@ -57,9 +61,10 @@ QVector<Pulsar> PulsarWorker::searchIn(int module, int ray, int D) {
                 pulsar.valid = true;
                 pulsar.snr = sum / noise;
                 pulsar.name = data.name;
-                pulsars.push_back(pulsar);
             }
         }
+
+        pulsars.push_back(pulsar);
     }
 
     return  pulsars;
@@ -99,7 +104,7 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
     pulsars.clear();
 
     for (QList<Pulsar>::Iterator i = l.begin(); i != l.end();)
-        if (goodDoubles(5.0, (*i).period))
+        if (goodDoubles(INTERVAL, (*i).period))
             i = l.erase(i);
         else
             i++;
@@ -132,7 +137,7 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
     return pulsars;
 }
 
-QVector<double> PulsarWorker::applyDispersion(int module, int ray, int D) {
+QVector<double> PulsarWorker::applyDispersion() {
     double v1 = data.fbands[0];
     double v2 = data.fbands[1];
     double mxd = 4.15 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D;
@@ -154,5 +159,63 @@ QVector<double> PulsarWorker::applyDispersion(int module, int ray, int D) {
     for (int i = 0; i < res.size(); i++)
         res[i] /= (data.channels - 1);
 
+
+    double noise = 0;
+    for (int i = 0; i < res.size(); i++)
+        noise += res[i] * res[i];
+
+    noise /= res.size();
+    noise = pow(noise, 0.5);
+
+    for (int i = 0; i < res.size(); i++)
+        if (res[i] >  noise * 5)
+            res[i] = noise * 5;
+        else if (res[i] < -noise * 5)
+            res[i] = -noise * 5;
+
+//    for (int i = 0; i < res.size(); i++)
+//        data.data[module][6][ray][i] = res[i];
+
     return res;
+}
+
+void PulsarWorker::clearAverange() {
+    const int step = INTERVAL / data.oneStep;
+    for (int channel = 0; channel < data.channels - 1; channel++) {
+        for (int i = 0; i < data.npoints; i += step) {
+            double sum = 0;
+            for (int j = i; j < i + step && j < data.npoints; j++)
+                sum += data.data[module][channel][ray][j];
+
+            sum /= min(i + step, data.npoints) - i;
+
+            for (int j = i; j < i + step && j < data.npoints; j++)
+                data.data[module][channel][ray][j] -= sum;
+        }
+
+        double noise = 0;
+        for (int i = 0; i < data.npoints; i++)
+            noise += pow(data.data[module][channel][ray][i], 2);
+
+        noise /= data.npoints;
+        noise = pow(noise, 0.5);
+
+        const int little = 15;
+
+        for (int i = 0; i < data.npoints - little; i += little) {
+            double sum = 0;
+            for (int j = i; j < i + little; j++)
+                sum += data.data[module][channel][ray][j];
+
+            sum /= little;
+            sum = fabs(sum);
+
+            if (sum > noise * 3) {
+                for (int j = i - little * 5; j < i + 60 / data.oneStep && j < data.npoints; j++)
+                    data.data[module][channel][ray][j] = 0;
+
+                break;
+            }
+        }
+    }
 }

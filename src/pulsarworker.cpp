@@ -30,7 +30,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     const int interval = 180;
 
     QVector<Pulsar> pulsars;
-    QVector<double> res = applyDispersion();return pulsars;
+    QVector<double> res = applyDispersion();
     double noise = 0;
     for (int i = res.size() / 2; i < res.size() / 2 + interval / data.oneStep; i++)
         noise += res[i] * res[i];

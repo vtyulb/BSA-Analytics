@@ -52,8 +52,10 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
         pulsar.snr = 0;
+        int calc = 0;
         for (int i = 0; i < res.size() - duration * period; i++) {
-            if (i % int(period / data.oneStep + 0.5) == 0) {
+            if (calc++ == int(period + 1)) {
+                calc = 0;
                 i += interval / 2 /data.oneStep;
                 if (i >= res.size() - interval / data.oneStep - 1)
                     break;

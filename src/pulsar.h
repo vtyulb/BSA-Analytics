@@ -48,9 +48,8 @@ struct Pulsar {
         for (double i = firstPoint; i < firstPoint + interval / data.oneStep; i += period)
             d.push_back(disp[i]);
 
-        QVariant res(d.toList());
-        res.convert(QVariant::ByteArray);
-        additionalData = res.toByteArray().toBase64();
+        QDataStream stream(&additionalData, QIODevice::WriteOnly);
+        QVariant(d.toList()).save(stream);
     }
 };
 

@@ -46,7 +46,7 @@ int pulsarEngine(int argc, char **argv) {
     if (dataPath == "" || savePath == "")
         return -1;
 
-    savePath = QDir(savePath).absolutePath();
+    savePath = QDir(savePath).absolutePath() + "/";
 
     QCoreApplication a(argc, argv);
     a.setOrganizationDomain("bsa.vtyulb.ru");

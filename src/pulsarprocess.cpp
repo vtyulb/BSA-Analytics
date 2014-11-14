@@ -55,7 +55,7 @@ void PulsarProcess::run() {
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = categories - 1; j >= 0; j--)
             if (sz[j] < pulsars[i].snr) {
-                QByteArray d = QString("%1\t\t%2\t%3\t%4\t%5\n").
+                QByteArray d = QString("%1\t%2\t%3\t\t%4\t%5\n").
                         arg(pulsars[i].time()).
                         arg(pulsars[i].module).
                         arg(pulsars[i].ray).

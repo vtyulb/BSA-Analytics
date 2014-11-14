@@ -61,8 +61,8 @@ void PulsarProcess::run() {
                         arg(pulsars[i].module + 1).
                         arg(pulsars[i].ray + 1).
                         arg(pulsars[i].dispersion).
-                        arg(QString::number(pulsars[i].period, 'g', 3)).
-                        arg(QString::number(pulsars[i].snr, 'g', 1)).
+                        arg(QString::number(pulsars[i].period, 'f', 3)).
+                        arg(QString::number(pulsars[i].snr, 'f', 1)).
                         toUtf8();
 
                 files[j]->write(d);

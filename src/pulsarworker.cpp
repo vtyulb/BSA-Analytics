@@ -4,10 +4,6 @@
 #include <QDebug>
 #include <QTimer>
 
-const int INTERVAL = 5;
-const double MINIMUM_PERIOD = 0.5;
-const double MAXIMUM_PERIOD = 10;
-const double PERIOD_STEP = 0.01;
 using std::min;
 
 PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
@@ -23,13 +19,11 @@ PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
 void PulsarWorker::run() {
     QTime t = QTime::currentTime();
     clearAverange();
-    res = removeDuplicates(searchIn());
+    res = searchIn();
     qDebug() << "process" << module << ray << D << "finished at" << QTime::currentTime().toString() << "total time: " << t.secsTo(QTime::currentTime()) << "s , found" << res.size() << "pulsars";
 }
 
 QVector<Pulsar> PulsarWorker::searchIn() {
-    const int interval = 180;
-
     QVector<Pulsar> pulsars;
     QVector<double> res = applyDispersion();
     QVector<double> noises;
@@ -86,6 +80,10 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             pulsars.push_back(pulsar);
     }
 
+    pulsars = removeDuplicates(pulsars);
+    for (int i = 0; i < pulsars.size(); i++)
+        pulsars[i].calculateAdditionalData(res);
+
     return  pulsars;
 }
 
@@ -115,10 +113,7 @@ bool PulsarWorker::equalPulsars(Pulsar *a, Pulsar *b) {
 }
 
 QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
-    QList<Pulsar> l;
-    for (int i = 0; i < pulsars.size(); i++)
-        l.push_back(pulsars[i]);
-
+    QList<Pulsar> l = pulsars.toList();
     pulsars.clear();
 
     for (QList<Pulsar>::Iterator i = l.begin(); i != l.end();)

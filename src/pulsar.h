@@ -4,6 +4,14 @@
 #include <data.h>
 #include <startime.h>
 #include <QString>
+#include <QVector>
+#include <QVariant>
+
+const int INTERVAL = 5;
+const double MINIMUM_PERIOD = 0.5;
+const double MAXIMUM_PERIOD = 10;
+const double PERIOD_STEP = 0.01;
+const int interval = 180;
 
 struct Pulsar {
     Data data;
@@ -12,11 +20,10 @@ struct Pulsar {
     int dispersion;
     int firstPoint;
     double period; // in seconds;
-
-    QString name; // file, not a pulsar :-)
-
     double snr;
 
+    QString name; // file, not a pulsar :-)
+    QByteArray additionalData;
     bool valid;
 
 
@@ -34,6 +41,14 @@ struct Pulsar {
 
     QString time() {
         return StarTime::StarTime(data, firstPoint);
+    }
+
+    void calculateAdditionalData(QVector<double> disp) {
+        QVector<QVariant> d;
+        for (double i = firstPoint; i < firstPoint + interval / data.oneStep; i += period)
+            d.push_back(disp[i]);
+
+        additionalData = QVariant(d.toList()).toByteArray().toBase64();
     }
 };
 

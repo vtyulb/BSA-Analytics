@@ -46,6 +46,7 @@ void PulsarProcess::run() {
     QByteArray header = QString("file: %1\nStart time\tmodule\tray\tdispersion\tsnr\n").arg(data.name).toUtf8();
 
     QFile *files[categories];
+
     for (int i = 0; i < categories; i++) {
         files[i] = new QFile(savePath + QString("%1-%2-%3.pulsar").arg(data.name).arg(sz[i]).arg(sz[i + 1]));
         files[i]->open(QIODevice::WriteOnly);
@@ -55,7 +56,7 @@ void PulsarProcess::run() {
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = categories - 1; j >= 0; j--)
             if (sz[j] < pulsars[i].snr) {
-                QByteArray d = QString("%1\t%2\t%3\t\t%4\t%5\n").
+                QByteArray d = QString("%1\t%2\t%3\t%4\t%5\n").
                         arg(pulsars[i].time()).
                         arg(pulsars[i].module).
                         arg(pulsars[i].ray).
@@ -63,6 +64,17 @@ void PulsarProcess::run() {
                         arg(pulsars[i].snr).toUtf8();
 
                 files[j]->write(d);
+                break;
+            }
+
+    for (int i = 0; i < categories; i++)
+        files[i]->write("additional data:\n");
+
+    for (int i = 0; i < pulsars.size(); i++)
+        for (int j = categories - 1; j >= 0; j--)
+            if (sz[j] < pulsars[i].snr) {
+                files[j]->write(pulsars[i].additionalData);
+                files[j]->write("\n");
                 break;
             }
 

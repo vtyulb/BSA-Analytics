@@ -43,11 +43,11 @@ void PulsarProcess::run() {
 
     const int categories = 3;
     const int sz[categories + 1] = {5, 7, 10, 1000};
-    QByteArray header = QString("file: %1\nStart time\tmodule\tray\tdispersion\tsnr\n").toUtf8();
+    QByteArray header = QString("file: %1\nStart time\tmodule\tray\tdispersion\tsnr\n").arg(data.name).toUtf8();
 
     QFile *files[categories];
     for (int i = 0; i < categories; i++) {
-        files[i] = new QFile(savePath + QString("snr_%1-%2.pulsar").arg(sz[i]).arg(sz[i + 1]));
+        files[i] = new QFile(savePath + QString("%1-%2-%3.pulsar").arg(data.name).arg(sz[i]).arg(sz[i + 1]));
         files[i]->open(QIODevice::WriteOnly);
         files[i]->write(header);
     }

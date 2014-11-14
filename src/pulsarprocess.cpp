@@ -47,7 +47,7 @@ void PulsarProcess::run() {
 
     QFile *files[categories];
     for (int i = 0; i < categories; i++) {
-        files[i] = new QFile(savePath + QString("snr %1-%2").arg(sz[i]).arg(sz[i + 1]));
+        files[i] = new QFile(savePath + QString("snr_%1-%2.pulsar").arg(sz[i]).arg(sz[i + 1]));
         files[i]->open(QIODevice::WriteOnly);
         files[i]->write(header);
     }
@@ -55,7 +55,7 @@ void PulsarProcess::run() {
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = categories - 1; j >= 0; j--)
             if (sz[j] < pulsars[i].snr) {
-                QByteArray d = QString("%1\t\t%2\t%3\t%4\t%5").
+                QByteArray d = QString("%1\t\t%2\t%3\t%4\t%5\n").
                         arg(pulsars[i].time()).
                         arg(pulsars[i].module).
                         arg(pulsars[i].ray).

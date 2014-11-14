@@ -1,22 +1,25 @@
 #include <pulsarsearcher.h>
 #include <pulsarprocess.h>
+#include <calculationpool.h>
 #include <QDir>
 
-PulsarSearcher::PulsarSearcher(QString dir, QObject *parent) :
-    QObject(parent)
+PulsarSearcher::PulsarSearcher(QString dir, QString savePath, int threads, QObject *parent) :
+    QObject(parent),
+    savePath(savePath)
 {
     files = QDir(dir).entryInfoList();
+    if (threads != -1)
+        CalculationPool::pool()->setMaxThreadCount(threads);
 }
 
 void PulsarSearcher::start() {
     for (int i = 0; i < files.size(); i++)
         if (files[i].isFile()) {
             qDebug() << "searching on file" << files[i].absoluteFilePath();
-            PulsarProcess *p = new PulsarProcess(files[i].absoluteFilePath());
+            PulsarProcess *p = new PulsarProcess(files[i].absoluteFilePath(), savePath);
             workers.push_back(p);
             QObject::connect(p, SIGNAL(finished()), this, SLOT(checkIfCalculated()));
             p->start();
-            p->wait();
         }
 }
 

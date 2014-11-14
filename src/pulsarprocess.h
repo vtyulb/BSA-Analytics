@@ -11,13 +11,15 @@ class PulsarProcess : public QThread
 {
     Q_OBJECT
 public:
-    explicit PulsarProcess(QString file, QObject *parent = 0);
+    explicit PulsarProcess(QString file, QString savePath, QObject *parent = 0);
 
-    QString file;
     Data data;
 
 private:
     void run();
+
+    QString savePath;
+    QString file;
 
 signals:
 

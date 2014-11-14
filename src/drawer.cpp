@@ -196,7 +196,7 @@ void Drawer::draw() {
     if (one++ < 2)
         return;
 
-    PulsarProcess *p = new PulsarProcess("wrong name :-)", this);
+    PulsarProcess *p = new PulsarProcess("wrong name :-)", "wrong path", this);
     p->data = drawer->data;
     p->start();
 }

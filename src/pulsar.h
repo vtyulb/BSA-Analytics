@@ -27,9 +27,13 @@ struct Pulsar {
                 arg(QString::number(ray + 1)).
                 arg(QString::number(dispersion)).
                 arg(QString::number(firstPoint)).
-                arg(StarTime::StarTime(data, firstPoint)).
+                arg(time()).
                 arg(QString::number(period)).
                 arg(QString::number(snr));
+    }
+
+    QString time() {
+        return StarTime::StarTime(data, firstPoint);
     }
 };
 

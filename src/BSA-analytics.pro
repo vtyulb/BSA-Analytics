@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     pulsarsearcher.cpp \
     pulsarprocess.cpp \
     writer.cpp \
-    pulsarworker.cpp
+    pulsarworker.cpp \
+    calculationpool.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -39,7 +40,8 @@ HEADERS  += mainwindow.h \
     pulsarprocess.h \
     writer.h \
     pulsar.h \
-    pulsarworker.h
+    pulsarworker.h \
+    calculationpool.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui

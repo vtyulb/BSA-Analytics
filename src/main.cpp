@@ -5,6 +5,7 @@
 #include <QMessageBox>
 #include <QProcess>
 #include <QVector>
+#include <QDir>
 #include <signal.h>
 
 namespace mainSpace {
@@ -23,23 +24,39 @@ int pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
         printf("\t-h --help  for this message\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
+        printf("\t--save-path /path/to/save\n");
+        printf("\t--threads <int> number of effective threads\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
         printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
         return 0;
     }
 
-    if (strcmp(argv[1], "--pulsar-search") == 0) {
-        QCoreApplication a(argc, argv);
-        a.setOrganizationDomain("bsa.vtyulb.ru");
-        a.setOrganizationName("vtyulb");
-        a.setApplicationName("BSA-Analytics");
+    QString savePath;
+    QString dataPath;
+    int threads = -1;
 
-        PulsarSearcher searcher(QString::fromUtf8(argv[2]));
-        searcher.start();
-        return a.exec();
-    }
+    for (int i = 1; i < argc; i++)
+        if (strcmp(argv[i], "--pulsar-search") == 0)
+            dataPath = QString::fromUtf8(argv[i + 1]);
+        else if (strcmp(argv[i], "--save-path") == 0)
+            savePath = QString::fromUtf8(argv[i + 1]);
+        else if (strcmp(argv[i], "--threads") == 0)
+            threads = QString::fromUtf8(argv[i + 1]).toInt();
 
-    return 0;
+    if (dataPath == "" || savePath == "")
+        return -1;
+
+    savePath = QDir(savePath).absolutePath();
+
+    QCoreApplication a(argc, argv);
+    a.setOrganizationDomain("bsa.vtyulb.ru");
+    a.setOrganizationName("vtyulb");
+    a.setApplicationName("BSA-Analytics");
+
+    PulsarSearcher searcher(dataPath, savePath, threads);
+    searcher.start();
+
+    return a.exec();
 }
 
 int main(int argc, char *argv[])

@@ -43,12 +43,14 @@ struct Pulsar {
         return StarTime::StarTime(data, firstPoint);
     }
 
-    void calculateAdditionalData(QVector<double> disp) {
+    void calculateAdditionalData(const QVector<double> &disp) {
         QVector<QVariant> d;
         for (double i = firstPoint; i < firstPoint + interval / data.oneStep; i += period)
             d.push_back(disp[i]);
 
-        additionalData = QVariant(d.toList()).toByteArray().toBase64();
+        QVariant res(d.toList());
+        res.convert(QVariant::ByteArray);
+        additionalData = res.toByteArray().toBase64();
     }
 };
 

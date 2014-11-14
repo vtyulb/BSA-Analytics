@@ -74,7 +74,7 @@ void PulsarProcess::run() {
         for (int j = categories - 1; j >= 0; j--)
             if (sz[j] < pulsars[i].snr) {
                 files[j]->write(pulsars[i].additionalData);
-                files[j]->write("\n");
+                files[j]->write(":");
                 break;
             }
 

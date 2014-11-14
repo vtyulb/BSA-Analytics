@@ -22,10 +22,12 @@ struct Pulsar {
     double period; // in seconds;
     double snr;
 
+    double noiseLevel;
+
     QString name; // file, not a pulsar :-)
     QByteArray additionalData;
     bool valid;
-
+    QTime nativeTime;
 
     QString print() {
         return QString("Pulsar in %1 module %2, ray %3, D%4, frstp %5 %6, period %7, snr %8").
@@ -47,6 +49,8 @@ struct Pulsar {
         QVector<QVariant> d;
         for (double i = firstPoint; i < firstPoint + interval / data.oneStep; i += period)
             d.push_back(disp[i]);
+
+        d.push_back(noiseLevel);
 
         QDataStream stream(&additionalData, QIODevice::WriteOnly);
         QVariant(d.toList()).save(stream);

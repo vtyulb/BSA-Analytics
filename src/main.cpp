@@ -1,5 +1,6 @@
 #include <mainwindow.h>
 #include <pulsarsearcher.h>
+#include <pulsarreader.h>
 #include <QApplication>
 #include <QCoreApplication>
 #include <QMessageBox>

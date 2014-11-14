@@ -73,6 +73,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                 pulsar.valid = true;
                 pulsar.snr = sum / noise;
                 pulsar.name = data.name;
+                pulsar.noiseLevel = noise;
             }
         }
 

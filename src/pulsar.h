@@ -51,7 +51,7 @@ struct Pulsar {
             double sum = 0;
             int n = 0;
             for (double i = firstPoint + offset; i < firstPoint + offset + interval / data.oneStep; i += period, n++)
-                sum += disp[i];
+                sum += disp[int(i)];
 
             d.push_back(sum / n);
         }

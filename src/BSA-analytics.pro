@@ -25,7 +25,8 @@ SOURCES += main.cpp\
     pulsarprocess.cpp \
     pulsarworker.cpp \
     calculationpool.cpp \
-    pulsarreader.cpp
+    pulsarreader.cpp \
+    pulsarlist.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -41,9 +42,11 @@ HEADERS  += mainwindow.h \
     pulsar.h \
     pulsarworker.h \
     calculationpool.h \
-    pulsarreader.h
+    pulsarreader.h \
+    pulsarlist.h
 
 FORMS    += mainwindow.ui \
-    customopendialog.ui
+    customopendialog.ui \
+    pulsarlist.ui
 
 win32:RC_FILE = icon.rc

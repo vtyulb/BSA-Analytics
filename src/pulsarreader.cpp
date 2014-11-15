@@ -1,17 +1,19 @@
 #include "pulsarreader.h"
+#include <pulsar.h>
 
 #include <QFile>
 #include <QVariant>
 #include <QList>
 #include <QDateTime>
 
-QVector<Pulsar> PulsarReader::ReadPulsarFile(QString name) {
+Pulsars PulsarReader::ReadPulsarFile(QString name) {
     QFile file(name);
     file.open(QIODevice::ReadOnly);
     file.readLine();
     file.readLine();
 
-    QVector<Pulsar> res;
+    Pulsars data = new QVector<Pulsar>;
+    QVector<Pulsar> &res = *data;
 
     while (!file.atEnd()) {
         QByteArray line = file.readLine();
@@ -32,8 +34,9 @@ QVector<Pulsar> PulsarReader::ReadPulsarFile(QString name) {
                 data->npoints = vars.size() - 1;
                 data->oneStep = res[i].period;
                 data->rays = 1;
-                data->time = QDateTime();
+                data->time = QDateTime(QDate(2000, 1, 1), res[i].nativeTime);
                 data->init();
+                data->releaseProtected = true;
 
                 res[i].noiseLevel = vars[vars.size() - 1].toDouble();
 
@@ -57,5 +60,5 @@ QVector<Pulsar> PulsarReader::ReadPulsarFile(QString name) {
         }
     }
 
-    return res;
+    return data;
 }

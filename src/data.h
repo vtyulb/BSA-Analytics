@@ -19,7 +19,12 @@ struct Data {
     double *fbands;
     double stairSize;
 
+    bool releaseProtected;
+
     void releaseData() {
+        if (releaseProtected)
+            return;
+
         for (int i = 0; i < modules; i++)
             for (int j = 0; j < channels; j++)
                 for (int k = 0; k < rays; k++)
@@ -38,6 +43,7 @@ struct Data {
 
     void init() {
         stairSize = 0;
+        releaseProtected = false;
         data = new float***[modules];
         fbands = new double[channels - 1];
         for (int j = 0; j < modules; j++) {

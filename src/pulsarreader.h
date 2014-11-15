@@ -7,7 +7,7 @@
 
 class PulsarReader {
     public:
-        static QVector<Pulsar> ReadPulsarFile(QString name);
+        static Pulsars ReadPulsarFile(QString name);
 };
 
 #endif // PULSARREADER_H

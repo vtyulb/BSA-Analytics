@@ -62,8 +62,6 @@ int pulsarEngine(int argc, char **argv) {
 
 int main(int argc, char *argv[])
 {
-    PulsarReader::ReadPulsarFile("/home/vlad/310714_01_N1_00.pnt-10-1000.pulsar");
-
     if (argc > 1)
         return pulsarEngine(argc, argv);
 

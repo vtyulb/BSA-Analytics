@@ -64,6 +64,7 @@
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_Binary"/>
     <addaction name="actionCustom_open"/>
+    <addaction name="actionPulsar_searcher"/>
     <addaction name="actionSave"/>
     <addaction name="actionPrint"/>
     <addaction name="actionExit"/>
@@ -183,6 +184,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionPulsar_searcher">
+   <property name="text">
+    <string>Pulsar searcher</string>
    </property>
   </action>
  </widget>

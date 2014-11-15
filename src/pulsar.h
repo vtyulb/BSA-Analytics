@@ -57,5 +57,7 @@ struct Pulsar {
     }
 };
 
+typedef QVector<Pulsar>* Pulsars;
+
 
 #endif // PULSAR_H

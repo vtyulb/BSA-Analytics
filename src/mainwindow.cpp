@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <customopendialog.h>
+#include <pulsarlist.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -18,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
     QObject::connect(ui->actionOpen_Binary, SIGNAL(triggered()), this, SLOT(openBinaryFile()));
     QObject::connect(ui->actionCustom_open, SIGNAL(triggered()), this, SLOT(customOpen()));
+    QObject::connect(ui->actionPulsar_searcher, SIGNAL(triggered()), this, SLOT(openPulsarFile()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
@@ -62,6 +64,16 @@ void MainWindow::openBinaryFile() {
     nativeOpenFile(path, 0, 0, QDateTime(), true);
 }
 
+void MainWindow::openPulsarFile() {
+    QString path = QFileDialog::getOpenFileName(this, "void", lastOpenPath, "Pulsar files (*.pulsar)");
+
+    if (path == "")
+        return;
+
+    PulsarList *list = new PulsarList(path, this);
+    QObject::connect(list, SIGNAL(switchData(Data&)), this, SLOT(regenerate(Data&)));
+}
+
 void MainWindow::decodeLastPath(QString path) {
     for (int i = path.length() - 1; i; i--)
         if (path[i] == '/' || path[i] == '\\') {
@@ -76,21 +88,24 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QD
     QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
     Data data = reader.readFile(fileName, skip, skipFirstRay, time, binary);
     statusBar()->showMessage("Done", 2000);
-    if (data.npoints) {
-        ui->label->hide();
-        delete drawer;
-        drawer = new Drawer(data, this);
-        ui->scrollAreaWidgetContents->layout()->addWidget(drawer);
+    if (data.npoints)
+        regenerate(data);
+}
 
-        QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
-        QObject::connect(ui->actionPrint, SIGNAL(triggered()), drawer->drawer, SLOT(print()));
+void MainWindow::regenerate(Data &data) {
+    ui->label->hide();
+    delete drawer;
+    drawer = new Drawer(data, this);
+    ui->scrollAreaWidgetContents->layout()->addWidget(drawer);
 
-        autoDraw(ui->actionAutoDraw->isChecked());
-        drawAxes(ui->actionAxes->isChecked());
-        drawNet(ui->actionNet->isChecked());
-        drawFast(ui->actionFast->isChecked());
-        drawLive(ui->actionLive->isChecked());
-    }
+    QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
+    QObject::connect(ui->actionPrint, SIGNAL(triggered()), drawer->drawer, SLOT(print()));
+
+    autoDraw(ui->actionAutoDraw->isChecked());
+    drawAxes(ui->actionAxes->isChecked());
+    drawNet(ui->actionNet->isChecked());
+    drawFast(ui->actionFast->isChecked());
+    drawLive(ui->actionLive->isChecked());
 }
 
 void MainWindow::readProgressChanged(double progress) {

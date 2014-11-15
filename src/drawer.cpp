@@ -191,6 +191,7 @@ void Drawer::draw() {
     drawer->allowDrawing = true;
     drawer->nativePaint();
 
+    /*
     static int one = 0;
     qDebug() << "debugging pulsar feauture enabled!!! Don't forget to delete" << one;
     if (one++ < 2)
@@ -198,7 +199,7 @@ void Drawer::draw() {
 
     PulsarProcess *p = new PulsarProcess("wrong name :-)", "wrong path", this);
     p->data = drawer->data;
-    p->start();
+    p->start();*/
 }
 
 void Drawer::moduleChanged() {

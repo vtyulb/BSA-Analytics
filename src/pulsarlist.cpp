@@ -1,6 +1,7 @@
 #include "pulsarlist.h"
 #include "ui_pulsarlist.h"
 #include <pulsarreader.h>
+#include <QDebug>
 
 PulsarList::PulsarList(QString fileName, QWidget *parent) :
     QWidget(NULL),
@@ -43,8 +44,7 @@ PulsarList::PulsarList(QString fileName, QWidget *parent) :
     show();
 }
 
-PulsarList::~PulsarList()
-{
+PulsarList::~PulsarList() {
     delete ui;
     delete pulsars;
 }

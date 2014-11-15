@@ -47,14 +47,16 @@ struct Pulsar {
 
     void calculateAdditionalData(const QVector<double> &disp) {
         QVector<QVariant> d;
-        for (int offset = 0; offset < period / data.oneStep * 2; offset++) {
+        /*for (int offset = 0; offset < period / data.oneStep * 2; offset++) {
             double sum = 0;
             int n = 0;
             for (double i = firstPoint + offset; i < firstPoint + offset + interval / data.oneStep; i += period, n++)
                 sum += disp[int(i)];
 
             d.push_back(sum / n);
-        }
+        }*/
+        for (int i = firstPoint; i < firstPoint + interval / data.oneStep; i++)
+            d.push_back(disp[i]);
 
         QDataStream stream(&additionalData, QIODevice::WriteOnly);
         stream << QVariant(d.toList());

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <QDebug>
 #include <QTimer>
+#include <QLinkedList>
 
 using std::min;
 
@@ -114,28 +115,31 @@ bool PulsarWorker::equalPulsars(Pulsar *a, Pulsar *b) {
 }
 
 QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
-    QList<Pulsar> l = pulsars.toList();
+    QLinkedList<Pulsar> l;
+    for (int i = 0; i < pulsars.size(); i++)
+        l.push_back(pulsars[i]);
+
     pulsars.clear();
 
-    for (QList<Pulsar>::Iterator i = l.begin(); i != l.end();)
+    for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end();)
         if (goodDoubles(INTERVAL / 2.0, (*i).period))
             i = l.erase(i);
         else
             i++;
 
-    for (QList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
-        for (QList<Pulsar>::Iterator j = i + 1; j != l.end(); j++)
+    for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
+        for (QLinkedList<Pulsar>::Iterator j = i + 1; j != l.end(); j++)
             if ((*i).valid && (*j).valid)
                 equalPulsars(&*i, &*j);
 
-    for (QList<Pulsar>::Iterator i = l.begin(); i != l.end();)
+    for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end();)
         if (!(*i).valid)
             i = l.erase(i);
         else
             i++;
 
 
-    for (QList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
+    for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
         pulsars.push_back(*i);
 
 

@@ -21,7 +21,7 @@ void PulsarWorker::run() {
     QTime t = QTime::currentTime();
     clearAverange();
     res = searchIn();
-    qDebug() << "process" << module << ray << D << "finished at" << QTime::currentTime().toString() << "total time: " << t.secsTo(QTime::currentTime()) << "s , found" << res.size() << "pulsars";
+    qDebug() << "process" << module << ray << D << "finished at" << QTime::currentTime().toString() << "total time: " << t.msecsTo(QTime::currentTime()) / 1000 << "s , found" << res.size() << "pulsars";
 }
 
 QVector<Pulsar> PulsarWorker::searchIn() {

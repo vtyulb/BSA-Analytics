@@ -54,7 +54,6 @@ struct Pulsar {
 
         QDataStream stream(&additionalData, QIODevice::WriteOnly);
         QVariant(d.toList()).save(stream);
-        additionalData = additionalData.toBase64();
     }
 };
 

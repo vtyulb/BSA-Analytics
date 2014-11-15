@@ -16,16 +16,12 @@ QVector<Pulsar> PulsarReader::ReadPulsarFile(QString name) {
     while (!file.atEnd()) {
         QByteArray line = file.readLine();
         if (line == "additional data:\n") {
-            line = file.readLine();
-            QList<QByteArray> list = line.split(':');
-            list.removeAll(QByteArray());
-            QVector<QByteArray> r = list.toVector();
-            for (int i = 0; i < r.size(); i++) {
-                r[i] = QByteArray::fromBase64(r[i]);
-                QVariant v;
-                QDataStream stream(&r[i], QIODevice::ReadOnly);
-                v.load(stream);
+            line = file.readAll();
+            QDataStream stream(&line, QIODevice::ReadOnly);
 
+            for (int i = 0; i < res.size(); i++) {
+                QVariant v;
+                v.load(stream);
 
                 Data *data = &res[i].data;
                 QVector<QVariant> vars = v.toList().toVector();

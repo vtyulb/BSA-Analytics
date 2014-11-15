@@ -21,7 +21,7 @@ QVector<Pulsar> PulsarReader::ReadPulsarFile(QString name) {
 
             for (int i = 0; i < res.size(); i++) {
                 QVariant v;
-                v.load(stream);
+                stream >> v;
 
                 Data *data = &res[i].data;
                 QVector<QVariant> vars = v.toList().toVector();

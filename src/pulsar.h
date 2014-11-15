@@ -53,7 +53,7 @@ struct Pulsar {
         d.push_back(noiseLevel);
 
         QDataStream stream(&additionalData, QIODevice::WriteOnly);
-        QVariant(d.toList()).save(stream);
+        stream << QVariant(d.toList());
     }
 };
 

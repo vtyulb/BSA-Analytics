@@ -22,7 +22,7 @@ class PulsarList : public QWidget
         Pulsars pulsars;
 
     private slots:
-        void selectionChanged(int, int, int, int);
+        void selectionChanged();
 
     signals:
         void switchData(Data &data);

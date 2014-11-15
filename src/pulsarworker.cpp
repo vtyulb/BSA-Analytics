@@ -27,21 +27,8 @@ void PulsarWorker::run() {
 QVector<Pulsar> PulsarWorker::searchIn() {
     QVector<Pulsar> pulsars;
     QVector<double> res = applyDispersion();
-    QVector<double> noises;
 
-    for (int i = 0; i < res.size() - interval / data.oneStep; i++) {
-        double noise = 0;
-        for (int j = 0; j < interval / data.oneStep; j++)
-            noise += res[i + j] * res[i + j];
-
-        noise /= (interval / data.oneStep);
-        noise = pow(noise, 0.5);
-        noises.push_back(noise);
-    }
-
-    std::sort(noises.begin(), noises.end());
-
-    double noise = noises[noises.size() / 2];
+    double noise = calculateNoise(res);
 
     for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += PERIOD_STEP) {
         const int duration = interval / data.oneStep / period;
@@ -177,12 +164,7 @@ QVector<double> PulsarWorker::applyDispersion() {
         res[i] /= (data.channels - 1);
 
 
-    double noise = 0;
-    for (int i = 0; i < res.size(); i++)
-        noise += res[i] * res[i];
-
-    noise /= res.size();
-    noise = pow(noise, 0.5);
+    double noise = calculateNoise(res);
 
     for (int i = 0; i < res.size(); i++)
         if (res[i] >  noise * 5)
@@ -237,4 +219,21 @@ void PulsarWorker::clearAverange() {
             }
         }
     }
+}
+
+double PulsarWorker::calculateNoise(QVector<double> &res) {
+    QVector<double> noises;
+
+    for (int i = 0; i < res.size() - interval / data.oneStep; i++) {
+        double noise = 0;
+        for (int j = 0; j < interval / data.oneStep; j++)
+            noise += res[i + j] * res[i + j];
+
+        noise /= (interval / data.oneStep);
+        noise = pow(noise, 0.5);
+        noises.push_back(noise);
+    }
+
+    std::sort(noises.begin(), noises.end());
+    return noises[noises.size() / 2];
 }

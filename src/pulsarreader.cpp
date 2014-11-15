@@ -5,6 +5,7 @@
 #include <QVariant>
 #include <QList>
 #include <QDateTime>
+#include <QTextStream>
 
 Pulsars PulsarReader::ReadPulsarFile(QString name) {
     QFile file(name);
@@ -28,6 +29,8 @@ Pulsars PulsarReader::ReadPulsarFile(QString name) {
                 Data *data = &res[i].data;
                 QVector<QVariant> vars = v.toList().toVector();
 
+                res[i].noiseLevel = vars[vars.size() - 1].toDouble();
+
                 data->channels = 1;
                 data->delta_lucha = 0.89;
                 data->modules = 1;
@@ -37,8 +40,7 @@ Pulsars PulsarReader::ReadPulsarFile(QString name) {
                 data->time = QDateTime(QDate(2000, 1, 1), res[i].nativeTime);
                 data->init();
                 data->releaseProtected = true;
-
-                res[i].noiseLevel = vars[vars.size() - 1].toDouble();
+                data->sigma = res[i].noiseLevel;
 
                 for (int i = 0; i < vars.size() - 1; i++)
                     data->data[0][0][0][i] = vars[i].toDouble();
@@ -46,7 +48,9 @@ Pulsars PulsarReader::ReadPulsarFile(QString name) {
         } else {
             int h, m, s, module, ray, dispersion;
             double period, snr;
-            sscanf(line.constData(), "%d:%d:%d %d %d %d %lf %lf", &h, &m, &s, &module, &ray, &dispersion, &period, &snr);
+            QTextStream stream(line.data(), QIODevice::ReadOnly);
+            char symb;
+            stream >> h >> symb >> m >> symb >> s >> module >> ray >> dispersion >> period >> snr;
 
             Pulsar pulsar;
             pulsar.dispersion = dispersion;

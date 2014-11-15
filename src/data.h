@@ -18,6 +18,7 @@ struct Data {
     double delta_lucha;
     double *fbands;
     double stairSize;
+    double sigma;
 
     bool releaseProtected;
 
@@ -42,6 +43,7 @@ struct Data {
     }
 
     void init() {
+        sigma = -1;
         stairSize = 0;
         releaseProtected = false;
         data = new float***[modules];

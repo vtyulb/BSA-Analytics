@@ -15,7 +15,7 @@ PulsarList::PulsarList(QString fileName, QWidget *parent) :
     ui->setupUi(this);
 
     QObject::connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
-    QObject::connect(ui->tableWidget, SIGNAL(currentCellChanged(int,int,int,int)), this, SLOT(selectionChanged(int, int, int, int)));
+    QObject::connect(ui->tableWidget->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
 
     ui->tableWidget->setRowCount(pulsars->size());
     ui->tableWidget->setColumnCount(6);
@@ -33,10 +33,12 @@ PulsarList::PulsarList(QString fileName, QWidget *parent) :
 
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     for (int i = 0; i < ui->tableWidget->columnCount(); i++)
-        ui->tableWidget->setColumnWidth(i, 65);
+        ui->tableWidget->setColumnWidth(i, 68);
 
     ui->tableWidget->setColumnWidth(2, 30);
-
+    ui->tableWidget->setColumnWidth(3, 80);
+    ui->tableWidget->setColumnWidth(5, 50);
+    ui->tableWidget->selectRow(0);
 
     show();
 }
@@ -47,6 +49,6 @@ PulsarList::~PulsarList()
     delete pulsars;
 }
 
-void PulsarList::selectionChanged(int x1, int y1, int x2, int y2) {
-    emit switchData((*pulsars)[y1].data);
+void PulsarList::selectionChanged() {
+    emit switchData((*pulsars)[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()].data);
 }

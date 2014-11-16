@@ -45,7 +45,7 @@ int pulsarEngine(int argc, char **argv) {
             savePath = QString::fromUtf8(argv[i + 1]);
         else if (strcmp(argv[i], "--threads") == 0)
             threads = QString::fromUtf8(argv[i + 1]).toInt();
-        else if (strcmp(argv[i], "--intellectual-filter"))
+        else if (strcmp(argv[i], "--intellectual-filter") == 0)
             Settings::settings()->setIntellectualFilter(true);
 
     if (dataPath == "" || savePath == "")

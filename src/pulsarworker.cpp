@@ -21,7 +21,7 @@ void PulsarWorker::run() {
     QTime t = QTime::currentTime();
     clearAverange();
     res = searchIn();
-    qDebug() << "process" << module << ray << D << "finished at" << QTime::currentTime().toString() << "total time: " << t.msecsTo(QTime::currentTime()) / 1000 << "s , found" << res.size() << "pulsars";
+    qDebug() << "process" << module << ray << D << "finished at" << QTime::currentTime().toString() << "total time: " << t.msecsTo(QTime::currentTime()) / 1000.0 << "s , found" << res.size() << "pulsars";
 }
 
 QVector<Pulsar> PulsarWorker::searchIn() {
@@ -152,7 +152,7 @@ QVector<double> PulsarWorker::applyDispersion() {
 
     for (int i = 0; i < data.npoints - mxd; i++)
         for (int j = 0; j < data.channels - 1; j++) {
-            int dt = 4.15 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * j / data.oneStep; // difference
+            int dt = int(4.15 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * j / data.oneStep + 0.5); // difference
             res[i] += data.data[module][j][ray][i - dt];
         }
 

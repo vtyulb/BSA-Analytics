@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QLinkedList>
+#include <settings.h>
 
 using std::min;
 using std::max;
@@ -66,7 +67,21 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             }
         }
 
-        if (pulsar.snr > 5)
+        int good = 0;
+        for (int i = 0; i < period / data.oneStep; i++) {
+            double sum = 0;
+            double j = i;
+            for (int k = 0; k < duration; j += period, k++)
+                sum += res[int(j)];
+
+            sum /= duration;
+            sum *= sqrt(duration);
+
+            if (sum / noise < 2)
+                good++;
+        }
+
+        if (pulsar.snr > 5 && (!Settings::settings()->intellectualFilter() || (good > (period / data.oneStep * 3 / 4))))
             pulsars.push_back(pulsar);
     }
 

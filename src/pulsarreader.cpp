@@ -50,11 +50,11 @@ Pulsars PulsarReader::ReadPulsarFile(QString name) {
                     data->data[0][0][0][i] = vars[i].toDouble();
             }
         } else {
-            int h, m, s, module, ray, dispersion, filtered;
+            int h, m, s, module, ray, dispersion;
             double period, snr;
             QTextStream stream(line.data(), QIODevice::ReadOnly);
             char symb;
-            stream >> h >> symb >> m >> symb >> s >> module >> ray >> dispersion >> period >> snr >> filtered;
+            stream >> h >> symb >> m >> symb >> s >> module >> ray >> dispersion >> period >> snr;
 
             Pulsar pulsar;
             pulsar.dispersion = dispersion;

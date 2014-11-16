@@ -35,7 +35,8 @@ void PulsarProcess::run() {
 
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = i + 1; j < pulsars.size(); j++)
-            if (pulsars[i].firstPoint > pulsars[j].firstPoint) {
+            if ((pulsars[i].filtered && !pulsars[j].filtered) || ((pulsars[i].filtered == pulsars[j].filtered)
+                                                                  && (pulsars[i].firstPoint > pulsars[j].firstPoint))) {
                 Pulsar p = pulsars[i];
                 pulsars[i] = pulsars[j];
                 pulsars[j] = p;
@@ -43,7 +44,7 @@ void PulsarProcess::run() {
 
     const int categories = 3;
     const int sz[categories + 1] = {5, 7, 10, 1000};
-    QByteArray header = QString("file: %1\nStart time\tmodule\tray\tdispersion\tperiod\tsnr\n").arg(data.name).toUtf8();
+    QByteArray header = QString("file: %1\nStart time\tmodule\tray\tdispersion\tperiod\tsnr\tfiltered\n").arg(data.name).toUtf8();
 
     QFile *files[categories];
 
@@ -56,13 +57,14 @@ void PulsarProcess::run() {
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = categories - 1; j >= 0; j--)
             if (sz[j] < pulsars[i].snr) {
-                QByteArray d = QString("%1\t%2\t%3\t%4\t%5\t%6\n").
+                QByteArray d = QString("%1\t%2\t%3\t%4\t%5\t%6\t%7\n").
                         arg(pulsars[i].time()).
                         arg(pulsars[i].module + 1).
                         arg(pulsars[i].ray + 1).
                         arg(pulsars[i].dispersion).
                         arg(QString::number(pulsars[i].period, 'f', 3)).
                         arg(QString::number(pulsars[i].snr, 'f', 1)).
+                        arg(QString::number(pulsars[i].filtered)).
                         toUtf8();
 
                 files[j]->write(d);

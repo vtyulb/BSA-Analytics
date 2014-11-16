@@ -64,6 +64,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                 pulsar.snr = sum / noise;
                 pulsar.name = data.name;
                 pulsar.noiseLevel = noise;
+                pulsar.filtered = false;
             }
         }
 
@@ -83,8 +84,12 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             }
         }
 
-        if (pulsar.snr > 5 && (!Settings::settings()->intellectualFilter() || (good < 3)))
+        if (pulsar.snr > 5) {
+            if (Settings::settings()->intellectualFilter() && (good > 2))
+                pulsar.filtered = true;
+
             pulsars.push_back(pulsar);
+        }
     }
 
     pulsars = removeDuplicates(pulsars);

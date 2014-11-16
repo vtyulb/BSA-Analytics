@@ -21,6 +21,7 @@ struct Pulsar {
     int firstPoint;
     double period; // in seconds;
     double snr;
+    bool filtered;
 
     double noiseLevel;
 

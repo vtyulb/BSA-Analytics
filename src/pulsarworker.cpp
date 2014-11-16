@@ -78,12 +78,12 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                 sum /= duration;
                 sum *= sqrt(duration);
 
-                if (sum / noise < 0.5)
+                if (sum / noise > 5)
                     good++;
             }
         }
 
-        if (pulsar.snr > 5 && (!Settings::settings()->intellectualFilter() || (good > (period * 3 / 4))))
+        if (pulsar.snr > 5 && (!Settings::settings()->intellectualFilter() || (good < 3)))
             pulsars.push_back(pulsar);
     }
 

@@ -6,6 +6,7 @@
 #include <QLinkedList>
 
 using std::min;
+using std::max;
 
 PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
     QObject(),
@@ -154,7 +155,7 @@ QVector<double> PulsarWorker::applyDispersion() {
     for (int i = 0; i < data.npoints - mxd; i++)
         for (int j = 0; j < data.channels - 1; j++) {
             int dt = int(4.15 / 2.5 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * j / data.oneStep + 0.5); // difference
-            res[i] += data.data[module][j][ray][i - dt];
+            res[i] += data.data[module][j][ray][max(i + dt, 0)];
         }
 
     for (int i = data.npoints - mxd; i < data.npoints; i++)

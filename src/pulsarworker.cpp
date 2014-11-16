@@ -78,7 +78,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                 sum /= duration;
                 sum *= sqrt(duration);
 
-                if (sum / noise > 5)
+                if (sum / noise > 2)
                     good++;
             }
         }

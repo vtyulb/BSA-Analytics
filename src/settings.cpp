@@ -1,7 +1,7 @@
 #include "settings.h"
 
 Settings::Settings() {
-    filter = false;
+    filter = true;
 }
 
 Settings *Settings::settings() {

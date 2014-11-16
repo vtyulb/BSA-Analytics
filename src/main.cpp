@@ -28,7 +28,7 @@ int pulsarEngine(int argc, char **argv) {
         printf("\t--pulsar-search /path/to/daily/data\n");
         printf("\t--save-path /path/to/save\n");
         printf("\t--threads <int> number of effective threads\n");
-        printf("\t--intellectual-filter for filter\n");
+        printf("\t--no-filter for disabling filter\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
         printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
         return 0;
@@ -45,8 +45,8 @@ int pulsarEngine(int argc, char **argv) {
             savePath = QString::fromUtf8(argv[i + 1]);
         else if (strcmp(argv[i], "--threads") == 0)
             threads = QString::fromUtf8(argv[i + 1]).toInt();
-        else if (strcmp(argv[i], "--intellectual-filter") == 0)
-            Settings::settings()->setIntellectualFilter(true);
+        else if (strcmp(argv[i], "--no-filter") == 0)
+            Settings::settings()->setIntellectualFilter(false);
 
     if (dataPath == "" || savePath == "")
         return -1;

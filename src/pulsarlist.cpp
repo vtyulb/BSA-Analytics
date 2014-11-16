@@ -19,9 +19,9 @@ PulsarList::PulsarList(QString fileName, QWidget *parent) :
     QObject::connect(ui->tableWidget->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
 
     ui->tableWidget->setRowCount(pulsars->size());
-    ui->tableWidget->setColumnCount(7);
+    ui->tableWidget->setColumnCount(6);
     QStringList header;
-    header << "time" << "module" << "ray" << "dispersion" << "period" << "snr" << "f";
+    header << "time" << "module" << "ray" << "dispersion" << "period" << "snr";
     ui->tableWidget->setHorizontalHeaderLabels(header);
     for (int i = 0; i < pulsars->size(); i++) {
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(pulsars->at(i).nativeTime.toString("hh:mm:ss")));
@@ -30,7 +30,10 @@ PulsarList::PulsarList(QString fileName, QWidget *parent) :
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(pulsars->at(i).dispersion)));
         ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(pulsars->at(i).period, 'f', 3)));
         ui->tableWidget->setItem(i, 5, new QTableWidgetItem(QString::number(pulsars->at(i).snr, 'f', 1)));
-        ui->tableWidget->setItem(i, 6, new QTableWidgetItem(QString::number(pulsars->at(i).filtered)));
+
+        if (pulsars->at(i).filtered)
+            for (int j = 0; j < ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(i, j)->setBackgroundColor(QColor("lightgray"));
     }
 
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -40,7 +43,6 @@ PulsarList::PulsarList(QString fileName, QWidget *parent) :
     ui->tableWidget->setColumnWidth(2, 30);
     ui->tableWidget->setColumnWidth(3, 80);
     ui->tableWidget->setColumnWidth(5, 50);
-    ui->tableWidget->setColumnWidth(6, 20);
     ui->tableWidget->selectRow(0);
 
     show();

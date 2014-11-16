@@ -16,9 +16,13 @@ Pulsars PulsarReader::ReadPulsarFile(QString name) {
     Pulsars data = new QVector<Pulsar>;
     QVector<Pulsar> &res = *data;
 
+    bool filtered = false;
+
     while (!file.atEnd()) {
         QByteArray line = file.readLine();
-        if (line == "additional data:\n") {
+        if (line == "filtered next\n") {
+            filtered = true;
+        } else if (line == "additional data:\n") {
             line = file.readAll();
             QDataStream stream(&line, QIODevice::ReadOnly);
 

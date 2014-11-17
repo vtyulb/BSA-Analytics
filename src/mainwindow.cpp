@@ -70,8 +70,11 @@ void MainWindow::openPulsarFile() {
     if (path == "")
         return;
 
+    decodeLastPath(path);
+
     PulsarList *list = new PulsarList(path, this);
     QObject::connect(list, SIGNAL(switchData(Data&)), this, SLOT(regenerate(Data&)));
+    QObject::connect(this, SIGNAL(destroyed()), list, SLOT(deleteLater()));
 }
 
 void MainWindow::decodeLastPath(QString path) {

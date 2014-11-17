@@ -2,6 +2,8 @@
 #include "ui_pulsarlist.h"
 #include <pulsarreader.h>
 #include <QDebug>
+#include <QTimer>
+#include <QSettings>
 
 PulsarList::PulsarList(QString fileName, QWidget *parent) :
     QWidget(NULL),
@@ -45,7 +47,14 @@ PulsarList::PulsarList(QString fileName, QWidget *parent) :
     ui->tableWidget->setColumnWidth(5, 50);
     ui->tableWidget->selectRow(0);
 
+    QTimer::singleShot(200, this, SLOT(selectionChanged()));
+
+    restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
     show();
+}
+
+void PulsarList::closeEvent(QCloseEvent *) {
+    QSettings().setValue("pulsar-list-geometry", saveGeometry());
 }
 
 PulsarList::~PulsarList() {

@@ -21,6 +21,8 @@ class PulsarList : public QWidget
         Ui::PulsarList *ui;
         Pulsars pulsars;
 
+        void closeEvent(QCloseEvent*);
+
     private slots:
         void selectionChanged();
 

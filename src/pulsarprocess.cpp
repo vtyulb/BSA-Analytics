@@ -29,9 +29,12 @@ void PulsarProcess::run() {
 
     pool->waitForDone();
     QVector<Pulsar> pulsars;
-    for (int i = 0; i < workers.size(); i++)
+    for (int i = 0; i < workers.size(); i++) {
         for (int j = 0; j < workers[i]->res.size(); j++)
             pulsars.push_back(workers[i]->res[j]);
+
+        delete workers[i];
+    }
 
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = i + 1; j < pulsars.size(); j++)
@@ -90,4 +93,6 @@ void PulsarProcess::run() {
 
     for (int i = 0; i < categories; i++)
         files[i]->close();
+
+    data.releaseData();
 }

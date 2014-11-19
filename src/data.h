@@ -47,7 +47,7 @@ struct Data {
         stairSize = 0;
         releaseProtected = false;
         data = new float***[modules];
-        fbands = new double[channels - 1];
+        fbands = new double[channels];
         for (int j = 0; j < modules; j++) {
             data[j] = new float**[channels];
             for (int i = 0; i < channels; i++) {

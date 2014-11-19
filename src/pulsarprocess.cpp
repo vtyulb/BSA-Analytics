@@ -5,6 +5,7 @@
 
 #include <QThreadPool>
 #include <QFile>
+#include <QDir>
 
 PulsarProcess::PulsarProcess(QString file, QString savePath, QObject *parent):
     QThread(parent),
@@ -62,6 +63,7 @@ void PulsarProcess::run() {
     for (int i = 0; i < categories; i++)
         filtered[i] = false;
 
+    QDir().mkdir(savePath);
     for (int i = 0; i < categories; i++) {
         files[i] = new QFile(savePath + QString("%1-%2-%3.pulsar").arg(data.name).arg(sz[i]).arg(sz[i + 1]));
         files[i]->open(QIODevice::WriteOnly);

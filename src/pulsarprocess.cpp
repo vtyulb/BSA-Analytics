@@ -28,11 +28,12 @@ void PulsarProcess::run() {
             }
 
     while (!pool->waitForDone(30000)) {
+        bool finished = true;
         for (int i = 0; i < workers.size(); i++)
-            if (!workers[i]->finished)
-                continue;
+            finished &= workers[i]->finished;
 
-        break;
+        if (finished)
+            break;
     }
 
     QVector<Pulsar> pulsars;

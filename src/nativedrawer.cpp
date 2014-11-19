@@ -15,8 +15,8 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     drawNet(false),
     channel(0),
     module(0),
-    art(new QImage(100, 100, QImage::Format_ARGB32)),
     data(data),
+    art(new QImage(100, 100, QImage::Format_ARGB32)),
     mousePressed(false)
 {
     for (int i = 0; i < data.rays; i++)

@@ -12,11 +12,11 @@ using std::max;
 PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
     QObject(),
     QRunnable(),
+    finished(false),
     data(data),
     module(module),
     ray(ray),
-    D(D),
-    finished(false)
+    D(D)
 {
 }
 

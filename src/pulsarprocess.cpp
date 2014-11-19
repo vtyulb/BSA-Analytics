@@ -9,8 +9,8 @@
 
 PulsarProcess::PulsarProcess(QString file, QString savePath, QObject *parent):
     QThread(parent),
-    file(file),
-    savePath(savePath)
+    savePath(savePath),
+    file(file)
 {
     Reader reader;
     data = reader.readBinaryFile(file);

@@ -16,6 +16,9 @@ namespace mainSpace {
 }
 
 void restart(int signal = 0) {
+    if (signal == SIGTERM)
+        exit(0); // to avoid warnings
+
     qDebug() << "restarting";
     QMessageBox::about(mainSpace::w, "Critical error", "Wrong file format or any other critical error...");
     QProcess::startDetached(mainSpace::program);

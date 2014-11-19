@@ -6,11 +6,16 @@ class Settings {
         Settings();
 
         static Settings *settings();
+
         bool intellectualFilter();
         void setIntellectualFilter(bool);
 
+        int skipCount();
+        void setSkipCount(int);
+
     private:
         bool filter;
+        int _skipCount;
 
 };
 

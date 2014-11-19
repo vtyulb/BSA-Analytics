@@ -101,8 +101,10 @@ void PulsarProcess::run() {
                 break;
             }
 
-    for (int i = 0; i < categories; i++)
+    for (int i = 0; i < categories; i++) {
         files[i]->close();
+        delete files[i];
+    }
 
     data.releaseData();
 }

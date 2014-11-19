@@ -15,7 +15,8 @@ PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
     data(data),
     module(module),
     ray(ray),
-    D(D)
+    D(D),
+    finished(false)
 {
 }
 
@@ -23,6 +24,7 @@ void PulsarWorker::run() {
     QTime t = QTime::currentTime();
     clearAverange();
     res = searchIn();
+    finished = true;
     qDebug() << "process" << module << ray << D << "finished at" << QTime::currentTime().toString() << "total time: " << t.msecsTo(QTime::currentTime()) / 1000.0 << "s , found" << res.size() << "pulsars";
 }
 

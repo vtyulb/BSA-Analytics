@@ -14,6 +14,7 @@ public:
     ~PulsarWorker() {};
 
     QVector<Pulsar> res;
+    bool finished;
     void run();
 
 private:

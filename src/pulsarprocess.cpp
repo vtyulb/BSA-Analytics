@@ -27,7 +27,14 @@ void PulsarProcess::run() {
                 pool->start(workers[workers.size() - 1]);
             }
 
-    pool->waitForDone();
+    while (!pool->waitForDone(30000)) {
+        for (int i = 0; i < workers.size(); i++)
+            if (!workers[i]->finished)
+                continue;
+
+        break;
+    }
+
     QVector<Pulsar> pulsars;
     for (int i = 0; i < workers.size(); i++) {
         for (int j = 0; j < workers[i]->res.size(); j++)

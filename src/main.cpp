@@ -7,8 +7,14 @@
 #include <QProcess>
 #include <QVector>
 #include <QDir>
+
 #include <signal.h>
 #include <settings.h>
+
+#include <sys/unistd.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <execinfo.h>
 
 namespace mainSpace {
     MainWindow *w;
@@ -23,6 +29,16 @@ void restart(int signal = 0) {
     QMessageBox::about(mainSpace::w, "Critical error", "Wrong file format or any other critical error...");
     QProcess::startDetached(mainSpace::program);
     exit(0);
+}
+
+void catchSigSegv(int signal) {
+    void *callstack[128];
+    int frames = backtrace(callstack, 128);
+    char **strs = backtrace_symbols(callstack, frames);
+    for (int i = 0; i < frames; i++)
+        fprintf(stderr, "%d: %s\n", i, strs[i]);
+
+    fprintf(stderr, "dead end\n");
 }
 
 int pulsarEngine(int argc, char **argv) {
@@ -66,6 +82,8 @@ int pulsarEngine(int argc, char **argv) {
     a.setOrganizationDomain("bsa.vtyulb.ru");
     a.setOrganizationName("vtyulb");
     a.setApplicationName("BSA-Analytics");
+
+    signal(SIGSEGV, catchSigSegv);
 
     PulsarSearcher searcher(dataPath, savePath, threads);
     searcher.start();

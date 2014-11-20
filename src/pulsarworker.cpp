@@ -71,7 +71,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         }
 
         int good = 0;
-        if (pulsar.snr > 5 && Settings::settings()->intellectualFilter()) {
+        if (pulsar.snr > CATEGORIES_SIZES[0] && Settings::settings()->intellectualFilter()) {
             for (int i = pulsar.firstPoint; i < int(pulsar.firstPoint + period); i++) {
                 double sum = 0;
                 double j = i;
@@ -86,7 +86,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             }
         }
 
-        if (pulsar.snr > 5) {
+        if (pulsar.snr > CATEGORIES_SIZES[0]) {
             if (Settings::settings()->intellectualFilter() && (good > 2))
                 pulsar.filtered = true;
 

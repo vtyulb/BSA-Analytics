@@ -12,6 +12,8 @@ const double MINIMUM_PERIOD = 0.5;
 const double MAXIMUM_PERIOD = 10;
 const double PERIOD_STEP = 0.01;
 const int interval = 180;
+const int CATEGORIES = 3;
+const int CATEGORIES_SIZES[CATEGORIES + 1] = {5, 7, 10, 1000};
 
 struct Pulsar {
     Data data;

@@ -33,6 +33,7 @@ int pulsarEngine(int argc, char **argv) {
         printf("\t--threads <int> number of effective threads\n");
         printf("\t--skip <int> for skipping first N files\n");
         printf("\t--no-filter for disabling filter\n");
+        printf("\t--sub-zero for output pulsars with snr 2-5 (only good)\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
         printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
         return 0;
@@ -53,6 +54,8 @@ int pulsarEngine(int argc, char **argv) {
             Settings::settings()->setIntellectualFilter(false);
         else if (strcmp(argv[i], "--skip") == 0)
             Settings::settings()->setSkipCount(QString(argv[i + 1]).toInt());
+        else if (strcmp(argv[i], "--sub-zero") == 0)
+            Settings::settings()->setSubZero(true);
 
     if (dataPath == "" || savePath == "")
         return -1;

@@ -28,3 +28,12 @@ int Settings::skipCount() {
     else
         return _skipCount;
 }
+
+void Settings::setSubZero(bool b) {
+    _subZero = b;
+}
+
+
+bool Settings::subZero() {
+    return _subZero;
+}

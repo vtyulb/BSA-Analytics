@@ -8,14 +8,17 @@ class Settings {
         static Settings *settings();
 
         bool intellectualFilter();
-        void setIntellectualFilter(bool);
-
+        bool subZero();
         int skipCount();
+
         void setSkipCount(int);
+        void setSubZero(bool);
+        void setIntellectualFilter(bool);
 
     private:
         bool filter;
         int _skipCount;
+        bool _subZero;
 
 };
 

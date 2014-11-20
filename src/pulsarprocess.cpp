@@ -2,6 +2,7 @@
 #include <math.h>
 #include <pulsarworker.h>
 #include <calculationpool.h>
+#include <settings.h>
 
 #include <QThreadPool>
 #include <QFile>
@@ -54,25 +55,23 @@ void PulsarProcess::run() {
                 pulsars[j] = p;
             }
 
-    const int categories = 3;
-    const int sz[categories + 1] = {5, 7, 10, 1000};
     QByteArray header = QString("file: %1\nStart time\tmodule\tray\tdispersion\tperiod\tsnr\n").arg(data.name).toUtf8();
 
-    QFile *files[categories];
-    bool filtered[categories];
-    for (int i = 0; i < categories; i++)
+    QFile *files[CATEGORIES];
+    bool filtered[CATEGORIES];
+    for (int i = 0; i < CATEGORIES; i++)
         filtered[i] = false;
 
     QDir().mkdir(savePath);
-    for (int i = 0; i < categories; i++) {
-        files[i] = new QFile(savePath + QString("%1-%2-%3.pulsar").arg(data.name).arg(sz[i]).arg(sz[i + 1]));
+    for (int i = 0; i < CATEGORIES; i++) {
+        files[i] = new QFile(savePath + QString("%1-%2-%3.pulsar").arg(data.name).arg(CATEGORIES_SIZES[i]).arg(CATEGORIES_SIZES[i + 1]));
         files[i]->open(QIODevice::WriteOnly);
         files[i]->write(header);
     }
 
     for (int i = 0; i < pulsars.size(); i++)
-        for (int j = categories - 1; j >= 0; j--)
-            if (sz[j] < pulsars[i].snr) {
+        for (int j = CATEGORIES - 1; j >= 0; j--)
+            if (CATEGORIES_SIZES[j] < pulsars[i].snr) {
                 if (!filtered[j] && pulsars[i].filtered) {
                     filtered[j] = true;
                     files[j]->write(QByteArray("filtered next\n"));
@@ -91,17 +90,17 @@ void PulsarProcess::run() {
                 break;
             }
 
-    for (int i = 0; i < categories; i++)
+    for (int i = 0; i < CATEGORIES; i++)
         files[i]->write("additional data:\n");
 
     for (int i = 0; i < pulsars.size(); i++)
-        for (int j = categories - 1; j >= 0; j--)
-            if (sz[j] < pulsars[i].snr) {
+        for (int j = CATEGORIES - 1; j >= 0; j--)
+            if (CATEGORIES_SIZES[j] < pulsars[i].snr) {
                 files[j]->write(pulsars[i].additionalData);
                 break;
             }
 
-    for (int i = 0; i < categories; i++) {
+    for (int i = 0; i < CATEGORIES; i++) {
         files[i]->close();
         delete files[i];
     }

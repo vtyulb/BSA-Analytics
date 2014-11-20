@@ -46,6 +46,8 @@ void PulsarProcess::run() {
         delete workers[i];
     }
 
+    qDebug() << "workers deleted";
+
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = i + 1; j < pulsars.size(); j++)
             if ((pulsars[i].filtered && !pulsars[j].filtered) || ((pulsars[i].filtered == pulsars[j].filtered)
@@ -105,5 +107,8 @@ void PulsarProcess::run() {
         delete files[i];
     }
 
+    qDebug() << "files deleted";
+
     data.releaseData();
+    qDebug() << "data released";
 }

@@ -26,12 +26,15 @@ void PulsarSearcher::start() {
 }
 
 void PulsarSearcher::checkIfCalculated() {
+    qDebug() << "process finished";
     for (int i = 0; i < workers.size(); i++)
         if (workers[i]->isFinished()) {
             delete workers[i];
             workers.remove(i);
             i--;
         }
+
+    qDebug() << "process cleared";
 
     if (workers.size() == 0)
         exit(0);

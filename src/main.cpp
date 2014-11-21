@@ -39,6 +39,7 @@ void catchSigSegv(int signal) {
         fprintf(stderr, "%d: %s\n", i, strs[i]);
 
     fprintf(stderr, "dead end\n");
+    exit(2);
 }
 
 int pulsarEngine(int argc, char **argv) {

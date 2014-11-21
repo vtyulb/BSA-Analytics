@@ -12,6 +12,7 @@ class PulsarProcess : public QThread
     Q_OBJECT
 public:
     explicit PulsarProcess(QString file, QString savePath, QObject *parent = 0);
+    ~PulsarProcess();
 
     Data data;
 

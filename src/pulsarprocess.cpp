@@ -17,6 +17,11 @@ PulsarProcess::PulsarProcess(QString file, QString savePath, QObject *parent):
     data = reader.readBinaryFile(file);
 }
 
+PulsarProcess::~PulsarProcess() {
+    data.releaseData();
+    qDebug() << "data released";
+}
+
 void PulsarProcess::run() {
     QVector<PulsarWorker*> workers;
     QThreadPool *pool = CalculationPool::pool();
@@ -108,7 +113,4 @@ void PulsarProcess::run() {
     }
 
     qDebug() << "files deleted";
-
-    data.releaseData();
-    qDebug() << "data released";
 }

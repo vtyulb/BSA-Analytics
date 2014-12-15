@@ -50,7 +50,7 @@ struct Pulsar {
 
     void calculateAdditionalData(const QVector<double> &disp) {
         QVector<QVariant> d;
-        for (int offset = 0; offset < period / data.oneStep * 2; offset++) {
+        for (int offset = -period / 2; offset < period / data.oneStep * 2 - period / 2 + 1; offset++) {
             double sum = 0;
             int n = 0;
             for (double i = firstPoint + offset; i < firstPoint + offset + interval / data.oneStep; i += period / data.oneStep, n++)

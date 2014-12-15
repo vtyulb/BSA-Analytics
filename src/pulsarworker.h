@@ -26,7 +26,8 @@ private:
     bool equalPulsars(Pulsar*, Pulsar*);
     bool goodDoubles(double, double);
 
-    double calculateNoise(QVector<double> &);
+    template <typename real>
+    double calculateNoise(real *, int);
 
     Data data;
     int module, ray, D;

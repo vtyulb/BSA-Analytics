@@ -257,7 +257,7 @@ template <typename real>
 double PulsarWorker::calculateNoise(real *res, int size) {
     QVector<double> noises;
 
-    for (int i = 0; i < size - interval / data.oneStep; i++) {
+    for (int i = 0; i < size - interval / data.oneStep; i += interval / data.oneStep / 2) {
         double noise = 0;
         for (int j = 0; j < interval / data.oneStep; j++)
             noise += res[i + j] * res[i + j];

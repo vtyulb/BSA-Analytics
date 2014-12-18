@@ -87,7 +87,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         }
 
         if (pulsar.snr > CATEGORIES_SIZES[0]) {
-            if (Settings::settings()->intellectualFilter() && (good > 2))
+            if (Settings::settings()->intellectualFilter() && (good > 3))
                 pulsar.filtered = true;
 
             pulsars.push_back(pulsar);

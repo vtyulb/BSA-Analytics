@@ -100,11 +100,14 @@ void NativeDrawer::nativePaint(bool forPrinter) {
     }
 
     if (data.sigma > 0) {
-        p.setPen(QColor("blue"));
-        p.drawLine(mirr(newCoord(0, data.sigma)), mirr(newCoord(width(), data.sigma)));
+//        p.setPen(QColor("blue"));
+//        p.drawLine(mirr(newCoord(0, data.sigma)), mirr(newCoord(width(), data.sigma)));
 
+//        p.setPen(QColor("green"));
+//        p.drawLine(mirr(newCoord(0, 0)), mirr(newCoord(width(), 0)));
         p.setPen(QColor("green"));
-        p.drawLine(mirr(newCoord(0, 0)), mirr(newCoord(width(), 0)));
+//        for (double i = data.oneStep; i < data.npoints; i += )
+
     }
 
     emit progress(100);

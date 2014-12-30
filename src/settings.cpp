@@ -33,7 +33,14 @@ void Settings::setSubZero(bool b) {
     _subZero = b;
 }
 
-
 bool Settings::subZero() {
     return _subZero;
+}
+
+double Settings::realOneStep() {
+    return _realOneStep;
+}
+
+void Settings::setRealOneStep(double st) {
+    _realOneStep = st;
 }

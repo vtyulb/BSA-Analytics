@@ -6,6 +6,8 @@
 
 QT       += core gui printsupport
 
+CONFIG += console
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = BSA-analytics

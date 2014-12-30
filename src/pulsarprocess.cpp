@@ -62,7 +62,7 @@ void PulsarProcess::run() {
                 pulsars[j] = p;
             }
 
-    QByteArray header = QString("file: %1\nStart time\tmodule\tray\tdispersion\tperiod\tsnr\n").arg(data.name).toUtf8();
+    QByteArray header = QString("file: %1\ntresolution %2\nStart time\tmodule\tray\tdispersion\tperiod\tsnr\n").arg(data.name).arg(data.oneStep).toUtf8();
 
     QFile *files[CATEGORIES];
     bool filtered[CATEGORIES];

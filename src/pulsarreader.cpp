@@ -1,5 +1,6 @@
 #include "pulsarreader.h"
 #include <pulsar.h>
+#include <settings.h>
 
 #include <QFile>
 #include <QVariant>
@@ -11,6 +12,10 @@ Pulsars PulsarReader::ReadPulsarFile(QString name) {
     QFile file(name);
     file.open(QIODevice::ReadOnly);
     file.readLine();
+    QString oneStep = file.readLine();
+    oneStep = oneStep.right(oneStep.size() - 12);
+    oneStep.chop(1);
+    Settings::settings()->setRealOneStep(oneStep.toDouble());
     file.readLine();
 
     Pulsars data = new QVector<Pulsar>;

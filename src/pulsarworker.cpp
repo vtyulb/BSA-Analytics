@@ -34,7 +34,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
 
     double noise = calculateNoise(res.data(), res.size());
 
-    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += PERIOD_STEP) {
+    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += 0.005) {//period+=data.oneStep/interval
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
         pulsar.snr = 0;
@@ -203,10 +203,10 @@ QVector<double> PulsarWorker::applyDispersion() {
     double noise = calculateNoise(res.data(), res.size());
 
     for (int i = 0; i < res.size(); i++)
-        if (res[i] >  noise * 5)
-            res[i] = noise * 5;
-        else if (res[i] < -noise * 5)
-            res[i] = -noise * 5;
+        if (res[i] >  noise * 4)
+            res[i] = noise * 4;
+        else if (res[i] < -noise * 4)
+            res[i] = -noise * 4;
 
 //    for (int i = 0; i < res.size(); i++)
 //        data.data[module][6][ray][i] = res[i];

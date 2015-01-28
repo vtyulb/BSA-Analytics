@@ -39,13 +39,13 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         Pulsar pulsar;
         pulsar.snr = 0;
         int calc = 0;
-        noise = calculateNoise(res.data(), interval / data.oneStep + 1);
+        noise = calculateNoise(res.data(), (interval / data.oneStep + 1) * 3);
         for (int i = 0; i < res.size() - interval / data.oneStep; i++) {
             if (calc++ == int(period + 1)) {
                 calc = 0;
                 i += interval / 2 /data.oneStep;
                 if (i < res.size() - interval / data.oneStep)
-                    noise = calculateNoise(res.data() + i, interval / data.oneStep + 1);
+                    noise = calculateNoise(res.data() + i, min(int(interval / data.oneStep + 1) * 3, res.size() - i));
 
                 if (i >= res.size() - interval / data.oneStep - 1)
                     break;

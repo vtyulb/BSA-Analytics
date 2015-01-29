@@ -14,7 +14,10 @@
 #include <sys/unistd.h>
 #include <sys/types.h>
 #include <stdlib.h>
-#include <execinfo.h>
+
+#ifdef Q_OS_LINUX
+    #include <execinfo.h>
+#endif
 
 namespace mainSpace {
     MainWindow *w;
@@ -32,11 +35,14 @@ void restart(int signal = 0) {
 }
 
 void catchSigSegv(int signal) {
+
+#ifdef Q_OS_LINUX
     void *callstack[128];
     int frames = backtrace(callstack, 128);
     char **strs = backtrace_symbols(callstack, frames);
     for (int i = 0; i < frames; i++)
         fprintf(stderr, "%d: %s\n", i, strs[i]);
+#endif
 
     fprintf(stderr, "dead end\n");
     exit(2);

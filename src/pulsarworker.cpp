@@ -183,7 +183,7 @@ QVector<double> PulsarWorker::applyDispersion() {
     double v1 = data.fbands[0];
     double v2 = data.fbands[1];
               //        !!!
-    double mxd = (4.15 / 2.5) * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D;
+    double mxd = (4.15) * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D;
     mxd *= -data.channels;
     mxd /= data.oneStep;
 
@@ -197,7 +197,7 @@ QVector<double> PulsarWorker::applyDispersion() {
 
     for (int i = 0; i < data.npoints - mxd; i++)
         for (int j = 0; j < data.channels - 1; j++) {
-            int dt = int(4.15 / 2.5 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * j / data.oneStep + 0.5); // difference
+            int dt = int(4.15 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * j / data.oneStep + 0.5); // difference
             res[i] += data.data[module][j][ray][max(i + dt, 0)];
         }
 

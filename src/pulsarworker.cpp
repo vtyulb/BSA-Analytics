@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <QLinkedList>
+#include <QMap>
 #include <settings.h>
 
 using std::min;
@@ -32,9 +33,11 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     QVector<Pulsar> pulsars;
     QVector<double> res = applyDispersion();
 
+    QMap<int, double> noises;
+
     double noise = calculateNoise(res.data(), res.size());
 
-    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += 0.005) {//period+=data.oneStep/interval
+    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval) {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
         pulsar.snr = 0;
@@ -44,8 +47,14 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             if (calc++ == int(period + 1)) {
                 calc = 0;
                 i += interval / 2 /data.oneStep;
-                if (i < res.size() - interval / data.oneStep)
-                    noise = calculateNoise(res.data() + i, min(int(interval / data.oneStep + 1) * 2, res.size() - i));
+                if (i < res.size() - interval / data.oneStep) {
+                    if (noises.contains(i))
+                        noise = noises[i];
+                    else {
+                        noise = calculateNoise(res.data() + i, min(int(interval / data.oneStep + 1) * 2, res.size() - i));
+                        noises[i] = noise;
+                    }
+                }
 
                 if (i >= res.size() - interval / data.oneStep - 1)
                     break;

@@ -45,7 +45,7 @@ struct Pulsar {
     }
 
     QString time() {
-        return StarTime::StarTime(data, firstPoint);
+        return StarTime::StarTime(data, firstPoint + interval / 2 / data.oneStep);
     }
 
     void calculateAdditionalData(const QVector<double> &disp) {

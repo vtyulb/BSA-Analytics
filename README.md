@@ -6,7 +6,7 @@ BSA graphics generator
 BUILD:
  - mkdir build
  - cd build
- - qmake ../src/
+ - qmake-qt5 ../src/
  - make
 
 Simple installation script:  

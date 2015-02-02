@@ -3,9 +3,11 @@
 #include <QApplication>
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
+#include <QMessageBox>
 
 #include <startime.h>
 #include <math.h>
+#include <settings.h>
 
 NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     QWidget(parent),
@@ -17,7 +19,8 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     module(0),
     data(data),
     art(new QImage(100, 100, QImage::Format_ARGB32)),
-    mousePressed(false)
+    mousePressed(false),
+    verticalLine(-1)
 {
     for (int i = 0; i < data.rays; i++)
         rayVisibles.push_back(true);
@@ -47,6 +50,9 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
     p.setBrush(QBrush(QColor(0, 50, 200, 100)));
     if (mousePressed)
         p.drawRect(mouseRect);
+
+    if (Settings::settings()->sourceMode())
+        p.drawLine(verticalLine, 0, verticalLine, height());
 
     p.end();
     event->accept();
@@ -165,8 +171,9 @@ void NativeDrawer::mousePressEvent(QMouseEvent *event) {
 }
 
 void NativeDrawer::mouseMoveEvent(QMouseEvent *event) {
+    verticalLine = event->pos().x();
     mouseRect = QRect(mouseClicked, event->pos());
-    if (mousePressed)
+    if (mousePressed || Settings::settings()->sourceMode())
         repaint();
 
     emit coordsChanged(backwardCoord(mirr(event->pos())));
@@ -177,6 +184,11 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
         return;
 
     mousePressed = false;
+
+    if (Settings::settings()->sourceMode()) {
+        sourceDetect(backwardCoord(mouseRect.topLeft()).x(), backwardCoord(mouseRect.bottomRight()).x());
+        return;
+    }
 
     if (abs(mouseRect.width()) < 50 || abs(mouseRect.height()) < 50) {
         repaint();
@@ -333,4 +345,29 @@ void NativeDrawer::nativePrint(QPrinter *printer) {
     art = tmpArt;
 
     repaint();
+}
+
+void NativeDrawer::sourceDetect(int a, int b) {
+    // What is it doing here?
+
+    int ray;
+    for (int i = 0; i < data.rays; i++)
+        if (rayVisibles[i]) {
+            ray = i;
+            break;
+        }
+
+    QString resStr = "Ray: " + QString::number(ray + 1) + "\n";
+    for (int k = 0; k < data.channels - 1; k++) {
+        QVector<double> res;
+        double h1 = data.data[module][k][ray][a];
+        double h2 = data.data[module][k][ray][b];
+        for (int i = a; i < b; i++)
+            res.push_back(data.data[module][k][ray][i] - ((i - a) / double(b - a) * (h2 - h1) + h1));
+
+        std::sort(res.data(), res.data() + res.size());
+        resStr = resStr + " " + QString::number(res[res.size() - 3] / Settings::settings()->getStairHeight(module, ray, k));
+    }
+
+    QMessageBox::information(this, "source height", resStr);
 }

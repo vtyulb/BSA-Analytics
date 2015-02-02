@@ -1,4 +1,5 @@
 #include "settings.h"
+#include <reader.h>
 
 Settings::Settings() {
     filter = true;
@@ -43,4 +44,26 @@ double Settings::realOneStep() {
 
 void Settings::setRealOneStep(double st) {
     _realOneStep = st;
+}
+
+bool Settings::sourceMode() {
+    return stairs.size() > 0;
+}
+
+void Settings::detectStair(char *name, int point) {
+    Reader reader;
+    Data data = reader.readBinaryFile(QString(name));
+    stairs.resize(data.modules);
+    for (int i = 0; i < data.modules; i++) {
+        stairs[i].resize(data.rays);
+        for (int j = 0; j < data.rays; j++)
+            for (int k = 0; k < data.channels; k++)
+                stairs[i][j].push_back(data.data[i][k][j][point]);
+    }
+
+    data.releaseData();
+}
+
+double Settings::getStairHeight(int module, int ray, int channel) {
+    return stairs[module][ray][channel];
 }

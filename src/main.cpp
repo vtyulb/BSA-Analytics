@@ -48,7 +48,7 @@ void catchSigSegv(int signal) {
     exit(2);
 }
 
-int pulsarEngine(int argc, char **argv) {
+void pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
         printf("\t-h --help  for this message\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
@@ -57,9 +57,10 @@ int pulsarEngine(int argc, char **argv) {
         printf("\t--skip <int> for skipping first N files\n");
         printf("\t--no-filter for disabling filter\n");
         printf("\t--sub-zero for output pulsars with snr 2-5 (only good)\n");
+        printf("\t--source-range <file name> <point> for running in a special mode\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
         printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
-        return 0;
+        exit(0);
     }
 
     QString savePath;
@@ -79,9 +80,13 @@ int pulsarEngine(int argc, char **argv) {
             Settings::settings()->setSkipCount(QString(argv[i + 1]).toInt());
         else if (strcmp(argv[i], "--sub-zero") == 0)
             Settings::settings()->setSubZero(true);
+        else if (strcmp(argv[i], "--source-range") == 0) {
+            Settings::settings()->detectStair(argv[i + 1], QString(argv[i + 2]).toInt());
+            return;
+        }
 
     if (dataPath == "" || savePath == "")
-        return -1;
+        exit(-1);
 
     savePath = QDir(savePath).absolutePath() + "/";
 
@@ -95,13 +100,13 @@ int pulsarEngine(int argc, char **argv) {
     PulsarSearcher searcher(dataPath, savePath, threads);
     searcher.start();
 
-    return a.exec();
+    exit(a.exec());
 }
 
 int main(int argc, char *argv[])
 {
     if (argc > 1)
-        return pulsarEngine(argc, argv);
+        pulsarEngine(argc, argv);
 
     signal(SIGABRT, restart);
     signal(SIGSEGV, restart);

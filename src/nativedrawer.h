@@ -63,7 +63,11 @@ private:
     QPoint mouseClicked;
     QRect mouseRect;
 
+    int verticalLine;
+
     int minimum(int, int);
+
+    void sourceDetect(int, int);
 
     QPoint mirr(QPoint);
 

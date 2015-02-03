@@ -48,10 +48,13 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
 
     p.setPen(QColor("black"));
     p.setBrush(QBrush(QColor(0, 50, 200, 100)));
-    if (mousePressed)
+    if (mousePressed) {
+        if (Settings::settings()->sourceMode()) {
+            mouseRect.setBottom(0);
+            mouseRect.setTop(height());
+        }
         p.drawRect(mouseRect);
-
-    if (Settings::settings()->sourceMode())
+    } else if (Settings::settings()->sourceMode())
         p.drawLine(verticalLine, 0, verticalLine, height());
 
     p.end();

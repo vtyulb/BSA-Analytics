@@ -57,8 +57,18 @@ void Settings::detectStair(char *name, int point) {
     for (int i = 0; i < data.modules; i++) {
         stairs[i].resize(data.rays);
         for (int j = 0; j < data.rays; j++)
-            for (int k = 0; k < data.channels; k++)
-                stairs[i][j].push_back(data.data[i][k][j][point]);
+            for (int k = 0; k < data.channels; k++) {
+                double sum = 0;
+                for (int q = -10; q < 10; q++)
+                    sum += data.data[i][k][j][point + q];
+
+                std::sort(data.data[i][k][j], data.data[i][k][j] + data.npoints);
+                double sum1 = 0;
+                for (int q = 0; q < 20; q++)
+                    sum1 += data.data[i][k][j][q];
+
+                stairs[i][j].push_back(sum / 20 - sum1 / 20);
+            }
     }
 
     data.releaseData();

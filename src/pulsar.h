@@ -13,8 +13,8 @@ const double MINIMUM_PERIOD = 0.5;
 const double MAXIMUM_PERIOD = 10;
 const double PERIOD_STEP = 0.01;
 const int interval = 180;
-const int CATEGORIES = 3;
-const int CATEGORIES_SIZES[CATEGORIES + 1] = {5, 7, 10, 1000};
+const int CATEGORIES = 4;
+const int CATEGORIES_SIZES[CATEGORIES + 1] = {4, 5, 7, 10, 1000};
 
 struct Pulsar {
     Data data;
@@ -59,34 +59,6 @@ struct Pulsar {
 
             d.push_back(sum / n);
         }
-
-        double mini = 0;
-        double maxi = 0;
-        for (int i = 0; i < d.size(); i++) {
-            if (d[i].toDouble() > maxi)
-                maxi = d[i].toDouble();
-            if (d[i].toDouble() < mini)
-                mini = d[i].toDouble();
-        }
-
-        double height = maxi - mini;
-
-        for (int i = 0; i < 100; i++)
-            d.push_back(0);
-
-        int from = d.size();
-
-        for (int i = firstPoint; i < firstPoint + interval / data.oneStep; i++)
-            d.push_back(disp[i]);
-
-        double sigma = 0;
-        for (int i = from; i < d.size(); i++)
-            sigma += d[i].toDouble() * d[i].toDouble();
-
-        sigma /= (d.size() - from);
-        sigma = pow(sigma, 0.5);
-
-        snr = height / sigma * pow(d.size() - from, 0.5) - 2.5;
 
         QDataStream stream(&additionalData, QIODevice::WriteOnly);
         stream << QVariant(d.toList());

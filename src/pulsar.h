@@ -3,6 +3,7 @@
 
 #include <data.h>
 #include <startime.h>
+#include <math.h>
 #include <QString>
 #include <QVector>
 #include <QVariant>
@@ -59,11 +60,33 @@ struct Pulsar {
             d.push_back(sum / n);
         }
 
+        double mini = 0;
+        double maxi = 0;
+        for (int i = 0; i < d.size(); i++) {
+            if (d[i].toDouble() > maxi)
+                maxi = d[i].toDouble();
+            if (d[i].toDouble() < mini)
+                mini = d[i].toDouble();
+        }
+
+        double height = maxi - mini;
+
         for (int i = 0; i < 100; i++)
             d.push_back(0);
 
+        int from = d.size();
+
         for (int i = firstPoint; i < firstPoint + interval / data.oneStep; i++)
             d.push_back(disp[i]);
+
+        double sigma = 0;
+        for (int i = from; i < d.size(); i++)
+            sigma += d[i].toDouble() * d[i].toDouble();
+
+        sigma /= (d.size() - from);
+        sigma = pow(sigma, 0.5);
+
+        snr = height / sigma * pow(d.size() - from, 0.5) - 2.5;
 
         QDataStream stream(&additionalData, QIODevice::WriteOnly);
         stream << QVariant(d.toList());

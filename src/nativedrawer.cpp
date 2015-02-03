@@ -185,7 +185,7 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
 
     mousePressed = false;
 
-    if (Settings::settings()->sourceMode()) {
+    if (Settings::settings()->sourceMode() && mouseRect.width() > 0) {
         sourceDetect(backwardCoord(mouseRect.topLeft()).x(), backwardCoord(mouseRect.bottomRight()).x());
         return;
     }

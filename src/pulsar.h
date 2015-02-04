@@ -8,7 +8,7 @@
 #include <QVector>
 #include <QVariant>
 
-const int INTERVAL = 5;
+const double INTERVAL = 5;
 const double MINIMUM_PERIOD = 0.5;
 const double MAXIMUM_PERIOD = 10;
 const double PERIOD_STEP = 0.01;

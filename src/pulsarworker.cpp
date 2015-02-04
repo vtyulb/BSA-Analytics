@@ -10,14 +10,15 @@
 using std::min;
 using std::max;
 
-PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
+PulsarWorker::PulsarWorker(int module, int ray, int D, Data data, bool secondInterval):
     QObject(),
     QRunnable(),
     finished(false),
     data(data),
     module(module),
     ray(ray),
-    D(D)
+    D(D),
+    secondInterval(secondInterval)
 {
 }
 
@@ -37,7 +38,9 @@ QVector<Pulsar> PulsarWorker::searchIn() {
 
     double noise = calculateNoise(res.data(), res.size());
 
-    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval) {
+    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval)
+        if (!goodDoubles(period, INTERVAL) ^ secondInterval)
+    {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
         pulsar.snr = 0;
@@ -146,12 +149,6 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
 
     pulsars.clear();
 
-    for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end();)
-        if (goodDoubles(INTERVAL, (*i).period))
-            i = l.erase(i);
-        else
-            i++;
-
     for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
         for (QLinkedList<Pulsar>::Iterator j = i + 1; j != l.end(); j++)
             if ((*i).valid && (*j).valid)
@@ -182,7 +179,6 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
 QVector<double> PulsarWorker::applyDispersion() {
     double v1 = data.fbands[0];
     double v2 = data.fbands[1];
-              //        !!!
     double mxd = (4.1488) * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D;
     mxd *= -data.channels;
     mxd /= data.oneStep;
@@ -197,7 +193,7 @@ QVector<double> PulsarWorker::applyDispersion() {
 
     for (int i = 0; i < data.npoints - mxd; i++)
         for (int j = 0; j < data.channels - 1; j++) {
-            int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * j / data.oneStep + 0.5); // difference
+            int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * j / data.oneStep + 0.5);
             res[i] += data.data[module][j][ray][max(i + dt, 0)];
         }
 
@@ -224,7 +220,7 @@ QVector<double> PulsarWorker::applyDispersion() {
 }
 
 void PulsarWorker::clearAverange() {
-    const int step = INTERVAL / data.oneStep;
+    const int step = (INTERVAL + 0.2 * secondInterval) / data.oneStep;
     for (int channel = 0; channel < data.channels - 1; channel++) {
         for (int i = 0; i < data.npoints; i += step) {
             double sum = 0;

@@ -28,11 +28,12 @@ void PulsarProcess::run() {
     qDebug() << "splitting to" << pool->maxThreadCount() << "processes";
     for (int D = 0; D < 200; D += 6)
         for (int i = 0; i < data.modules; i++)
-            for (int j = 0; j < data.rays; j++) {
-                workers.push_back(new PulsarWorker(i, j, D, data));
-                workers[workers.size() - 1]->setAutoDelete(false);
-                pool->start(workers[workers.size() - 1]);
-            }
+            for (int j = 0; j < data.rays; j++)
+                for (int b = 0; b < 2; b++) {
+                    workers.push_back(new PulsarWorker(i, j, D, data, b));
+                    workers[workers.size() - 1]->setAutoDelete(false);
+                    pool->start(workers[workers.size() - 1]);
+                }
 
     while (!pool->waitForDone(30000)) {
         bool finished = true;

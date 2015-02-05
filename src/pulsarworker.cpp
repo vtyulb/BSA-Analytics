@@ -275,5 +275,5 @@ void PulsarWorker::subtract(real *res, int size) {
         b += res[size - i] / 5;
 
     for (int i = 0; i < size; i++)
-        res[i] -= (b - a) * i / size;
+        res[i] -= (b - a) * i / size + a;
 }

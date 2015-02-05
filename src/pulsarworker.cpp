@@ -35,7 +35,9 @@ QVector<Pulsar> PulsarWorker::searchIn() {
 
     QMap<int, double> noises;
 
-    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval) {
+    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval)
+        if (!goodDoubles(period, INTERVAL))
+    {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
         pulsar.snr = 0;
@@ -266,14 +268,10 @@ double PulsarWorker::calculateNoise(real *res, int size) {
 
 template <typename real>
 void PulsarWorker::subtract(real *res, int size) {
-    double a = 0;
-    double b = 0;
-    for (int i = 0; i < size / 2; i++)
-        a += res[i] / (size / 2);
-
-    for (int i = 1; i <= size / 2; i++)
-        b += res[size - i] / (size / 2);
+    double sum = 0;
+    for (int i = 0; i < size; i++)
+        sum += res[i] / size;
 
     for (int i = 0; i < size; i++)
-        res[i] -= (b - a) * i / size + a;
+        res[i] -= sum;
 }

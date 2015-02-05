@@ -51,7 +51,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                     if (noises.contains(i))
                         noise = noises[i];
                     else {
-                        noise = calculateNoise(res.data() + i, min(int(interval / data.oneStep + 1) * 2, res.size() - i));
+                        noise = calculateNoise(res.data() + i, min(int(interval / data.oneStep + 1), res.size() - i));
                         noises[i] = noise;
                     }
                 }
@@ -252,12 +252,12 @@ template <typename real>
 double PulsarWorker::calculateNoise(real *res, int size) {
     QVector<double> noises;
 
-    for (int i = 0; i < size - interval / data.oneStep; i += interval / data.oneStep / 3) {
+    for (int i = 0; i < size - interval / data.oneStep / 3; i += interval / data.oneStep / 3) {
         double noise = 0;
         for (int j = 0; j < interval / data.oneStep / 3; j++)
             noise += res[i + j] * res[i + j];
 
-        noise /= (interval / data.oneStep);
+        noise /= (interval / data.oneStep / 3);
         noise = pow(noise, 0.5);
         noises.push_back(noise);
     }

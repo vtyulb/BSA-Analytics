@@ -268,11 +268,11 @@ template <typename real>
 void PulsarWorker::subtract(real *res, int size) {
     double a = 0;
     double b = 0;
-    for (int i = 0; i < 5; i++)
-        a += res[i] / 5;
+    for (int i = 0; i < size / 2; i++)
+        a += res[i] / (size / 2);
 
-    for (int i = 1; i <= 5; i++)
-        b += res[size - i] / 5;
+    for (int i = 1; i <= size / 2; i++)
+        b += res[size - i] / (size / 2);
 
     for (int i = 0; i < size; i++)
         res[i] -= (b - a) * i / size + a;

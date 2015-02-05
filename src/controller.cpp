@@ -16,6 +16,7 @@ Controller::Controller(QWidget *parent) :
     modules = new QLabel(this);
     sky = new QLabel(this);
     fileName = new QLabel(this);
+    nativeXCoord = new QLabel(this);
 
     layout->addWidget(rays);
     layout->addWidget(channels);
@@ -23,12 +24,14 @@ Controller::Controller(QWidget *parent) :
     layout->addWidget(points);
     layout->addWidget(sky);
     layout->addWidget(coords);
+    layout->addWidget(nativeXCoord);
     layout->addWidget(fileName);
     layout->addStretch(5);
 }
 
 void Controller::setCoords(QPointF p) {
     coords->setText(QString("X: %1; Y: %2").arg(StarTime::StarTime(data, p.x()), QString::number(p.y())));
+    nativeXCoord->setText(QString("X: %1").arg(p.x()));
 }
 
 void Controller::setRays(int r) {

@@ -26,6 +26,7 @@ private:
     QLabel *modules;
     QLabel *sky;
     QLabel *fileName;
+    QLabel *nativeXCoord;
 
     Data data;
 

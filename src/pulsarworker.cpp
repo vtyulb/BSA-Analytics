@@ -10,15 +10,14 @@
 using std::min;
 using std::max;
 
-PulsarWorker::PulsarWorker(int module, int ray, int D, Data data, bool secondInterval):
+PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
     QObject(),
     QRunnable(),
     finished(false),
     data(data),
     module(module),
     ray(ray),
-    D(D),
-    secondInterval(secondInterval)
+    D(D)
 {
 }
 
@@ -36,16 +35,12 @@ QVector<Pulsar> PulsarWorker::searchIn() {
 
     QMap<int, double> noises;
 
-    double noise = calculateNoise(res.data(), res.size());
-
-    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval)
-        if (!goodDoubles(period, INTERVAL) ^ secondInterval)
-    {
+    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval) {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
         pulsar.snr = 0;
         int calc = 0;
-        noise = calculateNoise(res.data(), (interval / data.oneStep + 1) * 2);
+        double noise = calculateNoise(res.data(), (interval / data.oneStep + 1) * 2);
         for (int i = 0; i < res.size() - interval / data.oneStep; i++) {
             if (calc++ == int(period + 1)) {
                 calc = 0;
@@ -213,14 +208,11 @@ QVector<double> PulsarWorker::applyDispersion() {
         else if (res[i] < -noise * 4)
             res[i] = -noise * 4;
 
-//    for (int i = 0; i < res.size(); i++)
-//        data.data[module][6][ray][i] = res[i];
-
     return res;
 }
 
 void PulsarWorker::clearAverange() {
-    const int step = (INTERVAL + 0.2 * secondInterval) / data.oneStep;
+    const int step =  INTERVAL / data.oneStep;
     for (int channel = 0; channel < data.channels - 1; channel++) {
         for (int i = 0; i < data.npoints; i += step) {
             double sum = 0;
@@ -266,9 +258,9 @@ template <typename real>
 double PulsarWorker::calculateNoise(real *res, int size) {
     QVector<double> noises;
 
-    for (int i = 0; i < size - interval / data.oneStep; i += interval / data.oneStep / 2) {
+    for (int i = 0; i < size - interval / data.oneStep; i += interval / data.oneStep / 3) {
         double noise = 0;
-        for (int j = 0; j < interval / data.oneStep; j++)
+        for (int j = 0; j < interval / data.oneStep / 3; j++)
             noise += res[i + j] * res[i + j];
 
         noise /= (interval / data.oneStep);

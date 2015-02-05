@@ -23,6 +23,9 @@ void PulsarSearcher::start() {
                 QObject::connect(p, SIGNAL(finished()), this, SLOT(checkIfCalculated()));
                 p->start();
             }
+
+    if (!workers.size())
+        exit(0);
 }
 
 void PulsarSearcher::checkIfCalculated() {

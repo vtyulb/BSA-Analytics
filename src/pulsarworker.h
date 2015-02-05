@@ -28,6 +28,8 @@ private:
 
     template <typename real>
     double calculateNoise(real *, int);
+    template <typename real>
+    void subtract(real *, int);
 
     Data data;
     int module, ray, D;

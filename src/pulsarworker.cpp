@@ -214,16 +214,8 @@ QVector<double> PulsarWorker::applyDispersion() {
 void PulsarWorker::clearAverange() {
     const int step =  INTERVAL / data.oneStep;
     for (int channel = 0; channel < data.channels - 1; channel++) {
-        for (int i = 0; i < data.npoints; i += step) {
-            double sum = 0;
-            for (int j = i; j < i + step && j < data.npoints; j++)
-                sum += data.data[module][channel][ray][j];
-
-            sum /= min(i + step, data.npoints) - i;
-
-            for (int j = i; j < i + step && j < data.npoints; j++)
-                data.data[module][channel][ray][j] -= sum;
-        }
+        for (int i = 0; i < data.npoints; i += step)
+            subtract(data.data[module][channel][ray] + i, min(step, data.npoints - i));
 
         double noise = 0;
         for (int i = 0; i < data.npoints; i++)
@@ -270,4 +262,18 @@ double PulsarWorker::calculateNoise(real *res, int size) {
 
     std::sort(noises.begin(), noises.end());
     return noises[noises.size() / 2];
+}
+
+template <typename real>
+void PulsarWorker::subtract(real *res, int size) {
+    double a = 0;
+    double b = 0;
+    for (int i = 0; i < 5; i++)
+        a += res[i] / 5;
+
+    for (int i = 1; i <= 5; i++)
+        b += res[size - i] / 5;
+
+    for (int i = 0; i < size; i++)
+        res[i] -= (b - a) * i / size;
 }

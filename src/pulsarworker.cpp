@@ -268,10 +268,14 @@ double PulsarWorker::calculateNoise(real *res, int size) {
 
 template <typename real>
 void PulsarWorker::subtract(real *res, int size) {
-    double sum = 0;
-    for (int i = 0; i < size; i++)
-        sum += res[i] / size;
+    double a = 0;
+    double b = 0;
+    for (int i = 0; i < size / 2; i++)
+        a += res[i] / (size / 2);
+
+    for (int i = 1; i <= size / 2; i++)
+        b += res[size - i] / (size / 2);
 
     for (int i = 0; i < size; i++)
-        res[i] -= sum;
+        res[i] -= (b - a) * i / size + a;
 }

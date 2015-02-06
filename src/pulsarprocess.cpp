@@ -49,7 +49,7 @@ void PulsarProcess::run() {
         for (int j = 0; j < workers[i]->res.size(); j++)
             pulsars.push_back(workers[i]->res[j]);
 
-        delete workers[i];
+        workers[i]->deleteLater();
     }
 
     qDebug() << "workers deleted";

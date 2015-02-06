@@ -11,6 +11,8 @@
 #include <QMessageBox>
 #include <QSettings>
 
+#include <algorithm>
+
 Analytics::Analytics(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Analytics),
@@ -81,6 +83,8 @@ void Analytics::apply() {
         QMessageBox::information(this, "Houston... We've Got a Problem", "There are no such pulsars");
         return;
     }
+
+    std::sort(pl->data(), pl->data() + pl->size());
 
     delete list;
     list = new PulsarList("void", pl, this);

@@ -70,6 +70,18 @@ struct Pulsar {
         QDataStream stream(&additionalData, QIODevice::WriteOnly);
         stream << QVariant(d.toList());
     }
+
+    bool operator < (const Pulsar &p) {
+        if (nativeTime.secsTo(p.nativeTime) > 0)
+            return true;
+        else if (nativeTime.secsTo(p.nativeTime) < 0)
+            return false;
+
+        if (dispersion < p.dispersion)
+            return true;
+
+        return false;
+    }
 };
 
 typedef QVector<Pulsar>* Pulsars;

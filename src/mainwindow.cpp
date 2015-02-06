@@ -72,7 +72,7 @@ void MainWindow::openPulsarFile() {
 
     decodeLastPath(path);
 
-    PulsarList *list = new PulsarList(path, this);
+    PulsarList *list = new PulsarList(path, NULL, this);
     QObject::connect(list, SIGNAL(switchData(Data&)), this, SLOT(regenerate(Data&)));
     QObject::connect(this, SIGNAL(destroyed()), list, SLOT(deleteLater()));
 }

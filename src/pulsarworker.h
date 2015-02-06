@@ -17,6 +17,8 @@ public:
     bool finished;
     void run();
 
+    static bool goodDoubles(double, double);
+
 private:
     QVector<double> applyDispersion();
     QVector<Pulsar> searchIn();
@@ -24,7 +26,6 @@ private:
 
     QVector<Pulsar> removeDuplicates(QVector<Pulsar>);
     bool equalPulsars(Pulsar*, Pulsar*);
-    bool goodDoubles(double, double);
 
     template <typename real>
     double calculateNoise(real *, int);

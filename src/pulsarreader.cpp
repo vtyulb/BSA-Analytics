@@ -7,8 +7,14 @@
 #include <QList>
 #include <QDateTime>
 #include <QTextStream>
+#include <QDebug>
 
 Pulsars PulsarReader::ReadPulsarFile(QString name) {
+    if (!name.endsWith(".pulsar")) {
+        qDebug() << "wrong file name" << name;
+        return NULL;
+    }
+
     QFile file(name);
     file.open(QIODevice::ReadOnly);
     QString fileName = file.readLine();

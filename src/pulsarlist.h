@@ -14,7 +14,7 @@ class PulsarList : public QWidget
     Q_OBJECT
 
     public:
-        explicit PulsarList(QString fileName, QWidget *parent = 0);
+        explicit PulsarList(QString fileName, Pulsars pl = 0, QWidget *parent = 0);
         ~PulsarList();
 
     private:

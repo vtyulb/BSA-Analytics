@@ -10,6 +10,7 @@
 
 #include <signal.h>
 #include <settings.h>
+#include <analytics.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -58,6 +59,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("\t--no-filter for disabling filter\n");
         printf("\t--sub-zero for output pulsars with snr 2-5 (only good)\n");
         printf("\t--source-range <file name> <point> for running in a special mode\n");
+        printf("\t--analytics to run in analytics mode\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
         printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
         exit(0);
@@ -83,6 +85,13 @@ void pulsarEngine(int argc, char **argv) {
         else if (strcmp(argv[i], "--source-range") == 0) {
             Settings::settings()->detectStair(argv[i + 1], QString(argv[i + 2]).toInt());
             return;
+        } else if (strcmp(argv[i], "--analytics") == 0) {
+            QApplication a(argc, argv);
+            a.setOrganizationDomain("bsa.vtyulb.ru");
+            a.setOrganizationName("vtyulb");
+            a.setApplicationName("BSA-Analytics");
+            Analytics an;
+            exit(a.exec());
         }
 
     if (dataPath == "" || savePath == "")

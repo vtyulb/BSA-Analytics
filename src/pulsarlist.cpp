@@ -5,11 +5,15 @@
 #include <QTimer>
 #include <QSettings>
 
-PulsarList::PulsarList(QString fileName, QWidget *parent) :
+PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
     QWidget(NULL),
-    ui(new Ui::PulsarList),
-    pulsars(PulsarReader::ReadPulsarFile(fileName))
+    ui(new Ui::PulsarList)
 {
+    if (pl == NULL)
+        pulsars = PulsarReader::ReadPulsarFile(fileName);
+    else
+        pulsars = pl;
+
     if (!pulsars->size()) {
         deleteLater();
         return;
@@ -59,7 +63,6 @@ void PulsarList::closeEvent(QCloseEvent *) {
 
 PulsarList::~PulsarList() {
     delete ui;
-    delete pulsars;
 }
 
 void PulsarList::selectionChanged() {

@@ -54,7 +54,7 @@ struct Pulsar {
         for (int offset = -period / data.oneStep / 2; offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1; offset++) {
             double sum = 0;
             int n = 0;
-            for (double i = firstPoint + offset; i < firstPoint + offset + interval / data.oneStep; i += period / data.oneStep, n++)
+            for (double i = firstPoint + offset; i < firstPoint + offset + interval / data.oneStep; i += period / data.oneStep * 2, n++)
                 sum += disp[int(i)];
 
             d.push_back(sum / n);
@@ -71,7 +71,7 @@ struct Pulsar {
         stream << QVariant(d.toList());
     }
 
-    bool operator < (const Pulsar &p) {
+    bool operator < (const Pulsar &p) const {
         if (nativeTime.secsTo(p.nativeTime) > 0)
             return true;
         else if (nativeTime.secsTo(p.nativeTime) < 0)

@@ -34,6 +34,8 @@ private:
     void applyRayFilter();
     void applyTimeFilter();
 
+    void applyMultiplePicksFilter();
+
 private slots:
     void apply();
 };

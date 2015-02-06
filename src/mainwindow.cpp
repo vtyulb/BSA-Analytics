@@ -37,7 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionAxes->setChecked(true);
     loadSettings();
 
-    QTimer::singleShot(400, this, SLOT(customOpen()));
+    if (!parent)
+        QTimer::singleShot(400, this, SLOT(customOpen()));
 }
 
 MainWindow::~MainWindow()

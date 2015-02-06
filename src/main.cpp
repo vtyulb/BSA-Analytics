@@ -90,8 +90,10 @@ void pulsarEngine(int argc, char **argv) {
             a.setOrganizationDomain("bsa.vtyulb.ru");
             a.setOrganizationName("vtyulb");
             a.setApplicationName("BSA-Analytics");
-            Analytics an;
-            exit(a.exec());
+            Analytics *an = new Analytics;
+            a.exec();
+            delete an;
+            exit(0);
         }
 
     if (dataPath == "" || savePath == "")

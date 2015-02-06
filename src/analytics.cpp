@@ -8,6 +8,8 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QDebug>
+#include <QMessageBox>
+#include <QSettings>
 
 Analytics::Analytics(QWidget *parent) :
     QWidget(parent),
@@ -17,13 +19,17 @@ Analytics::Analytics(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    QSettings s;
+    this->restoreGeometry(s.value("AnalyticsGeometry").toByteArray());
+
     QObject::connect(ui->applyButton, SIGNAL(clicked()), this, SLOT(apply()));
 
-    QString folder = QFileDialog::getExistingDirectory(this, "Path to *.pulsar files");
+    QString folder = QFileDialog::getExistingDirectory(this, "Path to *.pulsar files", s.value("openPath").toString());
+    s.setValue("openPath", folder);
     show();
     loadPulsars(folder);
     pulsarsEnabled.resize(pulsars->size());
-    window = new MainWindow();
+    window = new MainWindow(this);
     window->show();
     apply();
 }
@@ -63,10 +69,18 @@ void Analytics::apply() {
     if (ui->timeCheckBox->isChecked())
         applyTimeFilter();
 
+    if (ui->multiplePicks->isChecked())
+        applyMultiplePicksFilter();
+
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsarsEnabled[i])
             pl->push_back(pulsars->at(i));
+
+    if (!pl->size()) {
+        QMessageBox::information(this, "Houston... We've Got a Problem", "There are no such pulsars");
+        return;
+    }
 
     delete list;
     list = new PulsarList("void", pl, this);
@@ -95,10 +109,18 @@ void Analytics::applySNRFilter() {
 }
 
 void Analytics::applyTimeFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        pulsarsEnabled[i] &= (abs(pulsars->at(i).nativeTime.secsTo(ui->time->time())) < 120);
+}
 
+void Analytics::applyMultiplePicksFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        pulsarsEnabled[i] &= (!pulsars->at(i).filtered);
 }
 
 Analytics::~Analytics()
 {
+    QSettings s;
+    s.setValue("AnalyticsGeometry", this->saveGeometry());
     delete ui;
 }

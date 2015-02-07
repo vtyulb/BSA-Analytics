@@ -161,15 +161,6 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
     for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
         pulsars.push_back(*i);
 
-
-    for (int i = 0; i < pulsars.size(); i++)
-        for (int j = i + 1; j < pulsars.size(); j++)
-            if (pulsars[i].snr < pulsars[j].snr) {
-                Pulsar p = pulsars[i];
-                pulsars[i] = pulsars[j];
-                pulsars[j] = p;
-            }
-
     return pulsars;
 }
 

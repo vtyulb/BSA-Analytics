@@ -35,6 +35,7 @@ private:
     void applyTimeFilter();
 
     void applyMultiplePicksFilter();
+    void applyStrangeDataFilter();
 
 private slots:
     void apply();

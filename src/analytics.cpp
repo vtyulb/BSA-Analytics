@@ -74,6 +74,9 @@ void Analytics::apply() {
     if (ui->multiplePicks->isChecked())
         applyMultiplePicksFilter();
 
+    if (ui->strangeData->isChecked())
+        applyStrangeDataFilter();
+
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsarsEnabled[i])
@@ -120,6 +123,34 @@ void Analytics::applyTimeFilter() {
 void Analytics::applyMultiplePicksFilter() {
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] &= (!pulsars->at(i).filtered);
+}
+
+void Analytics::applyStrangeDataFilter() {
+    for (int i = 0; i < pulsars->size(); i++) {
+        const float *data = pulsars->at(i).data.data[0][0][0];
+        float mx = 0;
+        float mn = 0;
+        for (int i = 0; data[i] != 0; i++) {
+            if (data[i] > mx)
+                mx = data[i];
+
+            if (data[i] < mn)
+                mn = data[i];
+        }
+
+        int res = 0;
+        double step = (mx - mn) / 10;
+        for (int i = 0; i < 10; i++) {
+            bool rs = false;
+            for (int j = 0; data[j] != 0; j++)
+                rs |= ((data[j] - mn >= i * step) && (data[j] - mn <= (i + 1) * step));
+
+            res += rs;
+        }
+
+        if (res > 7)
+            pulsarsEnabled[i] = false;
+    }
 }
 
 Analytics::~Analytics()

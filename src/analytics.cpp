@@ -29,8 +29,10 @@ Analytics::Analytics(QWidget *parent) :
     QString folder = QFileDialog::getExistingDirectory(this, "Path to *.pulsar files", s.value("openPath").toString());
     s.setValue("openPath", folder);
     show();
+
     loadPulsars(folder);
     pulsarsEnabled.resize(pulsars->size());
+    preCalc();
     window = new MainWindow(this);
     window->show();
     apply();
@@ -47,6 +49,9 @@ void Analytics::loadPulsars(QString dir) {
 
     list = d.entryInfoList(QDir::Files);
     for (int i = 0; i < list.size(); i++) {
+        ui->progressBar->setValue((i + 1) / list.size() * 100);
+        update();
+        qApp->processEvents();
         qDebug() << "reading file" << list[i].absoluteFilePath();
         *pulsars += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath());
     }
@@ -76,6 +81,9 @@ void Analytics::apply() {
 
     if (ui->strangeData->isChecked())
         applyStrangeDataFilter();
+
+    if (ui->differentNoise->isChecked())
+        applyDifferentNoise();
 
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)
@@ -126,30 +134,73 @@ void Analytics::applyMultiplePicksFilter() {
 }
 
 void Analytics::applyStrangeDataFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i]) {
+            const float *data = pulsars->at(i).data.data[0][0][0];
+            float mx = 0;
+            float mn = 0;
+            for (int i = 0; data[i] != 0; i++) {
+                if (data[i] > mx)
+                    mx = data[i];
+
+                if (data[i] < mn)
+                    mn = data[i];
+            }
+
+            int res = 0;
+            double step = (mx - mn) / 10;
+            for (int i = 0; i < 10; i++) {
+                bool rs = false;
+                for (int j = 0; data[j] != 0; j++)
+                    rs |= ((data[j] - mn >= i * step) && (data[j] - mn <= (i + 1) * step));
+
+                res += rs;
+            }
+
+            if (res > 7)
+                pulsarsEnabled[i] = false;
+        }
+}
+
+void Analytics::applyDifferentNoise() {
+    for (int i = 0; i < pulsars->size(); i++)
+        pulsarsEnabled[i] &= differentNoisePreCalc[i];
+}
+
+void Analytics::preCalc() {
+    qDebug() << "precalc";
+
     for (int i = 0; i < pulsars->size(); i++) {
-        const float *data = pulsars->at(i).data.data[0][0][0];
-        float mx = 0;
-        float mn = 0;
-        for (int i = 0; data[i] != 0; i++) {
-            if (data[i] > mx)
-                mx = data[i];
-
-            if (data[i] < mn)
-                mn = data[i];
+        if (i % 1000 == 0) {
+            ui->progressBar->setValue((i + 1) / pulsars->size() * 100);\
+            qApp->processEvents();
         }
 
-        int res = 0;
-        double step = (mx - mn) / 10;
-        for (int i = 0; i < 10; i++) {
-            bool rs = false;
-            for (int j = 0; data[j] != 0; j++)
-                rs |= ((data[j] - mn >= i * step) && (data[j] - mn <= (i + 1) * step));
+        int j = 0;
+        while (pulsars->at(i).data.data[0][0][0][j] != 0) j++;
+        while (pulsars->at(i).data.data[0][0][0][j] == 0) j++;
 
-            res += rs;
+        QVector<double> sigmas;
+        int n = pulsars->at(i).data.npoints - j;
+        float *data = pulsars->at(i).data.data[0][0][0] + j;
+        bool res = true;
+        const int pieces = 8;
+        for (int k = 0; k < pieces; k++) {
+            double sigma = 0;
+            for (int i = k * n / pieces; i < (k + 1) * n / pieces; i++)
+                sigma += data[i] * data[i];
+
+            sigma /= (n / pieces);
+            sigma = pow(sigma, 0.5);
+            sigmas.push_back(sigma);
         }
 
-        if (res > 7)
-            pulsarsEnabled[i] = false;
+        for (int i = 0; i < pieces; i++)
+            for (int j = 0; j < pieces; j++)
+                if (sigmas[i] / sigmas[j] > 4)
+                    res = false;
+
+        differentNoisePreCalc.push_back(res);
     }
 }
 

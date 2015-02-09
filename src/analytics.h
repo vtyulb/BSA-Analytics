@@ -25,6 +25,7 @@ private:
 
     Pulsars pulsars;
     QVector<bool> pulsarsEnabled;
+    QVector<bool> differentNoisePreCalc;
 
     void loadPulsars(QString);
 
@@ -36,9 +37,13 @@ private:
 
     void applyMultiplePicksFilter();
     void applyStrangeDataFilter();
+    void applyDifferentNoise();
+
+    void preCalc();
 
 private slots:
     void apply();
+
 };
 
 #endif // ANALYTICS_H

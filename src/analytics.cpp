@@ -197,7 +197,7 @@ void Analytics::preCalc() {
 
         for (int i = 0; i < pieces; i++)
             for (int j = 0; j < pieces; j++)
-                if (sigmas[i] / sigmas[j] > 4)
+                if (sigmas[i] / sigmas[j] > 3)
                     res = false;
 
         differentNoisePreCalc.push_back(res);

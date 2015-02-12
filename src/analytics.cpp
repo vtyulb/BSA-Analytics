@@ -41,10 +41,13 @@ void Analytics::init() {
     window = new MainWindow(this);
     window->show();
     apply();
+    ui->progressBar->hide();
 }
 
 void Analytics::loadPulsars(QString dir) {
     qDebug() << "scanning directory" << dir;
+
+    static int total = 0;
 
     QDir d(dir);
     QFileInfoList list = d.entryInfoList(QDir::Dirs);
@@ -58,6 +61,8 @@ void Analytics::loadPulsars(QString dir) {
         qApp->processEvents();
         qDebug() << "reading file" << list[i].absoluteFilePath();
         *pulsars += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath());
+        total++;
+        ui->pulsarsTotal->setText(QString("Loaded %1 pulsar files").arg(total));
     }
 }
 

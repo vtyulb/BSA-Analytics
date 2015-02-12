@@ -219,6 +219,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="pulsarsTotal">
+     <property name="text">
+      <string>Loaded 0 pulsar files</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QProgressBar" name="progressBar">
      <property name="value">
       <number>0</number>

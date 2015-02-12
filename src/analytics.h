@@ -43,6 +43,7 @@ private:
 
 private slots:
     void apply();
+    void init();
 
 };
 

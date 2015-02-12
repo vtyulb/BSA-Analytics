@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QSettings>
+#include <QTimer>
 
 #include <algorithm>
 
@@ -25,10 +26,14 @@ Analytics::Analytics(QWidget *parent) :
     this->restoreGeometry(s.value("AnalyticsGeometry").toByteArray());
 
     QObject::connect(ui->applyButton, SIGNAL(clicked()), this, SLOT(apply()));
+    show();
+    init();
+}
 
+void Analytics::init() {
+    QSettings s;
     QString folder = QFileDialog::getExistingDirectory(this, "Path to *.pulsar files", s.value("openPath").toString());
     s.setValue("openPath", folder);
-    show();
 
     loadPulsars(folder);
     pulsarsEnabled.resize(pulsars->size());
@@ -49,8 +54,7 @@ void Analytics::loadPulsars(QString dir) {
 
     list = d.entryInfoList(QDir::Files);
     for (int i = 0; i < list.size(); i++) {
-        ui->progressBar->setValue((i + 1) / list.size() * 100);
-        update();
+        ui->progressBar->setValue((i + 1) * 100 / list.size());
         qApp->processEvents();
         qDebug() << "reading file" << list[i].absoluteFilePath();
         *pulsars += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath());

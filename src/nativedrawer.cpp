@@ -353,7 +353,7 @@ void NativeDrawer::nativePrint(QPrinter *printer) {
 void NativeDrawer::sourceDetect(int a, int b) {
     // What is it doing here?
 
-    int ray;
+    int ray = 0;
     for (int i = 0; i < data.rays; i++)
         if (rayVisibles[i]) {
             ray = i;

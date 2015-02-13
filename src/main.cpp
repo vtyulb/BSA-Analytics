@@ -60,6 +60,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("\t--sub-zero for output pulsars with snr 2-5 (only good)\n");
         printf("\t--source-range <file name> <point> for running in a special mode\n");
         printf("\t--analytics to run in analytics mode\n");
+        printf("\t--low-memory to do not save data roads in analytics mode\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
         printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
         exit(0);
@@ -68,6 +69,7 @@ void pulsarEngine(int argc, char **argv) {
     QString savePath;
     QString dataPath;
     int threads = -1;
+    bool analytics = false;
 
     for (int i = 1; i < argc; i++)
         if (strcmp(argv[i], "--pulsar-search") == 0)
@@ -86,15 +88,20 @@ void pulsarEngine(int argc, char **argv) {
             Settings::settings()->detectStair(argv[i + 1], QString(argv[i + 2]).toInt());
             return;
         } else if (strcmp(argv[i], "--analytics") == 0) {
-            QApplication a(argc, argv);
-            a.setOrganizationDomain("bsa.vtyulb.ru");
-            a.setOrganizationName("vtyulb");
-            a.setApplicationName("BSA-Analytics");
-            Analytics *an = new Analytics;
-            a.exec();
-            delete an;
-            exit(0);
-        }
+            analytics = true;
+        } else if (strcmp(argv[i], "--low-memory") == 0)
+            Settings::settings()->setLowMemoryMode(true);
+
+    if (analytics) {
+        QApplication a(argc, argv);
+        a.setOrganizationDomain("bsa.vtyulb.ru");
+        a.setOrganizationName("vtyulb");
+        a.setApplicationName("BSA-Analytics");
+        Analytics *an = new Analytics;
+        a.exec();
+        delete an;
+        exit(0);
+    }
 
     if (dataPath == "" || savePath == "")
         exit(-1);

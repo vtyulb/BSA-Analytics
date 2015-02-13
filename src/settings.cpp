@@ -4,6 +4,7 @@
 Settings::Settings() {
     filter = true;
     _skipCount = 0;
+    _lowMemory = false;
 }
 
 Settings *Settings::settings() {
@@ -21,6 +22,14 @@ void Settings::setIntellectualFilter(bool f) {
 
 void Settings::setSkipCount(int skip) {
     _skipCount = skip;
+}
+
+bool Settings::lowMemory() {
+    return _lowMemory;
+}
+
+void Settings::setLowMemoryMode(bool b) {
+    _lowMemory = b;
 }
 
 int Settings::skipCount() {

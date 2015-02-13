@@ -11,6 +11,7 @@ class Settings {
 
         bool intellectualFilter();
         bool subZero();
+        bool lowMemory();
         int skipCount();
         double realOneStep();
 
@@ -20,6 +21,7 @@ class Settings {
         void setSkipCount(int);
         void setSubZero(bool);
         void setIntellectualFilter(bool);
+        void setLowMemoryMode(bool);
         void setRealOneStep(double);
         void detectStair(char *name, int point);
 
@@ -28,6 +30,7 @@ class Settings {
         int _skipCount;
         bool _subZero;
         double _realOneStep;
+        bool _lowMemory;
         QVector<QVector<QVector<double> > > stairs;
 };
 

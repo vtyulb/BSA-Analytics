@@ -226,6 +226,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QLabel" name="currentFile">
+     <property name="text">
+      <string>Loading</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QProgressBar" name="progressBar">
      <property name="value">
       <number>0</number>

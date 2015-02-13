@@ -71,6 +71,19 @@ struct Pulsar {
         stream << QVariant(d.toList());
     }
 
+    void squeeze() {
+        int i = 0;
+        while (data.data[0][0][0][i] != 0)
+            i++;
+
+        data.npoints = i + 10;
+        float *nd = new float[i + 10];
+        memcpy(nd, data.data[0][0][0], sizeof(float) * (i + 10));
+
+        delete[] data.data[0][0][0];
+        data.data[0][0][0] = nd;
+    }
+
     bool operator < (const Pulsar &p) const {
         if (nativeTime.secsTo(p.nativeTime) > 0)
             return true;

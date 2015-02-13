@@ -4,6 +4,7 @@
 #include <pulsarreader.h>
 #include <pulsarworker.h>
 #include <pulsarlist.h>
+#include <settings.h>
 
 #include <QFileDialog>
 #include <QDir>
@@ -37,11 +38,11 @@ void Analytics::init() {
 
     loadPulsars(folder);
     pulsarsEnabled.resize(pulsars->size());
-    preCalc();
     window = new MainWindow(this);
     window->show();
     apply();
     ui->progressBar->hide();
+    ui->currentFile->hide();
 }
 
 void Analytics::loadPulsars(QString dir) {
@@ -60,7 +61,13 @@ void Analytics::loadPulsars(QString dir) {
         ui->progressBar->setValue((i + 1) * 100 / list.size());
         qApp->processEvents();
         qDebug() << "reading file" << list[i].absoluteFilePath();
+        ui->currentFile->setText(list[i].fileName());
         *pulsars += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath());
+        preCalc();
+        if (Settings::settings()->lowMemory())
+            for (static int j = 0; j < pulsars->size(); j++)
+                (*pulsars)[j].squeeze();
+
         total++;
         ui->pulsarsTotal->setText(QString("Loaded %1 pulsar files").arg(total));
     }
@@ -177,14 +184,7 @@ void Analytics::applyDifferentNoise() {
 }
 
 void Analytics::preCalc() {
-    qDebug() << "precalc";
-
-    for (int i = 0; i < pulsars->size(); i++) {
-        if (i % 1000 == 0) {
-            ui->progressBar->setValue((i + 1) / pulsars->size() * 100);\
-            qApp->processEvents();
-        }
-
+    for (static int i = 0; i < pulsars->size(); i++) {
         int j = 0;
         while (pulsars->at(i).data.data[0][0][0][j] != 0) j++;
         while (pulsars->at(i).data.data[0][0][0][j] == 0) j++;

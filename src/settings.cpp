@@ -119,3 +119,11 @@ int Settings::ray() {
 double Settings::period() {
     return _period;
 }
+
+void Settings::setTime(QTime t) {
+    _time = t;
+}
+
+QTime Settings::getTime() {
+    return _time;
+}

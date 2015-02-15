@@ -2,6 +2,7 @@
 #define SETTINGS_H
 
 #include <QVector>
+#include <QTime>
 
 class Settings {
     public:
@@ -29,11 +30,13 @@ class Settings {
         void setLowMemoryMode(bool);
         void setRealOneStep(double);
         void detectStair(char *name, int point);
+        QTime getTime();
 
         void setPreciseSearch(bool);
         void setModule(int);
         void setRay(int);
         void setPeriod(double);
+        void setTime(QTime);
 
     private:
         bool filter;
@@ -44,6 +47,7 @@ class Settings {
         bool _preciseSearch;
         int _ray;
         int _module;
+        QTime _time;
         double _period;
         QVector<QVector<QVector<double> > > stairs;
 };

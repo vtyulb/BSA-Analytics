@@ -7,6 +7,7 @@
 #include <QProcess>
 #include <QVector>
 #include <QDir>
+#include <QTime>
 
 #include <signal.h>
 #include <settings.h>
@@ -56,7 +57,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
         printf("BSA-Analytics --analytics [--low-memory]\n");
         printf("BSA-Analytics --source-range <file name> <point>\n");
-        printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double>\n");
+        printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double> --time <09:01:00>\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
@@ -82,6 +83,7 @@ void pulsarEngine(int argc, char **argv) {
     int module = 1;
     int ray = 1;
     double period = 1;
+    QTime time(0, 0, 0);
 
     for (int i = 1; i < argc; i++)
         if (strcmp(argv[i], "--pulsar-search") == 0)
@@ -112,14 +114,17 @@ void pulsarEngine(int argc, char **argv) {
             ray = QString(argv[i + 1]).toInt();
         else if (strcmp(argv[i], "--period") == 0)
             period = QString(argv[i + 1]).toDouble();
+        else if (strcmp(argv[i], "--time") == 0)
+            time = QTime::fromString(argv[i + 1], "hh:mm:ss");
 
     if (preciseSearch) {
-        qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray;
+        qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray << "with time" << time;
         Settings::settings()->setPreciseSearch(true);
         Settings::settings()->setModule(module - 1);
         Settings::settings()->setRay(ray - 1);
         Settings::settings()->setPeriod(period);
         Settings::settings()->setIntellectualFilter(false);
+        Settings::settings()->setTime(time);
 
         if (threads != -1)
             CalculationPool::pool()->setMaxThreadCount(threads);

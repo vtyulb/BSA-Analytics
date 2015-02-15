@@ -35,6 +35,22 @@ QVector<Pulsar> PulsarWorker::searchIn() {
 
     QMap<int, double> noises;
 
+    int start = 0;
+    int end = res.size() - interval / data.oneStep;
+    if (Settings::settings()->preciseSearch()) {
+        while (abs(Settings::settings()->getTime().secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > 180)
+            start++;
+
+        Settings::settings()->getTime().secsTo(QTime::fromString(StarTime::StarTime(data, start)));
+
+        end = start;
+        while (abs(Settings::settings()->getTime().secsTo(QTime::fromString(StarTime::StarTime(data, end)))) <= 180)
+            end++;
+
+        Settings::settings()->getTime().secsTo(QTime::fromString(StarTime::StarTime(data, end)));
+    }
+
+
     for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval)
         if (!Settings::settings()->preciseSearch() || goodDoubles(period, Settings::settings()->period()))
     {
@@ -43,7 +59,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         pulsar.snr = 0;
         int calc = 0;
         double noise = calculateNoise(res.data(), (interval / data.oneStep + 1) * 2);
-        for (int i = 0; i < res.size() - interval / data.oneStep; i++) {
+        for (int i = start; i < end; i++) {
             if (calc++ == int(period + 1)) {
                 calc = 0;
                 if (!Settings::settings()->preciseSearch())
@@ -101,7 +117,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             }
         }
 
-        if (pulsar.snr > CATEGORIES_SIZES[0]) {
+        if (pulsar.snr > CATEGORIES_SIZES[0] || Settings::settings()->preciseSearch()) {
             if (Settings::settings()->intellectualFilter() && (good > 3))
                 pulsar.filtered = true;
 

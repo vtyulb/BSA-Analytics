@@ -38,9 +38,15 @@ namespace {
         while (alf < 0)
             alf += 24;
 
-        m[1] = int(alf) % 24;
-        m[2] = int((alf - m[1]) * 60) % 60;
-        m[3] = int(((alf - m[1]) * 60 - m[2]) * 60 + 0.5) % 60;
+        m[1] = alf;
+        m[2] = (alf - m[1]) * 60;
+        m[3] = ((alf - m[1]) * 60 - m[2]) * 60 + 0.5;
+
+        m[2] += m[3] / 60;
+        m[3] %= 60;
+        m[1] += m[2] / 60;
+        m[2] %= 60;
+        m[1] %= 24;
 
         del /= 3600;
         while (del >= 360)
@@ -50,9 +56,15 @@ namespace {
             del += 360;
 
 
-        n[1] = int(del) % 24;
-        n[2] = int((del - n[1]) * 60) % 60;
-        n[3] = int(((del - n[1]) * 60 - n[2]) * 60 + 0.5) % 60;
+        n[1] = del;
+        n[2] = (del - n[1]) * 60;
+        n[3] = ((del - n[1]) * 60 - n[2]) * 60 + 0.5;
+
+        n[2] += n[3] / 60;
+        n[3] %= 60;
+        n[1] += n[2] / 60;
+        n[2] %= 60;
+        n[1] %= 24;
 
 
         QPair<QString, QString> res = QPair<QString, QString>(QTime(m[1], m[2], m[3]).toString("hh:mm:ss"), QString("%1°%2.%3").arg(n[1]).arg(n[2]).arg(n[3]));

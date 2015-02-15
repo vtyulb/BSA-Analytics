@@ -64,6 +64,8 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                 calc = 0;
                 if (!Settings::settings()->preciseSearch())
                     i += interval / 2 /data.oneStep;
+                else
+                    i += 20 / data.oneStep;
 
                 if (i < res.size() - interval / data.oneStep) {
                     if (noises.contains(i))

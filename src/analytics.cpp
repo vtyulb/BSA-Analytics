@@ -62,7 +62,7 @@ void Analytics::loadPulsars(QString dir) {
         qApp->processEvents();
         qDebug() << "reading file" << list[i].absoluteFilePath();
         ui->currentFile->setText(list[i].fileName());
-        *pulsars += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath());
+        *pulsars += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath(), ui->progressBar);
         preCalc();
         if (Settings::settings()->lowMemory())
             for (static int j = 0; j < pulsars->size(); j++)

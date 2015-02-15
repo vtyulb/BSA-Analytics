@@ -12,6 +12,7 @@ const double INTERVAL = 17;
 const double MINIMUM_PERIOD = 0.5;
 const double MAXIMUM_PERIOD = 10;
 const double PERIOD_STEP = 0.01;
+
 const int interval = 180;
 const int CATEGORIES = 4;
 const int CATEGORIES_SIZES[CATEGORIES + 1] = {4, 5, 7, 10, 1000};

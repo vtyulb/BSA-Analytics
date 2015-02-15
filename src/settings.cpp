@@ -5,6 +5,7 @@ Settings::Settings() {
     filter = true;
     _skipCount = 0;
     _lowMemory = false;
+    _preciseSearch = false;
 }
 
 Settings *Settings::settings() {
@@ -85,4 +86,36 @@ void Settings::detectStair(char *name, int point) {
 
 double Settings::getStairHeight(int module, int ray, int channel) {
     return stairs[module][ray][channel];
+}
+
+void Settings::setPreciseSearch(bool p) {
+    _preciseSearch = p;
+}
+
+bool Settings::preciseSearch() {
+    return _preciseSearch;
+}
+
+void Settings::setModule(int m) {
+    _module = m;
+}
+
+void Settings::setRay(int r) {
+    _ray = r;
+}
+
+void Settings::setPeriod(double p) {
+    _period = p;
+}
+
+int Settings::module() {
+    return _module;
+}
+
+int Settings::ray() {
+    return _ray;
+}
+
+double Settings::period() {
+    return _period;
 }

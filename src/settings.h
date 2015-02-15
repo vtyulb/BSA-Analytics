@@ -12,8 +12,13 @@ class Settings {
         bool intellectualFilter();
         bool subZero();
         bool lowMemory();
+        bool preciseSearch();
         int skipCount();
         double realOneStep();
+
+        int module();
+        int ray();
+        double period();
 
         double getStairHeight(int module, int ray, int channel);
         bool sourceMode();
@@ -25,12 +30,21 @@ class Settings {
         void setRealOneStep(double);
         void detectStair(char *name, int point);
 
+        void setPreciseSearch(bool);
+        void setModule(int);
+        void setRay(int);
+        void setPeriod(double);
+
     private:
         bool filter;
         int _skipCount;
         bool _subZero;
         double _realOneStep;
         bool _lowMemory;
+        bool _preciseSearch;
+        int _ray;
+        int _module;
+        double _period;
         QVector<QVector<QVector<double> > > stairs;
 };
 

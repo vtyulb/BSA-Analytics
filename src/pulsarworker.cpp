@@ -36,7 +36,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     QMap<int, double> noises;
 
     for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval)
-//        if (!goodDoubles(period, INTERVAL))
+        if (!Settings::settings()->preciseSearch() || goodDoubles(period, Settings::settings()->period()))
     {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
@@ -44,7 +44,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         int calc = 0;
         double noise = calculateNoise(res.data(), (interval / data.oneStep + 1) * 2);
         for (int i = 0; i < res.size() - interval / data.oneStep; i++) {
-            if (calc++ == int(period + 1)) {
+            if (calc++ == int(period + 1) && !Settings::settings()->preciseSearch()) {
                 calc = 0;
                 i += interval / 2 /data.oneStep;
                 if (i < res.size() - interval / data.oneStep) {
@@ -103,7 +103,15 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             if (Settings::settings()->intellectualFilter() && (good > 3))
                 pulsar.filtered = true;
 
-            pulsars.push_back(pulsar);
+            if (Settings::settings()->preciseSearch()) {
+                if (!pulsars.size())
+                    pulsars.push_back(pulsar);
+                else if (pulsar.snr > pulsars[0].snr) {
+                    pulsars.clear();
+                    pulsars.push_back(pulsar);
+                }
+            } else
+                pulsars.push_back(pulsar);
         }
     }
 
@@ -195,11 +203,13 @@ QVector<double> PulsarWorker::applyDispersion() {
 
     double noise = calculateNoise(res.data(), res.size());
 
-    for (int i = 0; i < res.size(); i++)
-        if (res[i] >  noise * 4)
-            res[i] = noise * 4;
-        else if (res[i] < -noise * 4)
-            res[i] = -noise * 4;
+    if (!Settings::settings()->preciseSearch()) {
+        for (int i = 0; i < res.size(); i++)
+            if (res[i] >  noise * 4)
+                res[i] = noise * 4;
+            else if (res[i] < -noise * 4)
+                res[i] = -noise * 4;
+    }
 
     return res;
 }

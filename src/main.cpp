@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <settings.h>
 #include <analytics.h>
+#include <calculationpool.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -51,6 +52,12 @@ void catchSigSegv(int signal) {
 
 void pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
+        printf("Usage:\nBSA-Analytics\n");
+        printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
+        printf("BSA-Analytics --analytics [--low-memory]\n");
+        printf("BSA-Analytics --source-range <file name> <point>\n");
+        printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double>\n");
+        printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
         printf("\t--save-path /path/to/save\n");
@@ -71,6 +78,11 @@ void pulsarEngine(int argc, char **argv) {
     int threads = -1;
     bool analytics = false;
 
+    bool preciseSearch = false;
+    int module = 1;
+    int ray = 1;
+    double period = 1;
+
     for (int i = 1; i < argc; i++)
         if (strcmp(argv[i], "--pulsar-search") == 0)
             dataPath = QString::fromUtf8(argv[i + 1]);
@@ -87,10 +99,38 @@ void pulsarEngine(int argc, char **argv) {
         else if (strcmp(argv[i], "--source-range") == 0) {
             Settings::settings()->detectStair(argv[i + 1], QString(argv[i + 2]).toInt());
             return;
-        } else if (strcmp(argv[i], "--analytics") == 0) {
+        } else if (strcmp(argv[i], "--analytics") == 0)
             analytics = true;
-        } else if (strcmp(argv[i], "--low-memory") == 0)
+        else if (strcmp(argv[i], "--low-memory") == 0)
             Settings::settings()->setLowMemoryMode(true);
+        else if (strcmp(argv[i], "--precise-pulsar-search") == 0) {
+            preciseSearch = true;
+            dataPath = QString(argv[i + 1]);
+        } else if (strcmp(argv[i], "--module") == 0)
+            module = QString(argv[i + 1]).toInt();
+        else if (strcmp(argv[i], "--ray") == 0)
+            ray = QString(argv[i + 1]).toInt();
+        else if (strcmp(argv[i], "--period") == 0)
+            period = QString(argv[i + 1]).toDouble();
+
+    if (preciseSearch) {
+        qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray;
+        Settings::settings()->setPreciseSearch(true);
+        Settings::settings()->setModule(module - 1);
+        Settings::settings()->setRay(ray - 1);
+        Settings::settings()->setPeriod(period);
+        Settings::settings()->setIntellectualFilter(false);
+
+        if (threads != -1)
+            CalculationPool::pool()->setMaxThreadCount(threads);
+
+        PulsarProcess p(dataPath);
+        p.start();
+        QCoreApplication a(argc, argv);
+        a.exec();
+        exit(0);
+    }
+
 
     if (analytics) {
         QApplication a(argc, argv);

@@ -27,13 +27,23 @@ void PulsarProcess::run() {
     QVector<PulsarWorker*> workers;
     QThreadPool *pool = CalculationPool::pool();
     qDebug() << "splitting to" << pool->maxThreadCount() << "processes";
-    for (int D = 0; D < 200; D += 6)
-        for (int i = 0; i < data.modules; i++)
-            for (int j = 0; j < data.rays; j++) {
-                    workers.push_back(new PulsarWorker(i, j, D, data));
-                    workers[workers.size() - 1]->setAutoDelete(false);
-                    pool->start(workers[workers.size() - 1]);
-                }
+
+    if (!Settings::settings()->preciseSearch()) {
+        for (int D = 0; D < 200; D += 6)
+            for (int i = 0; i < data.modules; i++)
+                for (int j = 0; j < data.rays; j++) {
+                        workers.push_back(new PulsarWorker(i, j, D, data));
+                        workers[workers.size() - 1]->setAutoDelete(false);
+                        pool->start(workers[workers.size() - 1]);
+                    }
+    } else {
+        for (int D = 0; D < 200; D++) {
+            workers.push_back(new PulsarWorker(Settings::settings()->module(), Settings::settings()->ray(), D, data));
+            workers[workers.size() - 1]->setAutoDelete(false);
+            pool->start(workers[workers.size() - 1]);
+        }
+
+    }
 
     while (!pool->waitForDone(30000)) {
         bool finished = true;

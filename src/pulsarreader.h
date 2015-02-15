@@ -4,10 +4,11 @@
 #include <pulsar.h>
 #include <QVector>
 #include <QString>
+#include <QProgressBar>
 
 class PulsarReader {
     public:
-        static Pulsars ReadPulsarFile(QString name);
+        static Pulsars ReadPulsarFile(QString name, QProgressBar *bar = NULL);
 };
 
 #endif // PULSARREADER_H

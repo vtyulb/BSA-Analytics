@@ -8,11 +8,12 @@
 #include <QDateTime>
 #include <QTextStream>
 #include <QDebug>
+#include <QApplication>
 
-Pulsars PulsarReader::ReadPulsarFile(QString name) {
+Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
     if (!name.endsWith(".pulsar")) {
         qDebug() << "wrong file name" << name;
-        return NULL;
+        return new QVector<Pulsar>;
     }
 
     QFile file(name);
@@ -39,6 +40,13 @@ Pulsars PulsarReader::ReadPulsarFile(QString name) {
             QDataStream stream(&line, QIODevice::ReadOnly);
 
             for (int i = 0; i < res.size(); i++) {
+                if (bar && i % 400 == 0) {
+                    int a = file.pos();
+                    int b = file.size();
+                    bar->setValue(file.pos() * 100 / file.size());
+                    qApp->processEvents();
+                }
+
                 QVariant v;
                 stream >> v;
 

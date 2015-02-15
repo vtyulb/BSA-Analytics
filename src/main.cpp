@@ -126,8 +126,9 @@ void pulsarEngine(int argc, char **argv) {
 
         PulsarProcess p(dataPath);
         p.start();
-        QCoreApplication a(argc, argv);
-        a.exec();
+        p.wait();
+//        QCoreApplication a(argc, argv);
+//        a.exec();
         exit(0);
     }
 

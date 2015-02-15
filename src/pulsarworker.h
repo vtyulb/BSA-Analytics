@@ -17,8 +17,6 @@ public:
     bool finished;
     void run();
 
-    static bool goodDoubles(double, double);
-
 private:
     QVector<double> applyDispersion();
     QVector<Pulsar> searchIn();
@@ -31,6 +29,8 @@ private:
     double calculateNoise(real *, int);
     template <typename real>
     void subtract(real *, int);
+
+    bool goodDoubles(double, double);
 
     Data data;
     int module, ray, D;

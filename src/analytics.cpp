@@ -124,9 +124,20 @@ void Analytics::applyModuleFilter() {
         pulsarsEnabled[i] &= (pulsars->at(i).module == ui->module->value());
 }
 
+bool Analytics::goodDoubles(double a, double b) {
+    if (a > b)
+        a /= b;
+    else
+        a = b / a;
+
+    a = fabs(a - int(a + 0.5));
+
+    return interval * a < 2 * b;
+}
+
 void Analytics::applyPeriodFilter() {
     for (int i = 0; i < pulsars->size(); i++)
-        pulsarsEnabled[i] &= (PulsarWorker::goodDoubles(ui->period->value(), pulsars->at(i).period));
+        pulsarsEnabled[i] &= (goodDoubles(ui->period->value(), pulsars->at(i).period));
 }
 
 void Analytics::applyRayFilter() {

@@ -36,7 +36,6 @@ private slots:
     void openBinaryFile();
     void customOpen();
 
-    void regenerate(Data &data);
     void nativeOpenFile(QString fileName, int skip = 0, int skipFirstRay = 2, QDateTime = QDateTime(), bool binary = false);
     void readProgressChanged(double);
     void saveFile();
@@ -49,6 +48,10 @@ private slots:
     void showAboutQt();
 
     void clone();
+
+public slots:
+    void regenerate(Data &data);
+
 };
 
 #endif // MAINWINDOW_H

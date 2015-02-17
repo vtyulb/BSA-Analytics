@@ -46,6 +46,7 @@ private:
 private slots:
     void apply();
     void init();
+    void dispersionPlot();
 
 };
 

@@ -27,6 +27,7 @@ Analytics::Analytics(QWidget *parent) :
     this->restoreGeometry(s.value("AnalyticsGeometry").toByteArray());
 
     QObject::connect(ui->applyButton, SIGNAL(clicked()), this, SLOT(apply()));
+    QObject::connect(ui->dispersionPlotButton, SIGNAL(clicked()), this, SLOT(dispersionPlot()));
     show();
     init();
 }
@@ -222,6 +223,29 @@ void Analytics::preCalc() {
 
         differentNoisePreCalc.push_back(res);
     }
+}
+
+void Analytics::dispersionPlot() {
+    Data data;
+    data.npoints = 200;
+    data.modules = 1;
+    data.rays = 1;
+    data.channels = 1;
+    data.time = pulsars->at(0).data.time;
+    data.name = pulsars->at(0).data.name;
+    data.init();
+
+
+    double current = 0;
+    for (int i = 0; i < 200; i++) {
+        for (int j = 0; j < pulsars->size(); j++)
+            if (pulsars->at(j).dispersion == i)
+                current = pulsars->at(j).snr;
+
+        data.data[0][0][0][i] = current;
+    }
+
+    window->regenerate(data);
 }
 
 Analytics::~Analytics()

@@ -148,7 +148,7 @@ bool PulsarWorker::goodDoubles(double a, double b) {
     else
         a = b / a;
 
-    if (fabs(a - int(a + 0.5)) < 0.05)
+    if (fabs(a - int(a + 0.5)) < 0.01)
         return true;
 
     return false;
@@ -223,7 +223,7 @@ QVector<double> PulsarWorker::applyDispersion() {
 
     double noise = calculateNoise(res.data(), res.size());
 
-    if (!Settings::settings()->preciseSearch()) {
+    if (!Settings::settings()->preciseSearch() || true) {
         for (int i = 0; i < res.size(); i++)
             if (res[i] >  noise * 4)
                 res[i] = noise * 4;

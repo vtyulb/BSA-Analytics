@@ -148,7 +148,8 @@ bool PulsarWorker::goodDoubles(double a, double b) {
     else
         a = b / a;
 
-    if (fabs(a - int(a + 0.5)) < 0.01)
+    const double eps = Settings::settings()->preciseSearch() ? 0.01 : 0.05;
+    if (fabs(a - int(a + 0.5)) < eps)
         return true;
 
     return false;

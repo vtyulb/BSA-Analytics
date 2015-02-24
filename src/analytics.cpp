@@ -133,7 +133,7 @@ bool Analytics::goodDoubles(double a, double b) {
 
     a = fabs(a - int(a + 0.5));
 
-    return interval * a < 2 * b;
+    return interval * a < 1.01 * b;
 }
 
 void Analytics::applyPeriodFilter() {

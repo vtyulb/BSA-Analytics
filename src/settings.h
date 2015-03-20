@@ -16,6 +16,7 @@ class Settings {
         bool preciseSearch();
         int skipCount();
         double realOneStep();
+        bool soundMode();
 
         int module();
         int ray();
@@ -29,6 +30,7 @@ class Settings {
         void setIntellectualFilter(bool);
         void setLowMemoryMode(bool);
         void setRealOneStep(double);
+        void setSoundMode(bool);
         void detectStair(char *name, int point);
         QTime getTime();
 
@@ -45,6 +47,7 @@ class Settings {
         double _realOneStep;
         bool _lowMemory;
         bool _preciseSearch;
+        bool _soundMode;
         int _ray;
         int _module;
         QTime _time;

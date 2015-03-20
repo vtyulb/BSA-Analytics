@@ -6,11 +6,20 @@ Settings::Settings() {
     _skipCount = 0;
     _lowMemory = false;
     _preciseSearch = false;
+    _soundMode = false;
 }
 
 Settings *Settings::settings() {
     static Settings *res = new Settings();
     return res;
+}
+
+bool Settings::soundMode() {
+    return _soundMode;
+}
+
+void Settings::setSoundMode(bool s) {
+    _soundMode = s;
 }
 
 bool Settings::intellectualFilter() {

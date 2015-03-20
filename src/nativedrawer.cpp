@@ -8,6 +8,7 @@
 #include <startime.h>
 #include <math.h>
 #include <settings.h>
+#include <wavplayer.h>
 
 NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     QWidget(parent),
@@ -195,6 +196,23 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
 
     if (abs(mouseRect.width()) < 50 || abs(mouseRect.height()) < 50) {
         repaint();
+        return;
+    }
+
+    if (Settings::settings()->soundMode()) { //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        qDebug() << "playing";
+        int x1 = backwardCoord(mouseRect.topLeft()).x();
+        int x2 = backwardCoord(mouseRect.bottomRight()).x();
+        QVector<double> sound;
+        int ray = 0;
+        for (; ray < data.rays; ray++)
+            if (rayVisibles[ray])
+                break;
+
+        for (int i = x1; i < x2; i++)
+            sound.push_back(data.data[module][channel][ray][i]);
+
+        WavPlayer::play(sound);
         return;
     }
 

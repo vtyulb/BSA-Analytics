@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QTimer>
+#include <QSet>
 
 #include <algorithm>
 
@@ -101,6 +102,9 @@ void Analytics::apply() {
 
     if (ui->differentNoise->isChecked())
         applyDifferentNoise();
+
+    if (ui->duplicatesCheckBox->isChecked())
+        applyDuplicatesFilter();
 
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)
@@ -193,6 +197,34 @@ void Analytics::applyStrangeDataFilter() {
 void Analytics::applyDifferentNoise() {
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] &= differentNoisePreCalc[i];
+}
+
+void Analytics::applyDuplicatesFilter() {
+    const int duplicates = ui->duplicates->value();
+    for (int i = 0; i < pulsars->size(); i++)
+        (*pulsars)[i].firstPoint = 0;
+
+    QSet<QString> *set = new QSet<QString>[pulsars->size()];
+
+    for (int i = 0; i < pulsars->size(); i++)
+        for (int j = i + 1; j < pulsars->size(); j++)
+            if (pulsars->at(i).module == pulsars->at(j).module &&
+                    pulsars->at(i).ray == pulsars->at(j).ray &&
+                    pulsarsEnabled[i] && pulsarsEnabled[j] &&
+                    pulsars->at(i).data.name != pulsars->at(j).data.name &&
+                    goodDoubles(pulsars->at(i).period, pulsars->at(j).period) &&
+                    !set[i].contains(pulsars->at(j).data.name)) {
+                set[i].insert(pulsars->at(j).data.name);
+                set[j].insert(pulsars->at(i).data.name);
+                (*pulsars)[i].firstPoint++;
+                (*pulsars)[j].firstPoint++;
+//                qDebug() << i << j << "inc";
+            }
+
+    for (int i = 0; i < pulsars->size(); i++)
+        pulsarsEnabled[i] &= (pulsars->at(i).firstPoint >= duplicates);
+
+    delete[] set;
 }
 
 void Analytics::preCalc() {

@@ -57,6 +57,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
         printf("BSA-Analytics --analytics [--low-memory]\n");
         printf("BSA-Analytics --source-range <file name> <point>\n");
+        printf("BSA-Analytics --sound-mode\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double> --time <09:01:00>\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
@@ -67,6 +68,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("\t--no-filter for disabling filter\n");
         printf("\t--sub-zero for output pulsars with snr 2-5 (only good)\n");
         printf("\t--source-range <file name> <point> for running in a special mode\n");
+        printf("\t--sound-mode for listening data\n");
         printf("\t--analytics to run in analytics mode\n");
         printf("\t--low-memory to do not save data roads in analytics mode\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
@@ -116,6 +118,10 @@ void pulsarEngine(int argc, char **argv) {
             period = QString(argv[i + 1]).toDouble();
         else if (strcmp(argv[i], "--time") == 0)
             time = QTime::fromString(argv[i + 1], "hh:mm:ss");
+        else if (strcmp(argv[i], "--sound-mode") == 0) {
+            Settings::settings()->setSoundMode(true);\
+            return;
+        }
 
     if (preciseSearch) {
         qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray << "with time" << time;

@@ -53,10 +53,10 @@
         <item row="3" column="1">
          <widget class="QSpinBox" name="ray"/>
         </item>
-        <item row="0" column="2">
-         <widget class="QCheckBox" name="periodCheckBox">
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_5">
           <property name="text">
-           <string/>
+           <string>Time</string>
           </property>
          </widget>
         </item>
@@ -67,10 +67,10 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_5">
+        <item row="0" column="2">
+         <widget class="QCheckBox" name="periodCheckBox">
           <property name="text">
-           <string>Time</string>
+           <string/>
           </property>
          </widget>
         </item>
@@ -78,16 +78,6 @@
          <widget class="QCheckBox" name="rayCheckBox">
           <property name="text">
            <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QDoubleSpinBox" name="period">
-          <property name="decimals">
-           <number>3</number>
-          </property>
-          <property name="singleStep">
-           <double>0.001000000000000</double>
           </property>
          </widget>
         </item>
@@ -100,6 +90,16 @@
         </item>
         <item row="2" column="1">
          <widget class="QSpinBox" name="module"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QDoubleSpinBox" name="period">
+          <property name="decimals">
+           <number>3</number>
+          </property>
+          <property name="singleStep">
+           <double>0.001000000000000</double>
+          </property>
+         </widget>
         </item>
         <item row="1" column="1">
          <widget class="QDoubleSpinBox" name="SNR">
@@ -117,6 +117,23 @@
         </item>
         <item row="4" column="2">
          <widget class="QCheckBox" name="timeCheckBox">
+          <property name="text">
+           <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>Duplicates</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QSpinBox" name="duplicates"/>
+        </item>
+        <item row="5" column="2">
+         <widget class="QCheckBox" name="duplicatesCheckBox">
           <property name="text">
            <string/>
           </property>
@@ -211,30 +228,6 @@
       </size>
      </property>
     </spacer>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupBox">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>100</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>100</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>Login</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QLineEdit" name="login"/>
-      </item>
-     </layout>
-    </widget>
    </item>
    <item>
     <widget class="QLabel" name="pulsarsTotal">

@@ -34,6 +34,7 @@ private:
     void applyModuleFilter();
     void applyRayFilter();
     void applyTimeFilter();
+    void applyDuplicatesFilter();
 
     void applyMultiplePicksFilter();
     void applyStrangeDataFilter();

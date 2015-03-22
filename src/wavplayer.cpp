@@ -38,14 +38,17 @@ namespace {
     }
 }
 
-void WavPlayer::play(QVector<double> data) {
+void WavPlayer::play(QVector<double> data, int doubling) {
     subtract(data.data(), data.size());
 
-    const int doubling = 100;
+    if (doubling > 50)
+        doubling = 100;
+    else
+        doubling = 10;
 
     Header header;
     header.chunkSize = 44 - 8 + data.size() * 2 * doubling;
-    header.sampleRate = doubling * 10;
+    header.sampleRate = 1000;
     header.bitsPerSample = 16;
     header.byteRate = header.sampleRate * header.bitsPerSample / 8;
     header.blockAlign = 16;

@@ -9,7 +9,7 @@ private:
     WavPlayer();
 
 public:
-    static void play(QVector<double>);
+    static void play(QVector<double>, int doubling);
 };
 
 #endif // WAVPLAYER_H

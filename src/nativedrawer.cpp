@@ -212,7 +212,7 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
         for (int i = x1; i < x2; i++)
             sound.push_back(data.data[module][channel][ray][i]);
 
-        WavPlayer::play(sound);
+        WavPlayer::play(sound, data.oneStep * 1000 + 1);
         return;
     }
 

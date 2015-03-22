@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <QProcess>
 #include <QStringList>
+#include <QFileDialog>
+#include <QApplication>
 #include <pulsarworker.h>
 
 namespace {
@@ -49,7 +51,8 @@ void WavPlayer::play(QVector<double> data) {
     header.blockAlign = 16;
     header.subchunk2Size = header.chunkSize - (44 - 8);
 
-    FILE *fout = fopen("wave.wav", "w");
+    QString fileName = QFileDialog::getSaveFileName(NULL, "Save wav file as");
+    FILE *fout = fopen((fileName + ".wav").toUtf8().constData(), "w");
     fwrite(&header, sizeof(header), 1, fout);
 
     double min = 100;

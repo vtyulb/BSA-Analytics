@@ -31,7 +31,8 @@ SOURCES += main.cpp\
     pulsarlist.cpp \
     settings.cpp \
     analytics.cpp \
-    wavplayer.cpp
+    wavplayer.cpp \
+    filecompressor.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -51,7 +52,8 @@ HEADERS  += mainwindow.h \
     pulsarlist.h \
     settings.h \
     analytics.h \
-    wavplayer.h
+    wavplayer.h \
+    filecompressor.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

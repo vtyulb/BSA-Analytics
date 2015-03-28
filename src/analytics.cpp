@@ -202,24 +202,33 @@ void Analytics::applyDifferentNoise() {
 void Analytics::applyDuplicatesFilter() {
     const int duplicates = ui->duplicates->value();
     for (int i = 0; i < pulsars->size(); i++)
-        (*pulsars)[i].firstPoint = 0;
+        (*pulsars)[i].firstPoint = 1;
 
     QSet<QString> *set = new QSet<QString>[pulsars->size()];
 
+    QVector<int> pl[6][8];
     for (int i = 0; i < pulsars->size(); i++)
-        for (int j = i + 1; j < pulsars->size(); j++)
-            if (pulsars->at(i).module == pulsars->at(j).module &&
-                    pulsars->at(i).ray == pulsars->at(j).ray &&
-                    pulsarsEnabled[i] && pulsarsEnabled[j] &&
-                    pulsars->at(i).data.name != pulsars->at(j).data.name &&
-                    goodDoubles(pulsars->at(i).period, pulsars->at(j).period) &&
-                    !set[i].contains(pulsars->at(j).data.name)) {
-                set[i].insert(pulsars->at(j).data.name);
-                set[j].insert(pulsars->at(i).data.name);
-                (*pulsars)[i].firstPoint++;
-                (*pulsars)[j].firstPoint++;
-//                qDebug() << i << j << "inc";
-            }
+        if (pulsarsEnabled[i])
+            pl[pulsars->at(i).module - 1][pulsars->at(i).ray - 1].push_back(i);
+
+    for (int module = 0; module < 6; module++)
+        for (int ray = 0; ray < 8; ray++)
+            for (int k = 0; k < pl[module][ray].size(); k++)
+                for (int l = k + 1; l < pl[module][ray].size(); l++) {
+                    int i = pl[module][ray][k];
+                    int j = pl[module][ray][l];
+
+                    if (pulsars->at(i).nativeTime.secsTo(pulsars->at(j).nativeTime) < 120 &&
+                            goodDoubles(pulsars->at(i).period, pulsars->at(j).period) &&
+                            pulsars->at(i).data.name != pulsars->at(j).data.name &&
+                            !set[i].contains(pulsars->at(j).data.name) &&
+                            !set[j].contains(pulsars->at(i).data.name)) {
+                        set[i].insert(pulsars->at(j).data.name);
+                        set[j].insert(pulsars->at(i).data.name);
+                        (*pulsars)[i].firstPoint++;
+                        (*pulsars)[j].firstPoint++;
+                    }
+                }
 
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] &= (pulsars->at(i).firstPoint >= duplicates);

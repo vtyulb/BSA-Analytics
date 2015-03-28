@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>230</width>
+    <width>233</width>
     <height>640</height>
    </rect>
   </property>
@@ -130,7 +130,11 @@
          </widget>
         </item>
         <item row="5" column="1">
-         <widget class="QSpinBox" name="duplicates"/>
+         <widget class="QSpinBox" name="duplicates">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+         </widget>
         </item>
         <item row="5" column="2">
          <widget class="QCheckBox" name="duplicatesCheckBox">

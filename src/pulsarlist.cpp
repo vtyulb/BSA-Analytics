@@ -66,5 +66,7 @@ PulsarList::~PulsarList() {
 }
 
 void PulsarList::selectionChanged() {
-    emit switchData((*pulsars)[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()].data);
+    if (ui->tableWidget->selectionModel()->selection().indexes().size())
+        if (ui->tableWidget->selectionModel()->selection().indexes().at(0).row() < pulsars->size())
+            emit switchData((*pulsars)[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()].data);
 }

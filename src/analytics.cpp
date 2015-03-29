@@ -42,12 +42,37 @@ void Analytics::init() {
     s.setValue("openPath", folder);
 
     loadPulsars(folder);
+    loadKnownPulsars();
     pulsarsEnabled.resize(pulsars->size());
     window = new MainWindow(this);
     window->show();
     apply();
     ui->progressBar->hide();
     ui->currentFile->hide();
+}
+
+void Analytics::loadKnownPulsars() {
+    QFile f("known-pulsars.pls");
+    if (f.open(QIODevice::ReadOnly)) {
+        f.readLine();
+        while (f.canReadLine()) {
+            QByteArray line = f.readLine();
+            if (line[0] == '#')
+                continue;
+            QTextStream stream(&line, QIODevice::ReadOnly);
+            KnownPulsar pulsar;
+            QString time;
+            stream >> pulsar.module >> pulsar.ray >> pulsar.period >> time;
+            if (time.size() < 6)
+                break;
+
+            pulsar.time = QTime::fromString(time, "hh:mm:ss");
+
+            qDebug() << "loaded pulsar" << pulsar.module << pulsar.ray << pulsar.period << pulsar.time;
+            knownPulsars.push_back(pulsar);
+        }
+    } else
+        qDebug() << "can't find file" << f.fileName();
 }
 
 void Analytics::loadPulsars(QString dir) {
@@ -99,6 +124,9 @@ void Analytics::apply() {
 
     if (ui->multiplePicks->isChecked())
         applyMultiplePicksFilter();
+
+    if (ui->knownPulsars->isChecked())
+        applyKnownPulsarsFilter();
 
     if (ui->strangeData->isChecked())
         applyStrangeDataFilter();
@@ -195,6 +223,16 @@ void Analytics::applyStrangeDataFilter() {
             if (res > 7)
                 pulsarsEnabled[i] = false;
         }
+}
+
+void Analytics::applyKnownPulsarsFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i])
+            for (int j = 0; j < knownPulsars.size(); j++)
+                if (knownPulsars[j] == pulsars->at(i)) {
+                    pulsarsEnabled[i] = false;
+                    break;
+                }
 }
 
 void Analytics::applyDifferentNoise() {

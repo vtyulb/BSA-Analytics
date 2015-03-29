@@ -5,6 +5,7 @@
 #include <pulsar.h>
 #include <pulsarlist.h>
 #include <mainwindow.h>
+#include <knownpulsar.h>
 
 namespace Ui {
 class Analytics;
@@ -18,6 +19,8 @@ public:
     explicit Analytics(QString analyticsPath = "", QWidget *parent = 0);
     ~Analytics();
 
+    static bool goodDoubles(double, double);
+
 private:
     Ui::Analytics *ui;
     PulsarList *list;
@@ -27,6 +30,8 @@ private:
     Pulsars pulsars;
     QVector<bool> pulsarsEnabled;
     QVector<bool> differentNoisePreCalc;
+
+    QVector<KnownPulsar> knownPulsars;
 
     void loadPulsars(QString);
 
@@ -40,10 +45,10 @@ private:
     void applyMultiplePicksFilter();
     void applyStrangeDataFilter();
     void applyDifferentNoise();
+    void applyKnownPulsarsFilter();
 
     void preCalc();
-
-    bool goodDoubles(double, double);
+    void loadKnownPulsars();
 
 private slots:
     void apply();

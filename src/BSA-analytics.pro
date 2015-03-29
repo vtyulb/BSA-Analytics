@@ -53,7 +53,8 @@ HEADERS  += mainwindow.h \
     settings.h \
     analytics.h \
     wavplayer.h \
-    filecompressor.h
+    filecompressor.h \
+    knownpulsar.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <QSettings>
 #include <QTimer>
+#include <QProcess>
+
 #include <customopendialog.h>
 #include <pulsarlist.h>
 
@@ -20,6 +22,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionOpen_Binary, SIGNAL(triggered()), this, SLOT(openBinaryFile()));
     QObject::connect(ui->actionCustom_open, SIGNAL(triggered()), this, SLOT(customOpen()));
     QObject::connect(ui->actionPulsar_searcher, SIGNAL(triggered()), this, SLOT(openPulsarFile()));
+    QObject::connect(ui->actionPulsar_analytics, SIGNAL(triggered()), this, SLOT(openAnalytics()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
@@ -63,6 +66,17 @@ void MainWindow::openBinaryFile() {
         return;
 
     nativeOpenFile(path, 0, 0, QDateTime(), true);
+}
+
+void MainWindow::openAnalytics() {
+    QString path = QFileDialog::getExistingDirectory(this, "analytics folder", lastOpenPath);
+    if (path == "")
+        return;
+
+    QStringList l;
+    l << "--analytics" << path;
+    QProcess::startDetached(qApp->arguments()[0], l);
+    qApp->exit(0);
 }
 
 void MainWindow::openPulsarFile() {

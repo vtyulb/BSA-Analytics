@@ -16,7 +16,8 @@
 
 #include <algorithm>
 
-Analytics::Analytics(QWidget *parent) :
+Analytics::Analytics(QString analyticsPath, QWidget *parent) :
+    folder(analyticsPath),
     QWidget(parent),
     ui(new Ui::Analytics),
     pulsars(new QVector<Pulsar>),
@@ -35,7 +36,9 @@ Analytics::Analytics(QWidget *parent) :
 
 void Analytics::init() {
     QSettings s;
-    QString folder = QFileDialog::getExistingDirectory(this, "Path to *.pulsar files", s.value("openPath").toString());
+    if (folder == "")
+        folder = QFileDialog::getExistingDirectory(this, "Path to *.pulsar files", s.value("openPath").toString());
+
     s.setValue("openPath", folder);
 
     loadPulsars(folder);

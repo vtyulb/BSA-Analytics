@@ -32,6 +32,7 @@ private:
 
 private slots:
     void openPulsarFile();
+    void openAnalytics();
     void openFile();
     void openBinaryFile();
     void customOpen();

@@ -25,8 +25,8 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>902</width>
-         <height>554</height>
+         <width>906</width>
+         <height>548</height>
         </rect>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -54,31 +54,35 @@
      <x>0</x>
      <y>0</y>
      <width>922</width>
-     <height>19</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionOpen_Binary"/>
     <addaction name="actionCustom_open"/>
+    <addaction name="separator"/>
     <addaction name="actionPulsar_searcher"/>
+    <addaction name="actionPulsar_analytics"/>
+    <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionPrint"/>
+    <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
     <addaction name="actionAutoDraw"/>
     <addaction name="actionAxes"/>
@@ -94,17 +98,17 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>Open</string>
+    <string>&amp;Open</string>
    </property>
   </action>
   <action name="actionExit">
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Exit</string>
    </property>
   </action>
   <action name="actionSave">
    <property name="text">
-    <string>Save</string>
+    <string>&amp;Save</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+S</string>
@@ -115,7 +119,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>AutoDraw</string>
+    <string>&amp;AutoDraw</string>
    </property>
   </action>
   <action name="actionAxes">
@@ -123,7 +127,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Axes</string>
+    <string>A&amp;xes</string>
    </property>
   </action>
   <action name="actionNet">
@@ -131,27 +135,27 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Net</string>
+    <string>&amp;Net</string>
    </property>
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
    </property>
   </action>
   <action name="actionAbout_Qt">
    <property name="text">
-    <string>About Qt</string>
+    <string>About &amp;Qt</string>
    </property>
   </action>
   <action name="actionCustom_open">
    <property name="text">
-    <string>Custom open</string>
+    <string>&amp;Custom open</string>
    </property>
   </action>
   <action name="actionOpen_Binary">
    <property name="text">
-    <string>Open Binary</string>
+    <string>Open &amp;Binary</string>
    </property>
   </action>
   <action name="actionFast">
@@ -159,12 +163,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Fast</string>
+    <string>&amp;Fast</string>
    </property>
   </action>
   <action name="actionClone">
    <property name="text">
-    <string>Clone</string>
+    <string>&amp;Clone</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
@@ -175,12 +179,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Live</string>
+    <string>&amp;Live</string>
    </property>
   </action>
   <action name="actionPrint">
    <property name="text">
-    <string>Print</string>
+    <string>P&amp;rint</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+P</string>
@@ -188,7 +192,12 @@
   </action>
   <action name="actionPulsar_searcher">
    <property name="text">
-    <string>Pulsar searcher</string>
+    <string>&amp;Pulsar searcher</string>
+   </property>
+  </action>
+  <action name="actionPulsar_analytics">
+   <property name="text">
+    <string>Pulsar analytics</string>
    </property>
   </action>
  </widget>

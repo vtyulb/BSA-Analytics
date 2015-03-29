@@ -15,13 +15,14 @@ class Analytics : public QWidget
     Q_OBJECT
 
 public:
-    explicit Analytics(QWidget *parent = 0);
+    explicit Analytics(QString analyticsPath = "", QWidget *parent = 0);
     ~Analytics();
 
 private:
     Ui::Analytics *ui;
     PulsarList *list;
     MainWindow *window;
+    QString folder;
 
     Pulsars pulsars;
     QVector<bool> pulsarsEnabled;

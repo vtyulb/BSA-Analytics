@@ -17,14 +17,14 @@ void FileCompressor::compress(QString name) {
         (*pulsars) += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath());
 
     if (pulsars->size())
-        FileCompressor::dump(pulsars, QDir(name).absolutePath() + QDir(name).dirName() + ".all.pulsar");
+        FileCompressor::dump(pulsars, QDir(name).absolutePath() + "-all.pulsar");
 }
 
 void FileCompressor::dump(Pulsars pulsars, QString name) {
     QFile f(name);
     f.open(QIODevice::WriteOnly);
 
-    f.write(("file: " + pulsars->at(0).data.name + "\n").toUtf8());
+    f.write(("file: " + pulsars->at(0).data.name).toUtf8());
     f.write("tresolution 0.0999424\n"); // do not try to understand it
     f.write("Start time\tmodule\tray\tdispersion\tperiod\tsnr\n");
 
@@ -38,7 +38,7 @@ void FileCompressor::dump(Pulsars pulsars, QString name) {
         }
 
         QByteArray d = QString("%1\t%2\t%3\t%4\t%5\t%6\n").
-                arg(pulsars->at(i).time()).
+                arg(pulsars->at(i).nativeTime.toString("HH:mm:ss")).
                 arg(pulsars->at(i).module + 1).
                 arg(pulsars->at(i).ray + 1).
                 arg(pulsars->at(i).dispersion).
@@ -53,11 +53,13 @@ void FileCompressor::dump(Pulsars pulsars, QString name) {
     QDataStream totalStream(&f);
     for (int i = 0; i < pulsars->size(); i++) {
         QVector<QVariant> pl;
-        for (int j = 0; pulsars->at(i).data.data[0][0][0][j] != 0 || pulsars->at(i).data.data[0][0][0][j] != 0; j++)
-            pl.push_back(pulsars->at(i).data.data[0][0][0][j]);
+        for (int j = 0; /*pulsars->at(i).data.data[0][0][0][j] != 0 || pulsars->at(i).data.data[0][0][0][j] != 0*/j < pulsars->at(i).data.npoints; j++)
+            pl.push_back(double(pulsars->at(i).data.data[0][0][0][j]));
 
         totalStream << QVariant(pl.toList());
     }
+
+    return;
 
     for (int i = 0; i < pulsars->size(); i++) {
         bool flushed = false;

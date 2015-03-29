@@ -56,10 +56,10 @@ void pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
         printf("Usage:\nBSA-Analytics\n");
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
-        printf("BSA-Analytics --analytics [--low-memory]\n");
+        printf("BSA-Analytics --analytics [path-to-data] [--low-memory]\n");
         printf("BSA-Analytics --source-range <file name> <point>\n");
         printf("BSA-Analytics --sound-mode\n");
-//        printf("BSA-Analytics --compress <dir>\n"); non documented power
+        printf("BSA-Analytics --compress <dir>\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double> --time <09:01:00>\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
@@ -80,6 +80,7 @@ void pulsarEngine(int argc, char **argv) {
 
     QString savePath;
     QString dataPath;
+    QString analyticsPath;
     int threads = -1;
     bool analytics = false;
 
@@ -105,9 +106,11 @@ void pulsarEngine(int argc, char **argv) {
         else if (strcmp(argv[i], "--source-range") == 0) {
             Settings::settings()->detectStair(argv[i + 1], QString(argv[i + 2]).toInt());
             return;
-        } else if (strcmp(argv[i], "--analytics") == 0)
+        } else if (strcmp(argv[i], "--analytics") == 0) {
             analytics = true;
-        else if (strcmp(argv[i], "--low-memory") == 0)
+            if (argv[i + 1][0] != '-' && argv[i + 1][0] != 0)
+                analyticsPath = QString(argv[i + 1]);
+        } else if (strcmp(argv[i], "--low-memory") == 0)
             Settings::settings()->setLowMemoryMode(true);
         else if (strcmp(argv[i], "--precise-pulsar-search") == 0) {
             preciseSearch = true;
@@ -154,7 +157,7 @@ void pulsarEngine(int argc, char **argv) {
         a.setOrganizationDomain("bsa.vtyulb.ru");
         a.setOrganizationName("vtyulb");
         a.setApplicationName("BSA-Analytics");
-        Analytics *an = new Analytics;
+        Analytics *an = new Analytics(analyticsPath);
         a.exec();
         delete an;
         exit(0);

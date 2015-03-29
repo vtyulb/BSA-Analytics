@@ -46,7 +46,7 @@ struct Pulsar {
                 arg(QString::number(snr));
     }
 
-    QString time() {
+    QString time() const {
         return StarTime::StarTime(data, firstPoint + interval / 2 / data.oneStep);
     }
 
@@ -85,7 +85,7 @@ struct Pulsar {
         data.data[0][0][0] = nd;
     }
 
-    bool operator < (const Pulsar &p) const {
+    bool operator < (const Pulsar &p) const {        
         if (nativeTime.secsTo(p.nativeTime) > 0)
             return true;
         else if (nativeTime.secsTo(p.nativeTime) < 0)
@@ -95,6 +95,15 @@ struct Pulsar {
             return true;
 
         return false;
+    }
+
+    static bool secondComparator(const Pulsar &p1, const Pulsar &p2) {
+        if (!p1.filtered && p2.filtered)
+            return true;
+        else if (p1.filtered && !p2.filtered)
+            return false;
+
+        return p1 < p2;
     }
 };
 

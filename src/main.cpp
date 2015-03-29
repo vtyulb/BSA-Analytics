@@ -13,6 +13,7 @@
 #include <settings.h>
 #include <analytics.h>
 #include <calculationpool.h>
+#include <filecompressor.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -58,6 +59,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --analytics [--low-memory]\n");
         printf("BSA-Analytics --source-range <file name> <point>\n");
         printf("BSA-Analytics --sound-mode\n");
+//        printf("BSA-Analytics --compress <dir>\n"); non documented power
         printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double> --time <09:01:00>\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
@@ -121,6 +123,9 @@ void pulsarEngine(int argc, char **argv) {
         else if (strcmp(argv[i], "--sound-mode") == 0) {
             Settings::settings()->setSoundMode(true);\
             return;
+        } else if (strcmp(argv[i], "--compress") == 0) {
+            FileCompressor::compress(argv[i + 1]);
+            exit(0);
         }
 
     if (preciseSearch) {

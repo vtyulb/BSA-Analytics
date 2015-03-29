@@ -12,6 +12,8 @@ public:
 
 private:
     static void dump(Pulsars, QString);
+    static bool equal(float *, float *);
+    static int rewind(float *);
 };
 
 #endif // FILECOMPRESSOR_H

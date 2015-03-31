@@ -7,11 +7,30 @@ Settings::Settings() {
     _lowMemory = false;
     _preciseSearch = false;
     _soundMode = false;
+    _flowFinder = false;
+    _noMultiplePeriods = false;
+    _dispersion = -1;
 }
 
 Settings *Settings::settings() {
     static Settings *res = new Settings();
     return res;
+}
+
+void Settings::setDispersion(int d) {
+    _dispersion = d;
+}
+
+int Settings::dispersion() {
+    return _dispersion;
+}
+
+void Settings::setNoMultiplePeriods(bool b) {
+    _noMultiplePeriods = b;
+}
+
+bool Settings::noMultiplePeriods() {
+    return _noMultiplePeriods;
 }
 
 bool Settings::soundMode() {
@@ -135,4 +154,12 @@ void Settings::setTime(QTime t) {
 
 QTime Settings::getTime() {
     return _time;
+}
+
+void Settings::setFlowFinder(bool f) {
+    _flowFinder = f;
+}
+
+bool Settings::flowFinder() {
+    return _flowFinder;
 }

@@ -10,7 +10,7 @@ class PulsarWorker : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    explicit PulsarWorker(int, int, int, Data);
+    explicit PulsarWorker(int, int, int, Data, bool sigmaCut = true);
     ~PulsarWorker() {};
 
     QVector<Pulsar> res;
@@ -34,6 +34,7 @@ private:
 
     Data data;
     int module, ray, D;
+    bool sigmaCut;
 
 signals:
 

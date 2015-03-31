@@ -10,14 +10,15 @@
 using std::min;
 using std::max;
 
-PulsarWorker::PulsarWorker(int module, int ray, int D, Data data):
+PulsarWorker::PulsarWorker(int module, int ray, int D, Data data, bool sigmaCut):
     QObject(),
     QRunnable(),
     finished(false),
     data(data),
     module(module),
     ray(ray),
-    D(D)
+    D(D),
+    sigmaCut(sigmaCut)
 {
 }
 
@@ -52,7 +53,9 @@ QVector<Pulsar> PulsarWorker::searchIn() {
 
 
     for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval)
-        if (!Settings::settings()->preciseSearch() || goodDoubles(period, Settings::settings()->period()))
+        if (!Settings::settings()->preciseSearch() || (goodDoubles(period, Settings::settings()->period() / data.oneStep) &&
+                                                       (!Settings::settings()->noMultiplePeriods())) ||
+                fabs(period - Settings::settings()->period() / data.oneStep) < 0.01)
     {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
@@ -224,7 +227,8 @@ QVector<double> PulsarWorker::applyDispersion() {
 
     double noise = calculateNoise(res.data(), res.size());
 
-    if (!Settings::settings()->preciseSearch() || true) {
+
+    if (sigmaCut) {
         for (int i = 0; i < res.size(); i++)
             if (res[i] >  noise * 4)
                 res[i] = noise * 4;

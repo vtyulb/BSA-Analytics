@@ -8,6 +8,8 @@
 #include <QFile>
 #include <QDir>
 
+using std::max;
+
 PulsarProcess::PulsarProcess(QString file, QString savePath, QObject *parent):
     QThread(parent),
     savePath(savePath),
@@ -37,7 +39,11 @@ void PulsarProcess::run() {
                         pool->start(workers[workers.size() - 1]);
                     }
     } else {
-        for (int D = 0; D < 200; D++) {
+        int mx = 200;
+        if (Settings::settings()->dispersion() != -1)
+            mx = Settings::settings()->dispersion() + 6;
+
+        for (int D = max(Settings::settings()->dispersion() - 6, 0); D < mx; D++) {
             workers.push_back(new PulsarWorker(Settings::settings()->module(), Settings::settings()->ray(), D, data));
             workers[workers.size() - 1]->setAutoDelete(false);
             pool->start(workers[workers.size() - 1]);

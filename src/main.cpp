@@ -14,6 +14,7 @@
 #include <analytics.h>
 #include <calculationpool.h>
 #include <filecompressor.h>
+#include <flowfinder.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -60,7 +61,9 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --source-range <file name> <point>\n");
         printf("BSA-Analytics --sound-mode\n");
         printf("BSA-Analytics --compress <dir>\n");
-        printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double> --time <09:01:00>\n");
+        printf("BSA-Analytics --flow-find\n");
+        printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double>\n"
+               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00>\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
@@ -129,7 +132,13 @@ void pulsarEngine(int argc, char **argv) {
         } else if (strcmp(argv[i], "--compress") == 0) {
             FileCompressor::compress(argv[i + 1]);
             exit(0);
-        }
+        } else if (strcmp(argv[i], "--flow-find") == 0) {
+            FlowFinder::find(argv[i + 1]);
+            exit(0);
+        } else if (strcmp(argv[i], "--no-multiple-periods") == 0)
+            Settings::settings()->setNoMultiplePeriods(true);
+        else if (strcmp(argv[i], "--dispersion") == 0)
+            Settings::settings()->setDispersion(QString(argv[i + 1]).toInt());
 
     if (preciseSearch) {
         qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray << "with time" << time;

@@ -17,6 +17,9 @@ class Settings {
         int skipCount();
         double realOneStep();
         bool soundMode();
+        bool flowFinder();
+        bool noMultiplePeriods();
+        int dispersion();
 
         int module();
         int ray();
@@ -39,6 +42,9 @@ class Settings {
         void setRay(int);
         void setPeriod(double);
         void setTime(QTime);
+        void setFlowFinder(bool);
+        void setNoMultiplePeriods(bool);
+        void setDispersion(int);
 
     private:
         bool filter;
@@ -50,8 +56,11 @@ class Settings {
         bool _soundMode;
         int _ray;
         int _module;
+        bool _flowFinder;
+        bool _noMultiplePeriods;
         QTime _time;
         double _period;
+        int _dispersion;
         QVector<QVector<QVector<double> > > stairs;
 };
 

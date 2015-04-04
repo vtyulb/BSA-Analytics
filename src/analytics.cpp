@@ -85,13 +85,20 @@ void Analytics::loadPulsars(QString dir) {
 
     static int total = 0;
 
+
+    QFileInfoList list;
     QDir d(dir);
-    QFileInfoList list = d.entryInfoList(QDir::Dirs);
+    list = d.entryInfoList(QDir::Dirs);
+
     for (int i = 0; i < list.size(); i++)
         if (list[i].fileName() != "." && list[i].fileName() != "..")
             loadPulsars(list[i].absoluteFilePath());
 
-    list = d.entryInfoList(QDir::Files);
+    if (QFileInfo(dir).isDir())
+        list = d.entryInfoList(QDir::Files);
+    else
+        list.push_back(QFileInfo(dir));
+
     for (int i = 0; i < list.size(); i++) {
         ui->progressBar->setValue((i + 1) * 100 / list.size());
         qApp->processEvents();

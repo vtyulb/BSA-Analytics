@@ -89,9 +89,14 @@ void MainWindow::openPulsarFile() {
 
     decodeLastPath(path);
 
-    PulsarList *list = new PulsarList(path, NULL, this);
-    QObject::connect(list, SIGNAL(switchData(Data&)), this, SLOT(regenerate(Data&)));
-    QObject::connect(this, SIGNAL(destroyed()), list, SLOT(deleteLater()));
+    QStringList l;
+    l << "--analytics" << path;
+    QProcess::startDetached(qApp->arguments()[0], l);
+    qApp->exit(0);
+
+//    PulsarList *list = new PulsarList(path, NULL, this);
+//    QObject::connect(list, SIGNAL(switchData(Data&)), this, SLOT(regenerate(Data&)));
+//    QObject::connect(this, SIGNAL(destroyed()), list, SLOT(deleteLater()));
 }
 
 void MainWindow::decodeLastPath(QString path) {

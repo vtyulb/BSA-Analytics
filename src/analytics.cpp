@@ -333,8 +333,8 @@ void Analytics::dispersionPlot() {
     data.init();
 
 
-    double current = 0;
     for (int i = 0; i < 200; i++) {
+        double current = 0;
         for (int j = 0; j < pulsars->size(); j++)
             if (pulsars->at(j).dispersion == i)
                 current = pulsars->at(j).snr;

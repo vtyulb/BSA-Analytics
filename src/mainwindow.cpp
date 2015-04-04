@@ -10,6 +10,7 @@
 
 #include <customopendialog.h>
 #include <pulsarlist.h>
+#include <precisesearchgui.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -33,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionAbout_Qt, SIGNAL(triggered()), this, SLOT(showAboutQt()));
     QObject::connect(ui->actionClone, SIGNAL(triggered()), this, SLOT(clone()));
     QObject::connect(ui->actionLive, SIGNAL(triggered(bool)), this, SLOT(drawLive(bool)));
+    QObject::connect(ui->actionPrecise_search, SIGNAL(triggered()), this, SLOT(runPreciseGui()));
 
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
@@ -206,4 +208,9 @@ void MainWindow::clone() {
     autoDraw(false);
 
     drawer = NULL;
+}
+
+void MainWindow::runPreciseGui() {
+    static PreciseSearchGui *gui = new PreciseSearchGui(this);
+    gui->show();
 }

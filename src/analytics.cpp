@@ -13,6 +13,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <QSet>
+#include <QTextBrowser>
 
 #include <algorithm>
 
@@ -30,6 +31,8 @@ Analytics::Analytics(QString analyticsPath, QWidget *parent) :
 
     QObject::connect(ui->applyButton, SIGNAL(clicked()), this, SLOT(apply()));
     QObject::connect(ui->dispersionPlotButton, SIGNAL(clicked()), this, SLOT(dispersionPlot()));
+    QObject::connect(ui->addPulsarCatalog, SIGNAL(clicked()), this, SLOT(addPulsarCatalog()));
+    QObject::connect(ui->infoButton, SIGNAL(clicked()),this, SLOT(showInfo()));
     show();
     init();
 }
@@ -43,7 +46,6 @@ void Analytics::init() {
 
     loadPulsars(folder);
     loadKnownPulsars();
-    pulsarsEnabled.resize(pulsars->size());
     window = new MainWindow(this);
     window->show();
     apply();
@@ -53,6 +55,7 @@ void Analytics::init() {
 
 void Analytics::loadKnownPulsars() {
     QFile f("known-pulsars.pls");
+    knownPulsars.clear();
     if (f.open(QIODevice::ReadOnly)) {
         f.readLine();
         while (f.canReadLine()) {
@@ -78,6 +81,8 @@ void Analytics::loadKnownPulsars() {
 void Analytics::loadPulsars(QString dir) {
     qDebug() << "scanning directory" << dir;
 
+    catalogs.push_back(dir);
+
     static int total = 0;
 
     QDir d(dir);
@@ -101,9 +106,12 @@ void Analytics::loadPulsars(QString dir) {
         total++;
         ui->pulsarsTotal->setText(QString("Loaded %1 pulsar files").arg(total));
     }
+
+    pulsarsEnabled.resize(pulsars->size());
 }
 
 void Analytics::apply() {
+    loadKnownPulsars();
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] = true;
 
@@ -328,6 +336,36 @@ void Analytics::dispersionPlot() {
     }
 
     window->regenerate(data);
+}
+
+void Analytics::addPulsarCatalog() {
+    QString catalog = QFileDialog::getExistingDirectory(this, "pulsar catalog", QSettings().value("openPath").toString());
+    if (catalog != "") {
+        ui->progressBar->show();
+        ui->currentFile->show();
+        loadPulsars(catalog);
+        ui->currentFile->hide();
+        ui->progressBar->hide();
+    }
+}
+
+void Analytics::showInfo() {
+    QString data = "Information about current instance<br/>";
+    data += "Known pulsars:<br/>";
+    data += "module ray period time<br/>";
+    for (int i = 0; i < knownPulsars.size(); i++)
+        data += QString("%1 %2 %3 %4<br/>").arg(QString::number(knownPulsars[i].module),
+                                                QString::number(knownPulsars[i].ray),
+                                                QString::number(knownPulsars[i].period),
+                                                knownPulsars[i].time.toString("HH:mm:ss"));
+
+    data += "<br/><br/>Loaded catalogs:<br/>";
+    for (int i = 0; i < catalogs.size(); i++)
+        data += catalogs[i] + "<br/>";
+
+    QTextBrowser *browser = new QTextBrowser();
+    browser->setHtml(data);
+    browser->show();
 }
 
 Analytics::~Analytics()

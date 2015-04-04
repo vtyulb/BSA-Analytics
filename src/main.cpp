@@ -7,6 +7,7 @@
 #include <QProcess>
 #include <QVector>
 #include <QDir>
+#include <QTextBrowser>
 #include <QTime>
 
 #include <signal.h>

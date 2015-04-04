@@ -26,6 +26,7 @@ private:
     PulsarList *list;
     MainWindow *window;
     QString folder;
+    QStringList catalogs;
 
     Pulsars pulsars;
     QVector<bool> pulsarsEnabled;
@@ -54,7 +55,8 @@ private slots:
     void apply();
     void init();
     void dispersionPlot();
-
+    void addPulsarCatalog();
+    void showInfo();
 };
 
 #endif // ANALYTICS_H

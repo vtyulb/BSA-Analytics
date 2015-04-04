@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     analytics.cpp \
     wavplayer.cpp \
     filecompressor.cpp \
-    flowfinder.cpp
+    flowfinder.cpp \
+    precisesearchgui.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -56,11 +57,13 @@ HEADERS  += mainwindow.h \
     wavplayer.h \
     filecompressor.h \
     knownpulsar.h \
-    flowfinder.h
+    flowfinder.h \
+    precisesearchgui.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \
     pulsarlist.ui \
-    analytics.ui
+    analytics.ui \
+    precisesearchgui.ui
 
 win32:RC_FILE = icon.rc

@@ -43,7 +43,11 @@ void PulsarProcess::run() {
         if (Settings::settings()->dispersion() != -1)
             mx = Settings::settings()->dispersion() + 6;
 
-        for (int D = max(Settings::settings()->dispersion() - 6, 0); D < mx; D++) {
+        int step = 1;
+        if (data.oneStep > 0.05)
+            step = 6;
+
+        for (int D = max(Settings::settings()->dispersion() - 6, 0); D < mx; D += step) {
             workers.push_back(new PulsarWorker(Settings::settings()->module(), Settings::settings()->ray(), D, data));
             workers[workers.size() - 1]->setAutoDelete(false);
             pool->start(workers[workers.size() - 1]);

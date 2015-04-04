@@ -48,6 +48,8 @@ private slots:
     void showAbout();
     void showAboutQt();
 
+    void runPreciseGui();
+
     void clone();
 
 public slots:

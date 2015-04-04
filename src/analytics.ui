@@ -185,6 +185,9 @@
           <property name="text">
            <string/>
           </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
          </widget>
         </item>
         <item row="2" column="0">
@@ -213,6 +216,9 @@
           <property name="text">
            <string/>
           </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
          </widget>
         </item>
        </layout>
@@ -228,10 +234,36 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="dispersionPlotButton">
+    <widget class="QPushButton" name="addPulsarCatalog">
      <property name="text">
-      <string>Dispersion plot</string>
+      <string>Add pulsar catalog</string>
      </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="infoButton">
+        <property name="maximumSize">
+         <size>
+          <width>60</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Info</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="dispersionPlotButton">
+        <property name="text">
+         <string>Dispersion plot</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item>

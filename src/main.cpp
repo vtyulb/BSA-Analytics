@@ -54,6 +54,34 @@ void catchSigSegv(int signal) {
     exit(2);
 }
 
+void precisePacket(QString me, QString fileName) {
+    QFile f(fileName);
+    if (f.open(QIODevice::ReadOnly)) {
+        while (!f.atEnd()) {
+            QString line = f.readLine();
+            if (line.size() < 15 || line[0] == '#')
+                continue;
+
+            QTextStream s(&line, QIODevice::ReadOnly);
+            double period;
+            int module, ray, D;
+            QString time, name;
+            s >> period >> module >> ray >> D >> time >> name;
+            QStringList l;
+            l << "--precise-pulsar-search" << name;
+            l << "--module" << QString::number(module);
+            l << "--ray" << QString::number(ray);
+            l << "--period" << QString::number(period);
+            l << "--dispersion" << QString::number(D);
+            l << "--time" << time;
+            l << "--no-multiple-periods";
+
+            QProcess p;
+            p.execute(me, l);
+        }
+    }
+}
+
 void pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
         printf("Usage:\nBSA-Analytics\n");
@@ -64,6 +92,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --flow-find\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double>\n"
                "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00>\n");
+        printf("BSA-Analytics --precise-packet <file name>\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
@@ -132,6 +161,10 @@ void pulsarEngine(int argc, char **argv) {
             Settings::settings()->setNoMultiplePeriods(true);
         else if (strcmp(argv[i], "--dispersion") == 0)
             Settings::settings()->setDispersion(QString(argv[i + 1]).toInt());
+        else if (strcmp(argv[i], "--precise-packet") == 0) {
+            precisePacket(argv[0], argv[i + 1]);
+            exit(0);
+        }
 
     if (preciseSearch) {
         qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray << "with time" << time;
@@ -145,11 +178,9 @@ void pulsarEngine(int argc, char **argv) {
         if (threads != -1)
             CalculationPool::pool()->setMaxThreadCount(threads);
 
-        PulsarProcess p(dataPath);
+        PulsarProcess p(dataPath, QFileInfo(dataPath).fileName() + "_processed/");
         p.start();
         p.wait();
-//        QCoreApplication a(argc, argv);
-//        a.exec();
         exit(0);
     }
 

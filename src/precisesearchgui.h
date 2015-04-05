@@ -18,6 +18,7 @@ public:
 private slots:
     void selectFile();
     void runSearcher();
+    void runPacketSearcher();
 
 private:
     Ui::PreciseSearchGui *ui;

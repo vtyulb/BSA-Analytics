@@ -64,6 +64,7 @@ FORMS    += mainwindow.ui \
     customopendialog.ui \
     pulsarlist.ui \
     analytics.ui \
-    precisesearchgui.ui
+    precisesearchgui.ui \
+    precisepacket.ui
 
 win32:RC_FILE = icon.rc

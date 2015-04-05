@@ -45,7 +45,7 @@ void PulsarProcess::run() {
 
         int step = 1;
         if (data.oneStep > 0.05)
-            step = 6;
+            step = 3;
 
         for (int D = max(Settings::settings()->dispersion() - 6, 0); D < mx; D += step) {
             workers.push_back(new PulsarWorker(Settings::settings()->module(), Settings::settings()->ray(), D, data));

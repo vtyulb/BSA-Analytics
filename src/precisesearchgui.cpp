@@ -1,5 +1,6 @@
 #include "precisesearchgui.h"
 #include "ui_precisesearchgui.h"
+#include "ui_precisepacket.h"
 
 #include <QFileDialog>
 #include <QSettings>
@@ -24,6 +25,23 @@ PreciseSearchGui::~PreciseSearchGui()
 
 void PreciseSearchGui::selectFile() {
     ui->fileName->setText(QFileDialog::getOpenFileName(this, "Binary data file", QSettings().value("openPath").toString()));
+    if (ui->fileName->text().contains(".precise-packet")) {
+        QDialog dialog;
+
+        Ui::Dialog ui2;
+        ui2.setupUi(&dialog);
+        if (dialog.exec()) {
+            runPacketSearcher();
+            reject();
+        }
+    }
+
+}
+
+void PreciseSearchGui::runPacketSearcher() {
+    QStringList l;
+    l << "--precise-packet" << ui->fileName->text();
+    QProcess::startDetached(qApp->arguments().at(0), l);
 }
 
 void PreciseSearchGui::runSearcher() {

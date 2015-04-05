@@ -112,7 +112,7 @@ void pulsarEngine(int argc, char **argv) {
             return;
         } else if (strcmp(argv[i], "--analytics") == 0) {
             analytics = true;
-            if (argv[i + 1][0] != '-' && argv[i + 1][0] != 0)
+            if (i + 1 < argc && argv[i + 1][0] != '-' && argv[i + 1][0] != 0)
                 analyticsPath = QString(argv[i + 1]);
         } else if (strcmp(argv[i], "--low-memory") == 0)
             Settings::settings()->setLowMemoryMode(true);

@@ -51,6 +51,7 @@ private slots:
     void runPreciseGui();
 
     void clone();
+    void soundModeTriggered();
 
 public slots:
     void regenerate(Data &data);

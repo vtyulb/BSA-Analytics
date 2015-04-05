@@ -87,6 +87,8 @@
     <addaction name="actionLive"/>
     <addaction name="actionFast"/>
     <addaction name="actionClone"/>
+    <addaction name="separator"/>
+    <addaction name="actionSound_mode"/>
    </widget>
    <widget class="QMenu" name="menuPulsars">
     <property name="title">
@@ -208,7 +210,15 @@
   </action>
   <action name="actionPrecise_search">
    <property name="text">
-    <string>Precise search</string>
+    <string>Precise &amp;search</string>
+   </property>
+  </action>
+  <action name="actionSound_mode">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Sound mode</string>
    </property>
   </action>
  </widget>

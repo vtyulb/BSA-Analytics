@@ -60,7 +60,6 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
         printf("BSA-Analytics --analytics [path-to-data] [--low-memory]\n");
         printf("BSA-Analytics --source-range <file name> <point>\n");
-        printf("BSA-Analytics --sound-mode\n");
         printf("BSA-Analytics --compress <dir>\n");
         printf("BSA-Analytics --flow-find\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double>\n"
@@ -71,10 +70,8 @@ void pulsarEngine(int argc, char **argv) {
         printf("\t--save-path /path/to/save\n");
         printf("\t--threads <int> number of effective threads\n");
         printf("\t--skip <int> for skipping first N files\n");
-        printf("\t--no-filter for disabling filter\n");
         printf("\t--sub-zero for output pulsars with snr 2-5 (only good)\n");
         printf("\t--source-range <file name> <point> for running in a special mode\n");
-        printf("\t--sound-mode for listening data\n");
         printf("\t--analytics to run in analytics mode\n");
         printf("\t--low-memory to do not save data roads in analytics mode\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
@@ -101,8 +98,6 @@ void pulsarEngine(int argc, char **argv) {
             savePath = QString::fromUtf8(argv[i + 1]);
         else if (strcmp(argv[i], "--threads") == 0)
             threads = QString::fromUtf8(argv[i + 1]).toInt();
-        else if (strcmp(argv[i], "--no-filter") == 0)
-            Settings::settings()->setIntellectualFilter(false);
         else if (strcmp(argv[i], "--skip") == 0)
             Settings::settings()->setSkipCount(QString(argv[i + 1]).toInt());
         else if (strcmp(argv[i], "--sub-zero") == 0)
@@ -127,10 +122,7 @@ void pulsarEngine(int argc, char **argv) {
             period = QString(argv[i + 1]).toDouble();
         else if (strcmp(argv[i], "--time") == 0)
             time = QTime::fromString(argv[i + 1], "hh:mm:ss");
-        else if (strcmp(argv[i], "--sound-mode") == 0) {
-            Settings::settings()->setSoundMode(true);\
-            return;
-        } else if (strcmp(argv[i], "--compress") == 0) {
+        else if (strcmp(argv[i], "--compress") == 0) {
             FileCompressor::compress(argv[i + 1]);
             exit(0);
         } else if (strcmp(argv[i], "--flow-find") == 0) {

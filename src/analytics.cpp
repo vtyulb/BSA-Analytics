@@ -176,14 +176,24 @@ void Analytics::applyModuleFilter() {
 }
 
 bool Analytics::goodDoubles(double a, double b) {
-    if (a > b)
-        a /= b;
-    else
-        a = b / a;
+    if (a < b) {
+        double c = a;
+        a = b;
+        b = c;
+    }
+
+    if (a > 2.1 * b)
+        return false;
+
+    a /= b;
 
     a = fabs(a - int(a + 0.5));
+    a = (a * interval / b);
 
-    return interval * a < 1.01 * b;
+    if (0.1 * b > 1.5)
+        return a < 0.1 * b;
+    else
+        return a < 1.5;
 }
 
 void Analytics::applyPeriodFilter() {

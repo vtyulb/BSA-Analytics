@@ -5,6 +5,7 @@
 #include <pulsarworker.h>
 #include <pulsarlist.h>
 #include <settings.h>
+#include <knownpulsarsgui.h>
 
 #include <QFileDialog>
 #include <QDir>
@@ -33,6 +34,8 @@ Analytics::Analytics(QString analyticsPath, QWidget *parent) :
     QObject::connect(ui->dispersionPlotButton, SIGNAL(clicked()), this, SLOT(dispersionPlot()));
     QObject::connect(ui->addPulsarCatalog, SIGNAL(clicked()), this, SLOT(addPulsarCatalog()));
     QObject::connect(ui->infoButton, SIGNAL(clicked()),this, SLOT(showInfo()));
+    QObject::connect(ui->knownPulsarsButton, SIGNAL(clicked()), this, SLOT(knownPulsarsGUI()));
+
     show();
     init();
 }
@@ -54,7 +57,7 @@ void Analytics::init() {
 }
 
 void Analytics::loadKnownPulsars() {
-    QFile f("known-pulsars.pls");
+    QFile f(KNOWN_PULSARS_FILENAME);
     knownPulsars.clear();
     if (f.open(QIODevice::ReadOnly)) {
         f.readLine();
@@ -384,6 +387,11 @@ void Analytics::showInfo() {
     QTextBrowser *browser = new QTextBrowser();
     browser->setHtml(data);
     browser->show();
+}
+
+void Analytics::knownPulsarsGUI() {
+    static KnownPulsarsGUI *gui = new KnownPulsarsGUI();
+    gui->show();
 }
 
 Analytics::~Analytics()

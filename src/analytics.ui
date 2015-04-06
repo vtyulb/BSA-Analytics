@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>233</width>
-    <height>640</height>
+    <height>642</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -234,16 +234,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="addPulsarCatalog">
-     <property name="text">
-      <string>Add pulsar catalog</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
        <widget class="QPushButton" name="infoButton">
         <property name="maximumSize">
          <size>
@@ -256,10 +249,24 @@
         </property>
        </widget>
       </item>
-      <item>
+      <item row="0" column="1">
        <widget class="QPushButton" name="dispersionPlotButton">
         <property name="text">
          <string>Dispersion plot</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="addPulsarCatalog">
+        <property name="text">
+         <string>Add catalog</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QPushButton" name="knownPulsarsButton">
+        <property name="text">
+         <string>Known pulsars</string>
         </property>
        </widget>
       </item>

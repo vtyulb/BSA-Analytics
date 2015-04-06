@@ -57,6 +57,7 @@ private slots:
     void dispersionPlot();
     void addPulsarCatalog();
     void showInfo();
+    void knownPulsarsGUI();
 };
 
 #endif // ANALYTICS_H

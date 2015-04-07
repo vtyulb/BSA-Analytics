@@ -5,7 +5,7 @@
 #include <QString>
 #include <pulsar.h>
 
-const QString KNOWN_PULSARS_FILENAME = "known-pulsars.pls";
+const QString KNOWN_PULSARS_FILENAME = "/known-pulsars.pls";
 
 struct KnownPulsar {
     KnownPulsar() {};

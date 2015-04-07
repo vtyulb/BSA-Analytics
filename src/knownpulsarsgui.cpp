@@ -5,6 +5,8 @@
 #include <QTextStream>
 #include <QTime>
 #include <QDebug>
+#include <QStandardPaths>
+#include <QDir>
 
 KnownPulsarsGUI::KnownPulsarsGUI(QWidget *parent) :
     QWidget(parent),
@@ -21,7 +23,7 @@ KnownPulsarsGUI::KnownPulsarsGUI(QWidget *parent) :
 
 void KnownPulsarsGUI::reload() {
     pulsars.clear();
-    QFile f(KNOWN_PULSARS_FILENAME);
+    QFile f(QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation)[0] + KNOWN_PULSARS_FILENAME);
     if (f.open(QIODevice::ReadOnly)) {
         f.readLine();
         while (f.canReadLine()) {
@@ -85,7 +87,8 @@ void KnownPulsarsGUI::remove() {
 }
 
 void KnownPulsarsGUI::dump() {
-    QFile f(KNOWN_PULSARS_FILENAME);
+    QDir().mkpath(QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation)[0]);
+    QFile f(QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation)[0] + KNOWN_PULSARS_FILENAME);
     f.open(QIODevice::WriteOnly);
     QTextStream s(&f);
     s << "module\tray\tperiod\ttime\n";

@@ -15,6 +15,7 @@
 #include <QTimer>
 #include <QSet>
 #include <QTextBrowser>
+#include <QStandardPaths>
 
 #include <algorithm>
 
@@ -57,7 +58,8 @@ void Analytics::init() {
 }
 
 void Analytics::loadKnownPulsars() {
-    QFile f(KNOWN_PULSARS_FILENAME);
+    qDebug() << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
+    QFile f(QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation)[0] + KNOWN_PULSARS_FILENAME);
     knownPulsars.clear();
     if (f.open(QIODevice::ReadOnly)) {
         f.readLine();

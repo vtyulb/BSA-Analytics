@@ -19,6 +19,8 @@
 
 #include <algorithm>
 
+using std::max;
+
 Analytics::Analytics(QString analyticsPath, QWidget *parent) :
     folder(analyticsPath),
     QWidget(parent),
@@ -36,6 +38,9 @@ Analytics::Analytics(QString analyticsPath, QWidget *parent) :
     QObject::connect(ui->addPulsarCatalog, SIGNAL(clicked()), this, SLOT(addPulsarCatalog()));
     QObject::connect(ui->infoButton, SIGNAL(clicked()),this, SLOT(showInfo()));
     QObject::connect(ui->knownPulsarsButton, SIGNAL(clicked()), this, SLOT(knownPulsarsGUI()));
+
+    maxModule = 1;
+    maxRay = 1;
 
     show();
     init();
@@ -123,6 +128,9 @@ void Analytics::loadPulsars(QString dir) {
 }
 
 void Analytics::apply() {
+    ui->progressBar->setValue(0);
+    ui->progressBar->show();
+
     loadKnownPulsars();
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] = true;
@@ -173,6 +181,8 @@ void Analytics::apply() {
     list = new PulsarList("void", pl, this);
     list->show();
     QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
+
+    ui->progressBar->hide();
 }
 
 void Analytics::applyModuleFilter() {
@@ -277,12 +287,13 @@ void Analytics::applyDuplicatesFilter() {
 
     QSet<QString> *set = new QSet<QString>[pulsars->size()];
 
-    QVector<int> pl[6][8];
+    QVector<int> pl[maxModule][maxRay];
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsarsEnabled[i])
             pl[pulsars->at(i).module - 1][pulsars->at(i).ray - 1].push_back(i);
 
-    for (int module = 0; module < 6; module++)
+    for (int module = 0; module < 6; module++) {
+        ui->progressBar->setValue(100 * module / 6);
         for (int ray = 0; ray < 8; ray++)
             for (int k = 0; k < pl[module][ray].size(); k++)
                 for (int l = k + 1; l < pl[module][ray].size(); l++) {
@@ -300,6 +311,7 @@ void Analytics::applyDuplicatesFilter() {
                         (*pulsars)[j].firstPoint++;
                     }
                 }
+    }
 
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] &= (pulsars->at(i).firstPoint >= duplicates);
@@ -309,6 +321,9 @@ void Analytics::applyDuplicatesFilter() {
 
 void Analytics::preCalc() {
     for (static int i = 0; i < pulsars->size(); i++) {
+        maxModule = max(maxModule, pulsars->at(i).module);
+        maxRay = max(maxRay, pulsars->at(i).ray);
+
         int j = 0;
         while (pulsars->at(i).data.data[0][0][0][j] != 0) j++;
         while (pulsars->at(i).data.data[0][0][0][j] == 0) j++;

@@ -32,6 +32,9 @@ private:
     QVector<bool> pulsarsEnabled;
     QVector<bool> differentNoisePreCalc;
 
+    int maxModule;
+    int maxRay;
+
     QVector<KnownPulsar> knownPulsars;
 
     void loadPulsars(QString);

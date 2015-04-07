@@ -58,8 +58,8 @@ void Analytics::init() {
 }
 
 void Analytics::loadKnownPulsars() {
-    qDebug() << QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation);
-    QFile f(QStandardPaths::standardLocations(QStandardPaths::AppLocalDataLocation)[0] + KNOWN_PULSARS_FILENAME);
+    qDebug() << QStandardPaths::standardLocations(QStandardPaths::DataLocation)[0];
+    QFile f(QStandardPaths::standardLocations(QStandardPaths::DataLocation)[0] + KNOWN_PULSARS_FILENAME);
     knownPulsars.clear();
     if (f.open(QIODevice::ReadOnly)) {
         f.readLine();

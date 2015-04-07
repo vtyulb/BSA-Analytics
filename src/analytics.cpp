@@ -294,6 +294,8 @@ void Analytics::applyDuplicatesFilter() {
 
     for (int module = 0; module < 6; module++) {
         ui->progressBar->setValue(100 * module / 6);
+        qApp->processEvents();
+
         for (int ray = 0; ray < 8; ray++)
             for (int k = 0; k < pl[module][ray].size(); k++)
                 for (int l = k + 1; l < pl[module][ray].size(); l++) {

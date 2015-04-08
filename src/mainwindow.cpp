@@ -25,6 +25,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionCustom_open, SIGNAL(triggered()), this, SLOT(customOpen()));
     QObject::connect(ui->actionPulsar_searcher, SIGNAL(triggered()), this, SLOT(openPulsarFile()));
     QObject::connect(ui->actionPulsar_analytics, SIGNAL(triggered()), this, SLOT(openAnalytics()));
+    QObject::connect(ui->actionPulsar_analytics_low_memory, SIGNAL(triggered(bool)), this, SLOT(openAnalytics(bool)));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
@@ -72,13 +73,16 @@ void MainWindow::openBinaryFile() {
     nativeOpenFile(path, 0, 0, QDateTime(), true);
 }
 
-void MainWindow::openAnalytics() {
+void MainWindow::openAnalytics(bool hasMemory) {
     QString path = QFileDialog::getExistingDirectory(this, "analytics folder", lastOpenPath);
     if (path == "")
         return;
 
     QStringList l;
     l << "--analytics" << path;
+    if (!hasMemory)
+        l << "--low-memory";
+
     QProcess::startDetached(qApp->arguments()[0], l);
     qApp->exit(0);
 }
@@ -120,6 +124,7 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QD
 }
 
 void MainWindow::regenerate(Data &data) {
+    show();
     ui->label->hide();
     delete drawer;
     drawer = new Drawer(data, this);

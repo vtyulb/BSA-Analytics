@@ -95,7 +95,10 @@
      <string>&amp;Pulsars</string>
     </property>
     <addaction name="actionPulsar_searcher"/>
+    <addaction name="separator"/>
     <addaction name="actionPulsar_analytics"/>
+    <addaction name="actionPulsar_analytics_low_memory"/>
+    <addaction name="separator"/>
     <addaction name="actionPrecise_search"/>
    </widget>
    <addaction name="menuFile"/>
@@ -218,7 +221,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Sound mode</string>
+    <string>&amp;Sound mode</string>
+   </property>
+  </action>
+  <action name="actionPulsar_analytics_low_memory">
+   <property name="text">
+    <string>Pulsar analytics low memory</string>
    </property>
   </action>
  </widget>

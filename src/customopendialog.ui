@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>239</width>
-    <height>262</height>
+    <width>261</width>
+    <height>299</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Custom open</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -51,21 +51,21 @@
       <item>
        <widget class="QRadioButton" name="radioButton_2">
         <property name="text">
-         <string>No</string>
+         <string>&amp;No</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QRadioButton" name="radioButton">
         <property name="text">
-         <string>Yes</string>
+         <string>&amp;Yes</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QRadioButton" name="radioButton_3">
         <property name="text">
-         <string>AutoDetect</string>
+         <string>&amp;AutoDetect</string>
         </property>
        </widget>
       </item>
@@ -84,14 +84,14 @@
       <item>
        <widget class="QRadioButton" name="binary">
         <property name="text">
-         <string>Binary</string>
+         <string>&amp;Binary</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QRadioButton" name="text">
         <property name="text">
-         <string>text</string>
+         <string>&amp;text</string>
         </property>
        </widget>
       </item>

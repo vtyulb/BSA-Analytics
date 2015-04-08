@@ -405,6 +405,7 @@ void Analytics::showInfo() {
 
     QTextBrowser *browser = new QTextBrowser();
     browser->setHtml(data);
+    browser->setWindowTitle("Info");
     browser->show();
 }
 

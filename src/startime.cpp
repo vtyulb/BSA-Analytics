@@ -92,6 +92,9 @@ namespace {
 
 namespace StarTime {
     QString StarTime(Data data, int point) {
+        if (!data.time.isValid())
+            return "invalid time";
+
         QDateTime time = data.time.addSecs(data.oneStep * point);
         double delta_lucha = data.delta_lucha;
 

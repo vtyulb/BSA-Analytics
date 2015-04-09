@@ -26,7 +26,8 @@ Analytics::Analytics(QString analyticsPath, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Analytics),
     pulsars(new QVector<Pulsar>),
-    list(NULL)
+    list(NULL),
+    noises(new KnownNoise)
 {
     ui->setupUi(this);
 
@@ -38,6 +39,7 @@ Analytics::Analytics(QString analyticsPath, QWidget *parent) :
     QObject::connect(ui->addPulsarCatalog, SIGNAL(clicked()), this, SLOT(addPulsarCatalog()));
     QObject::connect(ui->infoButton, SIGNAL(clicked()),this, SLOT(showInfo()));
     QObject::connect(ui->knownPulsarsButton, SIGNAL(clicked()), this, SLOT(knownPulsarsGUI()));
+    QObject::connect(ui->knownNoiseButton, SIGNAL(clicked()), noises, SLOT(show()));
 
     maxModule = 1;
     maxRay = 1;
@@ -156,6 +158,9 @@ void Analytics::apply() {
     if (ui->knownPulsars->isChecked())
         applyKnownPulsarsFilter();
 
+    if (ui->knownNoise->isChecked())
+        applyKnownNoiseFilter();
+
     if (ui->strangeData->isChecked())
         applyStrangeDataFilter();
 
@@ -164,6 +169,8 @@ void Analytics::apply() {
 
     if (ui->duplicatesCheckBox->isChecked())
         applyDuplicatesFilter();
+
+
 
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)
@@ -294,6 +301,7 @@ void Analytics::applyDuplicatesFilter() {
 
     for (int module = 0; module < 6; module++) {
         ui->progressBar->setValue(100 * module / 6);
+        update();
         qApp->processEvents();
 
         for (int ray = 0; ray < 8; ray++)
@@ -302,7 +310,7 @@ void Analytics::applyDuplicatesFilter() {
                     int i = pl[module][ray][k];
                     int j = pl[module][ray][l];
 
-                    if (pulsars->at(i).nativeTime.secsTo(pulsars->at(j).nativeTime) < 120 &&
+                    if (abs(pulsars->at(i).nativeTime.secsTo(pulsars->at(j).nativeTime)) < 120 &&
                             goodDoubles(pulsars->at(i).period, pulsars->at(j).period) &&
                             pulsars->at(i).data.name != pulsars->at(j).data.name &&
                             !set[i].contains(pulsars->at(j).data.name) &&
@@ -412,6 +420,11 @@ void Analytics::showInfo() {
 void Analytics::knownPulsarsGUI() {
     static KnownPulsarsGUI *gui = new KnownPulsarsGUI();
     gui->show();
+}
+
+void Analytics::applyKnownNoiseFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        pulsarsEnabled[i] &= !noises->contains(pulsars->at(i).period);
 }
 
 Analytics::~Analytics()

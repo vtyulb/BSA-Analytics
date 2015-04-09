@@ -6,6 +6,7 @@
 #include <pulsarlist.h>
 #include <mainwindow.h>
 #include <knownpulsar.h>
+#include <knownnoise.h>
 
 namespace Ui {
 class Analytics;
@@ -25,6 +26,7 @@ private:
     Ui::Analytics *ui;
     PulsarList *list;
     MainWindow *window;
+    KnownNoise *noises;
     QString folder;
     QStringList catalogs;
 
@@ -50,6 +52,7 @@ private:
     void applyStrangeDataFilter();
     void applyDifferentNoise();
     void applyKnownPulsarsFilter();
+    void applyKnownNoiseFilter();
 
     void preCalc();
     void loadKnownPulsars();

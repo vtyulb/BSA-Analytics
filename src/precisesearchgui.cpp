@@ -57,6 +57,11 @@ void PreciseSearchGui::runSearcher() {
     if (ui->skipMultiplePeriods->isChecked())
         l << "--no-multiple-periods";
 
+    if (!ui->clearNoise->isChecked())
+        l << "--do-not-clear-noise";
+
+    l << "--threads" << "1";
+
     qDebug() << "running with" << l;
     QProcess::startDetached(qApp->arguments().at(0), l);
 }

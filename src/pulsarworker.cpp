@@ -58,7 +58,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
 
     if (Settings::settings()->preciseSearch()) {
         MINIMUM_PERIOD_INC /= 10;
-        MAXIMUM_PERIOD_INC *= 10;
+        MAXIMUM_PERIOD_INC *= 2;
     }
 
     for (double period = MINIMUM_PERIOD_INC / data.oneStep; period < MAXIMUM_PERIOD_INC / data.oneStep; period += data.oneStep / interval)
@@ -237,7 +237,7 @@ QVector<double> PulsarWorker::applyDispersion() {
     double noise = calculateNoise(res.data(), res.size());
 
 
-    if (sigmaCut) {
+    if (sigmaCut && !Settings::settings()->doNotClearNoise()) {
         for (int i = 0; i < res.size(); i++)
             if (res[i] >  noise * 4)
                 res[i] = noise * 4;

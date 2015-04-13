@@ -19,6 +19,7 @@ class Settings {
         bool soundMode();
         bool flowFinder();
         bool noMultiplePeriods();
+        bool doNotClearNoise();
         int dispersion();
 
         int module();
@@ -34,6 +35,7 @@ class Settings {
         void setLowMemoryMode(bool);
         void setRealOneStep(double);
         void setSoundMode(bool);
+        void setDoNotClearNoise(bool);
         void detectStair(char *name, int point);
         QTime getTime();
 
@@ -58,6 +60,7 @@ class Settings {
         int _module;
         bool _flowFinder;
         bool _noMultiplePeriods;
+        bool _doNotClearNoise;
         QTime _time;
         double _period;
         int _dispersion;

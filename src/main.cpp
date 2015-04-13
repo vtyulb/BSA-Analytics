@@ -91,7 +91,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --compress <dir>\n");
         printf("BSA-Analytics --flow-find\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double>\n"
-               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00>\n");
+               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
@@ -115,6 +115,7 @@ void pulsarEngine(int argc, char **argv) {
     bool analytics = false;
 
     bool preciseSearch = false;
+    bool doNotClearNoise = false;
     int module = 1;
     int ray = 1;
     double period = 1;
@@ -164,7 +165,10 @@ void pulsarEngine(int argc, char **argv) {
         else if (strcmp(argv[i], "--precise-packet") == 0) {
             precisePacket(argv[0], argv[i + 1]);
             exit(0);
-        }
+        } else if (strcmp(argv[i], "--do-not-clear-noise"))
+            doNotClearNoise = true;
+
+    Settings::settings()->setDoNotClearNoise(doNotClearNoise);
 
     if (preciseSearch) {
         qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray << "with time" << time;

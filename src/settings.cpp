@@ -10,6 +10,7 @@ Settings::Settings() {
     _flowFinder = false;
     _noMultiplePeriods = false;
     _dispersion = -1;
+    _doNotClearNoise = false;
 }
 
 Settings *Settings::settings() {
@@ -162,4 +163,12 @@ void Settings::setFlowFinder(bool f) {
 
 bool Settings::flowFinder() {
     return _flowFinder;
+}
+
+void Settings::setDoNotClearNoise(bool b) {
+    _doNotClearNoise = b;
+}
+
+bool Settings::doNotClearNoise() {
+    return _doNotClearNoise;
 }

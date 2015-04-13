@@ -18,8 +18,8 @@ struct KnownPulsar {
 
     int module;
     int ray;
-    QTime time;
     double period;
+    QTime time;
 
     bool operator == (const Pulsar &p) const {
         return (module == p.module) &&

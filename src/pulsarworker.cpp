@@ -6,6 +6,7 @@
 #include <QLinkedList>
 #include <QMap>
 #include <settings.h>
+#include <analytics.h>
 
 using std::min;
 using std::max;
@@ -52,8 +53,16 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     }
 
 
-    for (double period = MINIMUM_PERIOD / data.oneStep; period < MAXIMUM_PERIOD / data.oneStep; period += data.oneStep / interval)
-        if (!Settings::settings()->preciseSearch() || (goodDoubles(period, Settings::settings()->period() / data.oneStep) &&
+    double MINIMUM_PERIOD_INC = MINIMUM_PERIOD;
+    double MAXIMUM_PERIOD_INC = MAXIMUM_PERIOD;
+
+    if (Settings::settings()->preciseSearch()) {
+        MINIMUM_PERIOD_INC /= 10;
+        MAXIMUM_PERIOD_INC *= 10;
+    }
+
+    for (double period = MINIMUM_PERIOD_INC / data.oneStep; period < MAXIMUM_PERIOD_INC / data.oneStep; period += data.oneStep / interval)
+        if (!Settings::settings()->preciseSearch() || (Analytics::goodDoubles(period, Settings::settings()->period() / data.oneStep) &&
                                                        (!Settings::settings()->noMultiplePeriods())) ||
                 fabs(period - Settings::settings()->period() / data.oneStep) < 0.01)
     {

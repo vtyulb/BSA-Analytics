@@ -178,7 +178,7 @@ void pulsarEngine(int argc, char **argv) {
         if (threads != -1)
             CalculationPool::pool()->setMaxThreadCount(threads);
 
-        PulsarProcess p(dataPath, QFileInfo(dataPath).fileName() + "_processed_" + QString::number(period) + "/");
+        PulsarProcess p(dataPath, QFileInfo(dataPath).fileName() + "_processed_" + QString::number(period) + "_" + QTime().toString("HH:mm:ss") + "/");
         p.start();
         p.wait();
         exit(0);

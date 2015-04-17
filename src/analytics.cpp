@@ -167,9 +167,9 @@ void Analytics::apply() {
     if (ui->differentNoise->isChecked())
         applyDifferentNoise();
 
-    if (ui->duplicatesCheckBox->isChecked())
-        applyDuplicatesFilter();
-
+    if (ui->duplicates->value() > 1)
+        for (int i = 0; i < ui->duplicatesIterations->value(); i++)
+            applyDuplicatesFilter();
 
 
     Pulsars pl = new QVector<Pulsar>;
@@ -212,10 +212,10 @@ bool Analytics::goodDoubles(double a, double b) {
     a = fabs(a - int(a + 0.5));
     a = (a * interval / b);
 
-    if (0.1 * b > 1.5)
+    if (0.1 * b > 0.5)
         return a < 0.1 * b;
     else
-        return a < 1.5;
+        return a < 0.5;
 }
 
 void Analytics::applyPeriodFilter() {

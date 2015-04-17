@@ -27,8 +27,10 @@ Pulsars FileCompressor::nativeCompress(QString name) {
     for (int i = 0; i < list.size(); i++) {
         Pulsars p = PulsarReader::ReadPulsarFile(list[i].absoluteFilePath());
         if (Settings::settings()->lowMemory())
-            for (int k = 0; k < p->size(); k++)
+            for (int k = 0; k < p->size(); k++) {
+                (*p)[k].badNoiseKnown = p->at(k).badNoise();
                 (*p)[k].squeeze();
+            }
 
         (*pulsars) += *p;
 
@@ -42,9 +44,9 @@ void FileCompressor::dump(Pulsars pulsars, QString name) {
     QFile f(name);
     f.open(QIODevice::WriteOnly);
 
-    f.write(("file: " + pulsars->at(0).data.name).toUtf8());
+    f.write("file: compressed data\n");
     f.write("tresolution 0.0999424\n"); // do not try to understand it
-    f.write("Start time\tmodule\tray\tdispersion\tperiod\tsnr\tbad noise\n");
+    f.write("Start time\tmodule\tray\tdispersion\tperiod\tsnr\tbad noise\tfile name\n");
 
     std::sort(pulsars->begin(), pulsars->end(), Pulsar::secondComparator);
 
@@ -55,14 +57,15 @@ void FileCompressor::dump(Pulsars pulsars, QString name) {
             filtered = true;
         }
 
-        QByteArray d = QString("%1\t%2\t%3\t%4\t%5\t%6\t%7\n").
+        QByteArray d = QString("%1\t%2\t%3\t%4\t%5\t%6\t%7\t%8\n").
                 arg(pulsars->at(i).nativeTime.toString("HH:mm:ss")).
-                arg(pulsars->at(i).module + 1).
-                arg(pulsars->at(i).ray + 1).
+                arg(pulsars->at(i).module).
+                arg(pulsars->at(i).ray).
                 arg(pulsars->at(i).dispersion).
                 arg(QString::number(pulsars->at(i).period, 'f', 4)).
                 arg(QString::number(pulsars->at(i).snr, 'f', 1)).
-                arg(QString::number(pulsars->at(i).badNoise())).
+                arg(QString::number(pulsars->at(i).badNoiseKnown)).
+                arg(pulsars->at(i).data.name).
                 toUtf8();
 
         f.write(d);

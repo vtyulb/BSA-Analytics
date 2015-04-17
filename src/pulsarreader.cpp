@@ -22,6 +22,7 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
     file.open(QIODevice::ReadOnly);
     QString fileName = file.readLine();
     fileName = fileName.right(fileName.size() - 6);
+    fileName = fileName.left(fileName.size() - 1);
     QString oneStep = file.readLine();
     oneStep = oneStep.right(oneStep.size() - 12);
     oneStep.chop(1);
@@ -67,7 +68,6 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
                 data->init();
                 data->releaseProtected = true;
                 data->sigma = res[i].noiseLevel;
-                data->name = fileName;
 
                 for (int i = 0; i < vars.size() - 1; i++)
                     data->data[0][0][0][i] = vars[i].toDouble();
@@ -89,12 +89,15 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
             pulsar.snr = snr;
             pulsar.nativeTime = QTime(h, m, s);
             pulsar.filtered = filtered;
+            pulsar.data.name = fileName;
 
             int badNoise;
             stream >> badNoise;
             if (!stream.atEnd()) {
                 pulsar.badNoiseKnown = true;
                 pulsar.badNoiseRes = badNoise;
+
+                stream >> pulsar.data.name;
             }
 
             res.push_back(pulsar);

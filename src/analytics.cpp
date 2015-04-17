@@ -114,7 +114,6 @@ void Analytics::loadPulsars(QString dir) {
     for (int i = 0; i < list.size(); i++) {
         ui->progressBar->setValue((i + 1) * 100 / list.size());
         qApp->processEvents();
-        qDebug() << "reading file" << list[i].absoluteFilePath();
         ui->currentFile->setText(list[i].fileName());
         *pulsars += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath(), ui->progressBar);
         preCalc();

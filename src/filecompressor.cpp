@@ -4,20 +4,38 @@
 #include <QDir>
 #include <pulsarreader.h>
 #include <algorithm>
+#include <settings.h>
+#include <QDebug>
 
 void FileCompressor::compress(QString name) {
-    QFileInfoList list = QDir(name).entryInfoList(QDir::Dirs);
-    for (int i = 0; i < list.size(); i++)
-        if (list[i].fileName() != "." && list[i].fileName() != "..")
-            compress(list[i].absolutePath());
-
-    list = QDir(name).entryInfoList(QDir::Files);
-    Pulsars pulsars = new QVector<Pulsar>;
-    for (int i = 0; i < list.size(); i++)
-        (*pulsars) += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath());
-
+    Pulsars pulsars = nativeCompress(name);
     if (pulsars->size())
         FileCompressor::dump(pulsars, QDir(name).absolutePath() + "-all.pulsar");
+}
+
+Pulsars FileCompressor::nativeCompress(QString name) {
+    QFileInfoList list = QDir(name).entryInfoList(QDir::Dirs);
+    Pulsars pulsars = new QVector<Pulsar>;
+    for (int i = 0; i < list.size(); i++)
+        if (list[i].fileName() != "." && list[i].fileName() != "..") {
+            Pulsars p = nativeCompress(list[i].absoluteFilePath());
+            (*pulsars) += *p;
+            delete p;
+        }
+
+    list = QDir(name).entryInfoList(QDir::Files);
+    for (int i = 0; i < list.size(); i++) {
+        Pulsars p = PulsarReader::ReadPulsarFile(list[i].absoluteFilePath());
+        if (Settings::settings()->lowMemory())
+            for (int k = 0; k < p->size(); k++)
+                (*p)[k].squeeze();
+
+        (*pulsars) += *p;
+
+        delete p;
+    }
+
+    return pulsars;
 }
 
 void FileCompressor::dump(Pulsars pulsars, QString name) {
@@ -26,7 +44,7 @@ void FileCompressor::dump(Pulsars pulsars, QString name) {
 
     f.write(("file: " + pulsars->at(0).data.name).toUtf8());
     f.write("tresolution 0.0999424\n"); // do not try to understand it
-    f.write("Start time\tmodule\tray\tdispersion\tperiod\tsnr\n");
+    f.write("Start time\tmodule\tray\tdispersion\tperiod\tsnr\tbad noise\n");
 
     std::sort(pulsars->begin(), pulsars->end(), Pulsar::secondComparator);
 
@@ -37,13 +55,14 @@ void FileCompressor::dump(Pulsars pulsars, QString name) {
             filtered = true;
         }
 
-        QByteArray d = QString("%1\t%2\t%3\t%4\t%5\t%6\n").
+        QByteArray d = QString("%1\t%2\t%3\t%4\t%5\t%6\t%7\n").
                 arg(pulsars->at(i).nativeTime.toString("HH:mm:ss")).
                 arg(pulsars->at(i).module + 1).
                 arg(pulsars->at(i).ray + 1).
                 arg(pulsars->at(i).dispersion).
                 arg(QString::number(pulsars->at(i).period, 'f', 4)).
                 arg(QString::number(pulsars->at(i).snr, 'f', 1)).
+                arg(QString::number(pulsars->at(i).badNoise())).
                 toUtf8();
 
         f.write(d);

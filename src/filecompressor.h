@@ -11,6 +11,7 @@ public:
     static void compress(QString);
 
 private:
+    static Pulsars nativeCompress(QString);
     static void dump(Pulsars, QString);
     static bool equal(float *, float *);
     static int rewind(float *);

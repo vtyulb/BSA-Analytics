@@ -27,6 +27,9 @@ struct Pulsar {
     double snr;
     bool filtered;
 
+    bool badNoiseKnown = false;
+    bool badNoiseRes;
+
     double noiseLevel;
 
     QString name; // file, not a pulsar :-)
@@ -104,6 +107,37 @@ struct Pulsar {
             return false;
 
         return p1 < p2;
+    }
+
+    bool badNoise() const {
+        if (badNoiseKnown)
+            return badNoiseRes;
+
+        int j = 0;
+        while (data.data[0][0][0][j] != 0) j++;
+        while (data.data[0][0][0][j] == 0) j++;
+
+        QVector<double> sigmas;
+        int n = data.npoints - j;
+        float *dt = data.data[0][0][0] + j;
+        bool res = true;
+        const int pieces = 8;
+        for (int k = 0; k < pieces; k++) {
+            double sigma = 0;
+            for (int i = k * n / pieces; i < (k + 1) * n / pieces; i++)
+                sigma += dt[i] * dt[i];
+
+            sigma /= (n / pieces);
+            sigma = pow(sigma, 0.5);
+            sigmas.push_back(sigma);
+        }
+
+        for (int i = 0; i < pieces; i++)
+            for (int j = 0; j < pieces; j++)
+                if (sigmas[i] / sigmas[j] > 3)
+                    res = false;
+
+        return !res;
     }
 };
 

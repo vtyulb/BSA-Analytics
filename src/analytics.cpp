@@ -334,31 +334,7 @@ void Analytics::preCalc() {
         maxModule = max(maxModule, pulsars->at(i).module);
         maxRay = max(maxRay, pulsars->at(i).ray);
 
-        int j = 0;
-        while (pulsars->at(i).data.data[0][0][0][j] != 0) j++;
-        while (pulsars->at(i).data.data[0][0][0][j] == 0) j++;
-
-        QVector<double> sigmas;
-        int n = pulsars->at(i).data.npoints - j;
-        float *data = pulsars->at(i).data.data[0][0][0] + j;
-        bool res = true;
-        const int pieces = 8;
-        for (int k = 0; k < pieces; k++) {
-            double sigma = 0;
-            for (int i = k * n / pieces; i < (k + 1) * n / pieces; i++)
-                sigma += data[i] * data[i];
-
-            sigma /= (n / pieces);
-            sigma = pow(sigma, 0.5);
-            sigmas.push_back(sigma);
-        }
-
-        for (int i = 0; i < pieces; i++)
-            for (int j = 0; j < pieces; j++)
-                if (sigmas[i] / sigmas[j] > 3)
-                    res = false;
-
-        differentNoisePreCalc.push_back(res);
+        differentNoisePreCalc.push_back(!pulsars->at(i).badNoise());
     }
 }
 

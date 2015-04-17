@@ -16,6 +16,8 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
         return new QVector<Pulsar>;
     }
 
+    qDebug() << "reading file" << name;
+
     QFile file(name);
     file.open(QIODevice::ReadOnly);
     QString fileName = file.readLine();
@@ -87,6 +89,13 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
             pulsar.snr = snr;
             pulsar.nativeTime = QTime(h, m, s);
             pulsar.filtered = filtered;
+
+            int badNoise;
+            stream >> badNoise;
+            if (!stream.atEnd()) {
+                pulsar.badNoiseKnown = true;
+                pulsar.badNoiseRes = badNoise;
+            }
 
             res.push_back(pulsar);
         }

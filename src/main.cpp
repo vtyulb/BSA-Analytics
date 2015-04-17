@@ -88,7 +88,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
         printf("BSA-Analytics --analytics [path-to-data] [--low-memory]\n");
         printf("BSA-Analytics --source-range <file name> <point>\n");
-        printf("BSA-Analytics --compress <dir>\n");
+        printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --flow-find\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double>\n"
                "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise]\n");

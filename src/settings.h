@@ -3,6 +3,7 @@
 
 #include <QVector>
 #include <QTime>
+#include <data.h>
 
 class Settings {
     public:
@@ -21,6 +22,8 @@ class Settings {
         bool noMultiplePeriods();
         bool doNotClearNoise();
         int dispersion();
+        QVector<double> dispersionData();
+        Data lastData();
 
         int module();
         int ray();
@@ -47,6 +50,8 @@ class Settings {
         void setFlowFinder(bool);
         void setNoMultiplePeriods(bool);
         void setDispersion(int);
+        void setDispersionData(const QVector<double>&);
+        void setLastData(const Data&);
 
     private:
         bool filter;
@@ -64,7 +69,9 @@ class Settings {
         QTime _time;
         double _period;
         int _dispersion;
+        QVector<double> dispersionPlotData;
         QVector<QVector<QVector<double> > > stairs;
+        Data _lastData;
 };
 
 #endif // SETTINGS_H

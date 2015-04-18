@@ -35,11 +35,14 @@ Analytics::Analytics(QString analyticsPath, QWidget *parent) :
     this->restoreGeometry(s.value("AnalyticsGeometry").toByteArray());
 
     QObject::connect(ui->applyButton, SIGNAL(clicked()), this, SLOT(apply()));
-    QObject::connect(ui->dispersionPlotButton, SIGNAL(clicked()), this, SLOT(dispersionPlot()));
     QObject::connect(ui->addPulsarCatalog, SIGNAL(clicked()), this, SLOT(addPulsarCatalog()));
     QObject::connect(ui->infoButton, SIGNAL(clicked()),this, SLOT(showInfo()));
     QObject::connect(ui->knownPulsarsButton, SIGNAL(clicked()), this, SLOT(knownPulsarsGUI()));
     QObject::connect(ui->knownNoiseButton, SIGNAL(clicked()), noises, SLOT(show()));
+
+    QObject::connect(ui->dispersionPlotButton, SIGNAL(clicked()), this, SLOT(dispersionPlot()));
+    QObject::connect(ui->dispersionM, SIGNAL(clicked()), this, SLOT(dispersionMplus()));
+    QObject::connect(ui->dispersionRemember, SIGNAL(clicked()), this, SLOT(dispersionRemember()));
 
     maxModule = 1;
     maxRay = 1;
@@ -115,7 +118,10 @@ void Analytics::loadPulsars(QString dir) {
         ui->progressBar->setValue((i + 1) * 100 / list.size());
         qApp->processEvents();
         ui->currentFile->setText(list[i].fileName());
-        *pulsars += *PulsarReader::ReadPulsarFile(list[i].absoluteFilePath(), ui->progressBar);
+        Pulsars p = PulsarReader::ReadPulsarFile(list[i].absoluteFilePath(), ui->progressBar);
+        *pulsars += (*p);
+        delete p;
+
         preCalc();
         if (Settings::settings()->lowMemory())
             for (static int j = 0; j < pulsars->size(); j++)
@@ -337,7 +343,7 @@ void Analytics::preCalc() {
     }
 }
 
-void Analytics::dispersionPlot() {
+Data Analytics::dispersionGenerateData() {
     Data data;
     data.npoints = 200;
     data.modules = 1;
@@ -357,6 +363,29 @@ void Analytics::dispersionPlot() {
 
         data.data[0][0][0][i] = current;
     }
+
+    return data;
+}
+
+void Analytics::dispersionPlot() {
+    Data data = dispersionGenerateData();
+    window->regenerate(data);
+}
+
+void Analytics::dispersionRemember() {
+    Data data = Settings::settings()->lastData();
+    QVector<double> dt;
+    for (int i = 0; i < data.npoints; i++)
+        dt.push_back(data.data[0][0][0][i]);
+
+    Settings::settings()->setDispersionData(dt);
+}
+
+void Analytics::dispersionMplus() {
+    Data data = dispersionGenerateData();
+    QVector<double> dt = Settings::settings()->dispersionData();
+    for (int i = 0; i < data.npoints; i++)
+        data.data[0][0][0][i] += dt[i];
 
     window->regenerate(data);
 }

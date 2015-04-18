@@ -172,3 +172,19 @@ void Settings::setDoNotClearNoise(bool b) {
 bool Settings::doNotClearNoise() {
     return _doNotClearNoise;
 }
+
+void Settings::setDispersionData(const QVector<double> &data) {
+    dispersionPlotData = data;
+}
+
+QVector<double> Settings::dispersionData() {
+    return dispersionPlotData;
+}
+
+void Settings::setLastData(const Data &d) {
+    _lastData = d;
+}
+
+Data Settings::lastData() {
+    return _lastData;
+}

@@ -57,10 +57,16 @@ private:
     void preCalc();
     void loadKnownPulsars();
 
+    Data dispersionGenerateData();
+
 private slots:
     void apply();
     void init();
+
     void dispersionPlot();
+    void dispersionRemember();
+    void dispersionMplus();
+
     void addPulsarCatalog();
     void showInfo();
     void knownPulsarsGUI();

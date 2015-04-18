@@ -409,7 +409,7 @@ void Analytics::dispersionMplus() {
 }
 
 void Analytics::addPulsarCatalog() {
-    QString catalog = QFileDialog::getExistingDirectory(this, QSettings().value("openPath").toString());
+    QString catalog = QFileDialog::getExistingDirectory(this, QString("Pulsar directory"), QSettings().value("openPath").toString());
     if (catalog != "") {
         QSettings().setValue("openPath", MainWindow::nativeDecodeLastPath(catalog));
 

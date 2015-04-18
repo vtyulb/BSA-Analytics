@@ -38,6 +38,7 @@ private:
     int maxRay;
 
     QVector<KnownPulsar> knownPulsars;
+    QVector<QString> fileNames;
 
     void loadPulsars(QString);
 
@@ -53,6 +54,7 @@ private:
     void applyDifferentNoise();
     void applyKnownPulsarsFilter();
     void applyKnownNoiseFilter();
+    void applyFileNameFilter();
 
     void preCalc();
     void loadKnownPulsars();

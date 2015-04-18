@@ -124,6 +124,9 @@
         </item>
        </layout>
       </item>
+      <item>
+       <widget class="QComboBox" name="fileNames"/>
+      </item>
      </layout>
     </widget>
    </item>

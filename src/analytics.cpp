@@ -47,6 +47,8 @@ Analytics::Analytics(QString analyticsPath, QWidget *parent) :
     maxModule = 1;
     maxRay = 1;
 
+    fileNames.push_back("all files");
+
     show();
     init();
 }
@@ -166,11 +168,14 @@ void Analytics::apply() {
     if (ui->knownNoise->isChecked())
         applyKnownNoiseFilter();
 
+    if (ui->differentNoise->isChecked())
+        applyDifferentNoise();
+
     if (ui->strangeData->isChecked())
         applyStrangeDataFilter();
 
-    if (ui->differentNoise->isChecked())
-        applyDifferentNoise();
+    if (ui->fileNames->currentIndex() != 0)
+        applyFileNameFilter();
 
     if (ui->duplicates->value() > 1)
         for (int i = 0; i < ui->duplicatesIterations->value(); i++)
@@ -195,6 +200,12 @@ void Analytics::apply() {
     QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
 
     ui->progressBar->hide();
+}
+
+void Analytics::applyFileNameFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i])
+            pulsarsEnabled[i] &= (pulsars->at(i).data.name == fileNames[ui->fileNames->currentIndex()]);
 }
 
 void Analytics::applyModuleFilter() {
@@ -339,8 +350,15 @@ void Analytics::preCalc() {
         maxModule = max(maxModule, pulsars->at(i).module);
         maxRay = max(maxRay, pulsars->at(i).ray);
 
+        if (!fileNames.contains(pulsars->at(i).data.name))
+            fileNames.push_back(pulsars->at(i).data.name);
+
         differentNoisePreCalc.push_back(!pulsars->at(i).badNoise());
     }
+
+    ui->fileNames->clear();
+    for (int i = 0; i < fileNames.size(); i++)
+        ui->fileNames->addItem(fileNames[i]);
 }
 
 Data Analytics::dispersionGenerateData() {
@@ -391,8 +409,10 @@ void Analytics::dispersionMplus() {
 }
 
 void Analytics::addPulsarCatalog() {
-    QString catalog = QFileDialog::getExistingDirectory(this, "pulsar catalog", QSettings().value("openPath").toString());
+    QString catalog = QFileDialog::getExistingDirectory(this, QSettings().value("openPath").toString());
     if (catalog != "") {
+        QSettings().setValue("openPath", MainWindow::nativeDecodeLastPath(catalog));
+
         ui->progressBar->show();
         ui->currentFile->show();
         loadPulsars(catalog);

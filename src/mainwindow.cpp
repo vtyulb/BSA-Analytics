@@ -105,12 +105,16 @@ void MainWindow::openPulsarFile() {
 //    QObject::connect(this, SIGNAL(destroyed()), list, SLOT(deleteLater()));
 }
 
-void MainWindow::decodeLastPath(QString path) {
+QString MainWindow::nativeDecodeLastPath(QString path) {
     for (int i = path.length() - 1; i; i--)
-        if (path[i] == '/' || path[i] == '\\') {
-            lastOpenPath = path.left(i);
-            break;
-        }
+        if (path[i] == '/' || path[i] == '\\')
+            return path.left(i);
+
+    return QDir::homePath();
+}
+
+void MainWindow::decodeLastPath(QString path) {
+    lastOpenPath = nativeDecodeLastPath(path);
 }
 
 void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QDateTime time, bool binary) {

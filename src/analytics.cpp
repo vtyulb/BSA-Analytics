@@ -220,7 +220,7 @@ bool Analytics::goodDoubles(double a, double b) {
         b = c;
     }
 
-    if (a > 2.1 * b)
+    if (a > (1.1 + ui->doublePeriods->isChecked()) * b)
         return false;
 
     a /= b;

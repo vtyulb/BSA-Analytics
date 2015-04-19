@@ -20,8 +20,6 @@ public:
     explicit Analytics(QString analyticsPath = "", QWidget *parent = 0);
     ~Analytics();
 
-    static bool goodDoubles(double, double);
-
 private:
     Ui::Analytics *ui;
     PulsarList *list;
@@ -60,6 +58,9 @@ private:
     void loadKnownPulsars();
 
     Data dispersionGenerateData();
+
+    bool goodDoubles(double, double);
+
 
 private slots:
     void apply();

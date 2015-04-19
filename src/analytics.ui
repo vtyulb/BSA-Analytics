@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>233</width>
-    <height>788</height>
+    <width>292</width>
+    <height>895</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -259,6 +259,16 @@
        <widget class="QLabel" name="label_9">
         <property name="text">
          <string>number of iterations</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="doublePeriods">
+        <property name="text">
+         <string>double periods</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

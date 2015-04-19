@@ -79,9 +79,7 @@ bool KnownNoise::goodDoubles(double a, double b) {
     if (a > 1.1 * b)
         return false;
 
-    a /= b;
-
-    a = fabs(a - int(a + 0.5));
+    a = fabs(a - b);
     a = (a * interval / b);
 
     if (0.1 * b > 0.5)

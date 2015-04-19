@@ -223,9 +223,10 @@ bool Analytics::goodDoubles(double a, double b) {
     if (a > (1.1 + ui->doublePeriods->isChecked()) * b)
         return false;
 
-    a /= b;
+    if (a > 1.9 * b)
+        a /= 2;
 
-    a = fabs(a - int(a + 0.5));
+    a = fabs(a - b);
     a = (a * interval / b);
 
     if (0.1 * b > 0.5)

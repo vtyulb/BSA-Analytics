@@ -29,14 +29,22 @@ struct KnownPulsar {
     }
 
     bool goodDoubles(double a, double b) const {
-        if (a > b)
-            a /= b;
+        if (a < b) {
+            double c = a;
+            a = b;
+            b = c;
+        }
+
+        if (a > 1.1 * b)
+            return false;
+
+        a = fabs(a - b);
+        a = (a * interval / b);
+
+        if (0.1 * b > 0.5)
+            return a < 0.1 * b;
         else
-            a = b / a;
-
-        a = fabs(a - int(a + 0.5));
-
-        return interval * a < 1.01 * b;
+            return a < 0.5;
     }
 };
 

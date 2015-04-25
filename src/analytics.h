@@ -59,9 +59,6 @@ private:
 
     Data dispersionGenerateData();
 
-    bool goodDoubles(double, double);
-
-
 private slots:
     void apply();
     void init();

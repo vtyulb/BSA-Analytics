@@ -22,7 +22,6 @@ private:
     Ui::KnownNoise *ui;
     QVector<double> doubles;
 
-    bool goodDoubles(double, double);
     void save();
     void reload();
 

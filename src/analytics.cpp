@@ -213,31 +213,9 @@ void Analytics::applyModuleFilter() {
         pulsarsEnabled[i] &= (pulsars->at(i).module == ui->module->value());
 }
 
-bool Analytics::goodDoubles(double a, double b) {
-    if (a < b) {
-        double c = a;
-        a = b;
-        b = c;
-    }
-
-    if (a > (1.1 + ui->doublePeriods->isChecked()) * b)
-        return false;
-
-    if (a > 1.9 * b)
-        a /= 2;
-
-    a = fabs(a - b);
-    a = (a * interval / b);
-
-    if (0.1 * b > 0.5)
-        return a < 0.1 * b;
-    else
-        return a < 0.5;
-}
-
 void Analytics::applyPeriodFilter() {
     for (int i = 0; i < pulsars->size(); i++)
-        pulsarsEnabled[i] &= (goodDoubles(ui->period->value(), pulsars->at(i).period));
+        pulsarsEnabled[i] &= (globalGoodDoubles(ui->period->value(), pulsars->at(i).period, ui->doublePeriods->isChecked()));
 }
 
 void Analytics::applyRayFilter() {
@@ -328,7 +306,7 @@ void Analytics::applyDuplicatesFilter() {
                     int j = pl[module][ray][l];
 
                     if (abs(pulsars->at(i).nativeTime.secsTo(pulsars->at(j).nativeTime)) < 120 &&
-                            goodDoubles(pulsars->at(i).period, pulsars->at(j).period) &&
+                            globalGoodDoubles(pulsars->at(i).period, pulsars->at(j).period, ui->doublePeriods->isChecked()) &&
                             pulsars->at(i).data.name != pulsars->at(j).data.name &&
                             !set[i].contains(pulsars->at(j).data.name) &&
                             !set[j].contains(pulsars->at(i).data.name)) {

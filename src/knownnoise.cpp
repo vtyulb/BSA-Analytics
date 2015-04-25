@@ -57,7 +57,7 @@ void KnownNoise::remove() {
 
 bool KnownNoise::contains(double p) {
     for (int i = 0; i < doubles.size(); i++)
-        if (goodDoubles(p, doubles[i]))
+        if (globalGoodDoubles(p, doubles[i]))
             return true;
 
     return false;
@@ -68,23 +68,3 @@ void KnownNoise::add() {
     save();
     reload();
 }
-
-bool KnownNoise::goodDoubles(double a, double b) {
-    if (a < b) {
-        double c = a;
-        a = b;
-        b = c;
-    }
-
-    if (a > 1.1 * b)
-        return false;
-
-    a = fabs(a - b);
-    a = (a * interval / b);
-
-    if (0.1 * b > 0.5)
-        return a < 0.1 * b;
-    else
-        return a < 0.5;
-}
-

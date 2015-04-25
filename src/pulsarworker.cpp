@@ -64,7 +64,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     for (double period = MINIMUM_PERIOD_INC / data.oneStep; period < MAXIMUM_PERIOD_INC / data.oneStep; period += data.oneStep / interval)
         if (!Settings::settings()->preciseSearch() || (goodDoubles(period, Settings::settings()->period() / data.oneStep) &&
                                                        (!Settings::settings()->noMultiplePeriods())) ||
-                fabs(period - Settings::settings()->period() / data.oneStep) < 0.01 * Settings::settings()->period())
+                globalGoodDoubles(period, Settings::settings()->period()))
     {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;

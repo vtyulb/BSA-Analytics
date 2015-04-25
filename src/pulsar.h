@@ -141,6 +141,29 @@ struct Pulsar {
     }
 };
 
+static bool globalGoodDoubles(double a, double b, bool twice = false) {
+    if (a < b) {
+        double c = a;
+        a = b;
+        b = c;
+    }
+
+    if (a > (1.1 + twice) * b)
+        return false;
+
+    if (a > 1.9 * b)
+        a /= 2;
+
+    a = fabs(a - b);
+    a = (a * interval / b);
+
+    if (0.1 * b > 0.5)
+        return a < 0.1 * b;
+    else
+        return a < 0.5;
+}
+
+
 typedef QVector<Pulsar>* Pulsars;
 
 

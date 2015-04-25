@@ -64,7 +64,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     for (double period = MINIMUM_PERIOD_INC / data.oneStep; period < MAXIMUM_PERIOD_INC / data.oneStep; period += data.oneStep / interval)
         if (!Settings::settings()->preciseSearch() || (goodDoubles(period, Settings::settings()->period() / data.oneStep) &&
                                                        (!Settings::settings()->noMultiplePeriods())) ||
-                fabs(period - Settings::settings()->period() / data.oneStep) < 0.01)
+                fabs(period - Settings::settings()->period() / data.oneStep) < 0.1 * Settings::settings()->period())
     {
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
@@ -189,14 +189,21 @@ QVector<Pulsar> PulsarWorker::removeDuplicates(QVector<Pulsar> pulsars) {
 
     for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)
         for (QLinkedList<Pulsar>::Iterator j = i + 1; j != l.end(); j++)
-            if ((*i).valid && (*j).valid)
-                equalPulsars(&*i, &*j);
+            if (equalPulsars(&*i, &*j)) {
+                if (!(*i).valid) {
+                    i = l.erase(i);
+                    j = i;
+                } else {
+                    j = l.erase(j);
+                    j--;
+                }
+            }
 
-    for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end();)
+    /*for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end();)
         if (!(*i).valid)
             i = l.erase(i);
         else
-            i++;
+            i++;*/
 
 
     for (QLinkedList<Pulsar>::Iterator i = l.begin(); i != l.end(); i++)

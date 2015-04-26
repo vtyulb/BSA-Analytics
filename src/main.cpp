@@ -183,7 +183,14 @@ void pulsarEngine(int argc, char **argv) {
         if (threads != -1)
             CalculationPool::pool()->setMaxThreadCount(threads);
 
-        PulsarProcess p(dataPath, QFileInfo(dataPath).fileName() + "_processed_" + QString::number(period) + "_" + QTime().toString("HH:mm:ss") + "/");
+        QString output = QFileInfo(dataPath).fileName() + "_" + QString::number(period) + "_" + QTime::currentTime().toString("HH:mm:ss");
+        if (Settings::settings()->singlePeriod())
+            output += "_sp";
+
+        if (Settings::settings()->doNotClearNoise())
+            output += "_with_noise";
+
+        PulsarProcess p(dataPath, output + "/");
         p.start();
         p.wait();
         exit(0);

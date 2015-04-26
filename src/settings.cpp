@@ -11,6 +11,7 @@ Settings::Settings() {
     _noMultiplePeriods = false;
     _dispersion = -1;
     _doNotClearNoise = false;
+    _singlePeriod = false;
 }
 
 Settings *Settings::settings() {
@@ -183,6 +184,14 @@ QVector<double> Settings::dispersionData() {
 
 void Settings::setLastData(const Data &d) {
     _lastData = d;
+}
+
+void Settings::setSinglePeriod(bool b) {
+    _singlePeriod = b;
+}
+
+bool Settings::singlePeriod() {
+    return _singlePeriod;
 }
 
 Data Settings::lastData() {

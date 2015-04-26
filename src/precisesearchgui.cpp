@@ -60,6 +60,9 @@ void PreciseSearchGui::runSearcher() {
     if (!ui->clearNoise->isChecked())
         l << "--do-not-clear-noise";
 
+    if (ui->singlePeriod->isChecked())
+        l << "--single-period";
+
     l << "--threads" << "1";
 
     qDebug() << "running with" << l;

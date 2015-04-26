@@ -165,10 +165,11 @@ void pulsarEngine(int argc, char **argv) {
         else if (strcmp(argv[i], "--precise-packet") == 0) {
             precisePacket(argv[0], argv[i + 1]);
             exit(0);
-        } else if (strcmp(argv[i], "--do-not-clear-noise"))
-            doNotClearNoise = true;
+        } else if (strcmp(argv[i], "--do-not-clear-noise") == 0)
+            Settings::settings()->setDoNotClearNoise(true);
+        else if (strcmp(argv[i], "--single-period") == 0)
+            Settings::settings()->setSinglePeriod(true);
 
-    Settings::settings()->setDoNotClearNoise(doNotClearNoise);
 
     if (preciseSearch) {
         qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray << "with time" << time;

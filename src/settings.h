@@ -7,8 +7,6 @@
 
 class Settings {
     public:
-        Settings();
-
         static Settings *settings();
 
         bool intellectualFilter();
@@ -21,6 +19,7 @@ class Settings {
         bool flowFinder();
         bool noMultiplePeriods();
         bool doNotClearNoise();
+        bool singlePeriod();
         int dispersion();
         QVector<double> dispersionData();
         Data lastData();
@@ -38,6 +37,7 @@ class Settings {
         void setLowMemoryMode(bool);
         void setRealOneStep(double);
         void setSoundMode(bool);
+        void setSinglePeriod(bool);
         void setDoNotClearNoise(bool);
         void detectStair(char *name, int point);
         QTime getTime();
@@ -54,6 +54,8 @@ class Settings {
         void setLastData(const Data&);
 
     private:
+        Settings();
+
         bool filter;
         int _skipCount;
         bool _subZero;
@@ -64,6 +66,7 @@ class Settings {
         int _ray;
         int _module;
         bool _flowFinder;
+        bool _singlePeriod;
         bool _noMultiplePeriods;
         bool _doNotClearNoise;
         QTime _time;

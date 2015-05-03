@@ -25,7 +25,9 @@ PulsarWorker::PulsarWorker(int module, int ray, int D, Data data, bool sigmaCut)
 
 void PulsarWorker::run() {
     QTime t = QTime::currentTime();
-    clearAverange();
+    if (!Settings::settings()->singlePeriod())
+        clearAverange();
+
     res = searchIn();
     finished = true;
     qDebug() << "process" << module << ray << D << "finished at" << QTime::currentTime().toString() << "total time: " << t.msecsTo(QTime::currentTime()) / 1000.0 << "s , found" << res.size() << "pulsars";
@@ -50,6 +52,9 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             end++;
 
         Settings::settings()->getTime().secsTo(QTime::fromString(StarTime::StarTime(data, end)));
+
+        if (Settings::settings()->singlePeriod())
+            end = start + 1;
     }
 
 

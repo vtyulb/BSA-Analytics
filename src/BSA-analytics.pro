@@ -36,7 +36,8 @@ SOURCES += main.cpp\
     flowfinder.cpp \
     precisesearchgui.cpp \
     knownpulsarsgui.cpp \
-    knownnoise.cpp
+    knownnoise.cpp \
+    spectredrawer.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -62,7 +63,8 @@ HEADERS  += mainwindow.h \
     flowfinder.h \
     precisesearchgui.h \
     knownpulsarsgui.h \
-    knownnoise.h
+    knownnoise.h \
+    spectredrawer.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

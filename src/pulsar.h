@@ -7,6 +7,7 @@
 #include <QString>
 #include <QVector>
 #include <QVariant>
+#include <settings.h>
 
 const double INTERVAL = 17;
 const double MINIMUM_PERIOD = 0.5;
@@ -55,7 +56,11 @@ struct Pulsar {
 
     void calculateAdditionalData(const QVector<double> &disp) {
         QVector<QVariant> d;
-        for (int offset = -period / data.oneStep / 2; offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1; offset++) {
+        int additionalSize = 0;
+//        if (Settings::settings()->)
+//        qDebug() << "fix it" << "line 61 pulsaar.h";
+
+        for (int offset = -period / data.oneStep / 2; offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1 + additionalSize; offset++) {
             double sum = 0;
             int n = 0;
             for (double i = firstPoint + offset; i < firstPoint + offset + interval / data.oneStep; i += period / data.oneStep * 2, n++)

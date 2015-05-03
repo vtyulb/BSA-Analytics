@@ -150,9 +150,6 @@ void Analytics::apply() {
     if (ui->periodCheckBox->isChecked())
         applyPeriodFilter();
 
-    if (ui->SNRCheckBox->isChecked())
-        applySNRFilter();
-
     if (ui->rayCheckBox->isChecked())
         applyRayFilter();
 
@@ -181,6 +178,8 @@ void Analytics::apply() {
         for (int i = 0; i < ui->duplicatesIterations->value(); i++)
             applyDuplicatesFilter();
 
+    if (ui->SNRCheckBox->isChecked())
+        applySNRFilter();
 
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)

@@ -1,6 +1,3 @@
-#include <mainwindow.h>
-#include <pulsarsearcher.h>
-#include <pulsarreader.h>
 #include <QApplication>
 #include <QCoreApplication>
 #include <QMessageBox>
@@ -10,16 +7,20 @@
 #include <QTextBrowser>
 #include <QTime>
 
-#include <signal.h>
 #include <settings.h>
+#include <mainwindow.h>
+#include <pulsarsearcher.h>
+#include <pulsarreader.h>
 #include <analytics.h>
 #include <calculationpool.h>
 #include <filecompressor.h>
 #include <flowfinder.h>
+#include <spectredrawer.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #ifdef Q_OS_LINUX
     #include <execinfo.h>
@@ -116,6 +117,7 @@ void pulsarEngine(int argc, char **argv) {
 
     bool preciseSearch = false;
     bool doNotClearNoise = false;
+    bool drawSpectre = false;
     int module = 1;
     int ray = 1;
     double period = 1;
@@ -169,7 +171,13 @@ void pulsarEngine(int argc, char **argv) {
             Settings::settings()->setDoNotClearNoise(true);
         else if (strcmp(argv[i], "--single-period") == 0)
             Settings::settings()->setSinglePeriod(true);
+        else if (strcmp(argv[i], "--draw-spectre") == 0)
+            drawSpectre = true;
 
+    if (drawSpectre) {
+        SpectreDrawer::drawSpectre(module - 1, ray - 1, dataPath, time, period);
+        exit(0);
+    }
 
     if (preciseSearch) {
         qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray << "with time" << time;

@@ -17,7 +17,7 @@ using std::min;
 
 QVector<int> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period) {
     int start = 0;
-    while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 2);
+    while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 2)
         start++;
 
     QVector<double> res;

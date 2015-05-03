@@ -6,6 +6,7 @@
 #include <QDesktopServices>
 #include <QPainter>
 #include <QUrl>
+#include <QProcess>
 
 #include <reader.h>
 #include <pulsarworker.h>
@@ -32,13 +33,18 @@ QVector<int> SpectreDrawer::getAnswer(const Data &data, int channel, int module,
     }
 
     double max = 0;
-    for (int i = 0; i < res.size(); i++)
+    double min = 0;
+    for (int i = 0; i < res.size(); i++) {
         if (max < res[i])
             max = res[i];
 
+        if (min > res[i])
+            min = res[i];
+    }
+
     QVector<int> norm;
     for (int i = 0; i < res.size(); i++)
-        norm.push_back(255 * res[i] / max);
+        norm.push_back(255 * (res[i] - min) / (max - min));
 
     return norm;
 }
@@ -57,22 +63,42 @@ void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime tim
     for (int i = 0; i < matrix.size(); i++)
         matrix[i] = getAnswer(data, i, module, ray, time, period);
 
-    drawImage(matrix);
+    drawImage(matrix, data);
 }
 
-void SpectreDrawer::drawImage(QVector<QVector<int> > matrix) {
-    QImage image(matrix[0].size(), matrix.size(), QImage::Format_ARGB32);
+void SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data) {
+    int nrm = 10;
+    const int offset = 50;
+
+    QImage image(matrix[0].size() * nrm + offset, matrix.size() * nrm, QImage::Format_ARGB32);
     QPainter p(&image);
+    p.fillRect(0, 0, image.width(), image.height(), Qt::white);
 
     for (int i = 0; i < matrix.size(); i++)
         for (int j = 0; j < matrix[i].size(); j++) {
-            int color = matrix[i][j];
+            int color = 255 - matrix[i][j];
             p.setPen(QColor(color, color, color));
-            p.drawPoint(j, i);
+            p.setBrush(QBrush(QColor(color, color, color)));
+            p.drawRect(j * nrm + offset, i * nrm, nrm, nrm);
         }
+
+    p.setPen(QColor("green"));
+    for (int i = 0; i < matrix.size(); i++)
+        p.drawText(1, i * nrm + nrm - 1, QString::number(data.fbands[i]));
 
 
     p.end();
-    image.save(QDir::tempPath() + "/spectre.png", "png");
-    QDesktopServices::openUrl(QUrl(QDir::tempPath() + "/spectre.png"));
+    QString path = QDir::tempPath() + "/spectre.png";
+    image.save(path, "png");
+
+    qDebug() << "saved as" << path;
+
+#ifndef Q_OS_LINUX
+    path.replace("/", "\\");
+
+    QStringList l;
+    l << "/select," + path;
+    qDebug() << l;
+    QProcess::startDetached("explorer.exe", l);
+#endif
 }

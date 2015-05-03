@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>233</width>
-    <height>330</height>
+    <width>238</width>
+    <height>359</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -141,6 +141,20 @@
         <widget class="QLabel" name="label_8">
          <property name="text">
           <string>Single period</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QCheckBox" name="spectre">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>Spectre</string>
          </property>
         </widget>
        </item>

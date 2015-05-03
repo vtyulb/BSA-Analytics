@@ -63,6 +63,9 @@ void PreciseSearchGui::runSearcher() {
     if (ui->singlePeriod->isChecked())
         l << "--single-period";
 
+    if (ui->spectre->isChecked())
+        l << "--draw-spectre";
+
     l << "--threads" << "1";
 
     qDebug() << "running with" << l;

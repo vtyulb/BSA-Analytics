@@ -14,7 +14,7 @@ public:
 
 private:
     static QVector<int> getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period);
-    static void drawImage(QVector<QVector<int> > matrix);
+    static void drawImage(QVector<QVector<int> > matrix, const Data &data);
 
     SpectreDrawer();
 };

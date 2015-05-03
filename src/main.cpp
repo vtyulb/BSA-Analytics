@@ -91,7 +91,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --source-range <file name> <point>\n");
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --flow-find\n");
-        printf("BSA-Analytics --precise-pulsar-search <file name> --module <int> --ray <int> --period <double>\n"
+        printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
                "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("\nOptions:\n");
@@ -175,6 +175,11 @@ void pulsarEngine(int argc, char **argv) {
             drawSpectre = true;
 
     if (drawSpectre) {
+        QApplication a(argc, argv);
+        a.setOrganizationDomain("bsa.vtyulb.ru");
+        a.setOrganizationName("vtyulb");
+        a.setApplicationName("BSA-Analytics");
+
         SpectreDrawer::drawSpectre(module - 1, ray - 1, dataPath, time, period);
         exit(0);
     }

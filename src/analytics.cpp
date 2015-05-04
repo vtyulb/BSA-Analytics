@@ -144,6 +144,9 @@ void Analytics::apply() {
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] = true;
 
+    if (ui->periodRangeCheckBox->isChecked())
+        applyPeriodRangeFilter();
+
     if (ui->moduleCheckBox->isChecked())
         applyModuleFilter();
 
@@ -181,6 +184,9 @@ void Analytics::apply() {
     if (ui->SNRCheckBox->isChecked())
         applySNRFilter();
 
+    if (ui->differentMaximums->isChecked())
+        applyDifferentMaximumsFilter();
+
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsarsEnabled[i])
@@ -210,6 +216,12 @@ void Analytics::applyFileNameFilter() {
 void Analytics::applyModuleFilter() {
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] &= (pulsars->at(i).module == ui->module->value());
+}
+
+void Analytics::applyPeriodRangeFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        pulsarsEnabled[i] &= (ui->periodRangeLeft->value() < pulsars->at(i).period) &&
+                                (ui->periodRangeRight->value() > pulsars->at(i).period);
 }
 
 void Analytics::applyPeriodFilter() {
@@ -274,6 +286,33 @@ void Analytics::applyKnownPulsarsFilter() {
                     pulsarsEnabled[i] = false;
                     break;
                 }
+}
+
+void Analytics::applyDifferentMaximumsFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i]) {
+            double mx1 = 0;
+            double mx2 = 0;
+            int sz;
+            float *data = pulsars->at(i).data.data[0][0][0];
+            for (sz = 0; data[sz] != 0; sz++);
+
+            for (int j = 0; j < sz / 2; j++)
+                if (data[j] > mx1)
+                    mx1 = data[j];
+
+            for (int j = sz / 2; j < sz; j++)
+                if (data[j] > mx2)
+                    mx2 = data[j];
+
+
+            if (mx1 > mx2)
+                mx1 /= mx2;
+            else
+                mx1 = mx2 / mx1;
+
+            pulsarsEnabled[i] &= mx1 < 1.4;
+        }
 }
 
 void Analytics::applyDifferentNoise() {

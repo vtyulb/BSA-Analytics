@@ -41,6 +41,7 @@ private:
     void loadPulsars(QString);
 
     void applyPeriodFilter();
+    void applyPeriodRangeFilter();
     void applySNRFilter();
     void applyModuleFilter();
     void applyRayFilter();
@@ -53,6 +54,7 @@ private:
     void applyKnownPulsarsFilter();
     void applyKnownNoiseFilter();
     void applyFileNameFilter();
+    void applyDifferentMaximumsFilter();
 
     void preCalc();
     void loadKnownPulsars();

@@ -196,7 +196,9 @@ void pulsarEngine(int argc, char **argv) {
         if (threads != -1)
             CalculationPool::pool()->setMaxThreadCount(threads);
 
-        QString output = QFileInfo(dataPath).fileName() + "_" + QString::number(period) + "_" + QTime::currentTime().toString("HH:mm:ss");
+        QString output = QFileInfo(dataPath).fileName() + "_" + QString::number(period) + "_" + QTime::currentTime().toString("HH-mm-ss");
+        output = QDir::tempPath() + "/" + output;
+        qDebug() << "saving as" << output;
         if (Settings::settings()->singlePeriod())
             output += "_sp";
 
@@ -206,6 +208,17 @@ void pulsarEngine(int argc, char **argv) {
         PulsarProcess p(dataPath, output + "/");
         p.start();
         p.wait();
+
+#ifndef Q_OS_LINUX
+        output.replace("/", "\\");
+
+        QStringList l;
+        l << "/select," + output;
+        qDebug() << l;
+        QProcess::startDetached("explorer.exe", l);
+#endif
+
+
         exit(0);
     }
 

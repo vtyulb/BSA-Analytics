@@ -17,6 +17,9 @@ PulsarProcess::PulsarProcess(QString file, QString savePath, QObject *parent):
 {
     Reader reader;
     data = reader.readBinaryFile(file);
+
+    if (Settings::settings()->preciseSearch())
+        data.halfRelease(Settings::settings()->module(), Settings::settings()->ray());
 }
 
 PulsarProcess::~PulsarProcess() {
@@ -24,6 +27,7 @@ PulsarProcess::~PulsarProcess() {
 //    data.releaseData();
 //    qDebug() << "data released";
 }
+
 
 void PulsarProcess::run() {
     QVector<PulsarWorker*> workers;

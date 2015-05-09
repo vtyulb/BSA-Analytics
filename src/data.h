@@ -42,6 +42,15 @@ struct Data {
         delete[] fbands;
     }
 
+    void halfRelease(int module, int ray) {
+        releaseProtected = true;
+        for (int i = 0; i < modules; i++)
+            for (int j = 0; j < channels; j++)
+                for (int k = 0; k < rays; k++)
+                    if (i != module || k != ray)
+                        delete[] data[i][j][k];
+    }
+
     void init() {
         sigma = -1;
         stairSize = 0;

@@ -15,6 +15,18 @@
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>4</number>
+    </property>
+    <property name="topMargin">
+     <number>4</number>
+    </property>
+    <property name="rightMargin">
+     <number>4</number>
+    </property>
+    <property name="bottomMargin">
+     <number>4</number>
+    </property>
     <item>
      <widget class="QScrollArea" name="frame">
       <property name="widgetResizable">
@@ -25,11 +37,11 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>906</width>
-         <height>548</height>
+         <width>910</width>
+         <height>556</height>
         </rect>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <widget class="QLabel" name="label">
           <property name="font">
@@ -226,7 +238,7 @@
   </action>
   <action name="actionPulsar_analytics_low_memory">
    <property name="text">
-    <string>Pulsar analytics low memory</string>
+    <string>Pulsar analytics &amp;low memory</string>
    </property>
   </action>
  </widget>

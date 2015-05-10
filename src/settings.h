@@ -20,6 +20,7 @@ class Settings {
         bool noMultiplePeriods();
         bool doNotClearNoise();
         bool singlePeriod();
+        bool longRoads();
         int dispersion();
         QVector<double> dispersionData();
         Data lastData();
@@ -52,6 +53,7 @@ class Settings {
         void setDispersion(int);
         void setDispersionData(const QVector<double>&);
         void setLastData(const Data&);
+        void setLongRoads(bool);
 
     private:
         Settings();
@@ -69,6 +71,7 @@ class Settings {
         bool _singlePeriod;
         bool _noMultiplePeriods;
         bool _doNotClearNoise;
+        bool _longRoads;
         QTime _time;
         double _period;
         int _dispersion;

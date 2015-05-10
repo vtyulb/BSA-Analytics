@@ -36,6 +36,8 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     layout->addWidget(drawer);
     layout->addWidget(controlFrame);
 
+
+
     QVBoxLayout *l = new QVBoxLayout(controlFrame);
     for (int i = 0; i < data.rays; i++) {
         checkBoxes.push_back(new QCheckBox(QString("ray %1%2").arg(QString::number((i + 1)/10), QString::number((i + 1)%10)), this));

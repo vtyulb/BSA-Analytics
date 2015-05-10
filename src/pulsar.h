@@ -57,8 +57,8 @@ struct Pulsar {
     void calculateAdditionalData(const QVector<double> &disp) {
         QVector<QVariant> d;
         int additionalSize = 0;
-//        if (Settings::settings()->)
-//        qDebug() << "fix it" << "line 61 pulsaar.h";
+        if (Settings::settings()->longRoads())
+            additionalSize = 1000;
 
         for (int offset = -period / data.oneStep / 2; offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1 + additionalSize; offset++) {
             double sum = 0;

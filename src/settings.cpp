@@ -12,11 +12,20 @@ Settings::Settings() {
     _dispersion = -1;
     _doNotClearNoise = false;
     _singlePeriod = false;
+    _longRoads = false;
 }
 
 Settings *Settings::settings() {
     static Settings *res = new Settings();
     return res;
+}
+
+void Settings::setLongRoads(bool b) {
+    _longRoads = b;
+}
+
+bool Settings::longRoads() {
+    return _longRoads;
 }
 
 void Settings::setDispersion(int d) {

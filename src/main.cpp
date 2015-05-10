@@ -92,7 +92,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --flow-find\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
-               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise]\n");
+               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
@@ -104,6 +104,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("\t--source-range <file name> <point> for running in a special mode\n");
         printf("\t--analytics to run in analytics mode\n");
         printf("\t--low-memory to do not save data roads in analytics mode\n");
+        printf("\t--long-roads to display more than two periods\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
         printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
         exit(0);
@@ -173,6 +174,8 @@ void pulsarEngine(int argc, char **argv) {
             Settings::settings()->setSinglePeriod(true);
         else if (strcmp(argv[i], "--draw-spectre") == 0)
             drawSpectre = true;
+        else if (strcmp(argv[i], "--long-roads") == 0)
+            Settings::settings()->setLongRoads(true);
 
     if (drawSpectre) {
         QApplication a(argc, argv);

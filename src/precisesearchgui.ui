@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>238</width>
-    <height>359</height>
+    <height>389</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -62,23 +62,6 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QCheckBox" name="skipMultiplePeriods">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1">
-        <widget class="QLabel" name="label_4">
-         <property name="text">
-          <string>Skip multiple periods</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="0">
         <widget class="QSpinBox" name="dispersion">
          <property name="minimum">
@@ -110,6 +93,23 @@
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>Time</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QCheckBox" name="skipMultiplePeriods">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>Skip multiple periods</string>
          </property>
         </widget>
        </item>

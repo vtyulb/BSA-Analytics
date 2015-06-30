@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>351</width>
-    <height>283</height>
+    <width>357</width>
+    <height>211</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,14 +18,14 @@
     <widget class="NativeSpectreDrawer" name="drawer" native="true"/>
    </item>
    <item>
-    <widget class="QWidget" name="widget_3" native="true">
+    <widget class="QWidget" name="widget" native="true">
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>75</height>
+       <height>80</height>
       </size>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QWidget" name="widget_2" native="true">
         <property name="maximumSize">
@@ -34,7 +34,31 @@
           <height>16777215</height>
          </size>
         </property>
-        <layout class="QFormLayout" name="formLayout">
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="0" column="2">
+          <widget class="QPushButton" name="saver">
+           <property name="text">
+            <string>Save as</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Time</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QSpinBox" name="time">
+           <property name="minimum">
+            <number>1</number>
+           </property>
+           <property name="maximum">
+            <number>10</number>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QSpinBox" name="channels">
            <property name="minimum">
@@ -45,16 +69,6 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="0">
-          <widget class="QSpinBox" name="time">
-           <property name="minimum">
-            <number>1</number>
-           </property>
-           <property name="maximum">
-            <number>10</number>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="1">
           <widget class="QLabel" name="label">
            <property name="text">
@@ -62,32 +76,21 @@
            </property>
           </widget>
          </item>
-         <item row="1" column="1">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Time</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="widget_4" native="true">
-        <widget class="QPushButton" name="saver">
-         <property name="geometry">
-          <rect>
-           <x>50</x>
-           <y>10</y>
-           <width>84</width>
-           <height>33</height>
-          </rect>
-         </property>
-         <property name="text">
-          <string>Save as</string>
-         </property>
-        </widget>
-       </widget>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>110</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>

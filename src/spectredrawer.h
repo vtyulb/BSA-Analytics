@@ -6,17 +6,28 @@
 #include <QVector>
 
 #include <data.h>
+#include "ui_spectre.h"
+#include <nativespectredrawer.h>
 
-class SpectreDrawer
+class SpectreDrawer: public QWidget
 {
+    Q_OBJECT
+
 public:
-    static void drawSpectre(int module, int ray, QString fileName, QTime time, double period);
+    SpectreDrawer() {};
+    void drawSpectre(int module, int ray, QString fileName, QTime time, double period);
 
 private:
-    static QVector<int> getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period);
-    static void drawImage(QVector<QVector<int> > matrix, const Data &data);
+    QVector<int> getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period);
+    QImage drawImage(QVector<QVector<int> > matrix, const Data &data);
 
-    SpectreDrawer();
+    Ui::SpectreUI *ui;
+    QVector<QVector<int> > matrix;
+    Data data;
+
+public slots:
+    void reDraw();
+    void saveAs();
 };
 
 #endif // SPECTREDRAWER_H

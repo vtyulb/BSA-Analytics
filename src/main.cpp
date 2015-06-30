@@ -183,8 +183,10 @@ void pulsarEngine(int argc, char **argv) {
         a.setOrganizationName("vtyulb");
         a.setApplicationName("BSA-Analytics");
 
-        SpectreDrawer::drawSpectre(module - 1, ray - 1, dataPath, time, period);
-        exit(0);
+        SpectreDrawer sd;
+        sd.drawSpectre(module - 1, ray - 1, dataPath, time, period);
+
+        exit(a.exec());
     }
 
     if (preciseSearch) {

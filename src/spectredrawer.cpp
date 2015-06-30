@@ -7,10 +7,12 @@
 #include <QPainter>
 #include <QUrl>
 #include <QProcess>
+#include <QFileDialog>
 
 #include <reader.h>
 #include <pulsarworker.h>
 #include <startime.h>
+#include <nativespectredrawer.h>
 
 #include <algorithm>
 
@@ -51,22 +53,53 @@ QVector<int> SpectreDrawer::getAnswer(const Data &data, int channel, int module,
 
 void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime time, double period) {
     Reader r;
-    Data data = r.readBinaryFile(fileName);
+    data = r.readBinaryFile(fileName);
 
     const int step =  INTERVAL / data.oneStep;
     for (int channel = 0; channel < data.channels - 1; channel++)
         for (int i = 0; i < data.npoints; i += step)
             PulsarWorker::subtract(data.data[module][channel][ray] + i, min(step, data.npoints - i));
 
-    QVector<QVector<int> > matrix;
     matrix.resize(data.channels - 1);
     for (int i = 0; i < matrix.size(); i++)
         matrix[i] = getAnswer(data, i, module, ray, time, period);
 
-    drawImage(matrix, data);
+    ui = new Ui::SpectreUI;
+    ui->setupUi(this);
+
+    ui->channels->setMaximum(matrix.size());
+
+    QObject::connect(ui->channels, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
+    QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
+    QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
+
+    this->reDraw();
+
+    this->show();
 }
 
-void SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data) {
+void SpectreDrawer::reDraw() {
+    int x = ui->time->value();
+    int y = ui->channels->value();
+
+    QVector<QVector<int> > r;
+    r.resize(matrix.size() / y);
+    for (int i = 0; i < matrix.size() / y; i++)
+        for (int j = 0; j < matrix[0].size() / x; j++) {
+            int v = 0;
+            for (int k = 0; k < y; k++)
+                for (int l = 0; l < x; l++)
+                    v += matrix[i * y + k][j * x + l];
+
+            v /= (x * y);
+            r[i].push_back(v);
+        }
+
+    ui->drawer->spectre = drawImage(r, data);
+    ui->drawer->repaint();
+}
+
+QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data) {
     int nrm = 10;
     const int offset = 50;
 
@@ -84,21 +117,16 @@ void SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data) {
 
     p.setPen(QColor("green"));
     for (int i = 0; i < matrix.size(); i++)
-        p.drawText(1, i * nrm + nrm - 1, QString::number(data.fbands[i]));
+        p.drawText(1, i * nrm + nrm - 1, QString::number(data.fbands[i * ui->channels->value()]));
 
 
     p.end();
-    QString path = QDir::tempPath() + "/spectre.png";
-    image.save(path, "png");
 
-    qDebug() << "saved as" << path;
+    return image;
+}
 
-#ifndef Q_OS_LINUX
-    path.replace("/", "\\");
-
-    QStringList l;
-    l << "/select," + path;
-    qDebug() << l;
-    QProcess::startDetached("explorer.exe", l);
-#endif
+void SpectreDrawer::saveAs() {
+    QString savePath = QFileDialog::getSaveFileName(this, "Spectre");
+    if (savePath != "")
+        ui->drawer->spectre.save(savePath);
 }

@@ -37,7 +37,8 @@ SOURCES += main.cpp\
     precisesearchgui.cpp \
     knownpulsarsgui.cpp \
     knownnoise.cpp \
-    spectredrawer.cpp
+    spectredrawer.cpp \
+    nativespectredrawer.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -64,7 +65,8 @@ HEADERS  += mainwindow.h \
     precisesearchgui.h \
     knownpulsarsgui.h \
     knownnoise.h \
-    spectredrawer.h
+    spectredrawer.h \
+    nativespectredrawer.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \
@@ -73,6 +75,7 @@ FORMS    += mainwindow.ui \
     precisesearchgui.ui \
     precisepacket.ui \
     knownpulsarsgui.ui \
-    knownnoise.ui
+    knownnoise.ui \
+    spectre.ui
 
 win32:RC_FILE = icon.rc

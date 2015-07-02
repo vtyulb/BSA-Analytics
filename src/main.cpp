@@ -193,8 +193,14 @@ void pulsarEngine(int argc, char **argv) {
     }
 
     if (QString(argv[1]) == "--precise-timing") {
-        PrecisePeriodDetecter::detect(argv[2], argv[3], argv[4], module, ray, Settings::settings()->dispersion(), period, time);
-        exit(0);
+        QApplication a(argc, argv);
+        a.setOrganizationDomain("bsa.vtyulb.ru");
+        a.setOrganizationName("vtyulb");
+        a.setApplicationName("BSA-Analytics");
+
+        PrecisePeriodDetecter::detect(argv[2], argv[3], argv[4], module - 1, ray - 1, Settings::settings()->dispersion(), period, time);
+
+        exit(a.exec());
     }
 
     if (preciseSearch) {

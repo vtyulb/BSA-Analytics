@@ -40,7 +40,7 @@ SOURCES += main.cpp\
     spectredrawer.cpp \
     nativespectredrawer.cpp \
     precisetiming.cpp \
-    preciseprerioddetecter.cpp
+    preciseperioddetecter.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -70,7 +70,7 @@ HEADERS  += mainwindow.h \
     spectredrawer.h \
     nativespectredrawer.h \
     precisetiming.h \
-    preciseprerioddetecter.h
+    preciseperioddetecter.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

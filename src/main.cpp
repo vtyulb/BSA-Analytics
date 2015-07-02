@@ -16,7 +16,7 @@
 #include <filecompressor.h>
 #include <flowfinder.h>
 #include <spectredrawer.h>
-#include <preciseprerioddetecter.h>
+#include <preciseperioddetecter.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -193,7 +193,7 @@ void pulsarEngine(int argc, char **argv) {
     }
 
     if (QString(argv[1]) == "--precise-timing") {
-        PrecisePreriodDetecter::detect(argv[2], argv[3], argv[4], module, ray, Settings::settings()->dispersion(), period, time);
+        PrecisePeriodDetecter::detect(argv[2], argv[3], argv[4], module, ray, Settings::settings()->dispersion(), period, time);
         exit(0);
     }
 

@@ -16,6 +16,7 @@
 #include <filecompressor.h>
 #include <flowfinder.h>
 #include <spectredrawer.h>
+#include <preciseprerioddetecter.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -94,6 +95,8 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
                "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
+        printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double>\n"
+                "--time <09:01:00>\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
@@ -187,6 +190,11 @@ void pulsarEngine(int argc, char **argv) {
         sd.drawSpectre(module - 1, ray - 1, dataPath, time, period);
 
         exit(a.exec());
+    }
+
+    if (QString(argv[1]) == "--precise-timing") {
+        PrecisePreriodDetecter::detect(argv[2], argv[3], argv[4], module, ray, Settings::settings()->dispersion(), period, time);
+        exit(0);
     }
 
     if (preciseSearch) {

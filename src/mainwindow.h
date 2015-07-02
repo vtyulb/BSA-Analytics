@@ -51,6 +51,7 @@ private slots:
     void showAboutQt();
 
     void runPreciseGui();
+    void runPreciseTimingGui();
 
     void clone();
     void soundModeTriggered();

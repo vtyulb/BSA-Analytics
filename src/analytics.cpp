@@ -133,6 +133,8 @@ void Analytics::loadPulsars(QString dir) {
         ui->pulsarsTotal->setText(QString("Loaded %1 pulsar files").arg(total));
     }
 
+    preCalcPowerfullNoise();
+
     pulsarsEnabled.resize(pulsars->size());
 }
 
@@ -143,6 +145,9 @@ void Analytics::apply() {
     loadKnownPulsars();
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] = true;
+
+    if (ui->powerfullNoise->isChecked())
+        applyPowerfullNoiseFilter();
 
     if (ui->periodRangeCheckBox->isChecked())
         applyPeriodRangeFilter();
@@ -320,6 +325,11 @@ void Analytics::applyDifferentNoise() {
         pulsarsEnabled[i] &= differentNoisePreCalc[i];
 }
 
+void Analytics::applyPowerfullNoiseFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        pulsarsEnabled[i] &= powerfullNoisePreCalc[i];
+}
+
 void Analytics::applyDuplicatesFilter() {
     const int duplicates = ui->duplicates->value();
     for (int i = 0; i < pulsars->size(); i++)
@@ -466,6 +476,11 @@ void Analytics::knownPulsarsGUI() {
 void Analytics::applyKnownNoiseFilter() {
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] &= !noises->contains(pulsars->at(i).period);
+}
+
+void Analytics::preCalcPowerfullNoise() {
+    powerfullNoisePreCalc.resize(pulsars->size());
+    
 }
 
 Analytics::~Analytics()

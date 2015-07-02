@@ -38,7 +38,7 @@
          <x>0</x>
          <y>0</y>
          <width>910</width>
-         <height>556</height>
+         <height>552</height>
         </rect>
        </property>
        <layout class="QHBoxLayout" name="horizontalLayout">
@@ -112,6 +112,7 @@
     <addaction name="actionPulsar_analytics_low_memory"/>
     <addaction name="separator"/>
     <addaction name="actionPrecise_search"/>
+    <addaction name="actionPrecise_timing"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPulsars"/>
@@ -239,6 +240,11 @@
   <action name="actionPulsar_analytics_low_memory">
    <property name="text">
     <string>Pulsar analytics &amp;low memory</string>
+   </property>
+  </action>
+  <action name="actionPrecise_timing">
+   <property name="text">
+    <string>Precise timing</string>
    </property>
   </action>
  </widget>

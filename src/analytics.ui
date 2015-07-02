@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>302</width>
-    <height>932</height>
+    <height>941</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -196,6 +196,26 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <layout class="QGridLayout" name="gridLayout_2">
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="strangeData">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="text">
+           <string/>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="label_14">
+          <property name="text">
+           <string>different maximums</string>
+          </property>
+         </widget>
+        </item>
         <item row="4" column="1">
          <widget class="QCheckBox" name="knownNoise">
           <property name="text">
@@ -227,23 +247,17 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QCheckBox" name="strangeData">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="1">
          <widget class="QCheckBox" name="multiplePicks">
           <property name="text">
            <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_11">
+          <property name="text">
+           <string>known noise</string>
           </property>
          </widget>
         </item>
@@ -254,10 +268,10 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_11">
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_7">
           <property name="text">
-           <string>known noise</string>
+           <string>strange data</string>
           </property>
          </widget>
         </item>
@@ -271,24 +285,27 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_7">
-          <property name="text">
-           <string>strange data</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_14">
-          <property name="text">
-           <string>different maximums</string>
-          </property>
-         </widget>
-        </item>
         <item row="5" column="1">
          <widget class="QCheckBox" name="differentMaximums">
           <property name="text">
            <string/>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0">
+         <widget class="QLabel" name="label_15">
+          <property name="text">
+           <string>powerfull noise</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="1">
+         <widget class="QCheckBox" name="powerfullNoise">
+          <property name="text">
+           <string/>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
           </property>
          </widget>
         </item>

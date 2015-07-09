@@ -22,8 +22,10 @@ private:
     QImage drawImage(QVector<QVector<int> > matrix, const Data &data);
 
     Ui::SpectreUI *ui;
-    QVector<QVector<int> > matrix;
     Data data;
+    int module, ray;
+    double period;
+    QTime time;
 
 public slots:
     void reDraw();

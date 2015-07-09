@@ -9,6 +9,10 @@
 
 #include <math.h>
 
+double PrecisePeriodDetecter::phase1 = 0;
+double PrecisePeriodDetecter::phase2 = 0;
+double PrecisePeriodDetecter::phase3 = 0;
+
 void PrecisePeriodDetecter::detect(QString file1, QString file2, QString file3, int module, int ray, int dispersion, double period, QTime time) {
 
     Settings::settings()->setPreciseSearch(true);
@@ -32,23 +36,25 @@ void PrecisePeriodDetecter::detect(QString file1, QString file2, QString file3, 
     worker3.run();
 
 
-    double phase1 = getPhase(data1, worker1.res.at(0).firstPoint);
-    double phase2 = getPhase(data2, worker2.res.at(0).firstPoint);
-    double phase3 = getPhase(data3, worker3.res.at(0).firstPoint);
+    phase1 = getPhase(data1, worker1.res.at(0).firstPoint);
+    phase2 = getPhase(data2, worker2.res.at(0).firstPoint);
+    phase3 = getPhase(data3, worker3.res.at(0).firstPoint);
 
     double cv = period;
 
 
 
     QVector<double> res;
-    for (double p = period - 0.001; p < period + 0.001; p += 1e-8) {
-        if (check(phase1, phase2, phase3, cv * 1000) > check(phase1, phase2, phase3, p * 1000))
+    for (double p = period - 0.0001; p < period + 0.0001; p += 1e-10) {
+        if (check(cv * 1000) > check(p * 1000))
             cv = p;
 
-        if (check(phase1, phase2, phase3, p * 1000) < 5)
-            qDebug() << "good value" << QString::number(p, 'g', 8) << "with error" << check(phase1, phase2, phase3, p * 1000);
+        if (check(p * 1000) < 500)
+            if (check(p * 1000) < check((p + 1e-9)*1000) &&
+                check(p * 1000) < check((p - 1e-9)*1000))
+                qDebug() << "good value is" << QString::number(p, 'g', 9);
 
-        res.push_back(-check(phase1, phase2, phase3, p * 1000));
+        res.push_back(-check(p * 1000));
     }
 
     Data data;
@@ -64,18 +70,18 @@ void PrecisePeriodDetecter::detect(QString file1, QString file2, QString file3, 
     w->show();
     w->regenerate(data);
 
-    qDebug() << cv << "result is" << check(phase1, phase2, phase3, cv * 1000);
+    qDebug() << cv << "result is" << check(cv * 1000);
+    qDebug() << "dump value" << period - 0.0001;
 }
 
 double PrecisePeriodDetecter::getPhase(Data data, int point) {
     return data.time.toMSecsSinceEpoch() + data.oneStep * point * 1000;
 }
 
-double PrecisePeriodDetecter::check(double phase1, double phase2, double phase3, double period) {
+double PrecisePeriodDetecter::check(double period) {
     int a = fabs(phase2 - phase1) / period + 0.5;
     int b = fabs(phase3 - phase1) / period + 0.5;
     int c = fabs(phase3 - phase2) / period + 0.5;
-
     return fabs(a * period - fabs(phase2 - phase1)) +
             fabs(b * period - fabs(phase3 - phase1)) +
             fabs(c * period - fabs(phase3 - phase2));

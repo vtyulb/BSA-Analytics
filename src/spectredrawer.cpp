@@ -19,6 +19,10 @@
 using std::min;
 
 QVector<int> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period) {
+    double v1 = data.fbands[0];
+    double v2 = data.fbands[1];
+    int D = Settings::settings()->dispersion();
+
     int start = 0;
     while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 2)
         start++;
@@ -29,9 +33,13 @@ QVector<int> SpectreDrawer::getAnswer(const Data &data, int channel, int module,
         double sum = 0;
         int n = 0;
         for (double i = start + offset; i < start + offset  + interval / data.oneStep; i += period / data.oneStep * 2, n++)
-            sum += data.data[module][channel][ray][int(i)];
+            for (int k = int(i); k < int(i) + ui->time->value(); k++)
+                for (int c = channel; c < channel + ui->channels->value(); c++) {
+                    int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * (c - 1) / data.oneStep + 0.5);
+                    sum += data.data[module][c][ray][int(k) + dt];
+                }
 
-        res.push_back(sum / n);
+        res.push_back(sum / n / ui->time->value() / ui->channels->value());
     }
 
     double max = 0;
@@ -54,46 +62,36 @@ QVector<int> SpectreDrawer::getAnswer(const Data &data, int channel, int module,
 void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime time, double period) {
     Reader r;
     data = r.readBinaryFile(fileName);
+    this->module = module;
+    this->ray = ray;
+    this->period = period;
+    this->time = time;
 
     const int step =  INTERVAL / data.oneStep;
     for (int channel = 0; channel < data.channels - 1; channel++)
         for (int i = 0; i < data.npoints; i += step)
             PulsarWorker::subtract(data.data[module][channel][ray] + i, min(step, data.npoints - i));
 
-    matrix.resize(data.channels - 1);
-    for (int i = 0; i < matrix.size(); i++)
-        matrix[i] = getAnswer(data, i, module, ray, time, period);
-
     ui = new Ui::SpectreUI;
     ui->setupUi(this);
 
-    ui->channels->setMaximum(matrix.size());
+    ui->channels->setMaximum(data.channels - 1);
 
     QObject::connect(ui->channels, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
     QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
     QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
 
     this->reDraw();
-
     this->show();
 }
 
 void SpectreDrawer::reDraw() {
-    int x = ui->time->value();
     int y = ui->channels->value();
 
     QVector<QVector<int> > r;
-    r.resize(matrix.size() / y);
-    for (int i = 0; i < matrix.size() / y; i++)
-        for (int j = 0; j < matrix[0].size() / x; j++) {
-            int v = 0;
-            for (int k = 0; k < y; k++)
-                for (int l = 0; l < x; l++)
-                    v += matrix[i * y + k][j * x + l];
+    for (int i = 0; i < data.channels - y; i += y)
+        r.push_back(getAnswer(data, i, module, ray, time, period));
 
-            v /= (x * y);
-            r[i].push_back(v);
-        }
 
     ui->drawer->spectre = drawImage(r, data);
     ui->drawer->repaint();

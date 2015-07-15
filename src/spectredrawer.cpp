@@ -18,14 +18,11 @@
 
 using std::min;
 
-QVector<int> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period) {
-    double v1 = data.fbands[0];
-    double v2 = data.fbands[1];
-    int D = Settings::settings()->dispersion();
-
-    int start = 0;
-    while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 2)
+QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period) {
+    static int start = 0;
+    while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 1.5)
         start++;
+
 
     QVector<double> res;
     //hello pulsar.h::calculateAdditionalData
@@ -33,35 +30,18 @@ QVector<int> SpectreDrawer::getAnswer(const Data &data, int channel, int module,
         double sum = 0;
         int n = 0;
         for (double i = start + offset; i < start + offset  + interval / data.oneStep; i += period / data.oneStep * 2, n++)
-            for (int k = int(i); k < int(i) + ui->time->value(); k++)
-                for (int c = channel; c < channel + ui->channels->value(); c++) {
-                    int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * (c - 1) / data.oneStep + 0.5);
-                    sum += data.data[module][c][ray][int(k) + dt];
-                }
+            sum += data.data[module][channel][ray][int(i + 0.5)];
 
-        res.push_back(sum / n / ui->time->value() / ui->channels->value());
+
+        res.push_back(sum / n);
     }
 
-    double max = 0;
-    double min = 0;
-    for (int i = 0; i < res.size(); i++) {
-        if (max < res[i])
-            max = res[i];
-
-        if (min > res[i])
-            min = res[i];
-    }
-
-    QVector<int> norm;
-    for (int i = 0; i < res.size(); i++)
-        norm.push_back(255 * (res[i] - min) / (max - min));
-
-    return norm;
+    return res;
 }
 
 void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime time, double period) {
-    Reader r;
-    data = r.readBinaryFile(fileName);
+    Reader reader;
+    data = reader.readBinaryFile(fileName);
     this->module = module;
     this->ray = ray;
     this->period = period;
@@ -81,19 +61,65 @@ void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime tim
     QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
     QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
 
+    for (int i = 0; i < data.channels; i++)
+        r.push_back(getAnswer(data, i, module, ray, time, period));
+
     this->reDraw();
     this->show();
 }
 
 void SpectreDrawer::reDraw() {
+    double v1 = data.fbands[0];
+    double v2 = data.fbands[1];
+
     int y = ui->channels->value();
 
-    QVector<QVector<int> > r;
-    for (int i = 0; i < data.channels - y; i += y)
-        r.push_back(getAnswer(data, i, module, ray, time, period));
+    QVector<QVector<int> > matrix;
+
+    int chs = ui->channels->value();
+    int tms = ui->time->value();
+    int dsp = ui->dispersion->value();
+
+    for (int  i = 0; i < data.channels / chs - 1; i++) {
+        QVector<double> res;
+        for (int j = 0; j < r[0].size() - tms; j++) {
+            double  sum = 0;
+            int n = 0;
+            for (int c = i * chs; c < i * chs + chs; c++) {
+                    int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dsp * (c - i * chs) / data.oneStep + 0.5);
+                    for (int k = 0; k < tms; k++)
+                        if (j + dt >= 0) {
+                            sum += r[c][j + dt + k];
+                            n++;
+                        }
+
+                }
+            res.push_back(sum / n);
+        }
 
 
-    ui->drawer->spectre = drawImage(r, data);
+        double max = -1e+20;
+        double min = 1e+20;
+        for (int i = 0; i < res.size(); i++) {
+            if (max < res[i])
+                max = res[i];
+
+            if (min > res[i])
+                min = res[i];
+        }
+
+        QVector<int> norm;
+        for (int i = 0; i < res.size(); i++)
+            norm.push_back(255 * (res[i] - min) / (max - min));
+
+
+
+        matrix.push_back(norm);
+    }
+
+
+
+    ui->drawer->spectre = drawImage(matrix, data);
     ui->drawer->repaint();
 }
 

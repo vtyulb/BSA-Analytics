@@ -18,7 +18,7 @@ public:
     void drawSpectre(int module, int ray, QString fileName, QTime time, double period);
 
 private:
-    QVector<int> getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period);
+    QVector<double> getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period);
     QImage drawImage(QVector<QVector<int> > matrix, const Data &data);
 
     Ui::SpectreUI *ui;
@@ -26,6 +26,7 @@ private:
     int module, ray;
     double period;
     QTime time;
+    QVector<QVector<double> > r;
 
 public slots:
     void reDraw();

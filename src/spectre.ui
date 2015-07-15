@@ -76,6 +76,20 @@
            </property>
           </widget>
          </item>
+         <item row="3" column="0">
+          <widget class="QSpinBox" name="dispersion">
+           <property name="maximum">
+            <number>500</number>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Dispersion</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>

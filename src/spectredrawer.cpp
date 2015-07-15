@@ -59,6 +59,7 @@ void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime tim
 
     QObject::connect(ui->channels, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
     QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
+    QObject::connect(ui->dispersion, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
     QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
 
     for (int i = 0; i < data.channels; i++)

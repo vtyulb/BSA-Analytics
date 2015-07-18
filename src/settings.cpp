@@ -13,11 +13,20 @@ Settings::Settings() {
     _doNotClearNoise = false;
     _singlePeriod = false;
     _longRoads = false;
+    _periodTester = false;
 }
 
 Settings *Settings::settings() {
     static Settings *res = new Settings();
     return res;
+}
+
+void Settings::setPeriodTester(bool b) {
+    _periodTester = b;
+}
+
+bool Settings::periodTester() {
+    return _periodTester;
 }
 
 void Settings::setLongRoads(bool b) {

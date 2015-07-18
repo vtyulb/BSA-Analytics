@@ -6,6 +6,7 @@
 #include <math.h>
 #include <QString>
 #include <QVector>
+#include <QDataStream>
 #include <QVariant>
 #include <settings.h>
 

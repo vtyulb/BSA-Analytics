@@ -93,7 +93,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --flow-find\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
-               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads]\n");
+               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads] [--period-tester]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double>\n"
                 "--time <09:01:00>\n");
@@ -179,6 +179,8 @@ void pulsarEngine(int argc, char **argv) {
             drawSpectre = true;
         else if (strcmp(argv[i], "--long-roads") == 0)
             Settings::settings()->setLongRoads(true);
+        else if (strcmp(argv[i], "--period-tester") == 0)
+            Settings::settings()->setPeriodTester(true);
 
     if (drawSpectre) {
         QApplication a(argc, argv);

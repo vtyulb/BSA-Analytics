@@ -21,6 +21,7 @@ class Settings {
         bool doNotClearNoise();
         bool singlePeriod();
         bool longRoads();
+        bool periodTester();
         int dispersion();
         QVector<double> dispersionData();
         Data lastData();
@@ -39,6 +40,7 @@ class Settings {
         void setRealOneStep(double);
         void setSoundMode(bool);
         void setSinglePeriod(bool);
+        void setPeriodTester(bool);
         void setDoNotClearNoise(bool);
         void detectStair(char *name, int point);
         QTime getTime();
@@ -65,6 +67,7 @@ class Settings {
         bool _lowMemory;
         bool _preciseSearch;
         bool _soundMode;
+        bool _periodTester;
         int _ray;
         int _module;
         bool _flowFinder;

@@ -57,6 +57,11 @@ void PreciseSearchGui::runSearcher() {
     if (ui->skipMultiplePeriods->isChecked())
         l << "--no-multiple-periods";
 
+    if (ui->periodTester->isChecked()) {
+        l << "--no-multiple-periods";
+        l << "--period-tester";
+    }
+
     if (!ui->clearNoise->isChecked())
         l << "--do-not-clear-noise";
 

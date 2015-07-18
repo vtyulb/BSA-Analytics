@@ -31,6 +31,7 @@ private:
     bool equalPulsars(Pulsar*, Pulsar*);
 
     bool goodDoubles(double, double);
+    void periodTesterWork(QVector<Pulsar> &p);
 
     Data data;
     int module, ray, D;

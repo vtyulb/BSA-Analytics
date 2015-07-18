@@ -145,7 +145,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
             if (Settings::settings()->intellectualFilter() && (good > 3))
                 pulsar.filtered = true;
 
-            if (Settings::settings()->preciseSearch()) {
+            if (Settings::settings()->preciseSearch() && !Settings::settings()->periodTester()) {
                 if (!pulsars.size())
                     pulsars.push_back(pulsar);
                 else if (pulsar.snr > pulsars[0].snr) {
@@ -157,9 +157,16 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         }
     }
 
-    pulsars = removeDuplicates(pulsars);
-    for (int i = 0; i < pulsars.size(); i++)
-        pulsars[i].calculateAdditionalData(res);
+    if (Settings::settings()->periodTester()) {
+        for (int i = 0; i < pulsars.size(); i++)
+            pulsars[i].calculateAdditionalData(res);
+
+        periodTesterWork(pulsars);
+    } else {
+        pulsars = removeDuplicates(pulsars);
+        for (int i = 0; i < pulsars.size(); i++)
+            pulsars[i].calculateAdditionalData(res);
+    }
 
     return  pulsars;
 }
@@ -330,4 +337,37 @@ void PulsarWorker::subtract(real *res, int size) {
 
     for (int i = 0; i < size; i++)
         res[i] -= (b - a) * i / size + a;
+}
+
+void PulsarWorker::periodTesterWork(QVector<Pulsar> &p) {
+    QVector<QVariant> res;
+    for (int i = 0; i < p.size(); i++) {
+        double min = +1e+10;
+        double max = -1e+10;
+        QDataStream stream(&p[i].additionalData, QIODevice::ReadOnly);
+        QVariant vrt;
+        QList<QVariant> data;
+        stream >> vrt;
+        data = vrt.toList();
+        for (int j = 0; data[j].toDouble() != 0; j++) {
+            double v = data[j].toDouble();
+            if (min > v)
+                min = v;
+            if (max < v)
+                max = v;
+        }
+
+        res.push_back(max - min);
+    }
+
+    res.push_back(0);
+    res.push_back(0);
+    res.push_back(0);
+
+
+    p[0].additionalData = QByteArray();
+    QDataStream stream(&p[0].additionalData, QIODevice::WriteOnly);
+    stream << QVariant(res.toList());
+
+    p.resize(1);
 }

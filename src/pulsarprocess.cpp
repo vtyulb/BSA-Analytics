@@ -42,6 +42,10 @@ void PulsarProcess::run() {
                         workers[workers.size() - 1]->setAutoDelete(false);
                         pool->start(workers[workers.size() - 1]);
                     }
+    } else if (Settings::settings()->periodTester()) {
+        workers.push_back(new PulsarWorker(Settings::settings()->module(), Settings::settings()->ray(), Settings::settings()->dispersion(), data));
+        workers[0]->setAutoDelete(false);
+        pool->start(workers[0]);
     } else {
         int mx = 200;
         if (Settings::settings()->dispersion() != -1)

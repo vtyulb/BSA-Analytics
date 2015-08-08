@@ -52,7 +52,8 @@ void PrecisePeriodDetecter::detect(QString file1, QString file2, QString file3, 
         if (check(p * 1000) < 500)
             if (check(p * 1000) < check((p + 1e-9)*1000) &&
                 check(p * 1000) < check((p - 1e-9)*1000))
-                qDebug() << "good value is" << QString::number(p, 'g', 9);
+                qDebug() << "good value is" << QString::number(p, 'g', 9) << "with error" <<
+                            check(p * 1000);
 
         res.push_back(-check(p * 1000));
     }

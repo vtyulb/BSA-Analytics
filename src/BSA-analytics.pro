@@ -40,7 +40,8 @@ SOURCES += main.cpp\
     spectredrawer.cpp \
     nativespectredrawer.cpp \
     precisetiming.cpp \
-    preciseperioddetecter.cpp
+    preciseperioddetecter.cpp \
+    flowdetecter.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -70,7 +71,8 @@ HEADERS  += mainwindow.h \
     spectredrawer.h \
     nativespectredrawer.h \
     precisetiming.h \
-    preciseperioddetecter.h
+    preciseperioddetecter.h \
+    flowdetecter.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \
@@ -81,6 +83,7 @@ FORMS    += mainwindow.ui \
     knownpulsarsgui.ui \
     knownnoise.ui \
     spectre.ui \
-    precisetiming.ui
+    precisetiming.ui \
+    flowdetecter.ui
 
 win32:RC_FILE = icon.rc

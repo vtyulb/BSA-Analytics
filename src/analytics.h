@@ -56,10 +56,8 @@ private:
     void applyKnownNoiseFilter();
     void applyFileNameFilter();
     void applyDifferentMaximumsFilter();
-    void applyPowerfullNoiseFilter();
 
     void preCalc();
-    void preCalcPowerfullNoise();
     void loadKnownPulsars();
 
     Data dispersionGenerateData();

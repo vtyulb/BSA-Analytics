@@ -51,6 +51,42 @@ struct Data {
                         delete[] data[i][j][k];
     }
 
+    bool isLong() {
+        return oneStep < 0.02;
+    }
+
+    double stairHeight(int module, int ray, int channel) {
+        int f1 = 3030;
+        int t1 = 3050;
+
+        int f2 = 3085;
+        int t2 = 3105;
+
+        double c = 99.9424 / 12.4928;
+
+        if (isLong()) {
+            f1 *= c;
+            t1 *= c;
+            f2 *= c;
+            t2 *= c;
+        }
+
+        double resMin = 0;
+        double resMax = 0;
+
+        for (int i = f1; i < t1; i++)
+            resMin += data[module][channel][ray][i];
+
+        resMin /= (t1 - f1);
+
+        for (int i = f2; i < t2; i++)
+            resMax += data[module][channel][ray][i];
+
+        resMax /= (t2 - f2);
+
+        return resMax - resMin;
+    }
+
     void init() {
         sigma = -1;
         stairSize = 0;

@@ -12,6 +12,7 @@
 #include <pulsarlist.h>
 #include <precisesearchgui.h>
 #include <precisetiming.h>
+#include <flowdetecter.h>
 #include <settings.h>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -39,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionLive, SIGNAL(triggered(bool)), this, SLOT(drawLive(bool)));
     QObject::connect(ui->actionPrecise_search, SIGNAL(triggered()), this, SLOT(runPreciseGui()));
     QObject::connect(ui->actionPrecise_timing, SIGNAL(triggered()), this, SLOT(runPreciseTimingGui()));
+    QObject::connect(ui->actionFlow_detecter, SIGNAL(triggered(bool)), this, SLOT(runFlowGui()));
     QObject::connect(ui->actionSound_mode, SIGNAL(triggered()), this, SLOT(soundModeTriggered()));
 
     progress = new QProgressBar(this);
@@ -236,6 +238,11 @@ void MainWindow::runPreciseGui() {
 void MainWindow::runPreciseTimingGui() {
     static PreciseTiming *gui = new PreciseTiming(this);
     gui->show();
+}
+
+void MainWindow::runFlowGui() {
+    static FlowDetecter *detecter = new FlowDetecter(this);
+    detecter->show();
 }
 
 void MainWindow::soundModeTriggered() {

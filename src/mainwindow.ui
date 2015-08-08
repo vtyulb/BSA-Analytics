@@ -113,6 +113,8 @@
     <addaction name="separator"/>
     <addaction name="actionPrecise_search"/>
     <addaction name="actionPrecise_timing"/>
+    <addaction name="separator"/>
+    <addaction name="actionFlow_detecter"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPulsars"/>
@@ -244,7 +246,12 @@
   </action>
   <action name="actionPrecise_timing">
    <property name="text">
-    <string>Precise timing</string>
+    <string>Precise &amp;timing</string>
+   </property>
+  </action>
+  <action name="actionFlow_detecter">
+   <property name="text">
+    <string>Flow detecter</string>
    </property>
   </action>
  </widget>

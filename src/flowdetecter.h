@@ -38,6 +38,8 @@ private:
 
 private slots:
     void run();
+    void setStairFileName();
+    void setFileName();
 };
 
 #endif // FLOWDETECTER_H

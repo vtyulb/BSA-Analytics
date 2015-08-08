@@ -52,6 +52,7 @@ private slots:
 
     void runPreciseGui();
     void runPreciseTimingGui();
+    void runFlowGui();
 
     void clone();
     void soundModeTriggered();

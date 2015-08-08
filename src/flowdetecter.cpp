@@ -5,6 +5,7 @@
 #include <startime.h>
 
 #include <QMessageBox>
+#include <QFileDialog>
 
 using std::max;
 using std::sort;
@@ -17,6 +18,17 @@ FlowDetecter::FlowDetecter(QWidget *parent) :
 
     QObject::connect(ui->buttonBox, SIGNAL(accepted()), this, SLOT(run()));
     QObject::connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
+
+    QObject::connect(ui->stairButton, SIGNAL(clicked(bool)), this, SLOT(setStairFileName()));
+    QObject::connect(ui->file, SIGNAL(clicked(bool)), this, SLOT(setFileName()));
+}
+
+void FlowDetecter::setStairFileName() {
+    ui->stairFile->setText(QFileDialog::getOpenFileName(this));
+}
+
+void FlowDetecter::setFileName() {
+    ui->file->setText(QFileDialog::getOpenFileName(this));
 }
 
 FlowDetecter::~FlowDetecter()

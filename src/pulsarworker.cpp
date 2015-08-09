@@ -72,15 +72,19 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     }
 
     int periodTester = 0;
-    if (Settings::settings()->periodTester())
+    if (Settings::settings()->periodTester()) {
         qDebug() << "sigma" <<  calculateNoise(res.data(), (interval / data.oneStep + 1) * 2);
+        periodTester = 1;
+    }
 
     for (double period = MINIMUM_PERIOD_INC / data.oneStep; period < MAXIMUM_PERIOD_INC / data.oneStep; period += data.oneStep / interval)
         if (!Settings::settings()->preciseSearch() || (goodDoubles(period * data.oneStep, Settings::settings()->period()) &&
                                                        (!Settings::settings()->noMultiplePeriods())) ||
                 globalGoodDoubles(period * data.oneStep, Settings::settings()->period()))
     {
-        qDebug() << "point" << periodTester++ << " period " << period;
+        if (periodTester)
+            qDebug() << "point" << periodTester++ << " period " << period;
+
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
         pulsar.snr = 0;

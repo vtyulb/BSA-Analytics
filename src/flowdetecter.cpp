@@ -20,7 +20,7 @@ FlowDetecter::FlowDetecter(QWidget *parent) :
     QObject::connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(close()));
 
     QObject::connect(ui->stairButton, SIGNAL(clicked(bool)), this, SLOT(setStairFileName()));
-    QObject::connect(ui->file, SIGNAL(clicked(bool)), this, SLOT(setFileName()));
+    QObject::connect(ui->fileButton, SIGNAL(clicked(bool)), this, SLOT(setFileName()));
 }
 
 void FlowDetecter::setStairFileName() {
@@ -71,10 +71,19 @@ void FlowDetecter::run() {
     QVector<double> profile;
     for (int j = 0; j < period * data.oneStep + 1; j++) {
         double result = 0;
-        for (double i = start; i < start + 180 * data.oneStep; i += period * data.oneStep)
+        int number = 0;
+        for (double i = start; i < start + 180 * data.oneStep; i += period * data.oneStep) {
             result += res[int(i + 0.5)];
+            number++;
+        }
 
-        profile.push_back(result);
+        if (ui->impulses->isChecked()) {
+            for (double i = start; i < start + 180 * data.oneStep; i += period * data.oneStep)
+                if (result / number * ui->impulseSensitivity->value() < res[int(i + 0.5)])
+                    QMessageBox::information(this, "Found an impulse!", "Found big impulse at point " + QString::number(i));
+        }
+
+        profile.push_back(result / number);
     }
 
     sort(profile.data(), profile.data() + profile.size());

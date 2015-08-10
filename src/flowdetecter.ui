@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>279</width>
-    <height>319</height>
+    <height>362</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -106,6 +106,37 @@
        <widget class="QLabel" name="label_6">
         <property name="text">
          <string>number of points</string>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="0">
+       <widget class="QCheckBox" name="impulses">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="9" column="1">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>Search for impulses</string>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="0">
+       <widget class="QSpinBox" name="impulseSensitivity">
+        <property name="value">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
+      <item row="10" column="1">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>Sensitivity</string>
         </property>
        </widget>
       </item>

@@ -43,4 +43,5 @@ public slots:
 
 };
 
+
 #endif // PULSARWORKER_H

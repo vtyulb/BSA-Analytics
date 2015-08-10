@@ -3,6 +3,7 @@
 
 #include <reader.h>
 #include <startime.h>
+#include <pulsarworker.h>
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -37,9 +38,9 @@ FlowDetecter::~FlowDetecter()
 }
 
 void FlowDetecter::run() {
-    module = ui->module->value();
+    module = ui->module->value() - 1;
     dispersion = ui->dispersion->value();
-    ray = ui->ray->value();
+    ray = ui->ray->value() - 1;
     time = ui->timeEdit->time();
 
     points = ui->point->value();
@@ -63,28 +64,38 @@ void FlowDetecter::run() {
             data.data[module][i][ray][j] *= K;
 
     res = applyDispersion();
+    for (int i = 0; i < res.size() - 20; i += 20)
+        subtract(res.data() + i, 20);
 
     int start = 0;
-    while (time.secsTo(QTime::fromString(StarTime::StarTime(data, start))) > 90)
+    while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > 90)
         start++;
 
     QVector<double> profile;
-    for (int j = 0; j < period * data.oneStep + 1; j++) {
+    int maximumAt = 0;
+    double maximum = 0;
+    for (int j = 0; j < period / data.oneStep + 1; j++) {
         double result = 0;
         int number = 0;
-        for (double i = start; i < start + 180 * data.oneStep; i += period * data.oneStep) {
+        for (double i = start + j; i < start + 180 / data.oneStep; i += period / data.oneStep) {
             result += res[int(i + 0.5)];
             number++;
         }
 
-        if (ui->impulses->isChecked()) {
-            for (double i = start; i < start + 180 * data.oneStep; i += period * data.oneStep)
-                if (result / number * ui->impulseSensitivity->value() < res[int(i + 0.5)])
-                    QMessageBox::information(this, "Found an impulse!", "Found big impulse at point " + QString::number(i));
+        if (maximum < result / number) {
+            maximum = result / number;
+            maximumAt = j;
         }
-
         profile.push_back(result / number);
     }
+
+    if (ui->impulses->isChecked()) {
+        for (double i = start + maximumAt; i < start + 180 / data.oneStep; i += period / data.oneStep)
+            if (maximum * ui->impulseSensitivity->value() < res[int(i + 0.5)])
+                QMessageBox::information(this, "Found an impulse!", "Found big impulse at point " + QString::number(int(i + 0.5)));
+    }
+
+
 
     sort(profile.data(), profile.data() + profile.size());
 
@@ -119,3 +130,18 @@ QVector<double> FlowDetecter::applyDispersion() {
 
     return res;
 }
+
+void FlowDetecter::subtract(double *res, int size) {
+    // Hello, void PulsarWorker::subtract(real *res, int size)
+    double a = 0;
+    double b = 0;
+    for (int i = 0; i < size / 2; i++)
+        a += res[i] / (size / 2);
+
+    for (int i = 1; i <= size / 2; i++)
+        b += res[size - i] / (size / 2);
+
+    for (int i = 0; i < size; i++)
+        res[i] -= (b - a) * i / size + a;
+}
+

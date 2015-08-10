@@ -35,6 +35,7 @@ private:
     Data data;
 
     QVector<double> applyDispersion();
+    void subtract(double *res, int size);
 
 private slots:
     void run();

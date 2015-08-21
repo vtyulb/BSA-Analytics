@@ -39,13 +39,10 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
         if (line == "filtered next\n") {
             filtered = true;
         } else if (line == "additional data:\n") {
-            line = file.readAll();
-            QDataStream stream(&line, QIODevice::ReadOnly);
+            QDataStream stream(&file);
 
             for (int i = 0; i < res.size(); i++) {
-                if (bar && i % 400 == 0) {
-                    int a = file.pos();
-                    int b = file.size();
+                if (bar && i % 5000 == 0) {
                     bar->setValue(file.pos() * 100 / file.size());
                     qApp->processEvents();
                 }

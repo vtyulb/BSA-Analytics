@@ -112,6 +112,8 @@ void FlowDetecter::run() {
     final /= points;
 
     QMessageBox::information(this, "Flow", QString("Res is %1").arg(QString::number(final)));
+    stair.releaseData();
+    data.releaseData();
 }
 
 QVector<double> FlowDetecter::applyDispersion() {

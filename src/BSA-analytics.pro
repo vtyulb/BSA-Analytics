@@ -41,7 +41,8 @@ SOURCES += main.cpp\
     nativespectredrawer.cpp \
     precisetiming.cpp \
     preciseperioddetecter.cpp \
-    flowdetecter.cpp
+    flowdetecter.cpp \
+    rotationmeasure.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -72,7 +73,8 @@ HEADERS  += mainwindow.h \
     nativespectredrawer.h \
     precisetiming.h \
     preciseperioddetecter.h \
-    flowdetecter.h
+    flowdetecter.h \
+    rotationmeasure.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \
@@ -84,6 +86,7 @@ FORMS    += mainwindow.ui \
     knownnoise.ui \
     spectre.ui \
     precisetiming.ui \
-    flowdetecter.ui
+    flowdetecter.ui \
+    rotationmeasure.ui
 
 win32:RC_FILE = icon.rc

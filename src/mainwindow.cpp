@@ -13,6 +13,7 @@
 #include <precisesearchgui.h>
 #include <precisetiming.h>
 #include <flowdetecter.h>
+#include <rotationmeasure.h>
 #include <settings.h>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -41,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionPrecise_search, SIGNAL(triggered()), this, SLOT(runPreciseGui()));
     QObject::connect(ui->actionPrecise_timing, SIGNAL(triggered()), this, SLOT(runPreciseTimingGui()));
     QObject::connect(ui->actionFlow_detecter, SIGNAL(triggered(bool)), this, SLOT(runFlowGui()));
+    QObject::connect(ui->actionRotation_measure, SIGNAL(triggered(bool)), this, SLOT(runRotationGui()));
     QObject::connect(ui->actionSound_mode, SIGNAL(triggered()), this, SLOT(soundModeTriggered()));
 
     progress = new QProgressBar(this);
@@ -243,6 +245,11 @@ void MainWindow::runPreciseTimingGui() {
 void MainWindow::runFlowGui() {
     static FlowDetecter *detecter = new FlowDetecter(this);
     detecter->show();
+}
+
+void MainWindow::runRotationGui() {
+    static RotationMeasure *measure = new RotationMeasure(this);
+    measure->show();
 }
 
 void MainWindow::soundModeTriggered() {

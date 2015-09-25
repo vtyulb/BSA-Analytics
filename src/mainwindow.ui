@@ -115,6 +115,7 @@
     <addaction name="actionPrecise_timing"/>
     <addaction name="separator"/>
     <addaction name="actionFlow_detecter"/>
+    <addaction name="actionRotation_measure"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPulsars"/>
@@ -251,7 +252,12 @@
   </action>
   <action name="actionFlow_detecter">
    <property name="text">
-    <string>Flow detecter</string>
+    <string>&amp;Flow detecter</string>
+   </property>
+  </action>
+  <action name="actionRotation_measure">
+   <property name="text">
+    <string>Rotation measure</string>
    </property>
   </action>
  </widget>

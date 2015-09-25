@@ -90,9 +90,15 @@ void FlowDetecter::run() {
     }
 
     if (ui->impulses->isChecked()) {
+        int impulses = 0;
         for (double i = start + maximumAt; i < start + 180 / data.oneStep; i += period / data.oneStep)
-            if (maximum * ui->impulseSensitivity->value() < res[int(i + 0.5)])
-                QMessageBox::information(this, "Found an impulse!", "Found big impulse at point " + QString::number(int(i + 0.5)));
+            if (maximum * ui->impulseSensitivity->value() < res[int(i + 0.5)]) {
+                impulses++;
+                if (impulses < 3)
+                    QMessageBox::information(this, "Found an impulse!", "Found big impulse at point " + QString::number(int(i + 0.5)));
+                else if (impulses == 3)
+                    QMessageBox::information(this, "Found an impulse!", "Too many impulses. No more windows at this session!");
+            }
     }
 
 

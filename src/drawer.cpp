@@ -163,7 +163,7 @@ void Drawer::checkBoxStateChanged() {
 
 void Drawer::channelChanged(int channel) {
     drawer->channel = channel - 1;
-    drawer->resetVisibleRectangle();
+    drawer->resetVisibleRectangle(true, false);
 }
 
 void Drawer::enableAllRays() {
@@ -209,7 +209,7 @@ void Drawer::moduleChanged() {
         if (modules[i]->isChecked())
             drawer->module = i;
 
-    drawer->resetVisibleRectangle();
+    drawer->resetVisibleRectangle(true, false);
 }
 
 

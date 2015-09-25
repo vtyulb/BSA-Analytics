@@ -76,7 +76,7 @@ signals:
     void coordsChanged(QPointF);
 
 public slots:
-    void resetVisibleRectangle(bool repaint = true);
+    void resetVisibleRectangle(bool repaint = true, bool resetLeftRight = true);
     void print();
 
 private slots:

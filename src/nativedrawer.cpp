@@ -129,28 +129,33 @@ void NativeDrawer::nativePaint(bool forPrinter) {
     repaint();
 }
 
-void NativeDrawer::resetVisibleRectangle(bool repaint) {
+void NativeDrawer::resetVisibleRectangle(bool repaint, bool resetLeftRight) {
     float min = 1e+30;
     float max = -min;
 
     for (int i = 0; i < data.npoints; i++)
-        for (int j = 0; j < data.rays; j++)
-            if (!std::isinf(data.data[module][channel][j][i]))
-        {
-            if (data.data[module][channel][j][i] > max)
-                max = data.data[module][channel][j][i];
+         for (int j = 0; j < data.rays; j++)
+             if (!std::isinf(data.data[module][channel][j][i])) {
+                 if (data.data[module][channel][j][i] > max)
+                     max = data.data[module][channel][j][i];
 
-            if (data.data[module][channel][j][i] < min)
-                min = data.data[module][channel][j][i];
-        } else {
-            qDebug() << "error at point" << i << "at ray" << j;
-        }
+                 if (data.data[module][channel][j][i] < min)
+                     min = data.data[module][channel][j][i];
+             } else {
+                 qDebug() << "error at point" << i << "at ray" << j;
+             }
 
-    float deltaX = data.npoints * 0.05;
+    float deltaX = data.npoints * 0.08;
     float deltaY = (max - min) * 0.05;
 
-    screen.setBottomLeft(QPointF(0 - deltaX, min - deltaY));
-    screen.setTopRight(QPointF(data.npoints + deltaX, max + deltaY));
+    if (resetLeftRight) {
+        screen.setBottomLeft(QPointF(0 - deltaX, min - deltaY));
+        screen.setTopRight(QPointF(data.npoints + deltaX, max + deltaY));
+    } else {
+        screen.setTop(max + deltaY);
+        screen.setBottom(min - deltaY);
+    }
+
     if (repaint)
         nativePaint();
 }
@@ -225,6 +230,7 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
         if (screens.size())
             screen = screens.pop();
         else {
+            resetVisibleRectangle();
             repaint();
             return;
         }

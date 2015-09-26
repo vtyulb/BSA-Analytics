@@ -26,7 +26,7 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
 
     QVector<double> res;
     //hello pulsar.h::calculateAdditionalData
-    for (int offset = (period < 1000 ? -period / data.oneStep / 2 : 0); offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1; offset++) {
+    for (int offset = (period < 1000 ? -period / data.oneStep / 2 : -20); offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1; offset++) {
         double sum = 0;
         int n = 0;
         for (double i = start + offset; i < start + offset  + interval / data.oneStep; i += period / data.oneStep * 2, n++)
@@ -34,7 +34,7 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
 
 
         res.push_back(sum / n);
-        if (res.size() > 30 && period > 1000)
+        if (res.size() > 40 && period > 1000)
             break;
     }
 

@@ -87,6 +87,19 @@ struct Data {
         return resMax - resMin;
     }
 
+    void fork() {
+        Data tmp = *this;
+        init();
+        for (int j = 0; j < modules; j++)
+            for (int i = 0; i < channels; i++)
+                for (int k = 0; k < rays; k++)
+                    for (int z = 0; z < npoints; z++)
+                        data[j][i][k][z] = tmp.data[j][i][k][z];
+
+        for (int i = 0; i < modules; i++)
+            fbands[i] = tmp.fbands[i];
+    }
+
     void init() {
         sigma = -1;
         stairSize = 0;

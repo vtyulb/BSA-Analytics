@@ -4,6 +4,7 @@
 #include <reader.h>
 #include <startime.h>
 #include <pulsarworker.h>
+#include <spectredrawer.h>
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -94,9 +95,12 @@ void FlowDetecter::run() {
         for (double i = start + maximumAt; i < start + 180 / data.oneStep; i += period / data.oneStep)
             if (maximum * ui->impulseSensitivity->value() < res[int(i + 0.5)]) {
                 impulses++;
-                if (impulses < 3)
+                if (impulses < 3) {
+                    SpectreDrawer drawer;
+                    drawer.drawSpectre(module, ray, data, QTime::fromString(StarTime::StarTime(data, i), "HH:mm:ss"), 100500);
                     QMessageBox::information(this, "Found an impulse!", "Found big impulse at point " + QString::number(int(i + 0.5)));
-                else if (impulses == 3)
+
+                } else if (impulses == 3)
                     QMessageBox::information(this, "Found an impulse!", "Too many impulses. No more windows at this session!");
             }
     }

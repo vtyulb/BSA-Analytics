@@ -19,14 +19,14 @@
 using std::min;
 
 QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period) {
-    static int start = 0;
+    int start = 0;
     while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 1.5)
         start++;
 
 
     QVector<double> res;
     //hello pulsar.h::calculateAdditionalData
-    for (int offset = -period / data.oneStep / 2; offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1; offset++) {
+    for (int offset = (period < 1000 ? -period / data.oneStep / 2 : 0); offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1; offset++) {
         double sum = 0;
         int n = 0;
         for (double i = start + offset; i < start + offset  + interval / data.oneStep; i += period / data.oneStep * 2, n++)
@@ -34,6 +34,8 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
 
 
         res.push_back(sum / n);
+        if (res.size() > 30 && period > 1000)
+            break;
     }
 
     return res;
@@ -41,16 +43,26 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
 
 void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime time, double period) {
     Reader reader;
-    data = reader.readBinaryFile(fileName);
+    Data data = reader.readBinaryFile(fileName);
+    drawSpectre(module, ray, data, time, period);
+    data.releaseData();
+}
+
+void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime time, double period) {
+    data = _data;
+    data.fork();
+
     this->module = module;
     this->ray = ray;
     this->period = period;
     this->time = time;
 
-    const int step =  INTERVAL / data.oneStep;
-    for (int channel = 0; channel < data.channels - 1; channel++)
-        for (int i = 0; i < data.npoints; i += step)
-            PulsarWorker::subtract(data.data[module][channel][ray] + i, min(step, data.npoints - i));
+    if (period < 1000) {
+        const int step =  INTERVAL / data.oneStep;
+        for (int channel = 0; channel < data.channels - 1; channel++)
+            for (int i = 0; i < data.npoints; i += step)
+                PulsarWorker::subtract(data.data[module][channel][ray] + i, min(step, data.npoints - i));
+    }
 
     ui = new Ui::SpectreUI;
     ui->setupUi(this);
@@ -154,4 +166,8 @@ void SpectreDrawer::saveAs() {
     QString savePath = QFileDialog::getSaveFileName(this, "Spectre");
     if (savePath != "")
         ui->drawer->spectre.save(savePath);
+}
+
+SpectreDrawer::~SpectreDrawer() {
+    data.releaseData();
 }

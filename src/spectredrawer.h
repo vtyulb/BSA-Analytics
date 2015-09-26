@@ -15,7 +15,9 @@ class SpectreDrawer: public QWidget
 
 public:
     SpectreDrawer() {};
+    ~SpectreDrawer();
     void drawSpectre(int module, int ray, QString fileName, QTime time, double period);
+    void drawSpectre(int module, int ray, const Data &_data, QTime time, double period);
 
 private:
     QVector<double> getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period);

@@ -10,5 +10,4 @@ BUILD:
  - make
 
 Simple installation script:  
-other/*.iss (InnoSetup)  
-According that hole folder is on drive E:
+other/*.iss (InnoSetup)

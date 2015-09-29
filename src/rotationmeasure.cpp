@@ -66,7 +66,6 @@ void RotationMeasure::run() {
 
     QMessageBox::information(this, "source height", resStr);
 
-    stair.releaseData();
     data.releaseData();
 }
 

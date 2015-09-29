@@ -3,6 +3,7 @@
 
 #include <QVector>
 #include <QTime>
+#include <QProgressBar>
 #include <data.h>
 
 class Settings {
@@ -22,6 +23,7 @@ class Settings {
         bool singlePeriod();
         bool longRoads();
         bool periodTester();
+        QProgressBar *getProgressBar();
         int dispersion();
         QVector<double> dispersionData();
         Data lastData();
@@ -42,6 +44,7 @@ class Settings {
         void setSinglePeriod(bool);
         void setPeriodTester(bool);
         void setDoNotClearNoise(bool);
+        void setProgressBar(QProgressBar*);
         void detectStair(char *name, int point);
         QTime getTime();
 
@@ -81,6 +84,7 @@ class Settings {
         QVector<double> dispersionPlotData;
         QVector<QVector<QVector<double> > > stairs;
         Data _lastData;
+        QProgressBar *bar;
 };
 
 #endif // SETTINGS_H

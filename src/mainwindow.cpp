@@ -47,7 +47,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
-    statusBar()->addPermanentWidget(progress);
+
+    Settings::settings()->setProgressBar(progress);
+
+    statusBar()->addWidget(progress, 1);
     ui->actionAxes->setChecked(true);
     loadSettings();
 

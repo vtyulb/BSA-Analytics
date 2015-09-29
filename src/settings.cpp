@@ -14,6 +14,7 @@ Settings::Settings() {
     _singlePeriod = false;
     _longRoads = false;
     _periodTester = false;
+    bar = NULL;
 }
 
 Settings *Settings::settings() {
@@ -214,4 +215,12 @@ bool Settings::singlePeriod() {
 
 Data Settings::lastData() {
     return _lastData;
+}
+
+void Settings::setProgressBar(QProgressBar *_bar) {
+    bar = _bar;
+}
+
+QProgressBar *Settings::getProgressBar() {
+    return bar;
 }

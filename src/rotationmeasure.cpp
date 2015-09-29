@@ -5,6 +5,7 @@
 #include <QMessageBox>
 
 #include <reader.h>
+#include <settings.h>
 
 RotationMeasure::RotationMeasure(QWidget *parent) :
     QDialog(parent),
@@ -32,11 +33,17 @@ void RotationMeasure::run() {
     int ray = ui->ray->value() - 1;
 
     Reader r1;
-    QObject::connect(&r1, SIGNAL(progress(int)), ui->progressBar, SLOT(setValue(int)));
+    QObject::connect(&r1, SIGNAL(progress(int)), Settings::settings()->getProgressBar(), SLOT(setValue(int)));
     Data stair = r1.readBinaryFile(ui->stairPath->text());
+    QVector<double> stairSizes;
+    for (int i = 0; i < stair.channels - 1; i++)
+        stairSizes.push_back(stair.stairHeight(module, ray, i));
+
+    stair.releaseData();
+
 
     Reader r2;
-    QObject::connect(&r2, SIGNAL(progress(int)), ui->progressBar, SLOT(setValue(int)));
+    QObject::connect(&r2, SIGNAL(progress(int)), Settings::settings()->getProgressBar(), SLOT(setValue(int)));
     Data data = r2.readBinaryFile(ui->filePath->text());
 
     for (int i = 0; i < data.channels - 1; i++) {
@@ -47,7 +54,7 @@ void RotationMeasure::run() {
                  << "channel" << i << "top" << data.data[module][i][ray][ui->top->value()]
                  << "bottom" << data.data[module][i][ray][ui->bottom->value()];
 
-        value /= stair.stairHeight(module, ray, i);
+        value /= stairSizes[i];
 
         res.push_back(value);
     }

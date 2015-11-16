@@ -94,6 +94,22 @@ void FlowDetecter::run() {
         int impulses = 0;
         for (double i = start + maximumAt; i < start + 180 / data.oneStep; i += period / data.oneStep)
             if (maximum * ui->impulseSensitivity->value() < res[int(i + 0.5)]) {
+
+                double v1 = data.fbands[0];
+                double v2 = data.fbands[1];
+
+                bool stop = false;
+
+                for (int k = 0; k < data.channels; k++) {
+                    int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dispersion * k / data.oneStep + 0.5);
+                    double v = data.data[module][k][ray][int(i + 0.5) + dt];
+                    if (v > res[int(i + 0.5)] / data.channels * 10)
+                        stop = true;
+                }
+
+                if (stop)
+                    continue;
+
                 impulses++;
                 if (impulses < 3) {
                     SpectreDrawer drawer;

@@ -141,7 +141,7 @@ void MainWindow::regenerate(Data &data) {
     ui->label->hide();
     delete drawer;
     drawer = new Drawer(data, this);
-    ui->scrollAreaWidgetContents->layout()->addWidget(drawer);
+    ui->frame->layout()->addWidget(drawer);
 
     QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
     QObject::connect(ui->actionPrint, SIGNAL(triggered()), drawer->drawer, SLOT(print()));

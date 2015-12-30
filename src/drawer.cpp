@@ -3,6 +3,7 @@
 #include <QVBoxLayout>
 #include <QCheckBox>
 #include <QTimer>
+#include <QScrollArea>
 #include <pulsarprocess.h>
 #include <colorwidget.h>
 
@@ -31,11 +32,21 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     numberModules(data.modules)
 {
     QHBoxLayout *layout = new QHBoxLayout(this);
+
     controlFrame = new QFrame(this);
+    QScrollArea *scrollArea = new QScrollArea(this);
+    scrollArea->setWidget(controlFrame);
+//    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+//    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    scrollArea->setContentsMargins(2, 2, 2, 2);
+    scrollArea->setWidgetResizable(true);
+
     drawer = new NativeDrawer(data, this);
     layout->addWidget(drawer);
-    layout->addWidget(controlFrame);
+    layout->addWidget(scrollArea);
 
+    drawer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    scrollArea->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::MinimumExpanding);
 
 
     QVBoxLayout *l = new QVBoxLayout(controlFrame);
@@ -129,8 +140,8 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     QObject::connect(resetButton, SIGNAL(clicked()), drawer, SLOT(resetVisibleRectangle()));
     QObject::connect(drawButton, SIGNAL(clicked()), this, SLOT(draw()));
 
-    controlFrame->setMaximumWidth(188);
-    controlFrame->setMinimumWidth(188);
+//    controlFrame->setMaximumWidth(188);
+//    controlFrame->setMinimumWidth(188);
 
     controller = new Controller(this);
     controller->setModules(data.modules);

@@ -97,21 +97,27 @@
    </widget>
    <widget class="QMenu" name="menuPulsars">
     <property name="title">
-     <string>&amp;Pulsars</string>
+     <string>&amp;Pulsars search</string>
     </property>
     <addaction name="actionPulsar_searcher"/>
     <addaction name="separator"/>
     <addaction name="actionPulsar_analytics"/>
     <addaction name="actionPulsar_analytics_low_memory"/>
-    <addaction name="separator"/>
+   </widget>
+   <widget class="QMenu" name="menuPulsars_investigation">
+    <property name="title">
+     <string>&amp;Investigation of pusars</string>
+    </property>
     <addaction name="actionPrecise_search"/>
     <addaction name="actionPrecise_timing"/>
     <addaction name="separator"/>
     <addaction name="actionFlow_detecter"/>
+    <addaction name="separator"/>
     <addaction name="actionRotation_measure"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPulsars"/>
+   <addaction name="menuPulsars_investigation"/>
    <addaction name="menuEdit"/>
    <addaction name="menuHelp"/>
   </widget>

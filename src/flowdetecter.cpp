@@ -98,7 +98,7 @@ void FlowDetecter::run() {
                 double v1 = data.fbands[0];
                 double v2 = data.fbands[1];
 
-                bool stop = false;
+                /*bool stop = false;
 
                 for (int k = 0; k < data.channels; k++) {
                     int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dispersion * k / data.oneStep + 0.5);
@@ -108,16 +108,27 @@ void FlowDetecter::run() {
                 }
 
                 if (stop)
-                    continue;
+                    continue;*/
 
-                impulses++;
-                if (impulses < 3) {
+                static bool forceStop = false;
+                if (!forceStop) {
                     SpectreDrawer drawer;
                     drawer.drawSpectre(module, ray, data, QTime::fromString(StarTime::StarTime(data, i), "HH:mm:ss"), 100500);
-                    QMessageBox::information(this, "Found an impulse!", "Found big impulse at point " + QString::number(int(i + 0.5)));
 
-                } else if (impulses == 3)
-                    QMessageBox::information(this, "Found an impulse!", "Too many impulses. No more windows at this session!");
+                    QMessageBox question(0);
+                    question.setWindowModality(Qt::NonModal);
+                    question.setWindowTitle("Found big impulse!");
+                    question.setText("Found big impulse at point " + QString::number(int(i + 0.5)));
+//                    question.addButton(QString("Continue"), QMessageBox::AcceptRole);
+//                    question.addButton(QString("Stop"), QMessageBox::RejectRole);
+                    question.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+                    question.setModal(false);
+
+                    int res = question.exec();
+
+                    if (res != QMessageBox::Ok)
+                        break;
+                }
             }
     }
 

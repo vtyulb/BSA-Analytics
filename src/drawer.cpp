@@ -175,7 +175,7 @@ void Drawer::checkBoxStateChanged() {
 void Drawer::channelChanged(int channel) {
     drawer->channel = channel - 1;
     drawer->nativePaint();
-//    drawer->resetVisibleRectangle(false, false);
+//    drawer->resetVisibleRectangle(true, false);
 }
 
 void Drawer::enableAllRays() {

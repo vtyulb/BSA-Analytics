@@ -130,20 +130,24 @@ void NativeDrawer::nativePaint(bool forPrinter) {
 }
 
 void NativeDrawer::resetVisibleRectangle(bool repaint, bool resetLeftRight) {
+
+    screens.clear();
+
     float min = 1e+30;
     float max = -min;
 
     for (int i = 0; i < data.npoints; i++)
          for (int j = 0; j < data.rays; j++)
-             if (!std::isinf(data.data[module][channel][j][i])) {
-                 if (data.data[module][channel][j][i] > max)
-                     max = data.data[module][channel][j][i];
+             for (int channel = 0; channel < data.channels; channel++)
+                 if (!std::isinf(data.data[module][channel][j][i])) {
+                     if (data.data[module][channel][j][i] > max)
+                         max = data.data[module][channel][j][i];
 
-                 if (data.data[module][channel][j][i] < min)
-                     min = data.data[module][channel][j][i];
-             } else {
-                 qDebug() << "error at point" << i << "at ray" << j;
-             }
+                     if (data.data[module][channel][j][i] < min)
+                         min = data.data[module][channel][j][i];
+                 } else {
+                     qDebug() << "error at point" << i << "at ray" << j;
+                 }
 
     float deltaX = data.npoints * 0.08;
     float deltaY = (max - min) * 0.05;

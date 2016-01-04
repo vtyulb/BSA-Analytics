@@ -17,10 +17,10 @@ public:
     SpectreDrawer() {};
     ~SpectreDrawer();
     void drawSpectre(int module, int ray, QString fileName, QTime time, double period);
-    void drawSpectre(int module, int ray, const Data &_data, QTime time, double period);
+    void drawSpectre(int module, int ray, const Data &_data, QTime time, double period, int startPoint = -1);
 
 private:
-    QVector<double> getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period);
+    QVector<double> getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period, int startPoint = -1);
     QImage drawImage(QVector<QVector<int> > matrix, const Data &data);
 
     Ui::SpectreUI *ui;

@@ -113,7 +113,7 @@ void FlowDetecter::run() {
                 static bool forceStop = false;
                 if (!forceStop) {
                     SpectreDrawer drawer;
-                    drawer.drawSpectre(module, ray, data, QTime::fromString(StarTime::StarTime(data, i), "HH:mm:ss"), 100500);
+                    drawer.drawSpectre(module, ray, data, QTime::fromString(StarTime::StarTime(data, i), "HH:mm:ss"), 100500, i);
 
                     QMessageBox question(0);
                     question.setWindowModality(Qt::NonModal);

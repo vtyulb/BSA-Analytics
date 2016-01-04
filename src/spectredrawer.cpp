@@ -18,10 +18,12 @@
 
 using std::min;
 
-QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period) {
-    int start = 0;
-    while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 1.5)
-        start++;
+QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period, int startPoint) {
+    int start = startPoint + 1;
+
+    if (startPoint != -1)
+        while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 1.5)
+            start++;
 
 
     QVector<double> res;
@@ -48,7 +50,7 @@ void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime tim
     data.releaseData();
 }
 
-void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime time, double period) {
+void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime time, double period, int startPoint) {
     data = _data;
     data.fork();
 
@@ -75,10 +77,11 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
     QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
 
     for (int i = 0; i < data.channels; i++)
-        r.push_back(getAnswer(data, i, module, ray, time, period));
+        r.push_back(getAnswer(data, i, module, ray, time, period, startPoint));
 
     this->reDraw();
     this->show();
+    this->resize(420, 380);
 }
 
 void SpectreDrawer::reDraw() {

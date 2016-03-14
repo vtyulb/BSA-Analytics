@@ -195,7 +195,7 @@ void MainWindow::showAboutQt() {
 }
 
 void MainWindow::showAbout() {
-    QMessageBox::about(this, "About", "Written specially for PRAO\nby V.S.Tyulbashev\n<vtyulb@vtyulb.ru>");
+    QMessageBox::about(this, "About", "Written specially for S.A.Tyulbashev\nby V.S.Tyulbashev\n<vtyulb@vtyulb.ru>");
 }
 
 void MainWindow::saveSettings() {

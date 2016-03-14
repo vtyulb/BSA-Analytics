@@ -138,7 +138,7 @@ void NativeDrawer::resetVisibleRectangle(bool repaint, bool resetLeftRight) {
 
     for (int i = 0; i < data.npoints; i++)
          for (int j = 0; j < data.rays; j++)
-             for (int channel = 0; channel < data.channels; channel++)
+//             for (int channel = 0; channel < data.channels; channel++)
                  if (!std::isinf(data.data[module][channel][j][i])) {
                      if (data.data[module][channel][j][i] > max)
                          max = data.data[module][channel][j][i];

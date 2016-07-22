@@ -6,7 +6,9 @@
 #include <QDir>
 
 #include <reader.h>
+#include <startime.h>
 #include <data.h>
+#include <datadumper.h>
 
 FileSummator::FileSummator()
 {    
@@ -68,12 +70,41 @@ void FileSummator::run() {
         printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
         fflush(stdout);
         Data data = reader.readBinaryFile(fileNames[i]);
+
+        double realPart;
+        QString time = StarTime::StarTime(data, 0, &realPart);
+        int h, m, s;
+        sscanf(time.toUtf8().data(), "%d:%d:%d", &h, &m, &s);
+        int startPoint = (h * 3600 + m * 60 + s + realPart) / data.oneStep;
+
+        for (int module = 0; module < data.modules; module++)
+            for (int channel = 0; channel < data.channels; channel++)
+                for (int ray = 0; ray < data.rays; ray++)
+                    for (int j = 0; j < data.npoints; j++) {
+                        multifile.data[module][channel][ray][startPoint + j] += data.data[module][channel][ray][j];
+                        coefficients.data[module][channel][ray][startPoint + j] += 1;
+                    }
+
+
         data.releaseData();
     }
+
+    for (int module = 0; module < multifile.modules; module++)
+        for (int channel = 0; channel < multifile.channels; channel++)
+            for (int ray = 0; ray < multifile.rays; ray++)
+                for (int i = 0; i < multifile.npoints; i++) {
+                    float c = coefficients.data[module][channel][ray][i];
+                    if (c > 0.1)
+                        multifile.data[module][channel][ray][i] /= c;
+                }
+
     printf("\nAll files were processed\n");
-    printf("Dumping multifile to NOT COMPLETED\n");
+
+    QString name = "multifile.pnt";
+    printf("Dumping multifile to %s\n", name.toUtf8().constData());
     fflush(stdout);
 
+    DataDumper::dump(multifile, name);
 }
 
 void FileSummator::findFiles(QString path, QStringList &names, const QStringList &extensions) {

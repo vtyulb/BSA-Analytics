@@ -45,11 +45,6 @@ namespace {
         if (realSeconds) {
             *realSeconds = ((alf - m[1]) * 60 - m[2]) * 60;
             *realSeconds -= (int(*realSeconds)/60*60);
-            while (*realSeconds < 0)
-                *realSeconds += 60;
-
-            while (*realSeconds >= 60)
-                *realSeconds -= 60;
         }
 
         m[2] += m[3] / 60;

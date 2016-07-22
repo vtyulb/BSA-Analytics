@@ -17,6 +17,7 @@
 #include <flowfinder.h>
 #include <spectredrawer.h>
 #include <preciseperioddetecter.h>
+#include <filesummator.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -97,6 +98,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double>\n"
                 "--time <09:01:00>\n");
+        printf("BSA-Analytics --file-summator\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
@@ -181,6 +183,12 @@ void pulsarEngine(int argc, char **argv) {
             Settings::settings()->setLongRoads(true);
         else if (strcmp(argv[i], "--period-tester") == 0)
             Settings::settings()->setPeriodTester(true);
+        else if (strcmp(argv[i], "--file-summator") == 0) {
+            FileSummator summator;
+            summator.run();
+            exit(0);
+        }
+
 
     if (drawSpectre) {
         QApplication a(argc, argv);

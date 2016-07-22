@@ -42,7 +42,8 @@ SOURCES += main.cpp\
     precisetiming.cpp \
     preciseperioddetecter.cpp \
     flowdetecter.cpp \
-    rotationmeasure.cpp
+    rotationmeasure.cpp \
+    filesummator.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -74,7 +75,8 @@ HEADERS  += mainwindow.h \
     precisetiming.h \
     preciseperioddetecter.h \
     flowdetecter.h \
-    rotationmeasure.h
+    rotationmeasure.h \
+    filesummator.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

@@ -220,7 +220,7 @@ void Drawer::moduleChanged() {
         if (modules[i]->isChecked())
             drawer->module = i;
 
-    drawer->resetVisibleRectangle(true, false);
+    drawer->resetVisibleRectangle(true, true);
 }
 
 

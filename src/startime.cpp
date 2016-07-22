@@ -7,7 +7,7 @@ namespace {
         return a * a;
     }
 
-    QPair<QString, QString> precess(double alfa, double delt, double t){
+    QPair<QString, QString> precess(double alfa, double delt, double t, double *realSeconds){
         double rs = 4.8481368e-6;
         double am = 46.1 * rs;
         double an = 20.4 * rs;
@@ -42,6 +42,16 @@ namespace {
         m[2] = (alf - m[1]) * 60;
         m[3] = ((alf - m[1]) * 60 - m[2]) * 60 + 0.5;
 
+        if (realSeconds) {
+            *realSeconds = ((alf - m[1]) * 60 - m[2]) * 60;
+            *realSeconds -= (int(*realSeconds)/60*60);
+            while (*realSeconds < 0)
+                *realSeconds += 60;
+
+            while (*realSeconds >= 60)
+                *realSeconds -= 60;
+        }
+
         m[2] += m[3] / 60;
         m[3] %= 60;
         m[1] += m[2] / 60;
@@ -71,7 +81,7 @@ namespace {
         return res;
     }
 
-    QPair<QString, QString> get_alf(double culm, double delt) {
+    QPair<QString, QString> get_alf(double culm, double delt, double *realSeconds) {
         const double fi = 0.956829;
         const double be = 0.008436;
 
@@ -86,12 +96,12 @@ namespace {
         double t = y / z;
         double alf = culm * M_PI / 12 + atan(t);
 
-        return precess(alf, delt, t);
+        return precess(alf, delt, t, realSeconds);
     }
 }
 
 namespace StarTime {
-    QString StarTime(Data data, int point) {
+    QString StarTime(Data data, int point, double *realSeconds) {
         if (!data.time.isValid())
             return "invalid time";
 
@@ -107,10 +117,10 @@ namespace StarTime {
         double cnst = 2.7379093e-3;
         double s_culm = s0 + (cnst + 1) * t_culm + alambda;
 
-        QPair<QString, QString> res = get_alf(s_culm, delta_lucha);
-        if (point != -1)
-            return res.first;
-        else
+        QPair<QString, QString> res = get_alf(s_culm, delta_lucha, realSeconds);
+        if (point == -1)
             return res.second;
+        else
+            return res.first;
     }
 }

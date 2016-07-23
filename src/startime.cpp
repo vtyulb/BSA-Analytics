@@ -43,8 +43,7 @@ namespace {
         m[3] = ((alf - m[1]) * 60 - m[2]) * 60 + 0.5;
 
         if (realSeconds) {
-            *realSeconds = ((alf - m[1]) * 60 - m[2]) * 60;
-            *realSeconds -= (int(*realSeconds)/60*60);
+            *realSeconds = alf * 3600;
         }
 
         m[2] += m[3] / 60;

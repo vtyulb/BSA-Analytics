@@ -9,6 +9,7 @@
 #include <startime.h>
 #include <data.h>
 #include <datadumper.h>
+#include <pulsarworker.h>
 
 FileSummator::FileSummator()
 {    
@@ -73,9 +74,10 @@ void FileSummator::run() {
 
         double realPart;
         QString time = StarTime::StarTime(data, 0, &realPart);
-        int h, m, s;
-        sscanf(time.toUtf8().data(), "%d:%d:%d", &h, &m, &s);
-        int startPoint = (h * 3600 + m * 60 + s + realPart) / data.oneStep;
+//        int h, m, s;
+//        sscanf(time.toUtf8().data(), "%d:%d:%d", &h, &m, &s);
+//        int startPoint = (h * 3600 + m * 60 + s + realPart) / data.oneStep;
+        int startPoint = realPart / data.oneStep;
 
         for (int module = 0; module < data.modules; module++)
             for (int channel = 0; channel < data.channels; channel++)
@@ -107,6 +109,62 @@ void FileSummator::run() {
     DataDumper::dump(multifile, name);
 }
 
+void FileSummator::processData(Data &data) {
+    // Hello pulsarworker::clearAveraNge(), i know you are here
+   /* for (int module = 0; module < data.modules; module++)
+        for (int ray = 0; ray < data.rays; ray++)
+          {
+            const int step =  INTERVAL / data.oneStep;
+            for (int channel = 0; channel < data.channels; channel++) {
+                for (int i = 0; i < data.npoints; i += step)
+                    PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
+
+                double noise = 0;
+                for (int i = 0; i < data.npoints; i++)
+                    noise += pow(data.data[module][channel][ray][i], 2);
+
+                noise /= data.npoints;
+                noise = pow(noise, 0.5);
+
+                const int little = 15;
+
+                for (int i = 0; i < data.npoints - little; i += little) {
+                    double sum = 0;
+                    for (int j = i; j < i + little; j++)
+                        sum += data.data[module][channel][ray][j];
+
+                    sum /= little;
+                    sum = fabs(sum);
+
+                    if (sum > noise * 2) {
+        //                qDebug() << "clearing stair" << i;
+
+                        for (int j = std::max(i - little * 5, 0); j < i + 60 / data.oneStep && j < data.npoints; j++)
+                            data.data[module][channel][ray][j] = (qrand() / double(RAND_MAX) * noise - noise / 2) / 8   ;
+                                                                                                   // it was 4 here ^
+
+                        break;
+                    }
+                }
+
+                noise = 0;
+                for (int i = 0; i < data.npoints; i++)
+                    noise += pow(data.data[module][channel][ray][i], 2);
+
+                noise /= data.npoints;
+                noise = pow(noise, 0.5);
+
+                float *res = data.data[module][channel][ray];
+                for (int i = 0; i < data.npoints; i++)
+                    if (res[i] >  noise * 4)
+                        res[i] = noise * 4;
+                    else if (res[i] < -noise * 4)
+                        res[i] = -noise * 4;
+
+            }
+          }*/
+}
+
 void FileSummator::findFiles(QString path, QStringList &names, const QStringList &extensions) {
     QDir dir(path);
     printf("scanning %s\n", path.toUtf8().constData());
@@ -114,7 +172,7 @@ void FileSummator::findFiles(QString path, QStringList &names, const QStringList
     for (int i = 0; i < files.size(); i++)
         if (files[i].isDir() && files[i].fileName() != "." && files[i].fileName() != "..")
             findFiles(files[i].absoluteFilePath(), names, extensions);
-        else if (files[i].isReadable()) {
+        else if (files[i].isReadable() && files[i].fileName() != "multifile.pnt") {
             for (int j = 0; j < extensions.size(); j++)
                 if (files[i].fileName().endsWith(extensions[j])) {
                     names.push_back(files[i].absoluteFilePath());

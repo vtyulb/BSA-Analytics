@@ -33,62 +33,93 @@ void FileSummator::run() {
     for (int i = 0; i < extensions.size(); i++)
         printf("*.%s\n", extensions[i].toUtf8().constData());
 
-
+    Reader reader;
+    Data multifile;
+    Data coefficients;
+    bool multifileInited = false;
     QString path = "non-blank";
-    while (path != "") {
+    while (path != "" || fileNames.count()) {
         printf("Please enter path to data (blank line to stop): ");
         path = input.readLine();
         if (path != "")
             findFiles(path, fileNames, extensions);
+
+        if (fileNames.size() && path != "")
+            printf("\nTotal %d files to process\n", fileNames.size());
+
+        if (!multifileInited && fileNames.size() > 0) {
+            printf("Reading first file (%s) ... ", fileNames[0].toUtf8().constData());
+            fflush(stdout);
+
+            multifile = reader.readBinaryFile(fileNames[0]);
+
+            printf("readed.\n");
+            printf("Memory allocation for multifile... ");
+            fflush(stdout);
+
+            multifile.npoints *= 25;
+            multifile.init();
+            multifileInited = true;
+
+            for (int i = 0; i < multifile.modules; i++)
+                for (int j = 0; j < multifile.channels; j++)
+                    for (int k = 0; k < multifile.rays; k++)
+                        for (int u = 0; u < multifile.npoints; u++)
+                            multifile.data[i][j][k][u] = 0;
+
+            coefficients = multifile;
+            coefficients.fork(); // linux style
+
+            printf("memory allocated.\n");
+            printf("Process seems to be all right, beginning to work\n");
+
+        } else if (!multifileInited && !fileNames.size()) {
+            printf("Did not found any valid files\n");
+            continue;
+        }
+
+        if (path != "")
+            continue;
+
+        for (int i = 0; i < fileNames.size(); i++) {
+            printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
+            fflush(stdout);
+            Data data = reader.readBinaryFile(fileNames[i]);
+            processData(data);
+
+            double realPart;
+            QString time = StarTime::StarTime(data, 0, &realPart);
+    //        int h, m, s;
+    //        sscanf(time.toUtf8().data(), "%d:%d:%d", &h, &m, &s);
+    //        int startPoint = (h * 3600 + m * 60 + s + realPart) / data.oneStep;
+            int startPoint = realPart / data.oneStep;
+
+            for (int module = 0; module < data.modules; module++)
+                for (int channel = 0; channel < data.channels; channel++)
+                    for (int ray = 0; ray < data.rays; ray++)
+                        for (int j = 0; j < data.npoints; j++)
+                            if (data.data[module][channel][ray][j] != 0)
+                        {
+                            multifile.data[module][channel][ray][startPoint + j] += data.data[module][channel][ray][j];
+                            coefficients.data[module][channel][ray][startPoint + j] += 1;
+                        }
+
+
+            data.releaseData();
+        }
+
+        if (fileNames.size()) {
+            fileNames.clear();
+            path = "test";
+        }
+
+        printf("\n\n");
     }
 
-    printf("\nTotal %d files to process\n", fileNames.size());
-    printf("Reading first file (%s) ... ", fileNames[0].toUtf8().constData());
-    fflush(stdout);
-
-    Reader reader;
-    Data multifile = reader.readBinaryFile(fileNames[0]);
-
-    printf("readed.\n");
-    printf("Memory allocation for multifile... ");
-    fflush(stdout);
-
-    multifile.npoints *= 25;
-    multifile.init();
-
-    for (int i = 0; i < multifile.modules; i++)
-        for (int j = 0; j < multifile.channels; j++)
-            for (int k = 0; k < multifile.rays; k++)
-                for (int u = 0; u < multifile.npoints; u++)
-                    multifile.data[i][j][k][u] = 0;
-
-    Data coefficients = multifile;
-    coefficients.fork(); // linux style
-
-    printf("memory allocated.\n");
-    printf("Process seems to be all right, beginning to work\n");
-    for (int i = 0; i < fileNames.size(); i++) {
-        printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
-        fflush(stdout);
-        Data data = reader.readBinaryFile(fileNames[i]);
-
-        double realPart;
-        QString time = StarTime::StarTime(data, 0, &realPart);
-//        int h, m, s;
-//        sscanf(time.toUtf8().data(), "%d:%d:%d", &h, &m, &s);
-//        int startPoint = (h * 3600 + m * 60 + s + realPart) / data.oneStep;
-        int startPoint = realPart / data.oneStep;
-
-        for (int module = 0; module < data.modules; module++)
-            for (int channel = 0; channel < data.channels; channel++)
-                for (int ray = 0; ray < data.rays; ray++)
-                    for (int j = 0; j < data.npoints; j++) {
-                        multifile.data[module][channel][ray][startPoint + j] += data.data[module][channel][ray][j];
-                        coefficients.data[module][channel][ray][startPoint + j] += 1;
-                    }
-
-
-        data.releaseData();
+    if (!multifileInited) {
+        printf("Zero work done.\n");
+        printf("Exiting from this cruel world...\n");
+        exit(0);
     }
 
     for (int module = 0; module < multifile.modules; module++)
@@ -100,18 +131,28 @@ void FileSummator::run() {
                         multifile.data[module][channel][ray][i] /= c;
                 }
 
-    printf("\nAll files were processed\n");
+    printf("All files were processed\n");
 
-    QString name = "multifile.pnt";
+    QFile f;
+    QString name;
+    while (1) {
+        printf("Please enter path to save multifile: ");
+        fflush(stdout);
+        name = input.readLine();
+        f.setFileName(name);
+        if (f.open(QIODevice::WriteOnly))
+            break;
+        else
+            printf("Can't open file '%s' for write\n", name.toUtf8().constData());
+    }
+
     printf("Dumping multifile to %s\n", name.toUtf8().constData());
-    fflush(stdout);
-
-    DataDumper::dump(multifile, name);
+    DataDumper::dump(multifile, f);
 }
 
 void FileSummator::processData(Data &data) {
     // Hello pulsarworker::clearAveraNge(), i know you are here
-   /* for (int module = 0; module < data.modules; module++)
+    for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++)
           {
             const int step =  INTERVAL / data.oneStep;
@@ -140,8 +181,7 @@ void FileSummator::processData(Data &data) {
         //                qDebug() << "clearing stair" << i;
 
                         for (int j = std::max(i - little * 5, 0); j < i + 60 / data.oneStep && j < data.npoints; j++)
-                            data.data[module][channel][ray][j] = (qrand() / double(RAND_MAX) * noise - noise / 2) / 8   ;
-                                                                                                   // it was 4 here ^
+                            data.data[module][channel][ray][j] = 0;
 
                         break;
                     }
@@ -154,15 +194,17 @@ void FileSummator::processData(Data &data) {
                 noise /= data.npoints;
                 noise = pow(noise, 0.5);
 
+                const int maximumNoise = 4;
+
                 float *res = data.data[module][channel][ray];
                 for (int i = 0; i < data.npoints; i++)
-                    if (res[i] >  noise * 4)
-                        res[i] = noise * 4;
-                    else if (res[i] < -noise * 4)
-                        res[i] = -noise * 4;
+                    if (res[i] >  noise * maximumNoise)
+                        res[i] = noise * maximumNoise;
+                    else if (res[i] < -noise * maximumNoise)
+                        res[i] = -noise * maximumNoise;
 
             }
-          }*/
+          }
 }
 
 void FileSummator::findFiles(QString path, QStringList &names, const QStringList &extensions) {

@@ -127,7 +127,9 @@ Data Reader::readBinaryFile(QString file) {
     Data data;
     data.time.setDate(QDate::fromString(header["date_begin"].right(10), QString("dd.MM.yyyy")));
     data.time.setTime(QTime::fromString(header["time_begin"].right(8).replace(' ', ""), QString("h:mm:ss")));
-//    data.oneStep = data.time.time().secsTo(QTime::fromString(header["time_end"].right(8).replace(' ', ""), QString("h:mm:ss"))) / double(npoints);
+    if (!header["time_begin"].contains("UTC"))
+        data.time = data.time.addSecs(-3600 * 4);
+
     data.oneStep = header["tresolution"].toDouble() / 1000;
     data.delta_lucha = 0.89;
 

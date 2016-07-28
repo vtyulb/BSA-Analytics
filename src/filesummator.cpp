@@ -11,6 +11,8 @@
 #include <datadumper.h>
 #include <pulsarworker.h>
 
+#include <algorithm>
+
 FileSummator::FileSummator()
 {    
 }
@@ -81,6 +83,24 @@ void FileSummator::run() {
         if (path != "")
             continue;
 
+        goodSigma = -1;
+        sigmas.clear();
+
+        printf("Running stage 1 of 2\n");
+        for (int i = 0; i < fileNames.size(); i++) {
+            printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
+            fflush(stdout);
+            Data data = reader.readBinaryFile(fileNames[i]);
+            processData(data);
+
+            data.releaseData();
+        }
+
+        std::sort(sigmas.begin(), sigmas.end());
+
+        goodSigma = sigmas[sigmas.size() * 0.1];
+
+        printf("\nRunning stage 2 of 2\n");
         for (int i = 0; i < fileNames.size(); i++) {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
@@ -166,6 +186,12 @@ void FileSummator::processData(Data &data) {
 
                 noise /= data.npoints;
                 noise = pow(noise, 0.5);
+
+                if (goodSigma < 0)
+                    sigmas.push_back(noise);
+                else if (noise < goodSigma)
+                    continue;
+
 
                 const int little = 15;
 

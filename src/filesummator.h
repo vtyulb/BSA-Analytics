@@ -15,7 +15,7 @@ public:
 
 private:
     void findFiles(QString path, QStringList &names, const QStringList &extensions);
-    void processData(Data &data);
+    void processData(Data &data, Data &multifile, Data &coefficients);
 
     QVector<float> sigmas;
     float goodSigma;

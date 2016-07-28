@@ -91,7 +91,7 @@ void FileSummator::run() {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
             Data data = reader.readBinaryFile(fileNames[i]);
-            processData(data);
+            processData(data, multifile, coefficients);
 
             data.releaseData();
         }
@@ -105,26 +105,7 @@ void FileSummator::run() {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
             Data data = reader.readBinaryFile(fileNames[i]);
-            processData(data);
-
-            double realPart;
-            QString time = StarTime::StarTime(data, 0, &realPart);
-    //        int h, m, s;
-    //        sscanf(time.toUtf8().data(), "%d:%d:%d", &h, &m, &s);
-    //        int startPoint = (h * 3600 + m * 60 + s + realPart) / data.oneStep;
-            int startPoint = realPart / data.oneStep;
-
-            for (int module = 0; module < data.modules; module++)
-                for (int channel = 0; channel < data.channels; channel++)
-                    for (int ray = 0; ray < data.rays; ray++)
-                        for (int j = 0; j < data.npoints; j++)
-                            if (data.data[module][channel][ray][j] != 0)
-                        {
-                            multifile.data[module][channel][ray][startPoint + j] += data.data[module][channel][ray][j];
-                            coefficients.data[module][channel][ray][startPoint + j] += 1;
-                        }
-
-
+            processData(data, multifile, coefficients);
             data.releaseData();
         }
 
@@ -170,7 +151,7 @@ void FileSummator::run() {
     DataDumper::dump(multifile, f);
 }
 
-void FileSummator::processData(Data &data) {
+void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) {
     // Hello pulsarworker::clearAveraNge(), i know you are here
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++)
@@ -187,9 +168,10 @@ void FileSummator::processData(Data &data) {
                 noise /= data.npoints;
                 noise = pow(noise, 0.5);
 
-                if (goodSigma < 0)
+                if (goodSigma < 0) {
                     sigmas.push_back(noise);
-                else if (noise < goodSigma)
+                    continue;
+                } else if (noise < goodSigma)
                     continue;
 
 
@@ -228,6 +210,17 @@ void FileSummator::processData(Data &data) {
                         res[i] = noise * maximumNoise;
                     else if (res[i] < -noise * maximumNoise)
                         res[i] = -noise * maximumNoise;
+
+
+                double realPart;
+                QString time = StarTime::StarTime(data, 0, &realPart);
+                int startPoint = realPart / data.oneStep;
+
+                for (int j = 0; j < data.npoints; j++)
+                    if (data.data[module][channel][ray][j] != 0) {
+                        multifile.data[module][channel][ray][startPoint + j] += data.data[module][channel][ray][j];
+                        coefficients.data[module][channel][ray][startPoint + j] += 1;
+                    }
 
             }
           }

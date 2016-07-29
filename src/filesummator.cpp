@@ -13,6 +13,8 @@
 
 #include <algorithm>
 
+const int PC = 1000; // point count
+
 FileSummator::FileSummator()
 {    
 }
@@ -69,6 +71,9 @@ void FileSummator::run() {
                         for (int u = 0; u < multifile.npoints; u++)
                             multifile.data[i][j][k][u] = 0;
 
+
+            noises.resize(multifile.npoints / PC * 2);
+
             coefficients = multifile;
             coefficients.fork(); // linux style
 
@@ -87,6 +92,7 @@ void FileSummator::run() {
         sigmas.clear();
 
         printf("Running stage 1 of 2\n");
+        stage = 1;
         for (int i = 0; i < fileNames.size(); i++) {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
@@ -101,6 +107,10 @@ void FileSummator::run() {
         goodSigma = sigmas[sigmas.size() * 0.1];
 
         printf("\nRunning stage 2 of 2\n");
+        stage = 2;
+        for (int i = 0; i < noises.size(); i++)
+            std::sort(noises[i].begin(), noises[i].end());
+
         for (int i = 0; i < fileNames.size(); i++) {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
@@ -159,7 +169,7 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
             const int step =  INTERVAL / data.oneStep;
             for (int channel = 0; channel < data.channels; channel++) {
                 for (int i = 0; i < data.npoints; i += step)
-                    PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - 1));
+                    PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
 
                 double noise = 0;
                 for (int i = 0; i < data.npoints; i++)
@@ -216,11 +226,30 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                 QString time = StarTime::StarTime(data, 0, &realPart);
                 int startPoint = realPart / data.oneStep;
 
-                for (int j = 0; j < data.npoints; j++)
-                    if (data.data[module][channel][ray][j] != 0) {
-                        multifile.data[module][channel][ray][startPoint + j] += data.data[module][channel][ray][j];
-                        coefficients.data[module][channel][ray][startPoint + j] += 1;
+                int offset = PC - startPoint % PC;
+
+                for (int j = 0; j < data.npoints / PC - 2; j++) {
+                    double noise = 0;
+                    for (int k = 0; k < PC; k++)
+                        noise += pow(data.data[module][channel][ray][offset + j * PC + k], 2);
+
+                    noise /= PC;
+                    noise = pow(noise, 0.5);
+
+
+                    int point = (startPoint + offset + j * 1000) / 1000;
+
+                    if (stage == 1)
+                        noises[point].push_back(noise);
+                    else if (noises[point][noises[point].size() / 2] > noise)
+                    // stage == 2
+                        for (int k = 0; k < PC; k++) {
+                            if (data.data[module][channel][ray][offset + j * PC + k] != 0) {
+                                multifile.data[module][channel][ray][startPoint + j * PC + offset + k] += data.data[module][channel][ray][offset + j * PC + k];
+                                coefficients.data[module][channel][ray][startPoint + j * PC + offset + k] += 1;
+                            }
                     }
+                }
 
             }
           }

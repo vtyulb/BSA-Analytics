@@ -1,4 +1,4 @@
-#ifndef FILESUMMATOR_H
+#ifndef FILEQSUMMATOR_H
 #define FILESUMMATOR_H
 
 #include <QStringList>
@@ -19,6 +19,9 @@ private:
 
     QVector<float> sigmas;
     float goodSigma;
+    int stage;
+
+    QVector<QVector<float> > noises;
 };
 
 #endif // FILESUMMATOR_H

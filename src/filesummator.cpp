@@ -220,14 +220,15 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
 
 
                     int point = (startPoint + offset + j * 1000) / 1000;
+                    int module = 24 * 60 * 60 / data.oneStep;
 
                     if (stage == 1)
                         noises[point].push_back(noise);
                     else if (noises[point][noises[point].size() / 2] > noise)
                     // stage == 2
                         for (int k = 0; k < PC; k++) {
-                            multifile.data[module][channel][ray][startPoint + j * PC + offset + k] += data.data[module][channel][ray][offset + j * PC + k];
-                            coefficients.data[module][channel][ray][startPoint + j * PC + offset + k] += 1;
+                            multifile.data[module][channel][ray][(startPoint + j * PC + offset + k) % module] += data.data[module][channel][ray][offset + j * PC + k];
+                            coefficients.data[module][channel][ray][(startPoint + j * PC + offset + k) % module] += 1;
                         }
                 }
 

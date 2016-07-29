@@ -180,11 +180,11 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                 noise /= data.npoints;
                 noise = pow(noise, 0.5);
 
-                if (goodSigma < 0) {
+                /*if (goodSigma < 0) {
                     sigmas.push_back(noise);
                     continue;
                 } else if (noise < goodSigma)
-                    continue;
+                    continue;*/
 
 
                 const int little = 15;

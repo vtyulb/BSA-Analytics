@@ -187,22 +187,6 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                     continue;*/
 
 
-                const int little = 15;
-
-                for (int i = 0; i < data.npoints - little; i += little) {
-                    double sum = 0;
-                    for (int j = i; j < i + little; j++)
-                        sum += pow(data.data[module][channel][ray][j], 2);
-
-                    sum /= little;
-                    sum = pow(sum, 0.5);
-
-                    if (sum > noise * 6) {
-                        for (int j = std::max(i - little * 5, 0); j < i + 60 / data.oneStep && j < data.npoints; j++)
-                            data.data[module][channel][ray][j] = 0;
-                    }
-                }
-
                 noise = 0;
                 for (int i = 0; i < data.npoints; i++)
                     noise += pow(data.data[module][channel][ray][i], 2);
@@ -242,11 +226,9 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                     else if (noises[point][noises[point].size() / 2] > noise)
                     // stage == 2
                         for (int k = 0; k < PC; k++) {
-                            if (data.data[module][channel][ray][offset + j * PC + k] != 0) {
-                                multifile.data[module][channel][ray][startPoint + j * PC + offset + k] += data.data[module][channel][ray][offset + j * PC + k];
-                                coefficients.data[module][channel][ray][startPoint + j * PC + offset + k] += 1;
-                            }
-                    }
+                            multifile.data[module][channel][ray][startPoint + j * PC + offset + k] += data.data[module][channel][ray][offset + j * PC + k];
+                            coefficients.data[module][channel][ray][startPoint + j * PC + offset + k] += 1;
+                        }
                 }
 
             }

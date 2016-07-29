@@ -91,7 +91,8 @@ void FileSummator::run() {
         goodSigma = -1;
         sigmas.clear();
 
-        printf("Running stage 1 of 2\n");
+        if (fileNames.size())
+            printf("Running stage 1 of 2\n");
         stage = 1;
         for (int i = 0; i < fileNames.size(); i++) {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
@@ -106,7 +107,8 @@ void FileSummator::run() {
 
         goodSigma = sigmas[sigmas.size() * 0.1];
 
-        printf("\nRunning stage 2 of 2\n");
+        if (fileNames.size())
+            printf("\nRunning stage 2 of 2\n");
         stage = 2;
         for (int i = 0; i < noises.size(); i++)
             std::sort(noises[i].begin(), noises[i].end());

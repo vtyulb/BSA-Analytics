@@ -198,12 +198,8 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                     sum = pow(sum, 0.5);
 
                     if (sum > noise * 6) {
-        //                qDebug() << "clearing stair" << i;
-
                         for (int j = std::max(i - little * 5, 0); j < i + 60 / data.oneStep && j < data.npoints; j++)
                             data.data[module][channel][ray][j] = 0;
-
-                        break;
                     }
                 }
 

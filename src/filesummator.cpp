@@ -159,7 +159,7 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
             const int step =  INTERVAL / data.oneStep;
             for (int channel = 0; channel < data.channels; channel++) {
                 for (int i = 0; i < data.npoints; i += step)
-                    PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
+                    PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - 1));
 
                 double noise = 0;
                 for (int i = 0; i < data.npoints; i++)

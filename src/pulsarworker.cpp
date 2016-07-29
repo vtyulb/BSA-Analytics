@@ -285,7 +285,7 @@ void PulsarWorker::clearAverange() {
     const int step =  INTERVAL / data.oneStep;
     for (int channel = 0; channel < data.channels - 1; channel++) {
         for (int i = 0; i < data.npoints; i += step)
-            subtract(data.data[module][channel][ray] + i, min(step, data.npoints - i));
+            subtract(data.data[module][channel][ray] + i, min(step, data.npoints - 1));
 
         double noise = 0;
         for (int i = 0; i < data.npoints; i++)

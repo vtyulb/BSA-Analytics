@@ -223,8 +223,8 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                     else if (noises[point][noises[point].size() * 0.8] > noise)
                     // stage == 2
                         for (int k = 0; k < PC; k++) {
-                            multifile.data[module][channel][ray][startPoint] += data.data[module][channel][ray][j * PC + k];
-                            coefficients.data[module][channel][ray][startPoint] += 1;
+                            multifile.data[module][channel][ray][startPoint + k] += data.data[module][channel][ray][j * PC + k];
+                            coefficients.data[module][channel][ray][startPoint + k] += 1;
                         }
                 }
 

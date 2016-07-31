@@ -13,7 +13,7 @@
 
 #include <algorithm>
 
-const int PC = 1000; // point count
+const int PC = 150; // point count
 
 FileSummator::FileSummator()
 {    
@@ -203,31 +203,28 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                     else if (res[i] < -noise * maximumNoise)
                         res[i] = -noise * maximumNoise;
 
-                double realPart;
-                QString time = StarTime::StarTime(data, 0, &realPart);
-                int startPoint = realPart / data.oneStep * 365 / 366.0;
-
-                int offset = PC - startPoint % PC;
-
                 for (int j = 0; j < data.npoints / PC - 2; j++) {
+                    double realPart;
+                    QString time = StarTime::StarTime(data, j * PC, &realPart);
+                    int startPoint = realPart / data.oneStep;
+
                     double noise = 0;
                     for (int k = 0; k < PC; k++)
-                        noise += pow(data.data[module][channel][ray][offset + j * PC + k], 2);
+                        noise += pow(data.data[module][channel][ray][j * PC + k], 2);
 
                     noise /= PC;
                     noise = pow(noise, 0.5);
 
 
-                    int point = (startPoint + offset + j * PC) / PC;
-                    int moduleStartEnd = 24 * 60 * 60 / data.oneStep * 10;
+                    int point = (startPoint) / PC;
 
                     if (stage == 1)
                         noises[point].push_back(noise);
                     else if (noises[point][noises[point].size() / 2] > noise)
                     // stage == 2
                         for (int k = 0; k < PC; k++) {
-                            multifile.data[module][channel][ray][(startPoint + j * PC + offset + k) % moduleStartEnd] += data.data[module][channel][ray][offset + j * PC + k];
-                            coefficients.data[module][channel][ray][(startPoint + j * PC + offset + k) % moduleStartEnd] += 1;
+                            multifile.data[module][channel][ray][startPoint] += data.data[module][channel][ray][j * PC + k];
+                            coefficients.data[module][channel][ray][startPoint] += 1;
                         }
                 }
 

@@ -194,7 +194,7 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                 noise /= data.npoints;
                 noise = pow(noise, 0.5);
 
-                const int maximumNoise = 4;
+                const int maximumNoise = 10;
 
                 float *res = data.data[module][channel][ray];
                 for (int i = 0; i < data.npoints; i++)

@@ -40,7 +40,7 @@ namespace {
 
         m[1] = alf;
         m[2] = (alf - m[1]) * 60;
-        m[3] = ((alf - m[1]) * 60 - m[2]) * 60 + 0.5;
+        m[3] = ((alf - m[1]) * 60 - m[2]) * 60;
 
         if (realSeconds) {
             *realSeconds = alf * 3600;
@@ -62,7 +62,7 @@ namespace {
 
         n[1] = del;
         n[2] = (del - n[1]) * 60;
-        n[3] = ((del - n[1]) * 60 - n[2]) * 60 + 0.5;
+        n[3] = ((del - n[1]) * 60 - n[2]) * 60;
 
         n[2] += n[3] / 60;
         n[3] %= 60;
@@ -99,14 +99,14 @@ namespace StarTime {
         if (!data.time.isValid())
             return "invalid time";
 
-        QDateTime time = data.time.addSecs(data.oneStep * point);
+        QDateTime time = data.time.addMSecs(data.oneStep * point * 1000);
         double delta_lucha = data.delta_lucha;
 
         double t = (time.date().toJulianDay() - QDate(2000, 1, 1).toJulianDay() - 1);
         t /= 36525;
 
         double s0 = 6 + 41 / 60.0 + 50.55 / 3600.0 + 8640184 / 3600.0 * t + 0.093104 / 3600.0 * t * t - 6.27 / 3600.0 * (1e-6) * t * t * t;
-        double t_culm = time.time().hour() + time.time().minute() / 60.0 + time.time().second() / 3600.0;
+        double t_culm = time.time().hour() + time.time().minute() / 60.0 + time.time().second() / 3600.0 + time.time().msec() / 3600.0 / 1000.0;
         double alambda = 2 + 30/60.0 + 34/3600.0;
         double cnst = 2.7379093e-3;
         double s_culm = s0 + (cnst + 1) * t_culm + alambda;

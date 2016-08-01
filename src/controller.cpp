@@ -1,6 +1,7 @@
 #include "controller.h"
 #include <startime.h>
 #include <QVBoxLayout>
+#include <QDebug>
 
 Controller::Controller(QWidget *parent) :
     QFrame(parent)
@@ -30,7 +31,10 @@ Controller::Controller(QWidget *parent) :
 }
 
 void Controller::setCoords(QPointF p) {
-    coords->setText(QString("X: %1; Y: %2").arg(StarTime::StarTime(data, p.x()), QString::number(p.y())));
+    double realSeconds;
+    QString starTime = StarTime::StarTime(data, p.x(), &realSeconds);
+    starTime += "." + QString::number(int(realSeconds * 100) / 10 % 10) + QString::number(int(realSeconds * 100) % 10);
+    coords->setText(QString("X: %1; Y: %2").arg(starTime, QString::number(p.y())));
     nativeXCoord->setText(QString("X: %1").arg(p.x()));
 }
 

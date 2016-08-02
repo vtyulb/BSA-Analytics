@@ -44,7 +44,8 @@ SOURCES += main.cpp\
     flowdetecter.cpp \
     rotationmeasure.cpp \
     filesummator.cpp \
-    datadumper.cpp
+    datadumper.cpp \
+    flowingwindow.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -78,7 +79,8 @@ HEADERS  += mainwindow.h \
     flowdetecter.h \
     rotationmeasure.h \
     filesummator.h \
-    datadumper.h
+    datadumper.h \
+    flowingwindow.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

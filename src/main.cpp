@@ -18,6 +18,7 @@
 #include <spectredrawer.h>
 #include <preciseperioddetecter.h>
 #include <filesummator.h>
+#include <flowingwindow.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -99,6 +100,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double>\n"
                 "--time <09:01:00>\n");
         printf("BSA-Analytics --file-summator\n");
+        printf("BSA-Analytics --flowing-window input-file output-file\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
@@ -187,7 +189,11 @@ void pulsarEngine(int argc, char **argv) {
             FileSummator summator;
             summator.run();
             exit(0);
+        } else if (strcmp(argv[i], "--flowing-window") == 0) {
+            FlowingWindow::run(argv[i + 1], argv[i + 2]);
+            exit(0);
         }
+
 
 
     if (drawSpectre) {

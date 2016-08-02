@@ -78,7 +78,7 @@ void FileSummator::run() {
             coefficients.fork(); // linux style
 
             printf("memory allocated.\n");
-            printf("Process seems to be all right, beginning to work\n");
+            printf("Process seems to be all right, can work now\n");
 
         } else if (!multifileInited && !fileNames.size()) {
             printf("Did not found any valid files\n");

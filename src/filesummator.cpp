@@ -13,7 +13,8 @@
 
 #include <algorithm>
 
-const int PC = 150; // point count
+const int PC_ = 150; // point count
+const int CuttingPC = 2048;
 
 FileSummator::FileSummator()
 {    
@@ -36,6 +37,24 @@ void FileSummator::run() {
     printf("Eligible names:\n");
     for (int i = 0; i < extensions.size(); i++)
         printf("*.%s\n", extensions[i].toUtf8().constData());
+
+    bool cutter = false;
+    printf("Do you want to dump cutted files? [y/N] ");
+    if (input.readLine().toUpper() == "Y") {
+        cutter = true;
+        while (true) {
+            printf("Please enter path to save cutted files: ");
+            cutterPath = input.readLine();
+            QDir dir(cutterPath);
+            cutterPath = dir.absolutePath() + "/result/";
+            if (dir.mkdir("result"))
+                break;
+        }
+
+        printf("Path [%s] accepted\n", cutterPath.toUtf8().constData());
+    }
+
+    PC = cutter ? CuttingPC : PC_;
 
     Reader reader;
     Data multifile;
@@ -73,6 +92,8 @@ void FileSummator::run() {
 
 
             noises.resize(multifile.npoints / PC * 2);
+            numberOfPieces.resize(multifile.npoints / PC * 2);
+            numberOfPieces.fill(0);
 
             coefficients = multifile;
             coefficients.fork(); // linux style
@@ -207,10 +228,11 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                     double realPart;
                     QString time = StarTime::StarTime(data, j * PC, &realPart);
                     int startPoint = realPart / data.oneStep;
+                    int offset = PC - startPoint % PC;
 
                     double noise = 0;
                     for (int k = 0; k < PC; k++)
-                        noise += pow(data.data[module][channel][ray][j * PC + k], 2);
+                        noise += pow(data.data[module][channel][ray][j * PC + k + offset], 2);
 
                     noise /= PC;
                     noise = pow(noise, 0.5);
@@ -222,9 +244,10 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                         noises[point].push_back(noise);
                     else if (noises[point][noises[point].size() * 0.8] > noise)
                     // stage == 2
+                        dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
                         for (int k = 0; k < PC; k++) {
-                            multifile.data[module][channel][ray][startPoint + k] += data.data[module][channel][ray][j * PC + k];
-                            coefficients.data[module][channel][ray][startPoint + k] += 1;
+                            multifile.data[module][channel][ray][startPoint + k + offset] += data.data[module][channel][ray][j * PC + k + offset];
+                            coefficients.data[module][channel][ray][startPoint + k + offset] += 1;
                         }
                 }
 
@@ -246,4 +269,24 @@ void FileSummator::findFiles(QString path, QStringList &names, const QStringList
                     break;
                 }
         }
+}
+
+void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber) {
+    Data res = data;
+    res.npoints = CuttingPC;
+    res.fork();
+
+    for (int module = 0; module < res.modules; module++)
+        for (int channel = 0; channel < res.channels; channel++)
+            for (int ray = 0; ray < res.rays; ray++)
+                for (int i = 0; i < CuttingPC; i++)
+                    res.data[module][channel][ray][i] = data.data[module][channel][ray][startPoint + i];
+
+    numberOfPieces[pieceNumber]++;
+    QDir().mkpath(cutterPath + "/" + QString::number(pieceNumber));
+    QFile f(cutterPath + "/" + QString::number(pieceNumber) + "/" + QString::number(numberOfPieces[pieceNumber]) + ".pnt");
+    f.open(QIODevice::WriteOnly);
+    DataDumper::dump(res, f);
+
+    res.releaseData();
 }

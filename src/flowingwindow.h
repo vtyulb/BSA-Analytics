@@ -6,7 +6,7 @@
 class FlowingWindow
 {
 public:
-    static void run(QString input, QString output);
+    static void run(QString input, QString output, QString number);
 private:
     FlowingWindow();
 

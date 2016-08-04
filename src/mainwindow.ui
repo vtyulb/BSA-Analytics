@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>BSA-analytics</string>
+   <string>BSA-Analytics</string>
   </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -97,7 +97,7 @@
    </widget>
    <widget class="QMenu" name="menuPulsars">
     <property name="title">
-     <string>&amp;Pulsars search</string>
+     <string>P&amp;ulsars search</string>
     </property>
     <addaction name="actionPulsar_searcher"/>
     <addaction name="separator"/>

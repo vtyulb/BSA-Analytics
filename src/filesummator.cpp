@@ -244,7 +244,9 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                         noises[point].push_back(noise);
                     else if (noises[point][noises[point].size() * 0.8] > noise)
                     // stage == 2
-                        dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
+                        if (module == data.modules - 1 && ray == data.rays - 1 && channel == data.channels - 1)
+                            dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
+
                         for (int k = 0; k < PC; k++) {
                             multifile.data[module][channel][ray][startPoint + k + offset] += data.data[module][channel][ray][j * PC + k + offset];
                             coefficients.data[module][channel][ray][startPoint + k + offset] += 1;

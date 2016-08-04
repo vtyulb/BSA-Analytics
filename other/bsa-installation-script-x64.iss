@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "BSA Analytics"
-#define MyAppVersion "0.1"
+#define MyAppVersion "1.0"
 #define MyAppPublisher "vtyulb"
 #define MyAppURL "bsa.vtyulb.ru"
-#define MyAppExeName "BSA-analytics.exe"
+#define MyAppExeName "BSA-Analytics.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -37,8 +37,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 0,6.1
 
 [Files]
-Source: "E:\BSA-analytics-x64\BSA-analytics.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\BSA-analytics-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "E:\work\bsa\BSA-Analytics-x64\BSA-Analytics.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\work\bsa\BSA-Analytics-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

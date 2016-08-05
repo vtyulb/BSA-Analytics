@@ -17,7 +17,7 @@ class Analytics : public QWidget
     Q_OBJECT
 
 public:
-    explicit Analytics(QString analyticsPath = "", QWidget *parent = 0);
+    explicit Analytics(QString analyticsPath = "", bool fourier = false, QWidget *parent = 0);
     ~Analytics();
 
 private:
@@ -33,8 +33,10 @@ private:
     QVector<bool> differentNoisePreCalc;
     QVector<bool> powerfullNoisePreCalc;
 
+
     int maxModule;
     int maxRay;
+    bool fourier;
 
     QVector<KnownPulsar> knownPulsars;
     QVector<QString> fileNames;
@@ -65,6 +67,7 @@ private:
 private slots:
     void apply();
     void init();
+    void loadFourierData();
 
     void dispersionPlot();
     void dispersionRemember();

@@ -19,6 +19,8 @@
 #include <preciseperioddetecter.h>
 #include <filesummator.h>
 #include <flowingwindow.h>
+#include <fourier.h>
+#include <fouriersearch.h>
 
 #include <sys/unistd.h>
 #include <sys/types.h>
@@ -90,7 +92,7 @@ void pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
         printf("Usage:\nBSA-Analytics\n");
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
-        printf("BSA-Analytics --analytics [path-to-data] [--low-memory]\n");
+        printf("BSA-Analytics --analytics [path-to-data] [--fourier] [--low-memory]\n");
         printf("BSA-Analytics --source-range <file name> <point>\n");
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --flow-find\n");
@@ -126,6 +128,7 @@ void pulsarEngine(int argc, char **argv) {
     bool preciseSearch = false;
     bool doNotClearNoise = false;
     bool drawSpectre = false;
+    bool fourier = false;
     int module = 1;
     int ray = 1;
     double period = 1;
@@ -192,7 +195,8 @@ void pulsarEngine(int argc, char **argv) {
         } else if (strcmp(argv[i], "--flowing-window") == 0) {
             FlowingWindow::run(argv[i + 1], argv[i + 2], argv[i + 3]);
             exit(0);
-        }
+        } else if (strcmp(argv[i], "--fourier") == 0)
+            fourier = true;
 
 
 
@@ -263,7 +267,7 @@ void pulsarEngine(int argc, char **argv) {
         a.setOrganizationDomain("bsa.vtyulb.ru");
         a.setOrganizationName("vtyulb");
         a.setApplicationName("BSA-Analytics");
-        Analytics *an = new Analytics(analyticsPath);
+        Analytics *an = new Analytics(analyticsPath, fourier);
         a.exec();
         delete an;
         exit(0);
@@ -289,6 +293,9 @@ void pulsarEngine(int argc, char **argv) {
 
 int main(int argc, char *argv[])
 {
+//    FourierSearch::run("/home/vlad/host/res/311/");
+//    exit(0);
+
     if (argc > 1)
         pulsarEngine(argc, argv);
 

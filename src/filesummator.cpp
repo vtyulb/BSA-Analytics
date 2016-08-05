@@ -51,7 +51,7 @@ void FileSummator::run() {
                 break;
         }
 
-        printf("Path [%s] accepted\n", cutterPath.toUtf8().constData());
+        printf("Path [%s] accepted\n\n", cutterPath.toUtf8().constData());
     }
 
     PC = cutter ? CuttingPC : PC_;
@@ -274,9 +274,19 @@ void FileSummator::findFiles(QString path, QStringList &names, const QStringList
 }
 
 void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber) {
+    if (CuttingPC != PC)
+        return;
+
     Data res = data;
     res.npoints = CuttingPC;
     res.fork();
+
+    double realSeconds;
+    StarTime::StarTime(data, startPoint, &realSeconds);
+
+    QMap<QString, QString> headerAddition;
+    headerAddition["native_datetime"] = data.name;
+    headerAddition["star_time"] = QString::number(realSeconds, 'g', 10);
 
     for (int module = 0; module < res.modules; module++)
         for (int channel = 0; channel < res.channels; channel++)
@@ -288,7 +298,7 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     QDir().mkpath(cutterPath + "/" + QString::number(pieceNumber));
     QFile f(cutterPath + "/" + QString::number(pieceNumber) + "/" + QString::number(numberOfPieces[pieceNumber]) + ".pnt");
     f.open(QIODevice::WriteOnly);
-    DataDumper::dump(res, f);
+    DataDumper::dump(res, f, headerAddition);
 
     res.releaseData();
 }

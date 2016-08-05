@@ -21,8 +21,9 @@
 
 using std::max;
 
-Analytics::Analytics(QString analyticsPath, QWidget *parent) :
+Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     folder(analyticsPath),
+    fourier(fourier),
     QWidget(parent),
     ui(new Ui::Analytics),
     pulsars(new QVector<Pulsar>),
@@ -50,6 +51,16 @@ Analytics::Analytics(QString analyticsPath, QWidget *parent) :
     fileNames.push_back("all files");
 
     show();
+    if (fourier) {
+        ui->groupBox_2->hide();
+        ui->groupBox->hide();
+        ui->groupBox_4->hide();
+
+        ui->fourierLoaded->hide();
+    } else {
+        ui->groupBox_5->hide();
+    }
+
     init();
 }
 
@@ -466,6 +477,11 @@ void Analytics::knownPulsarsGUI() {
 void Analytics::applyKnownNoiseFilter() {
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] &= !noises->contains(pulsars->at(i).period);
+}
+
+void Analytics::loadFourierData() {
+    QString path = QDir(folder).absolutePath() + "/";
+
 }
 
 Analytics::~Analytics()

@@ -45,7 +45,9 @@ SOURCES += main.cpp\
     rotationmeasure.cpp \
     filesummator.cpp \
     datadumper.cpp \
-    flowingwindow.cpp
+    flowingwindow.cpp \
+    fourier.cpp \
+    fouriersearch.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -80,7 +82,9 @@ HEADERS  += mainwindow.h \
     rotationmeasure.h \
     filesummator.h \
     datadumper.h \
-    flowingwindow.h
+    flowingwindow.h \
+    fourier.h \
+    fouriersearch.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

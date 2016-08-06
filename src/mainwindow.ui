@@ -103,6 +103,7 @@
     <addaction name="separator"/>
     <addaction name="actionPulsar_analytics"/>
     <addaction name="actionPulsar_analytics_low_memory"/>
+    <addaction name="actionPulsar_fourier_analytics"/>
    </widget>
    <widget class="QMenu" name="menuPulsars_investigation">
     <property name="title">
@@ -257,6 +258,11 @@
   <action name="actionRotation_measure">
    <property name="text">
     <string>&amp;Rotation measure</string>
+   </property>
+  </action>
+  <action name="actionPulsar_fourier_analytics">
+   <property name="text">
+    <string>Pulsar fourier analytics</string>
    </property>
   </action>
  </widget>

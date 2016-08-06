@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionPulsar_searcher, SIGNAL(triggered()), this, SLOT(openPulsarFile()));
     QObject::connect(ui->actionPulsar_analytics, SIGNAL(triggered()), this, SLOT(openAnalytics()));
     QObject::connect(ui->actionPulsar_analytics_low_memory, SIGNAL(triggered(bool)), this, SLOT(openAnalytics(bool)));
+    QObject::connect(ui->actionPulsar_fourier_analytics, SIGNAL(triggered()), this, SLOT(openFourierAnalytics()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
@@ -82,7 +83,7 @@ void MainWindow::openBinaryFile() {
     nativeOpenFile(path, 0, 0, QDateTime(), true);
 }
 
-void MainWindow::openAnalytics(bool hasMemory) {
+void MainWindow::openAnalytics(bool hasMemory, bool fourier) {
     QString path = QFileDialog::getExistingDirectory(this, "analytics folder", lastOpenPath);
     if (path == "")
         return;
@@ -92,8 +93,15 @@ void MainWindow::openAnalytics(bool hasMemory) {
     if (!hasMemory)
         l << "--low-memory";
 
+    if (fourier)
+        l << "--fourier";
+
     QProcess::startDetached(qApp->arguments()[0], l);
     qApp->exit(0);
+}
+
+void MainWindow::openFourierAnalytics() {
+    openAnalytics(true, true);
 }
 
 void MainWindow::openPulsarFile() {

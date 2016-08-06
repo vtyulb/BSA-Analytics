@@ -33,9 +33,6 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    QSettings s;
-    this->restoreGeometry(s.value("AnalyticsGeometry").toByteArray());
-
     QObject::connect(ui->applyButton, SIGNAL(clicked()), this, SLOT(apply()));
     QObject::connect(ui->addPulsarCatalog, SIGNAL(clicked()), this, SLOT(addPulsarCatalog()));
     QObject::connect(ui->infoButton, SIGNAL(clicked()),this, SLOT(showInfo()));
@@ -55,7 +52,6 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     fileNames.push_back("all files");
 
-    show();
     if (fourier) {
         ui->groupBox_2->hide();
         ui->groupBox->hide();
@@ -67,6 +63,10 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->groupBox_5->hide();
     }
 
+    QSettings s;
+    this->restoreGeometry(s.value("AnalyticsGeometry").toByteArray());
+
+    show();
     init();
 }
 
@@ -159,10 +159,6 @@ void Analytics::loadPulsars(QString dir) {
 }
 
 void Analytics::apply() {
-    if (fourier) {
-        return;
-    }
-
     ui->progressBar->setValue(0);
     ui->progressBar->show();
 
@@ -188,10 +184,10 @@ void Analytics::apply() {
     if (ui->multiplePicks->isChecked())
         applyMultiplePicksFilter();
 
-    if (ui->knownPulsars->isChecked())
+    if (ui->knownPulsars->isChecked() && ui->knownPulsars->isEnabled())
         applyKnownPulsarsFilter();
 
-    if (ui->knownNoise->isChecked())
+    if (ui->knownNoise->isChecked() && ui->knownNoise->isEnabled())
         applyKnownNoiseFilter();
 
     if (ui->differentNoise->isChecked())
@@ -223,7 +219,8 @@ void Analytics::apply() {
         return;
     }
 
-    std::sort(pl->data(), pl->data() + pl->size());
+    if (!fourier)
+        std::sort(pl->data(), pl->data() + pl->size());
 
     delete list;
     list = new PulsarList("void", pl, this);
@@ -234,6 +231,9 @@ void Analytics::apply() {
 }
 
 void Analytics::applyFileNameFilter() {
+    if (fourier)
+        return;
+
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsarsEnabled[i])
             pulsarsEnabled[i] &= (pulsars->at(i).data.name == fileNames[ui->fileNames->currentIndex()]);
@@ -507,17 +507,21 @@ void Analytics::loadFourierData() {
 
     ui->progressBar->setValue(0);
     ui->progressBar->show();
+    ui->currentFile->setText("Reading files");
+    ui->currentFile->show();
+
     int first = ui->fourierFrom->value();
     int last = ui->fourierTo->value();
     for (int i = first; i <= last; i++) {
-        ui->progressBar->setValue(100 * (i - first + 1) / (last - first + 1));
-        QApplication::processEvents();
-
         QString currentPath = path + QString::number(i) + "/";
         QStringList names = QDir(currentPath).entryList();
         for (int j = 0; j < names.size(); j++)
-            if (names[j] != "." && names[j] != "..")
+            if (names[j] != "." && names[j] != "..") {
+                ui->progressBar->setValue(100 * j / names.size());
+                QApplication::processEvents();
+
                 fourierData[i].push_back(Reader().readBinaryFile(currentPath + names[j]));
+            }
     }
 
     for (int i = 0; i < pulsars->size(); i++) {
@@ -534,10 +538,16 @@ void Analytics::loadFourierData() {
             summ[i][j].fill(0);
         }
 
-    for (int module = 0; module < 6; module++)
-        for (int ray = 0; ray < 8; ray++)
-            for (int i = 0; i < fourierData.size(); i++)
-                for (int j = 0; j < fourierData[i].size(); j++) {
+
+    ui->currentFile->setText("Running fourier");
+
+    for (int i = 0; i < fourierData.size(); i++)
+        for (int j = 0; j < fourierData[i].size(); j++) {
+            ui->progressBar->setValue(100 * j / fourierData[i].size());
+            QApplication::processEvents();
+
+            for (int module = 0; module < 6; module++)
+                for (int ray = 0; ray < 8; ray++) {
                     Data data;
                     data.npoints = 1024;
                     data.modules = 1;
@@ -566,10 +576,13 @@ void Analytics::loadFourierData() {
                     pl.filtered = true;
                     pl.data = data;
                     pl.valid = true;
+                    pl.findFourierData();
                     QTime time(0, 0, 0);
-                    pl.nativeTime = time.addSecs(2048 * i * 0.0999424);;
+                    pl.nativeTime = time.addSecs(2048 * i * 0.0999424);
                     pulsars->push_back(pl);
                 }
+
+        }
 
     std::sort(pulsars->data(), pulsars->data() + pulsars->size());
 
@@ -591,19 +604,25 @@ void Analytics::loadFourierData() {
             pl.filtered = false;
             pl.data = data;
             pl.valid = true;
+            pl.findFourierData();
             pulsars->push_front(pl);
         }
 
-    delete list;
+    /*delete list;
     list = NULL;
     if (pulsars->size()) {
         list = new PulsarList("void", pulsars, this);
         list->show();
         QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
-    }
+    }*/
+
+    pulsarsEnabled.resize(pulsars->size());
 
     ui->fourierLoaded->show();
     ui->fourierLoad->setDisabled(true);
+    ui->currentFile->hide();
+
+    apply();
 }
 
 void Analytics::actualFourierDataChanged() {
@@ -612,9 +631,12 @@ void Analytics::actualFourierDataChanged() {
     ui->fourierTo->setValue(ui->fourierFrom->value());
 }
 
-Analytics::~Analytics()
-{
+void Analytics::closeEvent(QCloseEvent *) {
     QSettings s;
     s.setValue("AnalyticsGeometry", this->saveGeometry());
+}
+
+Analytics::~Analytics()
+{
     delete ui;
 }

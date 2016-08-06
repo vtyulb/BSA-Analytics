@@ -81,6 +81,40 @@ struct Pulsar {
         stream << QVariant(d.toList());
     }
 
+    void findFourierData() {
+        int st = 50;
+        int ls = 1024;
+        QVector<float> ns;
+        for (int i = st; i < ls; i++)
+            ns.push_back(data.data[0][0][0][i]);
+
+        std::sort(ns.begin(), ns.end());
+        int stt = ns.size() * 0.05;
+        int lst = ns.size() * 0.95;
+
+        int avr = 0;
+        for (int i = stt; i < lst; i++)
+            avr += ns[i];
+        avr /= (lst - stt);
+
+
+
+        double noise = 0;
+        for (int i = stt; i < lst; i++)
+            noise += pow(ns[i] - avr, 2);
+
+        noise /= (lst - stt);
+        noise = pow(noise, 0.5);
+
+        float mx = 0;
+        for (int i = st; i < ls; i++)
+            if (data.data[0][0][0][i] > mx) {
+                mx = data.data[0][0][0][i];
+                snr = (mx-avr)/noise;
+                period = 2048 / double(i) * 0.0999424;
+            }
+    }
+
     void squeeze() {
         int i = 0;
         while (data.data[0][0][0][i] != 0)

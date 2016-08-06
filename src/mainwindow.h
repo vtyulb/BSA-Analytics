@@ -34,7 +34,8 @@ private:
 
 private slots:
     void openPulsarFile();
-    void openAnalytics(bool hasMemory = true);
+    void openAnalytics(bool hasMemory = true, bool fourier = false);
+    void openFourierAnalytics();
     void openFile();
     void openBinaryFile();
     void customOpen();

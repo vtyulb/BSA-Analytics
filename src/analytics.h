@@ -65,6 +65,8 @@ private:
 
     Data dispersionGenerateData();
 
+    void closeEvent(QCloseEvent *);
+
 private slots:
     void apply();
     void init();

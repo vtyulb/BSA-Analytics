@@ -40,6 +40,7 @@ private:
 
     QVector<KnownPulsar> knownPulsars;
     QVector<QString> fileNames;
+    QVector<QVector<Data> > fourierData;
 
     void loadPulsars(QString);
 
@@ -68,6 +69,8 @@ private slots:
     void apply();
     void init();
     void loadFourierData();
+
+    void actualFourierDataChanged();
 
     void dispersionPlot();
     void dispersionRemember();

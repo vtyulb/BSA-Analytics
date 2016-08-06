@@ -6,6 +6,7 @@
 #include <pulsarlist.h>
 #include <settings.h>
 #include <knownpulsarsgui.h>
+#include <fourier.h>
 
 #include <QFileDialog>
 #include <QDir>
@@ -45,6 +46,10 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->dispersionM, SIGNAL(clicked()), this, SLOT(dispersionMplus()));
     QObject::connect(ui->dispersionRemember, SIGNAL(clicked()), this, SLOT(dispersionRemember()));
 
+    QObject::connect(ui->fourierFrom, SIGNAL(valueChanged(int)), this, SLOT(actualFourierDataChanged()));
+    QObject::connect(ui->fourierTo, SIGNAL(valueChanged(int)), this, SLOT(actualFourierDataChanged()));
+    QObject::connect(ui->fourierLoad, SIGNAL(clicked(bool)), this, SLOT(loadFourierData()));
+
     maxModule = 1;
     maxRay = 1;
 
@@ -57,6 +62,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->groupBox_4->hide();
 
         ui->fourierLoaded->hide();
+        fourierData.resize(500);
     } else {
         ui->groupBox_5->hide();
     }
@@ -71,10 +77,10 @@ void Analytics::init() {
 
     s.setValue("openPath", folder);
 
-    loadPulsars(folder);
-    loadKnownPulsars();
     window = new MainWindow(this);
     window->show();
+    loadPulsars(folder);
+    loadKnownPulsars();
     apply();
     ui->progressBar->hide();
     ui->currentFile->hide();
@@ -108,6 +114,11 @@ void Analytics::loadKnownPulsars() {
 
 void Analytics::loadPulsars(QString dir) {
     qDebug() << "scanning directory" << dir;
+
+    if (fourier) {
+        loadFourierData();
+        return;
+    }
 
     catalogs.push_back(dir);
 
@@ -148,6 +159,10 @@ void Analytics::loadPulsars(QString dir) {
 }
 
 void Analytics::apply() {
+    if (fourier) {
+        return;
+    }
+
     ui->progressBar->setValue(0);
     ui->progressBar->show();
 
@@ -480,8 +495,121 @@ void Analytics::applyKnownNoiseFilter() {
 }
 
 void Analytics::loadFourierData() {
-    QString path = QDir(folder).absolutePath() + "/";
+    qDebug() << "fourier load called";
 
+    QString path = QDir(folder).absolutePath() + "/";
+    for (int i = 0; i < fourierData.size(); i++) {
+        for (int j = 0; j < fourierData[i].size(); j++)
+            fourierData[i][j].releaseData();
+
+        fourierData[i].clear();
+    }
+
+    ui->progressBar->setValue(0);
+    ui->progressBar->show();
+    int first = ui->fourierFrom->value();
+    int last = ui->fourierTo->value();
+    for (int i = first; i <= last; i++) {
+        ui->progressBar->setValue(100 * (i - first + 1) / (last - first + 1));
+        QApplication::processEvents();
+
+        QString currentPath = path + QString::number(i) + "/";
+        QStringList names = QDir(currentPath).entryList();
+        for (int j = 0; j < names.size(); j++)
+            if (names[j] != "." && names[j] != "..")
+                fourierData[i].push_back(Reader().readBinaryFile(currentPath + names[j]));
+    }
+
+    for (int i = 0; i < pulsars->size(); i++) {
+        (*pulsars)[i].data.releaseProtected = false;
+        (*pulsars)[i].data.releaseData();
+    }
+
+    pulsars->clear();
+
+    QVector<float> summ[6][8];
+    for (int i = 0; i < 6; i++)
+        for (int j = 0; j < 8; j++) {
+            summ[i][j].resize(1024);
+            summ[i][j].fill(0);
+        }
+
+    for (int module = 0; module < 6; module++)
+        for (int ray = 0; ray < 8; ray++)
+            for (int i = 0; i < fourierData.size(); i++)
+                for (int j = 0; j < fourierData[i].size(); j++) {
+                    Data data;
+                    data.npoints = 1024;
+                    data.modules = 1;
+                    data.rays = 1;
+                    data.channels = 1;
+                    data.init();
+                    data.releaseProtected = true;
+
+                    QVector<float> dt(1024, 0);
+                    for (int channel = 0; channel < 6; channel++) {
+                        Fourier::FFTAnalysis(fourierData[i][j].data[module][channel][ray], data.data[0][0][0], 2048, 1024);
+                        for (int k = 0; k < 1024; k++)
+                            dt[k] += data.data[0][0][0][k];
+                    }
+
+                    for (int k = 0; k < 1024; k++)
+                        data.data[0][0][0][k] = dt[k];
+
+                    for (int k = 0; k < 1024; k++)
+                        summ[module][ray][k] += dt[k];
+
+                    Pulsar pl;
+                    pl.module = module + 1;
+                    pl.ray = ray + 1;
+                    pl.snr = 666;
+                    pl.filtered = true;
+                    pl.data = data;
+                    pl.valid = true;
+                    QTime time(0, 0, 0);
+                    pl.nativeTime = time.addSecs(2048 * i * 0.0999424);;
+                    pulsars->push_back(pl);
+                }
+
+    std::sort(pulsars->data(), pulsars->data() + pulsars->size());
+
+    for (int module = 5; module >= 0; module--)
+        for (int ray = 7; ray >= 0; ray--) {
+            Data data;
+            data.npoints = 1024;
+            data.modules = 1;
+            data.rays = 1;
+            data.channels = 1;
+            data.init();
+            data.releaseProtected = true;
+            memcpy(data.data[0][0][0], summ[module][ray].constData(), sizeof(float) * 1024);
+
+            Pulsar pl;
+            pl.module = module + 1;
+            pl.ray = ray + 1;
+            pl.snr = 666;
+            pl.filtered = false;
+            pl.data = data;
+            pl.valid = true;
+            pulsars->push_front(pl);
+        }
+
+    delete list;
+    list = NULL;
+    if (pulsars->size()) {
+        list = new PulsarList("void", pulsars, this);
+        list->show();
+        QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
+    }
+
+    ui->fourierLoaded->show();
+    ui->fourierLoad->setDisabled(true);
+}
+
+void Analytics::actualFourierDataChanged() {
+    ui->fourierLoaded->hide();
+    ui->fourierLoad->setEnabled(true);
+    ui->fourierTo->setValue(ui->fourierFrom->value());
 }
 
 Analytics::~Analytics()

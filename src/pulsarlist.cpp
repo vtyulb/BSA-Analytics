@@ -58,10 +58,10 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
 }
 
 void PulsarList::closeEvent(QCloseEvent *) {
+    QSettings().setValue("pulsar-list-geometry", saveGeometry());
 }
 
 PulsarList::~PulsarList() {
-    QSettings().setValue("pulsar-list-geometry", saveGeometry());
     delete ui;
 }
 

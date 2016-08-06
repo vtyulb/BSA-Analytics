@@ -102,6 +102,16 @@ struct Pulsar {
 
         if (dispersion < p.dispersion)
             return true;
+        else if (dispersion > p.dispersion)
+            return false;
+
+        if (module < p.module)
+            return true;
+        else if (module > p.module)
+            return false;
+
+        if (ray < p.ray)
+            return true;
 
         return false;
     }

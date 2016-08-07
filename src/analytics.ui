@@ -354,53 +354,33 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <item row="0" column="1">
-       <widget class="QSpinBox" name="fourierFrom">
+       <widget class="QSpinBox" name="fourierBlockNo">
         <property name="minimum">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="maximum">
          <number>500</number>
         </property>
         <property name="value">
-         <number>340</number>
+         <number>0</number>
         </property>
        </widget>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label_15">
         <property name="text">
-         <string>From</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QSpinBox" name="fourierTo">
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>500</number>
-        </property>
-        <property name="value">
-         <number>339</number>
+         <string>Block number</string>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_16">
-        <property name="text">
-         <string>To</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
        <widget class="QPushButton" name="fourierLoad">
         <property name="text">
          <string>Load data</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="1" column="1">
        <widget class="QLabel" name="fourierLoaded">
         <property name="text">
          <string>Data is loaded</string>

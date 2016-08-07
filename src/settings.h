@@ -31,6 +31,7 @@ class Settings {
         int module();
         int ray();
         double period();
+        bool fourierAnalytics();
 
         double getStairHeight(int module, int ray, int channel);
         bool sourceMode();
@@ -59,6 +60,7 @@ class Settings {
         void setDispersionData(const QVector<double>&);
         void setLastData(const Data&);
         void setLongRoads(bool);
+        void setFourierAnalytics(bool);
 
     private:
         Settings();
@@ -81,6 +83,7 @@ class Settings {
         QTime _time;
         double _period;
         int _dispersion;
+        bool _fourierAnalytics;
         QVector<double> dispersionPlotData;
         QVector<QVector<QVector<double> > > stairs;
         Data _lastData;

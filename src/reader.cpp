@@ -109,12 +109,16 @@ Data Reader::readBinaryFile(QString file) {
     QMap<QString, QString> header;
     for (int i = 1; i < n; i++) {
         QString data = f.readLine();
-        QString value = data.right(data.size() - data.indexOf(' '));
+        char symb = ' ';
+        if (!data.contains(symb))
+            symb = '\t';
+
+        QString value = data.right(data.size() - data.indexOf(symb));
         value = value.left(value.size() - 1);
-        while (value[0] == ' ')
+        while (value[0] == symb)
             value = value.right(value.size() - 1);
 
-        header[data.left(data.indexOf(' '))] = value;
+        header[data.left(data.indexOf(symb))] = value;
     }
 
     qint64 npoints = header["npoints"].toInt();
@@ -142,6 +146,8 @@ Data Reader::readBinaryFile(QString file) {
     data.rays = rays;
     data.npoints = npoints;
     data.init();
+
+    data.previousLifeName = header["native_datetime"];
 
     QStringList fbands = header["fbands"].split(" ");
     for (int i = 0; i < channels - 1; i++)

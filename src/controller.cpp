@@ -1,5 +1,7 @@
-#include "controller.h"
+#include <controller.h>
 #include <startime.h>
+#include <settings.h>
+
 #include <QVBoxLayout>
 #include <QDebug>
 
@@ -36,6 +38,8 @@ void Controller::setCoords(QPointF p) {
     starTime += "." + QString::number(int(realSeconds * 100) / 10 % 10) + QString::number(int(realSeconds * 100) % 10);
     coords->setText(QString("X: %1; Y: %2").arg(starTime, QString::number(p.y())));
     nativeXCoord->setText(QString("X: %1").arg(p.x()));
+    if (Settings::settings()->fourierAnalytics())
+        nativeXCoord->setText(QString("X: %1; p=%2s").arg(QString::number(p.x(), 'f', 1), QString::number(2048.0 / p.x() * 0.0994, 'f', 3)));
 }
 
 void Controller::setRays(int r) {
@@ -57,8 +61,11 @@ void Controller::setModules(int m) {
 void Controller::resetSky(Data newData) {
     data = newData;
     sky->setText(StarTime::StarTime(data));
+    if (Settings::settings()->fourierAnalytics())
+        setFileName(data.previousLifeName);
 }
 
 void Controller::setFileName(QString s) {
-    fileName->setText(s);
+    if (s != "")
+        fileName->setText(s);
 }

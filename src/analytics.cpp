@@ -43,8 +43,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->dispersionM, SIGNAL(clicked()), this, SLOT(dispersionMplus()));
     QObject::connect(ui->dispersionRemember, SIGNAL(clicked()), this, SLOT(dispersionRemember()));
 
-    QObject::connect(ui->fourierFrom, SIGNAL(valueChanged(int)), this, SLOT(actualFourierDataChanged()));
-    QObject::connect(ui->fourierTo, SIGNAL(valueChanged(int)), this, SLOT(actualFourierDataChanged()));
+    QObject::connect(ui->fourierBlockNo, SIGNAL(valueChanged(int)), this, SLOT(actualFourierDataChanged()));
     QObject::connect(ui->fourierLoad, SIGNAL(clicked(bool)), this, SLOT(loadFourierData()));
 
     maxModule = 1;
@@ -53,6 +52,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     fileNames.push_back("all files");
 
     if (fourier) {
+        Settings::settings()->setFourierAnalytics(true);
         ui->groupBox_2->hide();
         ui->groupBox->hide();
         ui->groupBox_4->hide();
@@ -81,7 +81,9 @@ void Analytics::init() {
     window->show();
     loadPulsars(folder);
     loadKnownPulsars();
-    apply();
+    if (!fourier)
+        apply();
+
     ui->progressBar->hide();
     ui->currentFile->hide();
 }
@@ -497,21 +499,25 @@ void Analytics::applyKnownNoiseFilter() {
 void Analytics::loadFourierData() {
     qDebug() << "fourier load called";
 
+    ui->pulsarsTotal->hide();
+    ui->progressBar->show();
+    ui->currentFile->show();
+    ui->currentFile->setText("Releasing previous data");
+
     QString path = QDir(folder).absolutePath() + "/";
     for (int i = 0; i < fourierData.size(); i++) {
-        for (int j = 0; j < fourierData[i].size(); j++)
+        for (int j = 0; j < fourierData[i].size(); j++) {
+            ui->progressBar->setValue(100 * j / fourierData[i].size());
             fourierData[i][j].releaseData();
+        }
 
         fourierData[i].clear();
     }
 
-    ui->progressBar->setValue(0);
-    ui->progressBar->show();
     ui->currentFile->setText("Reading files");
-    ui->currentFile->show();
 
-    int first = ui->fourierFrom->value();
-    int last = ui->fourierTo->value();
+    int first = ui->fourierBlockNo->value();
+    int last = ui->fourierBlockNo->value();
     for (int i = first; i <= last; i++) {
         QString currentPath = path + QString::number(i) + "/";
         QStringList names = QDir(currentPath).entryList();
@@ -544,7 +550,6 @@ void Analytics::loadFourierData() {
     for (int i = 0; i < fourierData.size(); i++)
         for (int j = 0; j < fourierData[i].size(); j++) {
             ui->progressBar->setValue(100 * j / fourierData[i].size());
-            QApplication::processEvents();
 
             for (int module = 0; module < 6; module++)
                 for (int ray = 0; ray < 8; ray++) {
@@ -555,6 +560,7 @@ void Analytics::loadFourierData() {
                     data.channels = 1;
                     data.init();
                     data.releaseProtected = true;
+                    data.previousLifeName = "file " + QString::number(j) + ".pnt" + " from " + fourierData[i][j].previousLifeName;
 
                     QVector<float> dt(1024, 0);
                     for (int channel = 0; channel < 6; channel++) {
@@ -597,6 +603,7 @@ void Analytics::loadFourierData() {
             data.releaseProtected = true;
             memcpy(data.data[0][0][0], summ[module][ray].constData(), sizeof(float) * 1024);
 
+
             Pulsar pl;
             pl.module = module + 1;
             pl.ray = ray + 1;
@@ -605,6 +612,8 @@ void Analytics::loadFourierData() {
             pl.data = data;
             pl.valid = true;
             pl.findFourierData();
+            if (pulsars->size())
+                pl.nativeTime = pulsars->last().nativeTime;
             pulsars->push_front(pl);
         }
 
@@ -622,13 +631,15 @@ void Analytics::loadFourierData() {
     ui->fourierLoad->setDisabled(true);
     ui->currentFile->hide();
 
+    ui->pulsarsTotal->setText(QString("Loaded %1 files").arg(fourierData[first].size()));
+    ui->pulsarsTotal->show();
+
     apply();
 }
 
 void Analytics::actualFourierDataChanged() {
     ui->fourierLoaded->hide();
     ui->fourierLoad->setEnabled(true);
-    ui->fourierTo->setValue(ui->fourierFrom->value());
 }
 
 void Analytics::closeEvent(QCloseEvent *) {

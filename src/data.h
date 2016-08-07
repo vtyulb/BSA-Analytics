@@ -13,6 +13,7 @@ struct Data {
 
     QDateTime time;
 
+    QString previousLifeName;
     QString name;
     double oneStep;
     double delta_lucha;

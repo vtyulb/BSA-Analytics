@@ -14,6 +14,7 @@ Settings::Settings() {
     _singlePeriod = false;
     _longRoads = false;
     _periodTester = false;
+    _fourierAnalytics = false;
     bar = NULL;
 }
 
@@ -223,4 +224,12 @@ void Settings::setProgressBar(QProgressBar *_bar) {
 
 QProgressBar *Settings::getProgressBar() {
     return bar;
+}
+
+void Settings::setFourierAnalytics(bool b) {
+    _fourierAnalytics = b;
+}
+
+bool Settings::fourierAnalytics() {
+    return _fourierAnalytics;
 }

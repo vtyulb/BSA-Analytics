@@ -89,28 +89,39 @@ struct Pulsar {
             ns.push_back(data.data[0][0][0][i]);
 
         std::sort(ns.begin(), ns.end());
-        int stt = ns.size() * 0.05;
-        int lst = ns.size() * 0.95;
+        int stt = ns.size() * 0.3;
+        int lst = ns.size() * 0.7;
 
         int avr = 0;
         for (int i = stt; i < lst; i++)
             avr += ns[i];
         avr /= (lst - stt);
 
+        QVector<float> diffs;
+        for (int i = st; i < ls; i += 32) {
+            float mini = 10000;
+            float maxi = 0;
+            for (int k = 0; k < 32; k++) {
+                float v = data.data[0][0][0][i + k];
+                if (v < mini)
+                    mini = v;
+                if (v > maxi)
+                    maxi = v;
+            }
+
+            diffs.push_back(maxi - mini);
+        }
+
+        std::sort(diffs.begin(), diffs.end());
+        double noise = diffs[diffs.size() / 2] / 6;
 
 
-        double noise = 0;
-        for (int i = stt; i < lst; i++)
-            noise += pow(ns[i] - avr, 2);
-
-        noise /= (lst - stt);
-        noise = pow(noise, 0.5);
 
         float mx = 0;
         for (int i = st; i < ls; i++)
             if (data.data[0][0][0][i] > mx) {
                 mx = data.data[0][0][0][i];
-                snr = (mx-avr)/noise;
+                snr = (mx-avr)/noise - 3;
                 period = 2048 / double(i) * 0.0999424;
             }
     }

@@ -57,7 +57,6 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->groupBox->hide();
         ui->groupBox_4->hide();
 
-        ui->fourierLoaded->hide();
         fourierData.resize(500);
     } else {
         ui->groupBox_5->hide();
@@ -627,8 +626,8 @@ void Analytics::loadFourierData() {
 
     pulsarsEnabled.resize(pulsars->size());
 
-    ui->fourierLoaded->show();
     ui->fourierLoad->setDisabled(true);
+    ui->fourierLoad->setText("Data loaded");
     ui->currentFile->hide();
 
     ui->pulsarsTotal->setText(QString("Loaded %1 files").arg(fourierData[first].size()));
@@ -638,8 +637,11 @@ void Analytics::loadFourierData() {
 }
 
 void Analytics::actualFourierDataChanged() {
-    ui->fourierLoaded->hide();
     ui->fourierLoad->setEnabled(true);
+    ui->fourierLoad->setText("Load data");
+
+    int t = ui->fourierBlockNo->value() * 2048 * 0.0999424;
+    ui->fourierTime->setText(QTime(t / 3600, t / 60 % 60, t % 60).toString("HH:mm:ss"));
 }
 
 void Analytics::closeEvent(QCloseEvent *) {

@@ -381,9 +381,9 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLabel" name="fourierLoaded">
+       <widget class="QLabel" name="fourierTime">
         <property name="text">
-         <string>Data is loaded</string>
+         <string>00:00:00</string>
         </property>
        </widget>
       </item>

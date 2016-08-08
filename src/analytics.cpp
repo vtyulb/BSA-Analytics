@@ -520,7 +520,7 @@ void Analytics::loadFourierData() {
     for (int i = first; i <= last; i++) {
         QString currentPath = path + QString::number(i) + "/";
         QStringList names = QDir(currentPath).entryList();
-        for (int j = 0; j < names.size(); j++)
+        for (int j = 0; j < std::min(names.size(), ui->fourierFileNumber->value() + 2); j++)
             if (names[j] != "." && names[j] != "..") {
                 ui->progressBar->setValue(100 * j / names.size());
                 QApplication::processEvents();
@@ -586,7 +586,6 @@ void Analytics::loadFourierData() {
                     pl.nativeTime = time.addSecs(2048 * i * 0.0999424);
                     pulsars->push_back(pl);
                 }
-
         }
 
     std::sort(pulsars->data(), pulsars->data() + pulsars->size());

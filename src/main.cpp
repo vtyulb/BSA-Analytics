@@ -293,9 +293,6 @@ void pulsarEngine(int argc, char **argv) {
 
 int main(int argc, char *argv[])
 {
-//    FourierSearch::run("/home/vlad/host/res/311/");
-//    exit(0);
-
     if (argc > 1)
         pulsarEngine(argc, argv);
 

@@ -3,6 +3,7 @@
 
 #include <QDateTime>
 #include <QString>
+#include <QVector>
 
 struct Data {
     int npoints;
@@ -17,7 +18,7 @@ struct Data {
     QString name;
     double oneStep;
     double delta_lucha;
-    double *fbands;
+    QVector<double> fbands;
     double stairSize;
     double sigma;
 
@@ -40,7 +41,6 @@ struct Data {
             delete[] data[i];
 
         delete[] data;
-        delete[] fbands;
     }
 
     void halfRelease(int module, int ray) {
@@ -106,7 +106,7 @@ struct Data {
         stairSize = 0;
         releaseProtected = false;
         data = new float***[modules];
-        fbands = new double[channels];
+        fbands.resize(channels);
         for (int j = 0; j < modules; j++) {
             data[j] = new float**[channels];
             for (int i = 0; i < channels; i++) {

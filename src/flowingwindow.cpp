@@ -3,6 +3,8 @@
 #include <reader.h>
 #include <datadumper.h>
 
+#include <QDataStream>
+
 void FlowingWindow::run(QString input, QString output, QString number) {
     Reader r;
     Data data = r.readBinaryFile(input);
@@ -23,5 +25,6 @@ void FlowingWindow::run(QString input, QString output, QString number) {
 
     QFile f(output);
     f.open(QIODevice::WriteOnly);
-    DataDumper::dump(res, f);
+    QDataStream stream(&f);
+    DataDumper::dump(res, stream);
 }

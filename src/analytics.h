@@ -70,7 +70,8 @@ private:
 private slots:
     void apply();
     void init();
-    void loadFourierData();
+    void loadFourierData(bool cashOnly = false);
+    void calculateCashes();
 
     void actualFourierDataChanged();
 

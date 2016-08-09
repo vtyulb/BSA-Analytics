@@ -181,7 +181,8 @@ void FileSummator::run() {
     }
 
     printf("Dumping multifile to %s\n", name.toUtf8().constData());
-    DataDumper::dump(multifile, f);
+    QDataStream stream(&f);
+    DataDumper::dump(multifile, stream);
 }
 
 void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) {
@@ -298,7 +299,8 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     QDir().mkpath(cutterPath + "/" + QString::number(pieceNumber));
     QFile f(cutterPath + "/" + QString::number(pieceNumber) + "/" + QString::number(numberOfPieces[pieceNumber]) + ".pnt");
     f.open(QIODevice::WriteOnly);
-    DataDumper::dump(res, f, headerAddition);
+    QDataStream stream(&f);
+    DataDumper::dump(res, stream, headerAddition);
 
     res.releaseData();
 }

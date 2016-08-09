@@ -4,11 +4,12 @@
 #include <data.h>
 #include <startime.h>
 #include <math.h>
+#include <settings.h>
+
 #include <QString>
 #include <QVector>
 #include <QDataStream>
 #include <QVariant>
-#include <settings.h>
 
 const double INTERVAL = 17;
 const double MINIMUM_PERIOD = 0.5;
@@ -96,10 +97,12 @@ struct Pulsar {
 
         double noise = 0;
         for (int i = stt; i < lst; i++)
-            noise += pow(ns[i], 2);
+            noise += pow(ns[i] - avr, 2);
 
         noise /= (lst - stt);
         noise = pow(noise, 0.5);
+
+        noise *= 2;
 
         noiseLevel = noise;
 
@@ -185,6 +188,41 @@ struct Pulsar {
                     res = false;
 
         return !res;
+    }
+
+    void save(QDataStream &out) const {
+        out << data.npoints << data.modules << data.channels;
+        out << data.rays << data.time << data.previousLifeName;
+        out << data.name << data.oneStep << data.delta_lucha;
+        out << data.fbands << data.stairSize;
+        out << data.sigma << data.releaseProtected;
+        for (int i = 0; i < data.npoints; i++)
+            out << data.data[0][0][0][i];
+
+        out << module << ray << dispersion;
+        out << firstPoint << period << snr;
+        out << filtered << badNoiseKnown;
+        out << badNoiseRes << noiseLevel;
+        out << name << additionalData << valid;
+        out << nativeTime;
+    }
+
+    void load(QDataStream &in) {
+        in >> data.npoints >> data.modules >> data.channels;
+        in >> data.rays >> data.time >> data.previousLifeName;
+        in >> data.name >> data.oneStep >> data.delta_lucha;
+        in >> data.fbands >> data.stairSize;
+        in >> data.sigma >> data.releaseProtected;
+        data.init();
+        for (int i = 0; i < data.npoints; i++)
+            in >> data.data[0][0][0][i];
+
+        in >> module >> ray >> dispersion;
+        in >> firstPoint >> period >> snr;
+        in >> filtered >> badNoiseKnown;
+        in >> badNoiseRes >> noiseLevel;
+        in >> name >> additionalData >> valid;
+        in >> nativeTime;
     }
 };
 

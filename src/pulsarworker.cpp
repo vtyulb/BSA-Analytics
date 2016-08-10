@@ -344,8 +344,13 @@ void PulsarWorker::subtract(real *res, int size) {
     for (int i = 1; i <= size / 2; i++)
         b += res[size - i] / (size / 2);
 
+    double fp = (size / 2 - 1) / 2.0;
+    double sp = size - fp - 1;
+
+    double ar = (a - b) * sp / (sp - fp) + b;
+    double br = (b - a) * (size - fp) / (sp - fp) + a;
     for (int i = 0; i < size; i++)
-        res[i] -= (b - a) * i / size + a;
+        res[i] -= (br - ar) * i / size + ar;
 }
 
 void PulsarWorker::periodTesterWork(QVector<Pulsar> &p) {

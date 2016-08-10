@@ -111,7 +111,7 @@ struct Pulsar {
             if (data.data[0][0][0][i] > mx) {
                 mx = data.data[0][0][0][i];
                 snr = (mx-avr)/noise;
-                period = 2048 / double(i) * 0.0999424;
+                period = 2048 / double(i + 1) * 0.0999424;
             }
     }
 

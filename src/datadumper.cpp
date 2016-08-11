@@ -19,22 +19,24 @@ const char *header = "source      source\n"
                      "wbands      0.4150390625 0.4150390625 0.4150390625 0.4150390625 0.4150390625 0.4248046875\n"
                      "fbands      109.20751953125 109.62255859375 110.03759765625 110.45263671875 110.86767578125 111.28759765625\n";
 
-void DataDumper::dump(const Data &data, QDataStream &stream, QMap<QString, QString> headerAddition) {
-    stream << "numpar      ";
-    stream << QString::number(16 + headerAddition.size()).toUtf8();
-    stream << "\n";
+void DataDumper::dump(const Data &data, QFile &f, QMap<QString, QString> headerAddition) {
+    f.write("numpar      ");
+    f.write(QString::number(16 + headerAddition.size()).toUtf8());
+    f.write("\n");
 
-    QMap<QString, QString>::Iterator headIt = headerAddition.begin();
+    auto headIt = headerAddition.begin();
     for (int i = 0; i < headerAddition.size(); i++) {
-        stream << (headIt.key() + "\t" + headIt.value() + "\n").toUtf8();
+        f.write((headIt.key() + "\t" + headIt.value() + "\n").toUtf8());
         headIt++;
     }
 
-    stream << header;
-    stream << QString::asprintf("npoints     %d\n", data.npoints).toUtf8();
+    f.write(header);
+    f.write(QString::asprintf("npoints     %d\n", data.npoints).toUtf8());
     for (int i = 0; i < data.npoints; i++)
         for (int m = 0; m < data.modules; m++)
             for (int j = 0; j < data.rays; j++)
                 for (int k = 0; k < data.channels; k++)
-                    stream << (char*)(void*)&data.data[m][k][j][i], sizeof(float);
+                    f.write((char*)(void*)&data.data[m][k][j][i], sizeof(float));
+
+    f.close();
 }

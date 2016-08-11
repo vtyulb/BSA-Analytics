@@ -25,6 +25,5 @@ void FlowingWindow::run(QString input, QString output, QString number) {
 
     QFile f(output);
     f.open(QIODevice::WriteOnly);
-    QDataStream stream(&f);
-    DataDumper::dump(res, stream);
+    DataDumper::dump(res, f);
 }

@@ -109,11 +109,8 @@ void FileSummator::run() {
         if (path != "")
             continue;
 
-        goodSigma = -1;
-        sigmas.clear();
-
         if (fileNames.size())
-            printf("Running stage 1 of 2\n");
+            printf("\nRunning stage 1 of 2\n");
         stage = 1;
         for (int i = 0; i < fileNames.size(); i++) {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
@@ -123,10 +120,6 @@ void FileSummator::run() {
 
             data.releaseData();
         }
-
-        std::sort(sigmas.begin(), sigmas.end());
-
-        goodSigma = sigmas[sigmas.size() * 0.1];
 
         if (fileNames.size())
             printf("\nRunning stage 2 of 2\n");
@@ -181,8 +174,7 @@ void FileSummator::run() {
     }
 
     printf("Dumping multifile to %s\n", name.toUtf8().constData());
-    QDataStream stream(&f);
-    DataDumper::dump(multifile, stream);
+    DataDumper::dump(multifile, f);
 }
 
 void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) {
@@ -280,6 +272,9 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
 
     Data res = data;
     res.npoints = CuttingPC;
+//    res.modules = 1;
+//    res.channels = 1;
+//    res.rays = 1;
     res.fork();
 
     double realSeconds;
@@ -299,8 +294,6 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     QDir().mkpath(cutterPath + "/" + QString::number(pieceNumber));
     QFile f(cutterPath + "/" + QString::number(pieceNumber) + "/" + QString::number(numberOfPieces[pieceNumber]) + ".pnt");
     f.open(QIODevice::WriteOnly);
-    QDataStream stream(&f);
-    DataDumper::dump(res, stream, headerAddition);
-
+    DataDumper::dump(res, f, headerAddition);
     res.releaseData();
 }

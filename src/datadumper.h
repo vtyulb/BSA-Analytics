@@ -10,7 +10,7 @@
 class DataDumper
 {
 public:
-    static void dump(const Data &data, QDataStream &stream, QMap<QString, QString> headerAddition = QMap<QString, QString>());
+    static void dump(const Data &data, QFile &f, QMap<QString, QString> headerAddition = QMap<QString, QString>());
 
 private:
     DataDumper() {};

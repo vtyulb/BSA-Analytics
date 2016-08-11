@@ -18,8 +18,6 @@ private:
     void processData(Data &data, Data &multifile, Data &coefficients);
     void dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber);
 
-    QVector<float> sigmas;
-    float goodSigma;
     int stage;
     int PC;
     QString cutterPath;

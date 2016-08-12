@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QVector>
+#include <QTime>
 #include <pulsar.h>
 
 namespace Ui {
@@ -22,6 +23,7 @@ class PulsarList : public QWidget
         Pulsars pulsars;
 
         void closeEvent(QCloseEvent*);
+        QString getJName(int module, int ray, QTime time);
 
     private slots:
         void selectionChanged();

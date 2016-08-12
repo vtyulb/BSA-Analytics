@@ -30,7 +30,7 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
     header << "time" << "module" << "ray" << "dispersion" << "period" << "snr";
     ui->tableWidget->setHorizontalHeaderLabels(header);
     for (int i = 0; i < pulsars->size(); i++) {
-        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(pulsars->at(i).nativeTime.toString("hh:mm:ss")));
+        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(getJName(pulsars->at(i).module, pulsars->at(i).ray, pulsars->at(i).nativeTime)));
         ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(pulsars->at(i).module)));
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(pulsars->at(i).ray)));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(pulsars->at(i).dispersion)));
@@ -55,6 +55,21 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
 
     restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
     show();
+}
+
+QString PulsarList::getJName(int module, int ray, QTime time) {
+    module--;
+    ray--;
+    char *degree[6][8] = {
+        {"4213", "4172", "4131", "4089", "4047", "4006", "3964", "3923"},
+        {"3879", "3838", "3795", "3754", "3711", "3669", "3626", "3585"},
+        {"3540", "3497", "3454", "3412", "3369", "3325", "3282", "3238"},
+        {"3194", "3150", "3106", "3061", "3017", "2973", "2929", "2884"},
+        {"2837", "2792", "2747", "2701", "2656", "2610", "2564", "2518"},
+        {"2470", "2423", "2376", "2329", "2281", "2234", "2186", "2138"}
+    };
+
+    return "j" + time.toString("HHmm") + "+" + degree[module][ray];
 }
 
 void PulsarList::closeEvent(QCloseEvent *) {

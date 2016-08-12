@@ -24,7 +24,7 @@ void DataDumper::dump(const Data &data, QFile &f, QMap<QString, QString> headerA
     f.write(QString::number(16 + headerAddition.size()).toUtf8());
     f.write("\n");
 
-    auto headIt = headerAddition.begin();
+    QMap<QString, QString>::Iterator headIt = headerAddition.begin();
     for (int i = 0; i < headerAddition.size(); i++) {
         f.write((headIt.key() + "\t" + headIt.value() + "\n").toUtf8());
         headIt++;

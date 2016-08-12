@@ -179,6 +179,9 @@ void FileSummator::run() {
 
 void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) {
     // Hello pulsarworker::clearAveraNge(), i know you are here
+
+    QVector<float> buf(data.npoints);
+
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++)
           {
@@ -187,25 +190,16 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                 for (int i = 0; i < data.npoints; i += step)
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
 
+                for (int i = 0; i < data.npoints; i++)
+                    buf[i] = data.data[module][channel][ray][i];
+
+                std::sort(buf.begin(), buf.end());
+
                 double noise = 0;
-                for (int i = 0; i < data.npoints; i++)
+                for (int i = data.npoints * 0.2; i < data.npoints * 0.8; i++)
                     noise += pow(data.data[module][channel][ray][i], 2);
 
-                noise /= data.npoints;
-                noise = pow(noise, 0.5);
-
-                /*if (goodSigma < 0) {
-                    sigmas.push_back(noise);
-                    continue;
-                } else if (noise < goodSigma)
-                    continue;*/
-
-
-                noise = 0;
-                for (int i = 0; i < data.npoints; i++)
-                    noise += pow(data.data[module][channel][ray][i], 2);
-
-                noise /= data.npoints;
+                noise /= data.npoints * 0.8 - data.npoints * 0.2;
                 noise = pow(noise, 0.5);
 
                 const int maximumNoise = 4;

@@ -69,7 +69,7 @@ QString PulsarList::getJName(int module, int ray, QTime time) {
         {"2470", "2423", "2376", "2329", "2281", "2234", "2186", "2138"}
     };
 
-    return "j" + time.toString("HHmm") + "+" + degree[module][ray];
+    return "J" + time.toString("HHmm") + "+" + degree[module][ray];
 }
 
 void PulsarList::closeEvent(QCloseEvent *) {

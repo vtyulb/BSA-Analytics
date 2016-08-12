@@ -186,10 +186,10 @@ void Analytics::apply() {
     if (ui->multiplePicks->isChecked())
         applyMultiplePicksFilter();
 
-    if (ui->knownPulsars->isChecked() && ui->knownPulsars->isEnabled())
+    if (ui->knownPulsars->isChecked() && !fourier)
         applyKnownPulsarsFilter();
 
-    if (ui->knownNoise->isChecked() && ui->knownNoise->isEnabled())
+    if (ui->knownNoise->isChecked() && !fourier)
         applyKnownNoiseFilter();
 
     if (ui->differentNoise->isChecked())

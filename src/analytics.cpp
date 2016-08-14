@@ -61,6 +61,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         fourierData.resize(500);
     } else {
         ui->groupBox_5->hide();
+        ui->groupBox_6->hide();
     }
 
     QSettings s;
@@ -165,6 +166,7 @@ void Analytics::apply() {
     ui->progressBar->show();
 
     loadKnownPulsars();
+    applyFourierFilters();
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] = true;
 
@@ -553,15 +555,15 @@ void Analytics::loadFourierData(bool cashOnly) {
                 }
         }
 
-        QVector<float> summ[6][8];
         for (int i = 0; i < 6; i++)
             for (int j = 0; j < 8; j++) {
-                summ[i][j].resize(1024);
-                summ[i][j].fill(0);
+                fourierSumm[i][j].resize(1024);
+                fourierSumm[i][j].fill(0);
             }
 
 
         ui->currentFile->setText("Running fourier");
+        QVector<double> fourierNoises[6][8];
 
         for (int i = 0; i < fourierData.size(); i++)
             for (int j = 0; j < fourierData[i].size(); j++) {
@@ -588,60 +590,66 @@ void Analytics::loadFourierData(bool cashOnly) {
                         for (int k = 0; k < 1024; k++)
                             data.data[0][0][0][k] = dt[k];
 
-                        for (int k = 0; k < 1024; k++)
-                            summ[module][ray][k] += dt[k];
-
                         Pulsar pl;
                         pl.module = module + 1;
                         pl.ray = ray + 1;
-                        pl.snr = 666;
+                        pl.snr = -666;
                         pl.filtered = true;
                         pl.data = data;
                         pl.valid = true;
-                        pl.findFourierData();
+                        pl.findFourierData(ui->fourierPointsToSkip->value());
                         QTime time(0, 0, 0);
                         pl.nativeTime = time.addSecs(2048 * i * 0.0999424);
                         pulsars->push_back(pl);
+
+                        fourierNoises[module][ray].push_back(pl.noiseLevel);
                     }
             }
 
-        std::sort(pulsars->data(), pulsars->data() + pulsars->size());
+        for (int module = 0; module < 6; module++)
+            for (int ray = 0; ray < 8; ray++)
+                std::sort(fourierNoises[module][ray].begin(), fourierNoises[module][ray].end());
 
-        for (int module = 5; module >= 0; module--)
-            for (int ray = 7; ray >= 0; ray--) {
-                Data data;
-                data.npoints = 1024;
-                data.modules = 1;
-                data.rays = 1;
-                data.channels = 1;
-                data.init();
-                data.releaseProtected = true;
-                memcpy(data.data[0][0][0], summ[module][ray].constData(), sizeof(float) * 1024);
-
-
-                Pulsar pl;
-                pl.module = module + 1;
-                pl.ray = ray + 1;
-                pl.snr = 666;
-                pl.filtered = false;
-                pl.data = data;
-                pl.valid = true;
-                pl.findFourierData();
-                if (pulsars->size())
-                    pl.nativeTime = pulsars->last().nativeTime;
-                pulsars->push_front(pl);
-            }
-
-        QDir().mkpath(cashPath);
-        QFile f(cashFile);
-        if (f.open(QIODevice::WriteOnly)) {
-            QDataStream s(&f);
-            for (int i = 0; i < 48; i++)
-                pulsars->at(i).save(s);
+        for (int i = 0; i < pulsars->size(); i++) {
+            int module = pulsars->at(i).module - 1;
+            int ray = pulsars->at(i).ray - 1;
+            double avNoise = fourierNoises[module][ray].at(fourierNoises[module][ray].size() / 2);
+            if (pulsars->at(i).noiseLevel > avNoise * 1.3)
+                (*pulsars)[i].snr = -42;
         }
 
-        f.close();
+        int currentPulsar = 0;
+        ui->currentFile->setText("Summation");
+        for (int i = 0; i < fourierData.size(); i++)
+            for (int j = 0; j < fourierData[i].size(); j++) {
+                ui->progressBar->setValue(100 * j / fourierData[i].size());
 
+                for (int module = 0; module < 6; module++)
+                    for (int ray = 0; ray < 8; ray++) {
+                        if (!ui->fourierGoodLookingSpectresOnly->isChecked() || pulsars->at(currentPulsar).snr > 0) {
+                            for (int k = 0; k < 1024; k++)
+                                fourierSumm[module][ray][k] += pulsars->at(currentPulsar).data.data[0][0][0][k];
+                        }
+
+                        currentPulsar++;
+                    }
+           }
+
+        std::sort(pulsars->data(), pulsars->data() + pulsars->size());
+
+        applyFourierFilters();
+
+        if (cashOnly || ui->fourierCashResult->isChecked()) {
+            QDir().mkpath(cashPath);
+            QFile f(cashFile);
+            if (f.open(QIODevice::WriteOnly)) {
+                QDataStream s(&f);
+                for (int i = 0; i < 48; i++)
+                    pulsars->at(i).save(s);
+            }
+
+            f.close();
+        }
     }
 
     pulsarsEnabled.resize(pulsars->size());
@@ -663,6 +671,59 @@ void Analytics::actualFourierDataChanged() {
 
     int t = ui->fourierBlockNo->value() * 2048 * 0.0999424;
     ui->fourierTime->setText(QTime(t / 3600, t / 60 % 60, t % 60).toString("HH:mm:ss"));
+}
+
+void Analytics::applyFourierFilters() {
+    QVector<Pulsar>::Iterator end, start = pulsars->begin();
+    end = start;
+    while (end != pulsars->end() && end->filtered == false)
+        end++;
+
+    pulsars->erase(start, end);
+
+    for (int module = 5; module >= 0; module--)
+        for (int ray = 7; ray >= 0; ray--) {
+            Data data;
+            data.npoints = 1024;
+            data.modules = 1;
+            data.rays = 1;
+            data.channels = 1;
+            data.init();
+            data.releaseProtected = true;
+            memcpy(data.data[0][0][0], fourierSumm[module][ray].constData(), sizeof(float) * 1024);
+
+
+            Pulsar pl;
+            pl.module = module + 1;
+            pl.ray = ray + 1;
+            pl.snr = -666;
+            pl.filtered = false;
+            pl.data = data;
+            pl.valid = true;
+            if (pulsars->size())
+                pl.nativeTime = pulsars->last().nativeTime;
+
+            pl.findFourierData(ui->fourierPointsToSkip->value());
+            pl.data.sigma = pl.firstPoint;
+            pulsars->push_front(pl);
+
+            if (ui->fourierAllPeaks->isChecked())
+                while (pl.snr > std::max(ui->SNR->value(), 5.0)) {
+                    pl.data.fork();
+                    pl.data.releaseProtected = true;
+                    pl.snr = -777;
+                    pl.findFourierData(pl.firstPoint + 3);
+                    pl.data.sigma = pl.firstPoint;
+                    if (pl.snr > 0)
+                        pulsars->push_front(pl);
+                    else {
+                        pl.data.releaseProtected = false;
+                        pl.data.releaseData();
+                    }
+                }
+        }
+
+    pulsarsEnabled.resize(pulsars->size());
 }
 
 void Analytics::calculateCashes() {

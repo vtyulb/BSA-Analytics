@@ -41,6 +41,8 @@ private:
     QVector<KnownPulsar> knownPulsars;
     QVector<QString> fileNames;
     QVector<QVector<Data> > fourierData;
+    QVector<float> fourierSumm[6][8];
+
 
     void loadPulsars(QString);
 
@@ -72,6 +74,7 @@ private slots:
     void init();
     void loadFourierData(bool cashOnly = false);
     void calculateCashes();
+    void applyFourierFilters();
 
     void actualFourierDataChanged();
 

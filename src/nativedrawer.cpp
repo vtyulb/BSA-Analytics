@@ -110,6 +110,9 @@ void NativeDrawer::nativePaint(bool forPrinter) {
         }
     }
 
+    if (Settings::settings()->fourierAnalytics())
+        fourierDraw(p);
+
     if (data.sigma > 0) {
 //        p.setPen(QColor("blue"));
 //        p.drawLine(mirr(newCoord(0, data.sigma)), mirr(newCoord(width(), data.sigma)));
@@ -127,6 +130,33 @@ void NativeDrawer::nativePaint(bool forPrinter) {
 
     drawing.unlock();
     repaint();
+}
+
+void NativeDrawer::fourierDraw(QPainter &p) {
+    int original = data.sigma - 0.5;
+    if (original > 5)
+        for (int harmonic = 1; harmonic <= 4; harmonic++) {
+            int point = original * harmonic;
+            if (point > 1020)
+                break;
+            QPoint peak = mirr(newCoord(point, data.data[0][0][0][point]));
+            QPoint up = peak;
+            peak.setY(peak.y() - 15);
+            up.setY(0);
+            QPoint left = peak;
+            left.setY(left.y() - 15);
+            QPoint right = left;
+            left.setX(left.x() - 7);
+            right.setX(right.x() + 7);
+
+            p.setPen(QPen(QBrush("blue"), 2));
+            if (harmonic != 1) {
+                p.setPen(QPen(QBrush("lightblue"), 1));
+            }
+            p.drawLine(up, peak);
+            p.drawLine(left, peak);
+            p.drawLine(right, peak);
+        }
 }
 
 void NativeDrawer::resetVisibleRectangle(bool repaint, bool resetLeftRight) {
@@ -296,8 +326,8 @@ void NativeDrawer::drawAxes() {
     p.setPen(QPen(QColor("white")));
     p.setBrush(QBrush(QColor("white")));
     p.drawRect(0, 0, 46, art->height());
-    p.drawRect(0, 0, art->width(), 25);
-    p.drawRect(0, height() - 34, art->width(), height());
+    p.drawRect(0, 0, art->width(), 10);
+    p.drawRect(0, height() - 15, art->width(), height());
     p.drawRect(art->width() - 25, 0, art->width(), art->height());
 
     p.setPen(QColor("black"));

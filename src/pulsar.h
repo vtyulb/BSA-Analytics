@@ -82,9 +82,9 @@ struct Pulsar {
         stream << QVariant(d.toList());
     }
 
-    void findFourierData() {
+    void findFourierData(int startPoint) {
         int st = 50;
-        int ls = 1024;
+        int ls = 1023;
         QVector<float> ns;
         for (int i = st; i < ls; i++)
             ns.push_back(data.data[0][0][0][i]);
@@ -104,14 +104,24 @@ struct Pulsar {
 
         noise *= 2;
 
-        noiseLevel = noise;
+        noiseLevel = 0;
+        for (int i = 0; i < 1024; i++)
+            noiseLevel += pow(data.data[0][0][0][i], 2);
+        noiseLevel /= 1024;
+        noiseLevel = pow(noiseLevel, 0.5);
+
+        dispersion = noiseLevel * 1000000;
 
         float mx = 0;
-        for (int i = st; i < ls; i++)
+        for (int i = startPoint; i < ls; i++)
             if (data.data[0][0][0][i] > mx) {
                 mx = data.data[0][0][0][i];
                 snr = (mx-avr)/noise;
+                firstPoint = i + 1;
                 period = 2048 / double(i + 1) * 0.0999424;
+
+                if (snr > 5 && data.data[0][0][0][i + 1] < mx)
+                    break;
             }
     }
 

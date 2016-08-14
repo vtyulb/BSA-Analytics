@@ -68,6 +68,7 @@ private:
     int minimum(int, int);
 
     void sourceDetect(int, int);
+    void fourierDraw(QPainter &p);
 
     QPoint mirr(QPoint);
 

@@ -60,7 +60,7 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
 QString PulsarList::getJName(int module, int ray, QTime time) {
     module--;
     ray--;
-    char *degree[6][8] = {
+    static char *degree[6][8] = {
         {"4213", "4172", "4131", "4089", "4047", "4006", "3964", "3923"},
         {"3879", "3838", "3795", "3754", "3711", "3669", "3626", "3585"},
         {"3540", "3497", "3454", "3412", "3369", "3325", "3282", "3238"},
@@ -69,7 +69,11 @@ QString PulsarList::getJName(int module, int ray, QTime time) {
         {"2470", "2423", "2376", "2329", "2281", "2234", "2186", "2138"}
     };
 
-    return "J" + time.toString("HHmm") + "+" + degree[module][ray];
+    QString numb = degree[module][ray];
+    int minutes = numb.right(2).toInt();
+    minutes = minutes * 60 / 100;
+
+    return "J" + time.toString("HHmm") + "+" + numb.left(2) + QString::number(minutes / 10) + QString::number(minutes % 10);
 }
 
 void PulsarList::closeEvent(QCloseEvent *) {

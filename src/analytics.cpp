@@ -555,13 +555,6 @@ void Analytics::loadFourierData(bool cashOnly) {
                 }
         }
 
-        for (int i = 0; i < 6; i++)
-            for (int j = 0; j < 8; j++) {
-                fourierSumm[i][j].resize(1024);
-                fourierSumm[i][j].fill(0);
-            }
-
-
         ui->currentFile->setText("Running fourier");
         QVector<double> fourierNoises[6][8];
 
@@ -618,23 +611,6 @@ void Analytics::loadFourierData(bool cashOnly) {
                 (*pulsars)[i].snr = -42;
         }
 
-        int currentPulsar = 0;
-        ui->currentFile->setText("Summation");
-        for (int i = 0; i < fourierData.size(); i++)
-            for (int j = 0; j < fourierData[i].size(); j++) {
-                ui->progressBar->setValue(100 * j / fourierData[i].size());
-
-                for (int module = 0; module < 6; module++)
-                    for (int ray = 0; ray < 8; ray++) {
-                        if (!ui->fourierGoodLookingSpectresOnly->isChecked() || pulsars->at(currentPulsar).snr > 0) {
-                            for (int k = 0; k < 1024; k++)
-                                fourierSumm[module][ray][k] += pulsars->at(currentPulsar).data.data[0][0][0][k];
-                        }
-
-                        currentPulsar++;
-                    }
-           }
-
         std::sort(pulsars->data(), pulsars->data() + pulsars->size());
 
         applyFourierFilters();
@@ -680,6 +656,40 @@ void Analytics::applyFourierFilters() {
         end++;
 
     pulsars->erase(start, end);
+
+    for (int i = 0; i < 6; i++)
+        for (int j = 0; j < 8; j++) {
+            fourierSumm[i][j].resize(1024);
+            fourierSumm[i][j].fill(0);
+        }
+
+    QVector<bool> good(pulsars->size(), !ui->fourierPeak->isChecked());
+
+    if (ui->fourierPeak->isChecked()) {
+        int start = 2048/ui->fourierPeakTo->value()*0.0999424;
+        int end = 2048/ui->fourierPeakFrom->value()*0.0999424;
+        for (int i = 0; i < pulsars->size(); i++) {
+            for (int j = start; j < end; j++)
+                if ((pulsars->at(i).data.data[0][0][0][j] - pulsars->at(i).fourierAverage) / pulsars->at(i).fourierRealNoise > ui->fourierPeakSNR->value())
+                    good[i] = true;
+        }
+    }
+
+    for (int i = 0; i < pulsars->size(); i++) {
+        if (ui->fourierPeak->isChecked())
+            (*pulsars)[i].dispersion = 0;
+
+        if ((!ui->fourierGoodLookingSpectresOnly->isChecked() || pulsars->at(i).snr > 0) && good[i]) {
+            int module = pulsars->at(i).module - 1;
+            int ray = pulsars->at(i).ray - 1;
+            for (int k = 0; k < 1024; k++)
+                fourierSumm[module][ray][k] += pulsars->at(i).data.data[0][0][0][k];
+
+
+            if (ui->fourierPeak->isChecked())
+                (*pulsars)[i].dispersion = (int)good[i];
+        }
+    }
 
     for (int module = 5; module >= 0; module--)
         for (int ray = 7; ray >= 0; ray--) {

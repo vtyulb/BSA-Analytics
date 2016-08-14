@@ -35,6 +35,9 @@ struct Pulsar {
 
     double noiseLevel;
 
+    double fourierRealNoise;
+    float fourierAverage;
+
     QString name; // file, not a pulsar :-)
     QByteArray additionalData;
     bool valid;
@@ -103,6 +106,9 @@ struct Pulsar {
         noise = pow(noise, 0.5);
 
         noise *= 2;
+
+        fourierRealNoise = noise;
+        fourierAverage = avr;
 
         noiseLevel = 0;
         for (int i = 0; i < 1024; i++)

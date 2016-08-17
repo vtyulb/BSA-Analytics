@@ -536,7 +536,7 @@ void Analytics::loadFourierData(bool cashOnly) {
         QFile cash(cashFile);
         cash.open(QIODevice::ReadOnly);
         QDataStream stream(&cash);
-        for (int i = 0; i < 48; i++) {
+        while (!stream.atEnd()) {
             Pulsar p;
             p.load(stream);
             p.data.releaseProtected = true;
@@ -620,8 +620,9 @@ void Analytics::loadFourierData(bool cashOnly) {
             QFile f(cashFile);
             if (f.open(QIODevice::WriteOnly)) {
                 QDataStream s(&f);
-                for (int i = 0; i < 48; i++)
-                    pulsars->at(i).save(s);
+                for (int i = 0; i < pulsars->size(); i++)
+                    if (!pulsars->at(i).filtered)
+                        pulsars->at(i).save(s);
             }
 
             f.close();
@@ -650,6 +651,9 @@ void Analytics::actualFourierDataChanged() {
 }
 
 void Analytics::applyFourierFilters() {
+    if (ui->fourierCashOnly->isChecked())
+        return;
+
     QVector<Pulsar>::Iterator end, start = pulsars->begin();
     end = start;
     while (end != pulsars->end() && end->filtered == false)

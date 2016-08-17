@@ -229,7 +229,9 @@ struct Pulsar {
         in >> data.name >> data.oneStep >> data.delta_lucha;
         in >> data.fbands >> data.stairSize;
         in >> data.sigma >> data.releaseProtected;
+        double sg = data.sigma;
         data.init();
+        data.sigma = sg;
         for (int i = 0; i < data.npoints; i++)
             in >> data.data[0][0][0][i];
 

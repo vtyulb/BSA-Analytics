@@ -57,6 +57,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->groupBox_2->hide();
         ui->groupBox->hide();
         ui->groupBox_4->hide();
+        ui->fileNames->hide();
 
         fourierData.resize(500);
     } else {
@@ -546,8 +547,9 @@ void Analytics::loadFourierData(bool cashOnly) {
         for (int i = first; i <= last; i++) {
             QString currentPath = path + QString::number(i) + "/";
             QStringList names = QDir(currentPath).entryList();
-            for (int j = 0; j < std::min(names.size(), ui->fourierFileNumber->value() + 2); j++)
-                if (names[j] != "." && names[j] != ".." && names[j].endsWith(".pnt")) {
+            parseFourierAllowedNames();
+            for (int j = 0; j < names.size(); j++)
+                if (fourierAllowedNames.contains(names[j])) {
                     ui->progressBar->setValue(100 * j / names.size());
                     QApplication::processEvents();
 
@@ -571,7 +573,7 @@ void Analytics::loadFourierData(bool cashOnly) {
                         data.channels = 1;
                         data.init();
                         data.releaseProtected = true;
-                        data.previousLifeName = "file " + QString::number(j) + ".pnt" + " from " + fourierData[i][j].previousLifeName;
+                        data.previousLifeName = "file " + fourierData[i][j].name + " from " + fourierData[i][j].previousLifeName;
 
                         QVector<float> dt(1024, 0);
                         for (int channel = 0; channel < 6; channel++) {
@@ -759,6 +761,27 @@ void Analytics::calculateCashes() {
     }
 
     ui->fourierCalculateCashes->setText("Calculate cashes");
+}
+
+void Analytics::parseFourierAllowedNames() {
+    QString data = ui->fourierAllowedNames->document()->toPlainText();
+    data.replace('-', ' ');
+    data.replace('\n', ' ');
+    fourierAllowedNames.clear();
+    QTextStream stream(&data);
+    while (!stream.atEnd()) {
+        int a, b;
+        stream >> a >> b;
+        if (a < 0)
+            a = 0;
+        if (b > 2000)
+            b = 2000;
+
+        for (int i = a; i <= b; i++)
+            fourierAllowedNames << QString::number(i) + ".pnt";
+    }
+    for (auto i = fourierAllowedNames.begin(); i != fourierAllowedNames.end(); i++)
+        qDebug() << *i;
 }
 
 void Analytics::closeEvent(QCloseEvent *) {

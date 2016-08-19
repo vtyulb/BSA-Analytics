@@ -2,6 +2,8 @@
 #define ANALYTICS_H
 
 #include <QWidget>
+#include <QSet>
+
 #include <pulsar.h>
 #include <pulsarlist.h>
 #include <mainwindow.h>
@@ -42,7 +44,9 @@ private:
     QVector<QString> fileNames;
     QVector<QVector<Data> > fourierData;
     QVector<float> fourierSumm[6][8];
+    QSet<QString> fourierAllowedNames;
 
+    void parseFourierAllowedNames();
 
     void loadPulsars(QString);
 

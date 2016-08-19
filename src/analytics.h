@@ -42,8 +42,9 @@ private:
 
     QVector<KnownPulsar> knownPulsars;
     QVector<QString> fileNames;
-    QVector<QVector<Data> > fourierData;
+    QVector<Data> fourierData;
     QVector<float> fourierSumm[6][8];
+    QVector<double> fourierRawNoises[6][8];
     QSet<QString> fourierAllowedNames;
 
     void parseFourierAllowedNames();

@@ -15,6 +15,8 @@ Settings::Settings() {
     _longRoads = false;
     _periodTester = false;
     _fourierAnalytics = false;
+    _fourierStepConstant = 0.1;
+    _fourierSpectreSize = 1024;
     bar = NULL;
 }
 
@@ -232,4 +234,20 @@ void Settings::setFourierAnalytics(bool b) {
 
 bool Settings::fourierAnalytics() {
     return _fourierAnalytics;
+}
+
+void Settings::setFourierStepConstant(double d) {
+    _fourierStepConstant = d;
+}
+
+double Settings::getFourierStepConstant() {
+    return _fourierStepConstant;
+}
+
+void Settings::setFourierSpectreSize(int a) {
+    _fourierSpectreSize = a;
+}
+
+int Settings::getFourierSpectreSize() {
+    return _fourierSpectreSize;
 }

@@ -92,7 +92,7 @@ void NativeDrawer::nativePaint(bool forPrinter) {
             if (live)
                 repaint();
 
-        emit progress(5000000*k/data.npoints);
+        emit progress(5000000*k/(data.npoints + 1));
 
 
         for (int j = 0; j < rays; j++) {
@@ -137,7 +137,7 @@ void NativeDrawer::fourierDraw(QPainter &p) {
     if (original > 5)
         for (int harmonic = 1; harmonic <= 4; harmonic++) {
             int point = original * harmonic;
-            if (point > 1020)
+            if (point > Settings::settings()->getFourierSpectreSize() - 5)
                 break;
             QPoint peak = mirr(newCoord(point, data.data[0][0][0][point]));
             QPoint up = peak;

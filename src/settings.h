@@ -32,6 +32,8 @@ class Settings {
         int ray();
         double period();
         bool fourierAnalytics();
+        double getFourierStepConstant();
+        int getFourierSpectreSize();
 
         double getStairHeight(int module, int ray, int channel);
         bool sourceMode();
@@ -61,6 +63,8 @@ class Settings {
         void setLastData(const Data&);
         void setLongRoads(bool);
         void setFourierAnalytics(bool);
+        void setFourierStepConstant(double);
+        void setFourierSpectreSize(int);
 
     private:
         Settings();
@@ -84,6 +88,8 @@ class Settings {
         double _period;
         int _dispersion;
         bool _fourierAnalytics;
+        double _fourierStepConstant;
+        int _fourierSpectreSize;
         QVector<double> dispersionPlotData;
         QVector<QVector<QVector<double> > > stairs;
         Data _lastData;

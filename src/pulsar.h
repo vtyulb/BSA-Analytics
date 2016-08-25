@@ -87,7 +87,7 @@ struct Pulsar {
 
     void findFourierData(int startPoint) {
         int st = 50;
-        int ls = 1023;
+        int ls = Settings::settings()->getFourierSpectreSize() - 1;
         QVector<float> ns;
         for (int i = st; i < ls; i++)
             ns.push_back(data.data[0][0][0][i]);
@@ -111,9 +111,9 @@ struct Pulsar {
         fourierAverage = avr;
 
         noiseLevel = 0;
-        for (int i = 0; i < 1024; i++)
+        for (int i = 0; i < Settings::settings()->getFourierSpectreSize(); i++)
             noiseLevel += pow(data.data[0][0][0][i], 2);
-        noiseLevel /= 1024;
+        noiseLevel /= Settings::settings()->getFourierSpectreSize();
         noiseLevel = pow(noiseLevel, 0.5);
 
         dispersion = noiseLevel * 1000000;
@@ -124,7 +124,7 @@ struct Pulsar {
                 mx = data.data[0][0][0][i];
                 snr = (mx-avr)/noise;
                 firstPoint = i + 1;
-                period = 2048 / double(i + 1) * 0.0999424;
+                period = Settings::settings()->getFourierSpectreSize() * 2 / double(i + 1) * Settings::settings()->getFourierStepConstant();
 
                 if (snr > 5 && data.data[0][0][0][i + 1] < mx)
                     break;

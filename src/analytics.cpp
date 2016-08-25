@@ -553,6 +553,18 @@ void Analytics::loadFourierData(bool cashOnly) {
                 QApplication::processEvents();
 
                 fourierData.push_back(Reader().readBinaryFile(currentPath + names[j]));
+                if (fourierData[0].previousLifeName.endsWith(".pnthr")) {
+                    Settings::settings()->setFourierStepConstant(0.0124928);
+                    Settings::settings()->setFourierSpectreSize(8192);
+                    fourierSpectreSize = 8192;
+                    longData = true;
+                } else {
+                    Settings::settings()->setFourierStepConstant(0.0999424);
+                    Settings::settings()->setFourierSpectreSize(1024);
+                    fourierSpectreSize = 1024;
+                    longData = false;
+                }
+
                 for (int module = 0; module < 6; module++)
                     for (int ray = 0; ray < 8; ray++) {
                         double noise = 0;
@@ -579,7 +591,7 @@ void Analytics::loadFourierData(bool cashOnly) {
             for (int module = 0; module < 6; module++)
                 for (int ray = 0; ray < 8; ray++) {
                     Data data;
-                    data.npoints = 1024;
+                    data.npoints = fourierSpectreSize;
                     data.modules = 1;
                     data.rays = 1;
                     data.channels = 1;
@@ -588,15 +600,19 @@ void Analytics::loadFourierData(bool cashOnly) {
                     data.previousLifeName = "file " + fourierData[j].name + " from " + fourierData[j].previousLifeName;
                     data.sigma = fourierData[j].sigma;
 
-                    QVector<float> dt(1024, 0);
-                    for (int channel = 0; channel < 6; channel++) {
-                        Fourier::FFTAnalysis(fourierData[j].data[module][channel][ray], data.data[0][0][0], 2048, 1024);
-                        for (int k = 0; k < 1024; k++)
-                            dt[k] += data.data[0][0][0][k];
-                    }
+                    if (longData) {
+                        memcpy(data.data[0][0][0], fourierData[j].data[module][0][ray], sizeof(float) * fourierSpectreSize);
+                    } else {
+                        QVector<float> dt(fourierSpectreSize, 0);
+                        for (int channel = 0; channel < 6; channel++) {
+                            Fourier::FFTAnalysis(fourierData[j].data[module][channel][ray], data.data[0][0][0], fourierSpectreSize * 2, fourierSpectreSize);
+                            for (int k = 0; k < fourierSpectreSize; k++)
+                                dt[k] += data.data[0][0][0][k];
+                        }
 
-                    for (int k = 0; k < 1024; k++)
-                        data.data[0][0][0][k] = dt[k];
+                        for (int k = 0; k < fourierSpectreSize; k++)
+                            data.data[0][0][0][k] = dt[k];
+                    }
 
                     Pulsar pl;
                     pl.module = module + 1;
@@ -607,7 +623,7 @@ void Analytics::loadFourierData(bool cashOnly) {
                     pl.valid = true;
                     pl.findFourierData(ui->fourierPointsToSkip->value());
                     QTime time(0, 0, 0);
-                    pl.nativeTime = time.addSecs(2048 * blockNumber * 0.0999424);
+                    pl.nativeTime = time.addSecs(fourierSpectreSize * 2 * blockNumber * Settings::settings()->getFourierStepConstant());
                     pulsars->push_back(pl);
 
                     if (pl.snr < -660)
@@ -664,7 +680,7 @@ void Analytics::actualFourierDataChanged() {
     ui->fourierLoad->setEnabled(true);
     ui->fourierLoad->setText("Load data");
 
-    int t = ui->fourierBlockNo->value() * 2048 * 0.0999424;
+    int t = ui->fourierBlockNo->value() * fourierSpectreSize * 2 * Settings::settings()->getFourierStepConstant();
     ui->fourierTime->setText(QTime(t / 3600, t / 60 % 60, t % 60).toString("HH:mm:ss"));
 }
 
@@ -681,15 +697,15 @@ void Analytics::applyFourierFilters() {
 
     for (int i = 0; i < 6; i++)
         for (int j = 0; j < 8; j++) {
-            fourierSumm[i][j].resize(1024);
+            fourierSumm[i][j].resize(fourierSpectreSize);
             fourierSumm[i][j].fill(0);
         }
 
     QVector<bool> good(pulsars->size(), !ui->fourierPeak->isChecked());
 
     if (ui->fourierPeak->isChecked()) {
-        int start = 2048/ui->fourierPeakTo->value()*0.0999424;
-        int end = 2048/ui->fourierPeakFrom->value()*0.0999424;
+        int start = fourierSpectreSize * 2 / ui->fourierPeakTo->value()*Settings::settings()->getFourierStepConstant();
+        int end = fourierSpectreSize * 2 / ui->fourierPeakFrom->value()*Settings::settings()->getFourierStepConstant();
         for (int i = 0; i < pulsars->size(); i++) {
             for (int j = start; j < end; j++)
                 if ((pulsars->at(i).data.data[0][0][0][j] - pulsars->at(i).fourierAverage) / pulsars->at(i).fourierRealNoise > ui->fourierPeakSNR->value())
@@ -725,7 +741,7 @@ void Analytics::applyFourierFilters() {
         if ((!ui->fourierGoodLookingSpectresOnly->isChecked() || pulsars->at(i).snr > 0) && good[i]) {
             int module = pulsars->at(i).module - 1;
             int ray = pulsars->at(i).ray - 1;
-            for (int k = 0; k < 1024; k++)
+            for (int k = 0; k < fourierSpectreSize; k++)
                 fourierSumm[module][ray][k] += pulsars->at(i).data.data[0][0][0][k];
 
 
@@ -737,13 +753,13 @@ void Analytics::applyFourierFilters() {
     for (int module = 5; module >= 0; module--)
         for (int ray = 7; ray >= 0; ray--) {
             Data data;
-            data.npoints = 1024;
+            data.npoints = fourierSpectreSize;
             data.modules = 1;
             data.rays = 1;
             data.channels = 1;
             data.init();
             data.releaseProtected = true;
-            memcpy(data.data[0][0][0], fourierSumm[module][ray].constData(), sizeof(float) * 1024);
+            memcpy(data.data[0][0][0], fourierSumm[module][ray].constData(), sizeof(float) * fourierSpectreSize);
 
 
             Pulsar pl;
@@ -765,7 +781,7 @@ void Analytics::applyFourierFilters() {
                     pl.data.fork();
                     pl.data.releaseProtected = true;
                     pl.snr = -777;
-                    pl.findFourierData(pl.firstPoint + 3);
+                    pl.findFourierData(pl.firstPoint + (3 + longData * 10));
                     pl.data.sigma = pl.firstPoint;
                     if (pl.snr > 0)
                         pulsars->push_front(pl);

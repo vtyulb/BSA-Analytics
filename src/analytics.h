@@ -39,6 +39,8 @@ private:
     int maxModule;
     int maxRay;
     bool fourier;
+    int fourierSpectreSize;
+    bool longData;
 
     QVector<KnownPulsar> knownPulsars;
     QVector<QString> fileNames;

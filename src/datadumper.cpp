@@ -13,15 +13,17 @@ const char *header = "source      source\n"
                      "time_begin  23:20:47 UTC 19:20:47\n"
                      "date_end    23.10.2015\n"
                      "time_end    21:20:47\n"
-                     "modulus      1 2 3 4 5 6\n"
                      "tresolution 99.9424\n"
-                     "nbands      6\n"
                      "wbands      0.4150390625 0.4150390625 0.4150390625 0.4150390625 0.4150390625 0.4248046875\n"
                      "fbands      109.20751953125 109.62255859375 110.03759765625 110.45263671875 110.86767578125 111.28759765625\n";
 
 void DataDumper::dump(const Data &data, QFile &f, QMap<QString, QString> headerAddition) {
+    headerAddition["nbands"] = QString::number(data.channels - 1);
+    for (int i = 0; i < data.modules; i++)
+        headerAddition["modulus"] += " " + QString::number(i);
+
     f.write("numpar      ");
-    f.write(QString::number(16 + headerAddition.size()).toUtf8());
+    f.write(QString::number(14 + headerAddition.size()).toUtf8());
     f.write("\n");
 
     QMap<QString, QString>::Iterator headIt = headerAddition.begin();

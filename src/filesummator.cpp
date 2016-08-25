@@ -8,6 +8,7 @@
 #include <reader.h>
 #include <startime.h>
 #include <data.h>
+#include <fourier.h>
 #include <datadumper.h>
 #include <pulsarworker.h>
 
@@ -15,6 +16,7 @@
 
 const int PC_ = 150; // point count
 const int CuttingPC = 2048;
+const int CuttingPCLong = 16384;
 
 FileSummator::FileSummator()
 {    
@@ -55,6 +57,10 @@ void FileSummator::run() {
     }
 
     PC = cutter ? CuttingPC : PC_;
+    if (cutter && extensions.contains("pnthr")) {
+        PC = CuttingPCLong;
+        longData = true;
+    }
 
     Reader reader;
     Data multifile;
@@ -81,9 +87,13 @@ void FileSummator::run() {
             fflush(stdout);
 
             multifile.npoints *= 25;
-            multifile.init();
+            multifile.releaseData();
+            if (!longData)
+                multifile.init();
+
             multifileInited = true;
 
+            if (!longData)
             for (int i = 0; i < multifile.modules; i++)
                 for (int j = 0; j < multifile.channels; j++)
                     for (int k = 0; k < multifile.rays; k++)
@@ -95,8 +105,10 @@ void FileSummator::run() {
             numberOfPieces.resize(multifile.npoints / PC * 2);
             numberOfPieces.fill(0);
 
-            coefficients = multifile;
-            coefficients.fork(); // linux style
+            if (!longData) {
+                coefficients = multifile;
+                coefficients.fork(); // linux style
+            }
 
             printf("memory allocated.\n");
             printf("Process seems to be all right, can work now\n");
@@ -112,6 +124,7 @@ void FileSummator::run() {
         if (fileNames.size())
             printf("\nRunning stage 1 of 2\n");
         stage = 1;
+        if (!longData)
         for (int i = 0; i < fileNames.size(); i++) {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
@@ -131,7 +144,10 @@ void FileSummator::run() {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
             Data data = reader.readBinaryFile(fileNames[i]);
-            processData(data, multifile, coefficients);
+            if (longData)
+                processLongData(data);
+            else
+                processData(data, multifile, coefficients);
             data.releaseData();
         }
 
@@ -244,6 +260,64 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
           }
 }
 
+void FileSummator::processLongData(Data &data) {
+    // Hello FileSummator::processLongData(), i know you are here
+
+    QVector<float> buf(data.npoints);
+
+    for (int module = 0; module < data.modules; module++)
+        for (int ray = 0; ray < data.rays; ray++)
+          {
+            const int step =  INTERVAL / data.oneStep;
+            for (int channel = 0; channel < data.channels; channel++) {
+                for (int i = 0; i < data.npoints; i += step)
+                    PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
+
+                for (int i = 0; i < data.npoints; i++)
+                    buf[i] = data.data[module][channel][ray][i];
+
+                std::sort(buf.begin(), buf.end());
+
+                double noise = 0;
+                for (int i = data.npoints * 0.2; i < data.npoints * 0.8; i++)
+                    noise += pow(data.data[module][channel][ray][i], 2);
+
+                noise /= data.npoints * 0.8 - data.npoints * 0.2;
+                noise = pow(noise, 0.5);
+
+                const double maximumNoise = 1.9;
+
+                float *res = data.data[module][channel][ray];
+                for (int i = 0; i < data.npoints; i++)
+                    if (res[i] >  noise * maximumNoise)
+                        res[i] = noise * maximumNoise;
+                    else if (res[i] < -noise * maximumNoise)
+                        res[i] = -noise * maximumNoise;
+
+                for (int j = 0; j < data.npoints / PC - 2; j++) {
+                    double realPart;
+                    QString time = StarTime::StarTime(data, j * PC, &realPart);
+                    int startPoint = realPart / data.oneStep;
+                    int offset = PC - startPoint % PC;
+
+                    double noise = 0;
+                    for (int k = 0; k < PC; k++)
+                        noise += pow(data.data[module][channel][ray][j * PC + k + offset], 2);
+
+                    noise /= PC;
+                    noise = pow(noise, 0.5);
+
+
+                    int point = (startPoint) / PC;
+
+                    if (module == data.modules - 1 && ray == data.rays - 1 && channel == data.channels - 1)
+                        dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
+                }
+
+            }
+          }
+}
+
 void FileSummator::findFiles(QString path, QStringList &names, const QStringList &extensions) {
     QDir dir(path);
     printf("scanning %s\n", path.toUtf8().constData());
@@ -261,15 +335,8 @@ void FileSummator::findFiles(QString path, QStringList &names, const QStringList
 }
 
 void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber) {
-    if (CuttingPC != PC)
+    if (CuttingPC != PC && CuttingPCLong != PC)
         return;
-
-    Data res = data;
-    res.npoints = CuttingPC;
-//    res.modules = 1;
-//    res.channels = 1;
-//    res.rays = 1;
-    res.fork();
 
     double realSeconds;
     StarTime::StarTime(data, startPoint, &realSeconds);
@@ -278,11 +345,39 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     headerAddition["native_datetime"] = data.name;
     headerAddition["star_time"] = QString::number(realSeconds, 'g', 10);
 
-    for (int module = 0; module < res.modules; module++)
-        for (int channel = 0; channel < res.channels; channel++)
-            for (int ray = 0; ray < res.rays; ray++)
-                for (int i = 0; i < CuttingPC; i++)
-                    res.data[module][channel][ray][i] = data.data[module][channel][ray][startPoint + i];
+    Data res = data;
+    if (!longData) {
+        res.npoints = PC;
+    //    res.modules = 1;
+    //    res.channels = 1;
+    //    res.rays = 1;
+        res.fork();
+
+        for (int module = 0; module < res.modules; module++)
+            for (int channel = 0; channel < res.channels; channel++)
+                for (int ray = 0; ray < res.rays; ray++)
+                    for (int i = 0; i < CuttingPC; i++)
+                        res.data[module][channel][ray][i] = data.data[module][channel][ray][startPoint + i];
+    } else {
+        res.npoints = PC / 2;
+        res.channels = 1;
+        res.fork();
+        QVector<float> dt(PC / 2, 0);
+        QVector<float> tmp = dt;
+        for (int module = 0; module < data.modules; module++)
+            for (int ray = 0; ray < data.rays; ray++) {
+                tmp.fill(0);
+                dt.fill(0);
+                for (int channel = 0; channel < data.channels - 1; channel++) {
+                    Fourier::FFTAnalysis(data.data[module][channel][ray] + startPoint, tmp.data(), PC, PC / 2);
+                    for (int i = 0; i < PC / 2; i++)
+                        dt[i] += tmp[i];
+                }
+
+                for (int i = 0; i < PC / 2; i++)
+                    res.data[module][0][ray][i] = dt[i];
+            }
+    }
 
     numberOfPieces[pieceNumber]++;
     QDir().mkpath(cutterPath + "/" + QString::number(pieceNumber));

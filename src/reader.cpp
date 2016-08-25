@@ -109,16 +109,13 @@ Data Reader::readBinaryFile(QString file) {
     QMap<QString, QString> header;
     for (int i = 1; i < n; i++) {
         QString data = f.readLine();
-        char symb = ' ';
-        if (!data.contains(symb))
-            symb = '\t';
-
-        QString value = data.right(data.size() - data.indexOf(symb));
+        data.replace('\t', " ");
+        QString value = data.right(data.size() - data.indexOf(' '));
         value = value.left(value.size() - 1);
-        while (value[0] == symb)
+        while (value[0] == ' ')
             value = value.right(value.size() - 1);
 
-        header[data.left(data.indexOf(symb))] = value;
+        header[data.left(data.indexOf(' '))] = value;
     }
 
     qint64 npoints = header["npoints"].toInt();

@@ -49,6 +49,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     maxModule = 1;
     maxRay = 1;
+    fourierSpectreSize = 1024;
 
     fileNames.push_back("all files");
 

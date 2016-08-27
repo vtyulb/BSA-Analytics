@@ -39,7 +39,7 @@ void Controller::setCoords(QPointF p) {
     coords->setText(QString("X: %1; Y: %2").arg(starTime, QString::number(p.y())));
     nativeXCoord->setText(QString("X: %1").arg(p.x()));
     if (Settings::settings()->fourierAnalytics())
-        nativeXCoord->setText(QString("X: %1; p=%2s").arg(QString::number(p.x(), 'f', 1), QString::number(2048.0 / p.x() * 0.0994, 'f', 3)));
+        nativeXCoord->setText(QString("X: %1; p=%2s").arg(QString::number(p.x(), 'f', 1), QString::number(2048.0 / p.x() * 0.0999424, 'f', 5)));
 }
 
 void Controller::setRays(int r) {

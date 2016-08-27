@@ -681,7 +681,7 @@ void Analytics::actualFourierDataChanged() {
     ui->fourierLoad->setEnabled(true);
     ui->fourierLoad->setText("Load data");
 
-    int t = ui->fourierBlockNo->value() * fourierSpectreSize * 2 * Settings::settings()->getFourierStepConstant();
+    int t = (ui->fourierBlockNo->value() + 0.5) * fourierSpectreSize * 2 * Settings::settings()->getFourierStepConstant();
     ui->fourierTime->setText(QTime(t / 3600, t / 60 % 60, t % 60).toString("HH:mm:ss"));
 }
 

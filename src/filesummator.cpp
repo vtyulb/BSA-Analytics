@@ -423,7 +423,7 @@ void FileSummator::saveCuttingState() {
 
         stream << "\n";
 
-        for (auto i = filesProcessed.begin(); i != filesProcessed.end(); i++)
+        for (QSet<QString>::Iterator i = filesProcessed.begin(); i != filesProcessed.end(); i++)
             stream << (*i) << "\n";
 
         f.close();

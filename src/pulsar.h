@@ -3,8 +3,8 @@
 
 #include <data.h>
 #include <startime.h>
-#include <math.h>
 #include <settings.h>
+#include <math.h>
 
 #include <QString>
 #include <QVector>

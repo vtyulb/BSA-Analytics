@@ -176,3 +176,23 @@ Data Reader::readBinaryFile(QString file) {
 
     return data;
 }
+
+void Reader::repairWrongChannels(Data &data) {
+    if (!data.name.right(15).contains("N2"))
+        return;
+
+    bool longData = data.oneStep < 0.05;
+    if (longData) {
+        for (int module = 4; module < 6; module++)
+            for (int ray = 6; ray >= 0; ray--)
+                for (int channel = 23; channel < 32; channel++)
+                    std::swap(data.data[module][channel][ray],
+                              data.data[module][channel][7]);
+    } else {
+        for (int module = 4; module < 6; module++)
+            for (int ray = 6; ray >= 0; ray--)
+                for (int channel = 4; channel < 6; channel++)
+                    std::swap(data.data[module][channel][ray],
+                              data.data[module][channel][7]);
+    }
+}

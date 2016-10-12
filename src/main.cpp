@@ -56,7 +56,7 @@ void catchSigSegv(int signal) {
         fprintf(stderr, "%d: %s\n", i, strs[i]);
 #endif
 
-    fprintf(stderr, "dead end\n");
+    fprintf(stderr, "dead end, catched signal %d\n", signal);
     exit(2);
 }
 

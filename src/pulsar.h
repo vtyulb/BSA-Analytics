@@ -266,7 +266,6 @@ static bool globalGoodDoubles(double a, double b, bool twice = false) {
         return a < 0.5;
 }
 
-
 typedef QVector<Pulsar>* Pulsars;
 
 

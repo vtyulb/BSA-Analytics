@@ -59,6 +59,8 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget
         ui->tableWidget->setRowCount(v);
     }
 
+    ui->tableWidget->setStyleSheet("QMenu::item:selected{border:1px solid red;}");
+
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     for (int i = 0; i < ui->tableWidget->columnCount(); i++)
         ui->tableWidget->setColumnWidth(i, 68);
@@ -86,7 +88,19 @@ QString PulsarList::getJName(int module, int ray, QTime time) {
         {"2470", "2423", "2376", "2329", "2281", "2234", "2186", "2138"}
     };
 
+    static char *lowDegree[6][8] = {
+        {"2083", "2039", "1989", "1941", "1891", "1841", "1791", "1740"},
+        {"1687", "1636", "1584", "1532", "1480", "1427", "1374", "1320"},
+        {"1263", "1210", "1154", "1098", "1042", "0985", "0928", "0870"},
+        {"0809", "0750", "0690", "0629", "0568", "0505", "0442", "0378"},
+        {"0311", "0245", "0179", "0111", "0042", "-028", "-100", "-172"},
+        {"-250", "-325", "-402", "-482", "-562", "-646", "-732", "-820"}
+    };
+
     QString numb = degree[module][ray];
+    if (!Settings::settings()->getFourierHighGround())
+        numb = lowDegree[module][ray];
+
     int minutes = numb.right(2).toInt();
     minutes = minutes * 60 / 100;
 

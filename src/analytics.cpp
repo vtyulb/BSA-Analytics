@@ -554,6 +554,7 @@ void Analytics::loadFourierData(bool cashOnly) {
                 QApplication::processEvents();
 
                 fourierData.push_back(Reader().readBinaryFile(currentPath + names[j]));
+                Settings::settings()->setFourierHighGround(fourierData.first().previousLifeName.contains("N1"));
                 if (fourierData[0].previousLifeName.endsWith(".pnthr")) {
                     Settings::settings()->setFourierStepConstant(0.0124928);
                     Settings::settings()->setFourierSpectreSize(8192);

@@ -229,7 +229,7 @@ void Analytics::apply() {
         std::sort(pl->data(), pl->data() + pl->size());
 
     delete list;
-    list = new PulsarList("void", pl, this);
+    list = new PulsarList("void", pl, ui->fourierRemoveBadRawData->isChecked(), this);
     list->show();
     QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
 
@@ -696,6 +696,9 @@ void Analytics::applyFourierFilters() {
 
     pulsars->erase(start, end);
 
+    for (int i = 0; i < pulsars->size(); i++)
+        (*pulsars)[i].dispersion = 1;
+
     for (int i = 0; i < 6; i++)
         for (int j = 0; j < 8; j++) {
             fourierSumm[i][j].resize(fourierSpectreSize);
@@ -750,6 +753,12 @@ void Analytics::applyFourierFilters() {
                 (*pulsars)[i].dispersion = (int)good[i];
         }
     }
+
+    for (int i = 0; i < pulsars->size(); i++)
+        if (!good[i] || pulsars->at(i).snr == -666) {
+            (*pulsars)[i].dispersion = -7777;
+            good[i] = false;
+        }
 
     for (int module = 5; module >= 0; module--)
         for (int ray = 7; ray >= 0; ray--) {

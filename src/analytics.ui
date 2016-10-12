@@ -461,6 +461,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="fourierRemoveBadRawData">
+        <property name="text">
+         <string>remove bad raw data from table</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="fourierCashResult">
         <property name="text">
          <string>cash result</string>
@@ -493,7 +500,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="fourierBestNumber"/>
+          <widget class="QSpinBox" name="fourierBestNumber">
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_20">

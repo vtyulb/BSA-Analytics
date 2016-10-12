@@ -5,7 +5,7 @@
 #include <QTimer>
 #include <QSettings>
 
-PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
+PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget *parent) :
     QWidget(NULL),
     ui(new Ui::PulsarList)
 {
@@ -40,6 +40,23 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
         if (pulsars->at(i).filtered)
             for (int j = 0; j < ui->tableWidget->columnCount(); j++)
                 ui->tableWidget->item(i, j)->setBackgroundColor(QColor("lightgray"));
+
+        if (pulsars->at(i).dispersion == -7777)
+            for (int j = 0; j < ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(i, j)->setBackgroundColor(QColor(200, 100, 100));
+    }
+
+    if (removeBadData) {
+        int v = 0;
+        for (int i = 0; i < pulsars->size(); i++)
+            if (!(pulsars->at(i).dispersion == -7777)) {
+                for (int j = 0; j < ui->tableWidget->columnCount(); j++)
+                    ui->tableWidget->setItem(v, j, new QTableWidgetItem(*(ui->tableWidget->item(i, j))));
+
+                v++;
+            }
+
+        ui->tableWidget->setRowCount(v);
     }
 
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);

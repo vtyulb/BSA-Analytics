@@ -69,6 +69,8 @@ private:
     void applyFileNameFilter();
     void applyDifferentMaximumsFilter();
 
+    void applyFourierPeriodRangeFilter();
+
     void preCalc();
     void loadKnownPulsars();
 

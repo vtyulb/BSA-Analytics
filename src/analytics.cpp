@@ -687,7 +687,7 @@ void Analytics::actualFourierDataChanged() {
 }
 
 void Analytics::applyFourierFilters() {
-    if (ui->fourierCashOnly->isChecked())
+    if (ui->fourierCashOnly->isChecked() || !fourier)
         return;
 
     QVector<Pulsar>::Iterator end, start = pulsars->begin();
@@ -705,6 +705,9 @@ void Analytics::applyFourierFilters() {
             fourierSumm[i][j].resize(fourierSpectreSize);
             fourierSumm[i][j].fill(0);
         }
+
+    if (ui->periodRangeCheckBox->isChecked())
+        applyFourierPeriodRangeFilter();
 
     QVector<bool> good(pulsars->size(), !ui->fourierPeak->isChecked());
 
@@ -843,6 +846,29 @@ void Analytics::parseFourierAllowedNames() {
 
         for (int i = a; i <= b; i++)
             fourierAllowedNames << QString::number(i) + ".pnt";
+    }
+}
+
+void Analytics::applyFourierPeriodRangeFilter() {
+     //period = Settings::settings()->getFourierSpectreSize() * 2 / double(i + 1) * Settings::settings()->getFourierStepConstant();
+
+    if (ui->periodRangeCheckBox->isChecked()) {
+        for (int i = 0; i < pulsars->size(); i++)
+            if (pulsars->at(i).filtered) {
+                int start = Settings::settings()->getFourierSpectreSize() * 2 / ui->periodRangeLeft->value() * Settings::settings()->getFourierStepConstant()-1;
+                int end = Settings::settings()->getFourierSpectreSize() * 2 / ui->periodRangeRight->value() * Settings::settings()->getFourierStepConstant()-1;
+
+                Pulsar *p = &(*pulsars)[i];
+
+                // Hello pulsar.h::findFourierData
+                double mx = 0;
+                for (int j = start; j < end; j++)
+                    if (p->data.data[0][0][0][j] > mx) {
+                        mx = p->data.data[0][0][0][j];
+                        p->snr = (mx-p->fourierAverage)/p->fourierRealNoise;
+                        p->period = Settings::settings()->getFourierSpectreSize() * 2 / double(j + 1) * Settings::settings()->getFourierStepConstant();
+                    }
+            }
     }
 }
 

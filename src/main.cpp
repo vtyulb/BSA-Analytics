@@ -294,10 +294,11 @@ void pulsarEngine(int argc, char **argv) {
 int main(int argc, char *argv[])
 {
 #ifdef WIN32
-    QString appName = argv[0];
+    QByteArray appName = argv[0];
     if (!appName.contains("console.exe"))
         appName = appName.left(appName.size() - 4) + "-console.exe";
-    argv[0] = appName.toUtf8().data();
+
+    argv[0] = appName.data();
 #endif
 
     if (argc > 1)

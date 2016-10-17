@@ -759,7 +759,7 @@ void Analytics::applyFourierFilters() {
     }
 
     for (int i = 0; i < pulsars->size(); i++)
-        if (!good[i] || pulsars->at(i).snr == -666) {
+        if (!good[i] || pulsars->at(i).snr == -666 || pulsars->at(i).snr == -42) {
             (*pulsars)[i].dispersion = -7777;
             good[i] = false;
         }

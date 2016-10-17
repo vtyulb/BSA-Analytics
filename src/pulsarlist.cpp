@@ -44,6 +44,8 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget
         if (pulsars->at(i).dispersion == -7777)
             for (int j = 0; j < ui->tableWidget->columnCount(); j++)
                 ui->tableWidget->item(i, j)->setBackgroundColor(QColor(200, 100, 100));
+
+        pulsarsIndex.push_back(i);
     }
 
     if (removeBadData) {
@@ -53,6 +55,7 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget
                 for (int j = 0; j < ui->tableWidget->columnCount(); j++)
                     ui->tableWidget->setItem(v, j, new QTableWidgetItem(*(ui->tableWidget->item(i, j))));
 
+                pulsarsIndex[v] = i;
                 v++;
             }
 
@@ -118,5 +121,5 @@ PulsarList::~PulsarList() {
 void PulsarList::selectionChanged() {
     if (ui->tableWidget->selectionModel()->selection().indexes().size())
         if (ui->tableWidget->selectionModel()->selection().indexes().at(0).row() < pulsars->size())
-            emit switchData((*pulsars)[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()].data);
+            emit switchData((*pulsars)[pulsarsIndex[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()]].data);
 }

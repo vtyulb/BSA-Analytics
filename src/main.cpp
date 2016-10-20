@@ -126,7 +126,6 @@ void pulsarEngine(int argc, char **argv) {
     bool analytics = false;
 
     bool preciseSearch = false;
-    bool doNotClearNoise = false;
     bool drawSpectre = false;
     bool fourier = false;
     int module = 1;
@@ -134,15 +133,17 @@ void pulsarEngine(int argc, char **argv) {
     double period = 1;
     QTime time(0, 0, 0);
 
-    for (int i = 1; i < argc; i++)
+    for (int i = 1; i < argc; i++) {
+        QString cur = QString::fromLocal8Bit(argv[i]);
+        QString next = QString::fromLocal8Bit(argv[i + 1]);
         if (strcmp(argv[i], "--pulsar-search") == 0)
-            dataPath = QString::fromUtf8(argv[i + 1]);
+            dataPath = next;
         else if (strcmp(argv[i], "--save-path") == 0)
-            savePath = QString::fromUtf8(argv[i + 1]);
+            savePath = next;
         else if (strcmp(argv[i], "--threads") == 0)
             threads = QString::fromUtf8(argv[i + 1]).toInt();
         else if (strcmp(argv[i], "--skip") == 0)
-            Settings::settings()->setSkipCount(QString(argv[i + 1]).toInt());
+            Settings::settings()->setSkipCount(next.toInt());
         else if (strcmp(argv[i], "--sub-zero") == 0)
             Settings::settings()->setSubZero(true);
         else if (strcmp(argv[i], "--source-range") == 0) {
@@ -151,32 +152,32 @@ void pulsarEngine(int argc, char **argv) {
         } else if (strcmp(argv[i], "--analytics") == 0) {
             analytics = true;
             if (i + 1 < argc && argv[i + 1][0] != '-' && argv[i + 1][0] != 0)
-                analyticsPath = QString(argv[i + 1]);
+                analyticsPath = next;
         } else if (strcmp(argv[i], "--low-memory") == 0)
             Settings::settings()->setLowMemoryMode(true);
         else if (strcmp(argv[i], "--precise-pulsar-search") == 0) {
             preciseSearch = true;
-            dataPath = QString(argv[i + 1]);
+            dataPath = next;
         } else if (strcmp(argv[i], "--module") == 0)
-            module = QString(argv[i + 1]).toInt();
+            module = next.toInt();
         else if (strcmp(argv[i], "--ray") == 0)
-            ray = QString(argv[i + 1]).toInt();
+            ray = next.toInt();
         else if (strcmp(argv[i], "--period") == 0)
             period = QString(argv[i + 1]).toDouble();
         else if (strcmp(argv[i], "--time") == 0)
-            time = QTime::fromString(argv[i + 1], "hh:mm:ss");
+            time = QTime::fromString(next, "hh:mm:ss");
         else if (strcmp(argv[i], "--compress") == 0) {
-            FileCompressor::compress(argv[i + 1]);
+            FileCompressor::compress(next);
             exit(0);
         } else if (strcmp(argv[i], "--flow-find") == 0) {
-            FlowFinder::find(argv[i + 1]);
+            FlowFinder::find(next);
             exit(0);
         } else if (strcmp(argv[i], "--no-multiple-periods") == 0)
             Settings::settings()->setNoMultiplePeriods(true);
         else if (strcmp(argv[i], "--dispersion") == 0)
-            Settings::settings()->setDispersion(QString(argv[i + 1]).toInt());
+            Settings::settings()->setDispersion(next.toInt());
         else if (strcmp(argv[i], "--precise-packet") == 0) {
-            precisePacket(argv[0], argv[i + 1]);
+            precisePacket(argv[0], next);
             exit(0);
         } else if (strcmp(argv[i], "--do-not-clear-noise") == 0)
             Settings::settings()->setDoNotClearNoise(true);
@@ -197,6 +198,7 @@ void pulsarEngine(int argc, char **argv) {
             exit(0);
         } else if (strcmp(argv[i], "--fourier") == 0)
             fourier = true;
+    }
 
 
 

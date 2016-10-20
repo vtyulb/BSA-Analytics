@@ -59,6 +59,15 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->groupBox->hide();
         ui->groupBox_4->hide();
         ui->fileNames->hide();
+        ui->fourierShortGrayZone->setDisabled(true);
+
+        ui->infoButton->hide();
+        ui->addPulsarCatalog->hide();
+
+        ui->doublePeriods->hide();
+
+        QObject::connect(ui->fourierShortGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierShortGrayZone()));
+        QObject::connect(ui->fourierFullGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierFullGrayZone()));
 
         fourierData.resize(500);
     } else {
@@ -624,6 +633,7 @@ void Analytics::loadFourierData(bool cashOnly) {
                     pl.data = data;
                     pl.valid = true;
                     pl.findFourierData(ui->fourierPointsToSkip->value());
+                    pl.data.sigma = pl.firstPoint;
                     QTime time(0, 0, 0);
                     pl.nativeTime = time.addSecs(fourierSpectreSize * 2 * blockNumber * Settings::settings()->getFourierStepConstant());
                     pulsars->push_back(pl);
@@ -706,9 +716,6 @@ void Analytics::applyFourierFilters() {
             fourierSumm[i][j].fill(0);
         }
 
-    if (ui->periodRangeCheckBox->isChecked())
-        applyFourierPeriodRangeFilter();
-
     QVector<bool> good(pulsars->size(), !ui->fourierPeak->isChecked());
 
     if (ui->fourierPeak->isChecked()) {
@@ -746,7 +753,7 @@ void Analytics::applyFourierFilters() {
         if (ui->fourierSelectBest->isChecked())
             (*pulsars)[i].dispersion = good[i];
 
-        if ((!ui->fourierGoodLookingSpectresOnly->isChecked() || pulsars->at(i).snr > 0) && good[i]) {
+        if ((!ui->fourierGoodLookingSpectresOnly->isChecked() || pulsars->at(i).snr > 0) && good[i] && !pulsars->at(i).fourierDuplicate) {
             int module = pulsars->at(i).module - 1;
             int ray = pulsars->at(i).ray - 1;
             for (int k = 0; k < fourierSpectreSize; k++)
@@ -831,9 +838,10 @@ void Analytics::calculateCashes() {
 }
 
 void Analytics::parseFourierAllowedNames() {
-    QString data = ui->fourierAllowedNames->document()->toPlainText();
+    QString data = ui->fourierAllowedNames->text();
     data.replace('-', ' ');
     data.replace('\n', ' ');
+    data.replace(',', ' ');
     fourierAllowedNames.clear();
     QTextStream stream(&data);
     while (!stream.atEnd()) {
@@ -849,27 +857,48 @@ void Analytics::parseFourierAllowedNames() {
     }
 }
 
-void Analytics::applyFourierPeriodRangeFilter() {
-     //period = Settings::settings()->getFourierSpectreSize() * 2 / double(i + 1) * Settings::settings()->getFourierStepConstant();
+void Analytics::fourierShortGrayZone() {
+    ui->fourierShortGrayZone->setDisabled(true);
+    ui->fourierFullGrayZone->setEnabled(true);
 
-    if (ui->periodRangeCheckBox->isChecked()) {
-        for (int i = 0; i < pulsars->size(); i++)
-            if (pulsars->at(i).filtered) {
-                int start = Settings::settings()->getFourierSpectreSize() * 2 / ui->periodRangeLeft->value() * Settings::settings()->getFourierStepConstant()-1;
-                int end = Settings::settings()->getFourierSpectreSize() * 2 / ui->periodRangeRight->value() * Settings::settings()->getFourierStepConstant()-1;
+    while (pulsars->last().fourierDuplicate)
+        pulsars->removeLast();
 
-                Pulsar *p = &(*pulsars)[i];
+    ui->groupBox->hide();
+    apply();
+}
 
-                // Hello pulsar.h::findFourierData
-                double mx = 0;
-                for (int j = start; j < end; j++)
-                    if (p->data.data[0][0][0][j] > mx) {
-                        mx = p->data.data[0][0][0][j];
-                        p->snr = (mx-p->fourierAverage)/p->fourierRealNoise;
-                        p->period = Settings::settings()->getFourierSpectreSize() * 2 / double(j + 1) * Settings::settings()->getFourierStepConstant();
-                    }
+void Analytics::fourierFullGrayZone() {
+    ui->fourierFullGrayZone->setDisabled(true);
+    ui->fourierShortGrayZone->setEnabled(true);
+
+    int size = pulsars->size();
+    for (int i = 0; i < size; i++)
+        if (pulsars->at(i).filtered && pulsars->at(i).snr > 2) {
+            Pulsar pl = pulsars->at(i);
+
+            pl.findFourierData(ui->fourierPointsToSkip->value());
+            pl.data.sigma = pl.firstPoint;
+            pl.fourierDuplicate = true;
+            pulsars->push_back(pl);
+
+            while (pl.snr > 5.0) {
+                pl.data.fork();
+                pl.data.releaseProtected = true;
+                pl.snr = -777;
+                pl.findFourierData(pl.firstPoint + (3 + longData * 10));
+                pl.data.sigma = pl.firstPoint;
+                if (pl.snr > 0)
+                    pulsars->push_back(pl);
+                else {
+                    pl.data.releaseProtected = false;
+                    pl.data.releaseData();
+                }
             }
-    }
+        }
+
+    ui->groupBox->show();
+    apply();
 }
 
 void Analytics::closeEvent(QCloseEvent *) {

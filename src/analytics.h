@@ -69,8 +69,6 @@ private:
     void applyFileNameFilter();
     void applyDifferentMaximumsFilter();
 
-    void applyFourierPeriodRangeFilter();
-
     void preCalc();
     void loadKnownPulsars();
 
@@ -86,6 +84,9 @@ private slots:
     void applyFourierFilters();
 
     void actualFourierDataChanged();
+
+    void fourierFullGrayZone();
+    void fourierShortGrayZone();
 
     void dispersionPlot();
     void dispersionRemember();

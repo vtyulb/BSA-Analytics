@@ -37,6 +37,7 @@ struct Pulsar {
 
     double fourierRealNoise;
     float fourierAverage;
+    bool fourierDuplicate = false;
 
     QString name; // file, not a pulsar :-)
     QByteArray additionalData;

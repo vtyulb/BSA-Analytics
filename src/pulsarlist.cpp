@@ -45,6 +45,9 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget
             for (int j = 0; j < ui->tableWidget->columnCount(); j++)
                 ui->tableWidget->item(i, j)->setBackgroundColor(QColor(200, 100, 100));
 
+        if (pulsars->at(i).fourierDuplicate)
+            ui->tableWidget->item(i, 0)->setBackgroundColor(QColor(255, 255, 150));
+
         pulsarsIndex.push_back(i);
     }
 

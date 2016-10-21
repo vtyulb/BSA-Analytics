@@ -47,8 +47,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->fourierLoad, SIGNAL(clicked(bool)), this, SLOT(loadFourierData()));
     QObject::connect(ui->fourierCalculateCashes, SIGNAL(clicked(bool)), this, SLOT(calculateCashes()));
 
-    maxModule = 1;
-    maxRay = 1;
+    maxModule = 6;
+    maxRay = 8;
     fourierSpectreSize = 1024;
 
     fileNames.push_back("all files");
@@ -65,6 +65,9 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->addPulsarCatalog->hide();
 
         ui->doublePeriods->hide();
+        ui->duplicatesIterations->hide();
+        ui->label_9->hide();
+
 
         QObject::connect(ui->fourierShortGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierShortGrayZone()));
         QObject::connect(ui->fourierFullGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierFullGrayZone()));
@@ -386,9 +389,9 @@ void Analytics::applyDuplicatesFilter() {
 
                     if (abs(pulsars->at(i).nativeTime.secsTo(pulsars->at(j).nativeTime)) < 120 &&
                             globalGoodDoubles(pulsars->at(i).period, pulsars->at(j).period, ui->doublePeriods->isChecked()) &&
-                            pulsars->at(i).data.name != pulsars->at(j).data.name &&
+                            (pulsars->at(i).data.name != pulsars->at(j).data.name &&
                             !set[i].contains(pulsars->at(j).data.name) &&
-                            !set[j].contains(pulsars->at(i).data.name)) {
+                            !set[j].contains(pulsars->at(i).data.name) || fourier)) {
                         set[i].insert(pulsars->at(j).data.name);
                         set[j].insert(pulsars->at(i).data.name);
                         (*pulsars)[i].firstPoint++;
@@ -684,8 +687,12 @@ void Analytics::loadFourierData(bool cashOnly) {
     ui->pulsarsTotal->setText(QString("Loaded %1 files").arg(fourierData.size()));
     ui->pulsarsTotal->show();
 
-    if (!cashOnly)
-        apply();
+    if (!cashOnly) {
+        if (!ui->fourierFullGrayZone->isEnabled())
+            fourierFullGrayZone();
+        else
+            apply();
+    }
 }
 
 void Analytics::actualFourierDataChanged() {

@@ -153,7 +153,7 @@
            <item>
             <widget class="QDoubleSpinBox" name="periodRangeLeft">
              <property name="decimals">
-              <number>1</number>
+              <number>2</number>
              </property>
              <property name="value">
               <double>0.500000000000000</double>
@@ -163,7 +163,7 @@
            <item>
             <widget class="QDoubleSpinBox" name="periodRangeRight">
              <property name="decimals">
-              <number>1</number>
+              <number>2</number>
              </property>
              <property name="value">
               <double>5.000000000000000</double>

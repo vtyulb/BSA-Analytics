@@ -181,7 +181,12 @@ void Reader::repairWrongChannels(Data &data) {
     if (!data.name.right(15).contains("N2"))
         return;
 
-    bool longData = data.oneStep < 0.05;
+    if (data.modules != 6 || data.rays != 8) {
+        qDebug() << "Something strange with this data. Aborting" << data.name;
+        return;
+    }
+
+    bool longData = (data.channels == 33);
     if (longData) {
         for (int module = 4; module < 6; module++)
             for (int ray = 6; ray >= 0; ray--)

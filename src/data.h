@@ -7,7 +7,7 @@
 
 struct Data {
     int npoints;
-    int modules;
+    int modules = -1;
     int channels;
     int rays;
     float ****data;
@@ -115,6 +115,10 @@ struct Data {
                     data[j][i][k] = new float[npoints];
             }
         }
+    }
+
+    bool isValid() {
+        return modules != -1;
     }
 };
 

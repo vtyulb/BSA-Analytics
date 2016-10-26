@@ -132,6 +132,9 @@ void FileSummator::run() {
             fflush(stdout);
 
             Data data = reader.readBinaryFile(fileNames[i]);
+            if (!data.isValid())
+                continue;
+
             reader.repairWrongChannels(data);
             processData(data, multifile, coefficients);
             data.releaseData();
@@ -150,6 +153,9 @@ void FileSummator::run() {
                 continue;
 
             Data data = reader.readBinaryFile(fileNames[i]);
+            if (!data.isValid())
+                continue;
+
             reader.repairWrongChannels(data);
             if (longData)
                 processLongData(data);

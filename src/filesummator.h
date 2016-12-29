@@ -3,6 +3,7 @@
 
 #include <QStringList>
 #include <QVector>
+#include <QSet>
 
 #include <data.h>
 
@@ -19,6 +20,9 @@ private:
     void processLongData(Data &data);
     void dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber);
 
+    void saveCuttingState();
+    void loadCuttingState();
+
     int stage;
     bool longData = false;
     int PC;
@@ -26,6 +30,7 @@ private:
 
     QVector<QVector<float> > noises;
     QVector<int> numberOfPieces;
+    QSet<QString> filesProcessed;
 };
 
 #endif // FILESUMMATOR_H

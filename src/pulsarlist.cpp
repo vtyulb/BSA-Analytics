@@ -11,7 +11,7 @@
 #include <QAction>
 #include <QMessageBox>
 
-PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
+PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget *parent) :
     QWidget(NULL),
     ui(new Ui::PulsarList)
 {
@@ -51,7 +51,32 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
         if (pulsars->at(i).filtered)
             for (int j = 0; j < ui->tableWidget->columnCount(); j++)
                 ui->tableWidget->item(i, j)->setBackgroundColor(QColor("lightgray"));
+
+        if (pulsars->at(i).dispersion == -7777)
+            for (int j = 0; j < ui->tableWidget->columnCount(); j++)
+                ui->tableWidget->item(i, j)->setBackgroundColor(QColor(200, 100, 100));
+
+        if (pulsars->at(i).fourierDuplicate)
+            ui->tableWidget->item(i, 0)->setBackgroundColor(QColor(255, 255, 150));
+
+        pulsarsIndex.push_back(i);
     }
+
+    if (removeBadData) {
+        int v = 0;
+        for (int i = 0; i < pulsars->size(); i++)
+            if (!(pulsars->at(i).dispersion == -7777)) {
+                for (int j = 0; j < ui->tableWidget->columnCount(); j++)
+                    ui->tableWidget->setItem(v, j, new QTableWidgetItem(*(ui->tableWidget->item(i, j))));
+
+                pulsarsIndex[v] = i;
+                v++;
+            }
+
+        ui->tableWidget->setRowCount(v);
+    }
+
+    ui->tableWidget->setStyleSheet("QMenu::item:selected{border:1px solid red;}");
 
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
     for (int i = 0; i < ui->tableWidget->columnCount(); i++)
@@ -80,7 +105,19 @@ QString PulsarList::getJName(int module, int ray, QTime time) {
         {"2470", "2423", "2376", "2329", "2281", "2234", "2186", "2138"}
     };
 
+    static char *lowDegree[6][8] = {
+        {"2083", "2039", "1989", "1941", "1891", "1841", "1791", "1740"},
+        {"1687", "1636", "1584", "1532", "1480", "1427", "1374", "1320"},
+        {"1263", "1210", "1154", "1098", "1042", "0985", "0928", "0870"},
+        {"0809", "0750", "0690", "0629", "0568", "0505", "0442", "0378"},
+        {"0311", "0245", "0179", "0111", "0042", "-028", "-100", "-172"},
+        {"-250", "-325", "-402", "-482", "-562", "-646", "-732", "-820"}
+    };
+
     QString numb = degree[module][ray];
+    if (!Settings::settings()->getFourierHighGround())
+        numb = lowDegree[module][ray];
+
     int minutes = numb.right(2).toInt();
     minutes = minutes * 60 / 100;
 

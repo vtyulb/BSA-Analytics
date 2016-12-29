@@ -3,8 +3,8 @@
 
 #include <data.h>
 #include <startime.h>
-#include <math.h>
 #include <settings.h>
+#include <math.h>
 
 #include <QString>
 #include <QVector>
@@ -37,6 +37,7 @@ struct Pulsar {
 
     double fourierRealNoise;
     float fourierAverage;
+    bool fourierDuplicate = false;
 
     QString name; // file, not a pulsar :-)
     QByteArray additionalData;
@@ -278,7 +279,6 @@ static bool globalGoodDoubles(double a, double b, bool twice = false) {
     else
         return a < 0.5;
 }
-
 
 typedef QVector<Pulsar>* Pulsars;
 

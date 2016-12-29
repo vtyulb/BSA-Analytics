@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>306</width>
-    <height>1522</height>
+    <height>1540</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -153,7 +153,7 @@
            <item>
             <widget class="QDoubleSpinBox" name="periodRangeLeft">
              <property name="decimals">
-              <number>1</number>
+              <number>2</number>
              </property>
              <property name="value">
               <double>0.500000000000000</double>
@@ -163,7 +163,7 @@
            <item>
             <widget class="QDoubleSpinBox" name="periodRangeRight">
              <property name="decimals">
-              <number>1</number>
+              <number>2</number>
              </property>
              <property name="value">
               <double>5.000000000000000</double>
@@ -253,24 +253,9 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QPlainTextEdit" name="fourierAllowedNames">
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>50</height>
-         </size>
-        </property>
-        <property name="sizeAdjustPolicy">
-         <enum>QAbstractScrollArea::AdjustIgnored</enum>
-        </property>
-        <property name="plainText">
-         <string>1 - 1000</string>
+       <widget class="QLineEdit" name="fourierAllowedNames">
+        <property name="text">
+         <string>1 - 1000, 1001-2000</string>
         </property>
        </widget>
       </item>
@@ -461,6 +446,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="fourierRemoveBadRawData">
+        <property name="text">
+         <string>remove bad raw data from table</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="fourierCashResult">
         <property name="text">
          <string>cash result</string>
@@ -493,7 +485,11 @@
           </widget>
          </item>
          <item>
-          <widget class="QSpinBox" name="fourierBestNumber"/>
+          <widget class="QSpinBox" name="fourierBestNumber">
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+          </widget>
          </item>
          <item>
           <widget class="QLabel" name="label_20">
@@ -602,6 +598,44 @@
            </property>
            <property name="value">
             <double>2.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <property name="leftMargin">
+          <number>6</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>6</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="fourierFullGrayZone">
+           <property name="text">
+            <string>Full gray zone</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="fourierShortGrayZone">
+           <property name="text">
+            <string>Short gray zone</string>
            </property>
           </widget>
          </item>

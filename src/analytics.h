@@ -85,6 +85,9 @@ private slots:
 
     void actualFourierDataChanged();
 
+    void fourierFullGrayZone();
+    void fourierShortGrayZone();
+
     void dispersionPlot();
     void dispersionRemember();
     void dispersionMplus();

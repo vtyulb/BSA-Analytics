@@ -17,6 +17,7 @@ Settings::Settings() {
     _fourierAnalytics = false;
     _fourierStepConstant = 0.1;
     _fourierSpectreSize = 1024;
+    _fourierHighGround = true;
     bar = NULL;
 }
 
@@ -250,4 +251,12 @@ void Settings::setFourierSpectreSize(int a) {
 
 int Settings::getFourierSpectreSize() {
     return _fourierSpectreSize;
+}
+
+void Settings::setFourierHighGround(bool a) {
+    _fourierHighGround = a;
+}
+
+bool Settings::getFourierHighGround() {
+    return _fourierHighGround;
 }

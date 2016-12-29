@@ -15,6 +15,8 @@ public:
     Data readFile(QString, int skip, int firstColumn, QDateTime = QDateTime(), bool binary = false); // 0 - true; 1 - false; 2 - autodetect
     Data readBinaryFile(QString);
 
+    static void repairWrongChannels(Data &data);
+
 private:
     int number(QByteArray);
     float slowNumber(QByteArray);

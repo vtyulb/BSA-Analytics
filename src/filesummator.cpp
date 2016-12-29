@@ -49,8 +49,10 @@ void FileSummator::run() {
             cutterPath = input.readLine();
             QDir dir(cutterPath);
             cutterPath = dir.absolutePath() + "/result/";
-            if (dir.mkdir("result"))
+            if (dir.mkdir("result") || QDir(cutterPath).exists()) {
+                loadCuttingState();
                 break;
+            }
         }
 
         printf("Path [%s] accepted\n\n", cutterPath.toUtf8().constData());
@@ -67,7 +69,7 @@ void FileSummator::run() {
     Data coefficients;
     bool multifileInited = false;
     QString path = "non-blank";
-    while (path != "" || fileNames.count()) {
+    while (path != "" || fileNames.count() || cutter) {
         printf("Please enter path to data (blank line to stop): ");
         path = input.readLine();
         if (path != "")
@@ -118,7 +120,7 @@ void FileSummator::run() {
             continue;
         }
 
-        if (path != "")
+        if (path != "" && !cutter)
             continue;
 
         if (fileNames.size())
@@ -128,9 +130,13 @@ void FileSummator::run() {
         for (int i = 0; i < fileNames.size(); i++) {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
-            Data data = reader.readBinaryFile(fileNames[i]);
-            processData(data, multifile, coefficients);
 
+            Data data = reader.readBinaryFile(fileNames[i]);
+            if (!data.isValid())
+                continue;
+
+            reader.repairWrongChannels(data);
+            processData(data, multifile, coefficients);
             data.releaseData();
         }
 
@@ -143,12 +149,22 @@ void FileSummator::run() {
         for (int i = 0; i < fileNames.size(); i++) {
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
+            if (filesProcessed.contains(fileNames[i]))
+                continue;
+
             Data data = reader.readBinaryFile(fileNames[i]);
+            if (!data.isValid())
+                continue;
+
+            reader.repairWrongChannels(data);
             if (longData)
                 processLongData(data);
             else
                 processData(data, multifile, coefficients);
             data.releaseData();
+
+            filesProcessed.insert(fileNames[i]);
+            saveCuttingState();
         }
 
         if (fileNames.size()) {
@@ -385,4 +401,39 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     f.open(QIODevice::WriteOnly);
     DataDumper::dump(res, f, headerAddition);
     res.releaseData();
+}
+
+void FileSummator::loadCuttingState() {
+    QFile f(cutterPath + "state.txt");
+    if (f.open(QIODevice::ReadOnly)) {
+        printf("\nFound previous cutting data\n");
+        printf("Restoring state...\n");
+        QTextStream stream(&f);
+        stream.readLine();
+        numberOfPieces.resize(500);
+        for (int i = 0; i < 500; i++)
+            stream >> numberOfPieces[i];
+
+        while (!stream.atEnd())
+            filesProcessed.insert(stream.readLine().replace("\n", ""));
+
+        printf("State loaded. Total %d files processed already\n\n", filesProcessed.size() - 1);
+    }
+}
+
+void FileSummator::saveCuttingState() {
+    QFile f(cutterPath + "state.txt");
+    if (f.open(QIODevice::WriteOnly)) {
+        QTextStream stream(&f);
+        stream << "Last state change: " << QDateTime::currentDateTime().toString() << "\n";
+        for (int i = 0; i < 500; i++)
+            stream << numberOfPieces[i] << " ";
+
+        stream << "\n";
+
+        for (QSet<QString>::Iterator i = filesProcessed.begin(); i != filesProcessed.end(); i++)
+            stream << (*i) << "\n";
+
+        f.close();
+    }
 }

@@ -17,7 +17,7 @@ class PulsarList : public QWidget
     Q_OBJECT
 
     public:
-        explicit PulsarList(QString fileName, Pulsars pl = 0, QWidget *parent = 0);
+        explicit PulsarList(QString fileName, Pulsars pl = 0, bool removeBadData = false, QWidget *parent = 0);
         ~PulsarList();
 
     private:
@@ -27,6 +27,8 @@ class PulsarList : public QWidget
 
         void closeEvent(QCloseEvent*);
         QString getJName(int module, int ray, QTime time);
+
+        QVector<int> pulsarsIndex;
 
     private slots:
         void selectionChanged();

@@ -1,9 +1,15 @@
 #include "pulsarlist.h"
 #include "ui_pulsarlist.h"
+
 #include <pulsarreader.h>
+
 #include <QDebug>
 #include <QTimer>
 #include <QSettings>
+#include <QTableWidget>
+#include <QMenu>
+#include <QAction>
+#include <QMessageBox>
 
 PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
     QWidget(NULL),
@@ -23,6 +29,11 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, QWidget *parent) :
 
     QObject::connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     QObject::connect(ui->tableWidget->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
+
+    QAction *showUTCtime = new QAction("Show UTC time");
+    QObject::connect(showUTCtime, SIGNAL(triggered(bool)), this, SLOT(showTime()));
+    ui->tableWidget->addAction(showUTCtime);
+    ui->tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
 
     ui->tableWidget->setRowCount(pulsars->size());
     ui->tableWidget->setColumnCount(6);
@@ -86,6 +97,12 @@ PulsarList::~PulsarList() {
 
 void PulsarList::selectionChanged() {
     if (ui->tableWidget->selectionModel()->selection().indexes().size())
-        if (ui->tableWidget->selectionModel()->selection().indexes().at(0).row() < pulsars->size())
-            emit switchData((*pulsars)[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()].data);
+        if (ui->tableWidget->selectionModel()->selection().indexes().at(0).row() < pulsars->size()) {
+            currentPulsar = &(*pulsars)[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()];
+            emit switchData(currentPulsar->data);
+        }
+}
+
+void PulsarList::showTime() {
+    QMessageBox::information(this, "Peak UTC time", currentPulsar->UTCtime());
 }

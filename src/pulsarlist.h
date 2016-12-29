@@ -4,6 +4,8 @@
 #include <QWidget>
 #include <QVector>
 #include <QTime>
+#include <QPoint>
+
 #include <pulsar.h>
 
 namespace Ui {
@@ -21,12 +23,14 @@ class PulsarList : public QWidget
     private:
         Ui::PulsarList *ui;
         Pulsars pulsars;
+        Pulsar *currentPulsar;
 
         void closeEvent(QCloseEvent*);
         QString getJName(int module, int ray, QTime time);
 
     private slots:
         void selectionChanged();
+        void showTime();
 
     signals:
         void switchData(Data &data);

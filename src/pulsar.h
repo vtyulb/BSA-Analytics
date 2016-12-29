@@ -59,6 +59,19 @@ struct Pulsar {
         return StarTime::StarTime(data, firstPoint + interval / 2 / data.oneStep);
     }
 
+    QString UTCtime() const {
+        double oneStep = data.name.contains(".pnthr") ? 0.0124928 : 0.0999424;
+        QTime start((data.name[7] + QString(data.name[8])).toInt(), 0);
+        QDate date((QString(data.name[4])+data.name[5]).toInt(),
+                   (QString(data.name[2])+data.name[3]).toInt(),
+                   (QString(data.name[0])+data.name[1]).toInt());
+
+        QDateTime res(date, start);
+        res = res.addSecs(-3600*3);
+        res = res.addMSecs(firstPoint*oneStep*1000);
+        return "UTC " + res.toString("dd.MM.yy HH:mm:ss.zzz");
+    }
+
     void calculateAdditionalData(const QVector<double> &disp) {
         QVector<QVariant> d;
         int additionalSize = 0;

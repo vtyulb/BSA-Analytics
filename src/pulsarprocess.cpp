@@ -91,7 +91,7 @@ void PulsarProcess::run() {
                 pulsars[j] = p;
             }
 
-    QByteArray header = QString("file: %1\ntresolution %2\nStart time\tmodule\tray\tdispersion\tperiod\tsnr\n").arg(data.name).arg(data.oneStep).toUtf8();
+    QByteArray header = QString("file: %1\ntresolution %2\nStart time\tmodule\tray\tdispersion\tperiod\tsnr\tfirst_point\n").arg(data.name).arg(data.oneStep).toUtf8();
 
     QFile *files[CATEGORIES];
     bool filtered[CATEGORIES];
@@ -113,13 +113,14 @@ void PulsarProcess::run() {
                     files[j]->write(QByteArray("filtered next\n"));
                 }
 
-                QByteArray d = QString("%1\t%2\t%3\t%4\t%5\t%6\n").
+                QByteArray d = QString("%1\t%2\t%3\t%4\t%5\t%6\t%7\n").
                         arg(pulsars[i].time()).
                         arg(pulsars[i].module + 1).
                         arg(pulsars[i].ray + 1).
                         arg(pulsars[i].dispersion).
                         arg(QString::number(pulsars[i].period, 'f', 5)).
                         arg(QString::number(pulsars[i].snr, 'f', 1)).
+                        arg(QString::number(pulsars[i].firstPoint)).
                         toUtf8();
 
                 files[j]->write(d);

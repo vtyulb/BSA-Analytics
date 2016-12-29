@@ -72,11 +72,12 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
         } else {
             int h = 23, m = 59, s = 59, module, ray, dispersion;
             double period, snr;
+            int firstPoint;
             QTextStream stream(line.data(), QIODevice::ReadOnly);
             char symb;
             if (line.data()[0] >= '0' && line.data()[0] <= '9')
                 stream >> h >> symb >> m >> symb >> s;
-            stream >> module >> ray >> dispersion >> period >> snr;
+            stream >> module >> ray >> dispersion >> period >> snr >> firstPoint;
 
             Pulsar pulsar;
             pulsar.dispersion = dispersion;
@@ -86,6 +87,7 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
             pulsar.snr = snr;
             pulsar.nativeTime = QTime(h, m, s);
             pulsar.filtered = filtered;
+            pulsar.firstPoint = firstPoint;
             pulsar.data.name = fileName;
 
             int badNoise;

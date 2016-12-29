@@ -87,6 +87,7 @@ void Analytics::init() {
     if (!fourier)
         apply();
 
+    QObject::connect(ui->fileNames, SIGNAL(currentIndexChanged(int)), this, SLOT(apply()));
     ui->progressBar->hide();
     ui->currentFile->hide();
 }
@@ -168,7 +169,9 @@ void Analytics::apply() {
     ui->progressBar->show();
 
     loadKnownPulsars();
-    applyFourierFilters();
+    if (fourier)
+        applyFourierFilters();
+
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] = true;
 
@@ -451,8 +454,18 @@ void Analytics::dispersionRemember() {
 void Analytics::dispersionMplus() {
     Data data = dispersionGenerateData();
     QVector<double> dt = Settings::settings()->dispersionData();
-    for (int i = 0; i < data.npoints; i++)
-        data.data[0][0][0][i] += dt[i];
+    if (!dt.size()) {
+        QMessageBox::information(this, "error", "Memory is not filled now");
+        return;
+    }
+
+    for (int i = 0; i < data.npoints; i++) {
+        double tmp = dt[i];
+        dt[i] += data.data[0][0][0][i];
+        data.data[0][0][0][i] += tmp;
+    }
+
+    Settings::settings()->setDispersionData(dt);
 
     window->regenerate(data);
 }

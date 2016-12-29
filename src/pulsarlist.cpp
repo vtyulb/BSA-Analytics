@@ -30,7 +30,7 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget
     QObject::connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     QObject::connect(ui->tableWidget->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
 
-    QAction *showUTCtime = new QAction("Show UTC time");
+    QAction *showUTCtime = new QAction("Show UTC time", this);
     QObject::connect(showUTCtime, SIGNAL(triggered(bool)), this, SLOT(showTime()));
     ui->tableWidget->addAction(showUTCtime);
     ui->tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);

@@ -184,6 +184,7 @@ void Analytics::apply() {
     if (fourier)
         applyFourierFilters();
 
+    pulsarsEnabled.resize(pulsars->size());
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] = true;
 
@@ -255,9 +256,13 @@ void Analytics::applyFileNameFilter() {
     if (fourier)
         return;
 
+    int currentIndex = ui->fileNames->currentIndex();
+    if (currentIndex == -1)
+        return;
+
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsarsEnabled[i])
-            pulsarsEnabled[i] &= (pulsars->at(i).data.name == fileNames[ui->fileNames->currentIndex()]);
+            pulsarsEnabled[i] &= (pulsars->at(i).data.name == fileNames[currentIndex]);
 }
 
 void Analytics::applyModuleFilter() {

@@ -124,6 +124,7 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     deltaLabel->setText("delta");
     deltaLayout->addWidget(deltaLabel);
     deltaLayout->addWidget(delta);
+    deltaFrame->hide();
 
     l->addWidget(deltaFrame);
 

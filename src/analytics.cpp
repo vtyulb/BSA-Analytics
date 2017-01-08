@@ -161,6 +161,7 @@ void Analytics::loadPulsars(QString dir) {
         qApp->processEvents();
         ui->currentFile->setText(list[i].fileName());
         Pulsars p = PulsarReader::ReadPulsarFile(list[i].absoluteFilePath(), ui->progressBar);
+        Settings::settings()->setFourierHighGround(list[i].fileName().contains("N1"));
         *pulsars += (*p);
         delete p;
 

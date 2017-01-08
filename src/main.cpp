@@ -29,7 +29,10 @@
 
 #ifdef Q_OS_LINUX
     #include <execinfo.h>
+#else
+    #include <windows.h>
 #endif
+
 
 namespace mainSpace {
     MainWindow *w;
@@ -265,6 +268,9 @@ void pulsarEngine(int argc, char **argv) {
 
 
     if (analytics) {
+#ifdef WIN32
+        FreeConsole();
+#endif
         QApplication a(argc, argv);
         a.setOrganizationDomain("bsa.vtyulb.ru");
         a.setOrganizationName("vtyulb");
@@ -295,20 +301,15 @@ void pulsarEngine(int argc, char **argv) {
 
 int main(int argc, char *argv[])
 {
-#ifdef WIN32
-    QByteArray appName = argv[0];
-    if (!appName.contains("console.exe"))
-        appName = appName.left(appName.size() - 4) + "-console.exe";
-
-    argv[0] = appName.data();
-#endif
-
     if (argc > 1)
         pulsarEngine(argc, argv);
 
     signal(SIGABRT, restart);
     signal(SIGSEGV, restart);
 
+#ifdef WIN32
+    FreeConsole();
+#endif
     QApplication a(argc, argv);
     a.setApplicationName("BSA-Analytics");
     a.setOrganizationName("vtyulb");

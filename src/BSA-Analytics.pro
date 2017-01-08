@@ -6,7 +6,7 @@
 
 QT       += core gui printsupport
 
-#CONFIG += console
+CONFIG += console
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 

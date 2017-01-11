@@ -135,7 +135,7 @@ PulsarList::~PulsarList() {
 void PulsarList::selectionChanged() {
     if (ui->tableWidget->selectionModel()->selection().indexes().size())
         if (ui->tableWidget->selectionModel()->selection().indexes().at(0).row() < pulsars->size()) {
-            currentPulsar = &(*pulsars)[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()];
+            currentPulsar = &(*pulsars)[pulsarsIndex[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()]];
             emit switchData(currentPulsar->data);
         }
 }

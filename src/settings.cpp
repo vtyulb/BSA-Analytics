@@ -18,6 +18,7 @@ Settings::Settings() {
     _fourierStepConstant = 0.1;
     _fourierSpectreSize = 1024;
     _fourierHighGround = true;
+    _stairStatus = NoStair;
     bar = NULL;
 }
 
@@ -113,28 +114,21 @@ bool Settings::sourceMode() {
     return stairs.size() > 0;
 }
 
-void Settings::detectStair(char *name, int point) {
-    Reader reader;
-    Data data = reader.readBinaryFile(QString(name));
+void Settings::detectStair(const Data &data, int pointStart, int pointEnd) {
     stairs.resize(data.modules);
     for (int i = 0; i < data.modules; i++) {
         stairs[i].resize(data.rays);
         for (int j = 0; j < data.rays; j++)
             for (int k = 0; k < data.channels; k++) {
-                double sum = 0;
-                for (int q = -10; q < 10; q++)
-                    sum += data.data[i][k][j][point + q];
+                QVector<double> tmp;
+                for (int q = pointStart; q < pointEnd; q++)
+                    tmp.push_back(data.data[i][k][j][q]);
 
-                std::sort(data.data[i][k][j], data.data[i][k][j] + data.npoints);
-                double sum1 = 0;
-                for (int q = 0; q < 20; q++)
-                    sum1 += data.data[i][k][j][q];
+                std::sort(tmp.begin(), tmp.end());
 
-                stairs[i][j].push_back(sum / 20 - sum1 / 20);
+                stairs[i][j].push_back(tmp[tmp.size() - 5] - tmp[5]);
             }
     }
-
-    data.releaseData();
 }
 
 double Settings::getStairHeight(int module, int ray, int channel) {
@@ -259,4 +253,12 @@ void Settings::setFourierHighGround(bool a) {
 
 bool Settings::getFourierHighGround() {
     return _fourierHighGround;
+}
+
+void Settings::setStairStatus(int status) {
+    _stairStatus = status;
+}
+
+int Settings::stairStatus() {
+    return _stairStatus;
 }

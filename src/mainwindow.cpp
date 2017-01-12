@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionFlow_detecter, SIGNAL(triggered(bool)), this, SLOT(runFlowGui()));
     QObject::connect(ui->actionRotation_measure, SIGNAL(triggered(bool)), this, SLOT(runRotationGui()));
     QObject::connect(ui->actionSound_mode, SIGNAL(triggered()), this, SLOT(soundModeTriggered()));
+    QObject::connect(ui->actionSet_stair, SIGNAL(triggered()), this, SLOT(setStair()));
 
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
@@ -265,4 +266,11 @@ void MainWindow::runRotationGui() {
 
 void MainWindow::soundModeTriggered() {
     Settings::settings()->setSoundMode(ui->actionSound_mode->isChecked());
+}
+
+void MainWindow::setStair() {
+    Settings::settings()->setStairStatus(SettingStair);
+    QMessageBox::information(this, "Setting stair",
+                             "Open file with the stair, make a rectangular around it.\n"
+                             "Rectangular height does not matter, only width and position");
 }

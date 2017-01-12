@@ -278,6 +278,15 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
         mouseRect.setTop(height() - bot);
         mouseRect.setBottom(height() - top);
 
+        if (Settings::settings()->stairStatus() == SettingStair) {
+            Settings::settings()->detectStair(data,
+                                              backwardCoord(mouseRect.bottomLeft()).x(),
+                                              backwardCoord(mouseRect.topRight()).x());
+            Settings::settings()->setStairStatus(DetectedStair);
+            QMessageBox::information(this, "Stair status", "Stair detected. Sample height: " +
+                                     QString::number(Settings::settings()->getStairHeight(0,0,0)));
+        }
+
         c.setTopLeft(backwardCoord(mouseRect.bottomLeft()));
         c.setBottomRight(backwardCoord(mouseRect.topRight()));
 
@@ -425,16 +434,20 @@ void NativeDrawer::sourceDetect(int a, int b) {
         }
 
     QString resStr = "Ray: " + QString::number(ray + 1) + "\n";
+    double average = 0;
     for (int k = 0; k < data.channels - 1; k++) {
         QVector<double> res;
-        double h1 = data.data[module][k][ray][a];
-        double h2 = data.data[module][k][ray][b];
         for (int i = a; i < b; i++)
-            res.push_back(data.data[module][k][ray][i] - ((i - a) / double(b - a) * (h2 - h1) + h1));
+            res.push_back(data.data[module][k][ray][i]);
+
 
         std::sort(res.data(), res.data() + res.size());
-        resStr = resStr + " " + QString::number(res[res.size() - 3] / Settings::settings()->getStairHeight(module, ray, k));
+        double current = (res[res.size() - 5] - res[5])/ Settings::settings()->getStairHeight(module, ray, k) * 2100;
+        average += current / (data.channels - 1);
+        resStr = resStr + " " + QString::number(current);
     }
+
+    resStr += " " + QString::number(average);
 
     QMessageBox::information(this, "source height", resStr);
 }

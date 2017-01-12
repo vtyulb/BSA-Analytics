@@ -91,6 +91,9 @@
     <addaction name="actionNet"/>
     <addaction name="actionLive"/>
     <addaction name="actionFast"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_stair"/>
+    <addaction name="separator"/>
     <addaction name="actionClone"/>
     <addaction name="separator"/>
     <addaction name="actionSound_mode"/>
@@ -262,7 +265,12 @@
   </action>
   <action name="actionPulsar_fourier_analytics">
    <property name="text">
-    <string>Pulsar fourier analytics</string>
+    <string>Pulsar &amp;fourier analytics</string>
+   </property>
+  </action>
+  <action name="actionSet_stair">
+   <property name="text">
+    <string>Set stair</string>
    </property>
   </action>
  </widget>

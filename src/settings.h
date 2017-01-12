@@ -6,6 +6,12 @@
 #include <QProgressBar>
 #include <data.h>
 
+enum Stair {
+    NoStair = 0,
+    SettingStair = 1,
+    DetectedStair = 2
+};
+
 class Settings {
     public:
         static Settings *settings();
@@ -27,6 +33,7 @@ class Settings {
         int dispersion();
         QVector<double> dispersionData();
         Data lastData();
+        int stairStatus();
 
         int module();
         int ray();
@@ -49,7 +56,7 @@ class Settings {
         void setPeriodTester(bool);
         void setDoNotClearNoise(bool);
         void setProgressBar(QProgressBar*);
-        void detectStair(char *name, int point);
+        void detectStair(const Data &data, int pointStart, int pointEnd);
         QTime getTime();
 
         void setPreciseSearch(bool);
@@ -67,6 +74,7 @@ class Settings {
         void setFourierStepConstant(double);
         void setFourierSpectreSize(int);
         void setFourierHighGround(bool);
+        void setStairStatus(int);
 
     private:
         Settings();
@@ -93,6 +101,7 @@ class Settings {
         double _fourierStepConstant;
         int _fourierSpectreSize;
         bool _fourierHighGround;
+        bool _stairStatus;
         QVector<double> dispersionPlotData;
         QVector<QVector<QVector<double> > > stairs;
         Data _lastData;

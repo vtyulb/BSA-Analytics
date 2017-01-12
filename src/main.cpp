@@ -96,7 +96,6 @@ void pulsarEngine(int argc, char **argv) {
         printf("Usage:\nBSA-Analytics\n");
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
         printf("BSA-Analytics --analytics [path-to-data] [--fourier] [--low-memory]\n");
-        printf("BSA-Analytics --source-range <file name> <point>\n");
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --flow-find\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
@@ -113,7 +112,6 @@ void pulsarEngine(int argc, char **argv) {
         printf("\t--threads <int> number of effective threads\n");
         printf("\t--skip <int> for skipping first N files\n");
         printf("\t--sub-zero for output pulsars with snr 2-5 (only good)\n");
-        printf("\t--source-range <file name> <point> for running in a special mode\n");
         printf("\t--analytics to run in analytics mode\n");
         printf("\t--low-memory to do not save data roads in analytics mode\n");
         printf("\t--long-roads to display more than two periods\n");
@@ -149,10 +147,7 @@ void pulsarEngine(int argc, char **argv) {
             Settings::settings()->setSkipCount(next.toInt());
         else if (strcmp(argv[i], "--sub-zero") == 0)
             Settings::settings()->setSubZero(true);
-        else if (strcmp(argv[i], "--source-range") == 0) {
-            Settings::settings()->detectStair(argv[i + 1], QString(argv[i + 2]).toInt());
-            return;
-        } else if (strcmp(argv[i], "--analytics") == 0) {
+        else if (strcmp(argv[i], "--analytics") == 0) {
             analytics = true;
             if (i + 1 < argc && argv[i + 1][0] != '-' && argv[i + 1][0] != 0)
                 analyticsPath = next;

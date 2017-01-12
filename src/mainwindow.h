@@ -58,6 +58,7 @@ private slots:
 
     void clone();
     void soundModeTriggered();
+    void setStair();
 
 public slots:
     void regenerate(Data &data);

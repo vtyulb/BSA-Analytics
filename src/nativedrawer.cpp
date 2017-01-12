@@ -56,8 +56,9 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
             mouseRect.setTop(height());
         }
         p.drawRect(mouseRect);
-    } else if (Settings::settings()->sourceMode())
+    } else if (Settings::settings()->sourceMode()) {
         p.drawLine(verticalLine, 0, verticalLine, height());
+    }
 
     p.end();
     event->accept();

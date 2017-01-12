@@ -19,7 +19,6 @@ struct Data {
     double oneStep;
     double delta_lucha;
     QVector<double> fbands;
-    double stairSize;
     double sigma;
 
     bool releaseProtected;
@@ -103,7 +102,6 @@ struct Data {
 
     void init() {
         sigma = -1;
-        stairSize = 0;
         releaseProtected = false;
         data = new float***[modules];
         fbands.resize(channels);

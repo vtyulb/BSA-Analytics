@@ -121,7 +121,7 @@ QString PulsarList::getJName(int module, int ray, QTime time) {
     int minutes = numb.right(2).toInt();
     minutes = minutes * 60 / 100;
 
-    return "J" + time.toString("HHmm") + (numb[0] == '-' ? "" : "+") + numb.left(2) + QString::number(minutes / 10) + QString::number(minutes % 10);
+    return QString("J" + time.toString("HHmm") + (numb[0] == '-' ? "" : "+") + numb.left(2) + QString::number(minutes / 10) + QString::number(minutes % 10)).replace("-", "-0");
 }
 
 void PulsarList::closeEvent(QCloseEvent *) {

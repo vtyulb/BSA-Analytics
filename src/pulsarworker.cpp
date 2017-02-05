@@ -86,7 +86,8 @@ QVector<Pulsar> PulsarWorker::searchIn() {
 
         const int duration = interval / data.oneStep / period;
         Pulsar pulsar;
-        pulsar.snr = 0;
+        pulsar.snr = pulsar.module = pulsar.ray = 0;
+        pulsar.data = data;
         int calc = 0;
         double noise = calculateNoise(res.data(), (interval / data.oneStep + 1) * 2);
         for (int i = start; i < end; i++) {
@@ -154,7 +155,6 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                 pulsar.filtered = true;
 
             if (Settings::settings()->preciseSearch() && !Settings::settings()->periodTester()) {
-                pulsar.calculateAdditionalData(res);
                 if (!pulsars.size())
                     pulsars.push_back(pulsar);
                 else if (pulsar.snr > pulsars[0].snr) {

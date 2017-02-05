@@ -10,6 +10,7 @@
 #include <QVector>
 #include <QDataStream>
 #include <QVariant>
+#include <QDebug>
 
 const double INTERVAL = 17;
 const double MINIMUM_PERIOD = 0.5;
@@ -79,13 +80,17 @@ struct Pulsar {
         if (Settings::settings()->longRoads())
             additionalSize = 1000;
 
-        for (int offset = -period / data.oneStep / 2; offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1 + additionalSize; offset++) {
-            double sum = 0;
-            int n = 0;
-            for (double i = firstPoint + offset; i < firstPoint + offset + interval / data.oneStep; i += period / data.oneStep * 2, n++)
-                sum += disp[int(i)];
+        if (period < 0.0001) {
+            qDebug() << "really strange things are happening now: period" << period;
+        } else {
+            for (int offset = -period / data.oneStep / 2; offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1 + additionalSize; offset++) {
+                double sum = 0;
+                int n = 0;
+                for (double i = firstPoint + offset; i < firstPoint + offset + interval / data.oneStep; i += period / data.oneStep * 2, n++)
+                    sum += disp[int(i)];
 
-            d.push_back(sum / n);
+                d.push_back(sum / n);
+            }
         }
 
         for (int i = 0; i < 100; i++)

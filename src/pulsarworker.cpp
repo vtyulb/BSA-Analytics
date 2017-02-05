@@ -158,9 +158,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                 pulsar.calculateAdditionalData(res);
                 if (!pulsars.size())
                     pulsars.push_back(pulsar);
-                else if ((pulsar.snr > pulsars[0].snr && (pulsar.similiarPeaks == pulsars[0].similiarPeaks)) ||
-                         (!pulsars[0].similiarPeaks && pulsar.similiarPeaks)) {
-
+                else if (pulsar.snr > pulsars[0].snr) {
                     pulsars.clear();
                     pulsars.push_back(pulsar);
                 }
@@ -256,13 +254,13 @@ QVector<double> PulsarWorker::applyDispersion() {
             data.data[module][i][ray][j] /= noise;
     }
 
-    for (int i = 0; i < data.npoints - mxd; i++)
+    for (int i = 0; i < data.npoints + mxd; i++)
         for (int j = 0; j < data.channels - 1; j++) {
             int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * j / data.oneStep + 0.5);
             res[i] += data.data[module][j][ray][max(i + dt, 0)];
         }
 
-    for (int i = data.npoints - mxd; i < data.npoints; i++)
+    for (int i = data.npoints + mxd; i < data.npoints; i++)
         for (int j = 0; j < data.channels - 1; j++)
             res[i] += data.data[module][j][ray][i];
 

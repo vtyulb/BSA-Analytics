@@ -32,6 +32,7 @@ struct Pulsar {
 
     bool badNoiseKnown = false;
     bool badNoiseRes;
+    bool similiarPeaks;
 
     double noiseLevel;
 
@@ -88,13 +89,28 @@ struct Pulsar {
             d.push_back(sum / n);
         }
 
+        float m1 = 0.00001;
+        float m2 = 0.00001;
+        for (int i = 0; i < d.size() / 2; i++)
+            if (m1 < d[i].toFloat())
+                m1 = d[i].toFloat();
+
+        for (int i = period / data.oneStep / 2 * 3 - 1; i < period / data.oneStep / 2 * 3 + 2; i++)
+            if (m2 < d[i].toFloat())
+                m2 = d[i].toFloat();
+
+        if (m1 < m2)
+            std::swap(m1, m2);
+
+        similiarPeaks = m2 * 1.2 > m1;
+
         for (int i = 0; i < 100; i++)
             d.push_back(0);
 
         for (int i = firstPoint; i < firstPoint + interval / data.oneStep; i++)
             d.push_back(disp[i]);
 
-
+        additionalData.clear();
         QDataStream stream(&additionalData, QIODevice::WriteOnly);
         stream << QVariant(d.toList());
     }

@@ -107,7 +107,7 @@ void PulsarProcess::run() {
 
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = CATEGORIES - 1; j >= 0; j--)
-            if (CATEGORIES_SIZES[j] < pulsars[i].snr) {
+            if (CATEGORIES_SIZES[j] < pulsars[i].snr || j == 0) {
                 if (!filtered[j] && pulsars[i].filtered) {
                     filtered[j] = true;
                     files[j]->write(QByteArray("filtered next\n"));
@@ -132,7 +132,7 @@ void PulsarProcess::run() {
 
     for (int i = 0; i < pulsars.size(); i++)
         for (int j = CATEGORIES - 1; j >= 0; j--)
-            if (CATEGORIES_SIZES[j] < pulsars[i].snr) {
+            if (CATEGORIES_SIZES[j] < pulsars[i].snr || j == 0) {
                 files[j]->write(pulsars[i].additionalData);
                 break;
             }

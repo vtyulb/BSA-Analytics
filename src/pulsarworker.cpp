@@ -155,9 +155,12 @@ QVector<Pulsar> PulsarWorker::searchIn() {
                 pulsar.filtered = true;
 
             if (Settings::settings()->preciseSearch() && !Settings::settings()->periodTester()) {
+                pulsar.calculateAdditionalData(res);
                 if (!pulsars.size())
                     pulsars.push_back(pulsar);
-                else if (pulsar.snr > pulsars[0].snr) {
+                else if ((pulsar.snr > pulsars[0].snr && (pulsar.similiarPeaks == pulsars[0].similiarPeaks)) ||
+                         (!pulsars[0].similiarPeaks && pulsar.similiarPeaks)) {
+
                     pulsars.clear();
                     pulsars.push_back(pulsar);
                 }

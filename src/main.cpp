@@ -201,6 +201,9 @@ void pulsarEngine(int argc, char **argv) {
 
 
     if (drawSpectre) {
+#ifdef WIN32
+        FreeConsole();
+#endif
         QApplication a(argc, argv);
         a.setOrganizationDomain("bsa.vtyulb.ru");
         a.setOrganizationName("vtyulb");

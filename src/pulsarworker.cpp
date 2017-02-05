@@ -25,8 +25,7 @@ PulsarWorker::PulsarWorker(int module, int ray, int D, Data data, bool sigmaCut)
 
 void PulsarWorker::run() {
     QTime t = QTime::currentTime();
-//    if (!Settings::settings()->singlePeriod())
-//        clearAverange();
+    clearAverange();
 
     res = searchIn();
     finished = true;

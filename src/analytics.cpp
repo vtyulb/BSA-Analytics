@@ -547,6 +547,9 @@ void Analytics::loadFourierData(bool cashOnly) {
     fourierData.clear();
 
     for (int i = 0; i < pulsars->size(); i++) {
+        if ((*pulsars)[i].fourierDuplicate)
+            continue;
+
         (*pulsars)[i].data.releaseProtected = false;
         (*pulsars)[i].data.releaseData();
     }
@@ -915,17 +918,12 @@ void Analytics::fourierFullGrayZone() {
             pulsars->push_back(pl);
 
             while (pl.snr > 5.0) {
-                pl.data.fork();
                 pl.data.releaseProtected = true;
                 pl.snr = -777;
                 pl.findFourierData(pl.firstPoint + (3 + longData * 10));
                 pl.data.sigma = pl.firstPoint;
                 if (pl.snr > 0)
                     pulsars->push_back(pl);
-                else {
-                    pl.data.releaseProtected = false;
-                    pl.data.releaseData();
-                }
             }
         }
 

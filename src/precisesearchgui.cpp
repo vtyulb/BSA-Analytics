@@ -7,6 +7,11 @@
 #include <QStringList>
 #include <QProcess>
 #include <QDebug>
+#include <QButtonGroup>
+#include <QRadioButton>
+#include <QSpinBox>
+#include <QThread>
+#include <QLabel>
 
 PreciseSearchGui::PreciseSearchGui(QWidget *parent) :
     QDialog(parent),
@@ -16,6 +21,17 @@ PreciseSearchGui::PreciseSearchGui(QWidget *parent) :
 
     QObject::connect(ui->selectButton, SIGNAL(clicked()), this, SLOT(selectFile()));
     QObject::connect(this, SIGNAL(accepted()), this, SLOT(runSearcher()));
+
+    QObject::connect(ui->preciseSearch, SIGNAL(clicked(bool)), this, SLOT(preciseSearchMode()));
+    QObject::connect(ui->spectre, SIGNAL(clicked(bool)), this, SLOT(nonPreciseSearchMode()));
+    QObject::connect(ui->singlePeriod, SIGNAL(clicked(bool)), this, SLOT(nonPreciseSearchMode()));
+
+    ui->threadCount->setMaximum(QThread::idealThreadCount());
+
+    QButtonGroup *group = new QButtonGroup(this);
+    group->addButton(ui->preciseSearch);
+    group->addButton(ui->spectre);
+    group->addButton(ui->singlePeriod);
 }
 
 PreciseSearchGui::~PreciseSearchGui()
@@ -57,11 +73,6 @@ void PreciseSearchGui::runSearcher() {
     if (ui->skipMultiplePeriods->isChecked())
         l << "--no-multiple-periods";
 
-    if (ui->periodTester->isChecked()) {
-        l << "--no-multiple-periods";
-        l << "--period-tester";
-    }
-
     if (!ui->clearNoise->isChecked())
         l << "--do-not-clear-noise";
 
@@ -71,8 +82,18 @@ void PreciseSearchGui::runSearcher() {
     if (ui->spectre->isChecked())
         l << "--draw-spectre";
 
-    l << "--threads" << "1";
+    l << "--threads" << QString::number(ui->threadCount->value());
 
     qDebug() << "running with" << l;
     QProcess::startDetached(qApp->arguments().at(0), l);
+}
+
+void PreciseSearchGui::preciseSearchMode() {
+    ui->skipMultiplePeriods->setEnabled(true);
+    ui->skipPeriodsLabel->setEnabled(true);
+}
+
+void PreciseSearchGui::nonPreciseSearchMode() {
+    ui->skipMultiplePeriods->setEnabled(false);
+    ui->skipPeriodsLabel->setEnabled(false);
 }

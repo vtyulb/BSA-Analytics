@@ -66,8 +66,8 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionOpen"/>
     <addaction name="actionOpen_Binary"/>
+    <addaction name="actionOpen"/>
     <addaction name="actionCustom_open"/>
     <addaction name="separator"/>
     <addaction name="actionSave"/>
@@ -128,7 +128,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>&amp;Open</string>
+    <string>Open RK8 BSA1/3</string>
    </property>
   </action>
   <action name="actionExit">
@@ -180,12 +180,12 @@
   </action>
   <action name="actionCustom_open">
    <property name="text">
-    <string>&amp;Custom open</string>
+    <string>Open custom</string>
    </property>
   </action>
   <action name="actionOpen_Binary">
    <property name="text">
-    <string>Open &amp;Binary</string>
+    <string>Open Binary BSA3</string>
    </property>
   </action>
   <action name="actionFast">
@@ -249,6 +249,9 @@
    </property>
   </action>
   <action name="actionPrecise_timing">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Precise &amp;timing</string>
    </property>
@@ -270,7 +273,7 @@
   </action>
   <action name="actionSet_stair">
    <property name="text">
-    <string>Set stair</string>
+    <string>S&amp;et stair</string>
    </property>
   </action>
  </widget>

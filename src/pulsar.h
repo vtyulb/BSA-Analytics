@@ -96,8 +96,10 @@ struct Pulsar {
         for (int i = 0; i < 100; i++)
             d.push_back(0);
 
-        for (int i = firstPoint; i < firstPoint + interval / data.oneStep; i++)
-            d.push_back(disp[i]);
+        if (period >= 0.0001) {
+            for (int i = firstPoint; i < firstPoint + interval / data.oneStep; i++)
+                d.push_back(disp[i]);
+        }
 
         additionalData.clear();
         QDataStream stream(&additionalData, QIODevice::WriteOnly);

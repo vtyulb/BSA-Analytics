@@ -61,9 +61,10 @@ void Controller::setModules(int m) {
 
 void Controller::resetSky(Data newData, int module, QVector<bool> rays) {
     data = newData;
-    if (Settings::settings()->fourierAnalytics())
+    if (Settings::settings()->fourierAnalytics()) {
         setFileName(data.previousLifeName);
-    else {
+        sky->hide();
+    } else {
         int first = 1;
         int last = 1;
         for (int i = 0; i < rays.size(); i++)

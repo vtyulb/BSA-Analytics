@@ -99,7 +99,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --flow-find\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
-               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads] [--period-tester]\n");
+               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads] [--period-tester] [--run-analytics-after]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double>\n"
                 "\t--time <09:01:00>\n");
@@ -129,6 +129,7 @@ void pulsarEngine(int argc, char **argv) {
     bool preciseSearch = false;
     bool drawSpectre = false;
     bool fourier = false;
+    bool runAnalyticsAfter = false;
     int module = 1;
     int ray = 1;
     double period = 1;
@@ -196,6 +197,8 @@ void pulsarEngine(int argc, char **argv) {
             exit(0);
         } else if (strcmp(argv[i], "--fourier") == 0)
             fourier = true;
+        else if (strcmp(argv[i], "--run-analytics-after") == 0)
+            runAnalyticsAfter = true;
     }
 
 
@@ -257,7 +260,12 @@ void pulsarEngine(int argc, char **argv) {
         QStringList l;
         l << "/select," + output;
         qDebug() << l;
-        QProcess::startDetached("explorer.exe", l);
+        if (runAnalyticsAfter) {
+            l.clear();
+            l << "--analytics" << output;
+            QProcess::startDetached(qApp->arguments().first(), l);
+        } else
+            QProcess::startDetached("explorer.exe", l);
 #endif
 
 

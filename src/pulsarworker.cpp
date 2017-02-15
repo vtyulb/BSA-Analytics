@@ -174,7 +174,10 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     } else {
         pulsars = removeDuplicates(pulsars);
         for (int i = 0; i < pulsars.size(); i++)
-            pulsars[i].calculateAdditionalData(res);
+            if (pulsars[i].period < 0.00001) {
+                pulsars.removeAt(i);
+                i--;
+            } else pulsars[i].calculateAdditionalData(res);
     }
 
     return  pulsars;

@@ -94,10 +94,14 @@ void Analytics::init() {
 
     window = new MainWindow(this);
     window->show();
+
     loadPulsars(folder);
     loadKnownPulsars();
-    if (!fourier)
+    if (!fourier) {
         apply();
+        if (pulsars->size() <= 200)
+            preciseDataMode();
+    }
 
     QObject::connect(ui->fileNames, SIGNAL(currentIndexChanged(int)), this, SLOT(apply()));
     ui->progressBar->hide();
@@ -929,6 +933,27 @@ void Analytics::fourierFullGrayZone() {
 
     ui->groupBox->show();
     apply();
+}
+
+void Analytics::preciseDataMode() {
+    ui->groupBox->hide();
+    ui->differentNoise->setEnabled(false);
+    ui->module->setEnabled(false);
+    ui->moduleCheckBox->setEnabled(false);
+    ui->ray->setEnabled(false);
+    ui->rayCheckBox->setEnabled(false);
+    ui->period->setEnabled(false);
+    ui->periodCheckBox->setEnabled(false);
+    ui->periodRangeLeft->setEnabled(false);
+    ui->periodRangeRight->setEnabled(false);
+    ui->periodRangeCheckBox->setEnabled(false);
+    ui->time->setEnabled(false);
+    ui->timeCheckBox->setEnabled(false);
+    ui->multiplePicks->setEnabled(false);
+    ui->strangeData->setEnabled(false);
+    ui->differentNoise->setEnabled(false);
+    ui->SNR->setEnabled(false);
+    ui->SNRCheckBox->setEnabled(false);
 }
 
 void Analytics::closeEvent(QCloseEvent *) {

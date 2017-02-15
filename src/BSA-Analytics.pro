@@ -92,7 +92,6 @@ FORMS    += mainwindow.ui \
     knownnoise.ui \
     spectre.ui \
     precisetiming.ui \
-    flowdetecter.ui \
-    rotationmeasure.ui
+    flowdetecter.ui
 
 win32:RC_FILE = icon.rc

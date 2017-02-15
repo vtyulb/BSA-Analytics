@@ -33,7 +33,6 @@ SOURCES += main.cpp\
     analytics.cpp \
     wavplayer.cpp \
     filecompressor.cpp \
-    flowfinder.cpp \
     precisesearchgui.cpp \
     knownpulsarsgui.cpp \
     knownnoise.cpp \
@@ -42,7 +41,6 @@ SOURCES += main.cpp\
     precisetiming.cpp \
     preciseperioddetecter.cpp \
     flowdetecter.cpp \
-    rotationmeasure.cpp \
     filesummator.cpp \
     datadumper.cpp \
     flowingwindow.cpp \
@@ -70,7 +68,6 @@ HEADERS  += mainwindow.h \
     wavplayer.h \
     filecompressor.h \
     knownpulsar.h \
-    flowfinder.h \
     precisesearchgui.h \
     knownpulsarsgui.h \
     knownnoise.h \
@@ -79,7 +76,6 @@ HEADERS  += mainwindow.h \
     precisetiming.h \
     preciseperioddetecter.h \
     flowdetecter.h \
-    rotationmeasure.h \
     filesummator.h \
     datadumper.h \
     flowingwindow.h \

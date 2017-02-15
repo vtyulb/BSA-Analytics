@@ -55,7 +55,7 @@ void WavPlayer::play(QVector<double> data, int doubling) {
     header.subchunk2Size = header.chunkSize - (44 - 8);
 
     QString fileName = QFileDialog::getSaveFileName(NULL, "Save wav file as");
-    FILE *fout = fopen((fileName + ".wav").toUtf8().constData(), "w");
+    FILE *fout = fopen((fileName + ".wav").toLocal8Bit().constData(), "wb");
     fwrite(&header, sizeof(header), 1, fout);
 
     double min = 100;

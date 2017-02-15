@@ -14,7 +14,6 @@
 #include <analytics.h>
 #include <calculationpool.h>
 #include <filecompressor.h>
-#include <flowfinder.h>
 #include <spectredrawer.h>
 #include <preciseperioddetecter.h>
 #include <filesummator.h>
@@ -97,7 +96,6 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
         printf("BSA-Analytics --analytics [path-to-data] [--fourier] [--low-memory]\n");
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
-        printf("BSA-Analytics --flow-find\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
                "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads] [--period-tester] [--run-analytics-after]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
@@ -167,9 +165,6 @@ void pulsarEngine(int argc, char **argv) {
             time = QTime::fromString(next, "hh:mm:ss");
         else if (strcmp(argv[i], "--compress") == 0) {
             FileCompressor::compress(next);
-            exit(0);
-        } else if (strcmp(argv[i], "--flow-find") == 0) {
-            FlowFinder::find(next);
             exit(0);
         } else if (strcmp(argv[i], "--no-multiple-periods") == 0)
             Settings::settings()->setNoMultiplePeriods(true);

@@ -4,6 +4,7 @@
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
 #include <QMessageBox>
+#include <QClipboard>
 
 #include <startime.h>
 #include <cmath>
@@ -433,7 +434,7 @@ void NativeDrawer::sourceDetect(int a, int b) {
             break;
         }
 
-    QString resStr = "Ray: " + QString::number(ray + 1) + "\n";
+    QString resStr;
     double average = 0;
     for (int k = 0; k < data.channels - 1; k++) {
         QVector<double> res;
@@ -447,7 +448,14 @@ void NativeDrawer::sourceDetect(int a, int b) {
         resStr = resStr + " " + QString::number(current);
     }
 
-    resStr += " " + QString::number(average);
+    if (Settings::settings()->sourceMode() == RotationMeasure)
+        resStr = QString::number(average) + " " + resStr;
+    else
+        resStr = QString::number(average);
+
+    qApp->clipboard()->setText(resStr);
+
+    resStr = "Ray: " + QString::number(ray + 1) + "\n" + resStr;
 
     QMessageBox::information(this, "source height", resStr);
 }

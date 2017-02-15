@@ -92,7 +92,6 @@
     <addaction name="actionLive"/>
     <addaction name="actionFast"/>
     <addaction name="separator"/>
-    <addaction name="actionSet_stair"/>
     <addaction name="separator"/>
     <addaction name="actionClone"/>
     <addaction name="separator"/>
@@ -102,11 +101,12 @@
     <property name="title">
      <string>P&amp;ulsars search</string>
     </property>
-    <addaction name="actionPulsar_searcher"/>
-    <addaction name="separator"/>
     <addaction name="actionPulsar_analytics"/>
     <addaction name="actionPulsar_analytics_low_memory"/>
+    <addaction name="separator"/>
     <addaction name="actionPulsar_fourier_analytics"/>
+    <addaction name="separator"/>
+    <addaction name="actionPulsar_searcher"/>
    </widget>
    <widget class="QMenu" name="menuPulsars_investigation">
     <property name="title">
@@ -114,14 +114,18 @@
     </property>
     <addaction name="actionPrecise_search"/>
     <addaction name="actionPrecise_timing"/>
-    <addaction name="separator"/>
-    <addaction name="actionFlow_detecter"/>
-    <addaction name="separator"/>
-    <addaction name="actionRotation_measure"/>
+   </widget>
+   <widget class="QMenu" name="menuNon_pulsar_flux">
+    <property name="title">
+     <string>&amp;Non pulsar flux</string>
+    </property>
+    <addaction name="actionRotation_Measure"/>
+    <addaction name="actionFlux_Density"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPulsars"/>
    <addaction name="menuPulsars_investigation"/>
+   <addaction name="menuNon_pulsar_flux"/>
    <addaction name="menuEdit"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -274,6 +278,30 @@
   <action name="actionSet_stair">
    <property name="text">
     <string>S&amp;et stair</string>
+   </property>
+  </action>
+  <action name="actionEstimation_of_flux">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Estimation of flux</string>
+   </property>
+  </action>
+  <action name="actionRotation_Measure">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Rotation Measure</string>
+   </property>
+  </action>
+  <action name="actionFlux_Density">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Flux Density</string>
    </property>
   </action>
  </widget>

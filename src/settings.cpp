@@ -7,7 +7,6 @@ Settings::Settings() {
     _lowMemory = false;
     _preciseSearch = false;
     _soundMode = false;
-    _flowFinder = false;
     _noMultiplePeriods = false;
     _dispersion = -1;
     _doNotClearNoise = false;
@@ -110,8 +109,15 @@ void Settings::setRealOneStep(double st) {
     _realOneStep = st;
 }
 
-bool Settings::sourceMode() {
-    return stairs.size() > 0;
+SourceMode Settings::sourceMode() {
+    if (stairs.size() == 0)
+        return NoSourceMode;
+    else
+        return _sourceMode;
+}
+
+void Settings::setSourceMode(SourceMode mode) {
+    _sourceMode = mode;
 }
 
 void Settings::detectStair(const Data &data, int pointStart, int pointEnd) {
@@ -173,14 +179,6 @@ void Settings::setTime(QTime t) {
 
 QTime Settings::getTime() {
     return _time;
-}
-
-void Settings::setFlowFinder(bool f) {
-    _flowFinder = f;
-}
-
-bool Settings::flowFinder() {
-    return _flowFinder;
 }
 
 void Settings::setDoNotClearNoise(bool b) {
@@ -257,6 +255,8 @@ bool Settings::getFourierHighGround() {
 
 void Settings::setStairStatus(int status) {
     _stairStatus = status;
+    if (status == NoStair)
+        stairs.clear();
 }
 
 int Settings::stairStatus() {

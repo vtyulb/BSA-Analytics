@@ -12,6 +12,12 @@ enum Stair {
     DetectedStair = 2
 };
 
+enum SourceMode {
+    NoSourceMode = 0,
+    RotationMeasure = 1,
+    FluxDensity = 2
+};
+
 class Settings {
     public:
         static Settings *settings();
@@ -23,7 +29,6 @@ class Settings {
         int skipCount();
         double realOneStep();
         bool soundMode();
-        bool flowFinder();
         bool noMultiplePeriods();
         bool doNotClearNoise();
         bool singlePeriod();
@@ -44,7 +49,7 @@ class Settings {
         bool getFourierHighGround();
 
         double getStairHeight(int module, int ray, int channel);
-        bool sourceMode();
+        SourceMode sourceMode();
 
         void setSkipCount(int);
         void setSubZero(bool);
@@ -64,7 +69,6 @@ class Settings {
         void setRay(int);
         void setPeriod(double);
         void setTime(QTime);
-        void setFlowFinder(bool);
         void setNoMultiplePeriods(bool);
         void setDispersion(int);
         void setDispersionData(const QVector<double>&);
@@ -75,6 +79,7 @@ class Settings {
         void setFourierSpectreSize(int);
         void setFourierHighGround(bool);
         void setStairStatus(int);
+        void setSourceMode(SourceMode);
 
     private:
         Settings();
@@ -89,7 +94,6 @@ class Settings {
         bool _periodTester;
         int _ray;
         int _module;
-        bool _flowFinder;
         bool _singlePeriod;
         bool _noMultiplePeriods;
         bool _doNotClearNoise;
@@ -102,6 +106,7 @@ class Settings {
         int _fourierSpectreSize;
         bool _fourierHighGround;
         bool _stairStatus;
+        SourceMode _sourceMode;
         QVector<double> dispersionPlotData;
         QVector<QVector<QVector<double> > > stairs;
         Data _lastData;

@@ -13,7 +13,6 @@
 #include <precisesearchgui.h>
 #include <precisetiming.h>
 #include <flowdetecter.h>
-#include <rotationmeasure.h>
 #include <settings.h>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -42,10 +41,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionLive, SIGNAL(triggered(bool)), this, SLOT(drawLive(bool)));
     QObject::connect(ui->actionPrecise_search, SIGNAL(triggered()), this, SLOT(runPreciseGui()));
     QObject::connect(ui->actionPrecise_timing, SIGNAL(triggered()), this, SLOT(runPreciseTimingGui()));
-    QObject::connect(ui->actionFlow_detecter, SIGNAL(triggered(bool)), this, SLOT(runFlowGui()));
-    QObject::connect(ui->actionRotation_measure, SIGNAL(triggered(bool)), this, SLOT(runRotationGui()));
+//    QObject::connect(ui->actionFlow_detecter, SIGNAL(triggered(bool)), this, SLOT(runFlowGui()));
     QObject::connect(ui->actionSound_mode, SIGNAL(triggered()), this, SLOT(soundModeTriggered()));
-    QObject::connect(ui->actionSet_stair, SIGNAL(triggered()), this, SLOT(setStair()));
+    QObject::connect(ui->actionRotation_Measure, SIGNAL(triggered()), this, SLOT(setRotationMeasureMode()));
+    QObject::connect(ui->actionFlux_Density, SIGNAL(triggered()), this, SLOT(setFluxDensityMode()));
 
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
@@ -259,18 +258,33 @@ void MainWindow::runFlowGui() {
     detecter->show();
 }
 
-void MainWindow::runRotationGui() {
-    static RotationMeasure *measure = new RotationMeasure(this);
-    measure->show();
-}
-
 void MainWindow::soundModeTriggered() {
     Settings::settings()->setSoundMode(ui->actionSound_mode->isChecked());
 }
 
+void MainWindow::setRotationMeasureMode() {
+    ui->actionFlux_Density->setChecked(false);
+    setStair();
+}
+
+void MainWindow::setFluxDensityMode() {
+    ui->actionRotation_Measure->setChecked(false);
+    setStair();
+}
+
 void MainWindow::setStair() {
-    Settings::settings()->setStairStatus(SettingStair);
-    QMessageBox::information(this, "Setting stair",
-                             "Open file with the stair, make a rectangular around it.\n"
-                             "Rectangular height does not matter, only width and position");
+    bool on = ui->actionRotation_Measure->isChecked() || ui->actionFlux_Density->isChecked();
+    if (on) {
+        Settings::settings()->setStairStatus(NoStair);
+        Settings::settings()->setStairStatus(SettingStair);
+        QMessageBox::information(this, "Setting stair",
+                                 "Open file with the stair, make a rectangular around it.\n"
+                                 "Rectangular height does not matter, only width and position");
+    } else
+        Settings::settings()->setStairStatus(NoStair);
+
+    if (ui->actionRotation_Measure->isChecked())
+        Settings::settings()->setSourceMode(RotationMeasure);
+    else
+        Settings::settings()->setSourceMode(FluxDensity);
 }

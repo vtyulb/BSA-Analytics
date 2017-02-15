@@ -73,6 +73,9 @@ void PreciseSearchGui::runSearcher() {
     if (ui->skipMultiplePeriods->isChecked())
         l << "--no-multiple-periods";
 
+    if (ui->runAnalytics->isEnabled() && ui->runAnalytics->isChecked())
+        l << "--run-analytics-after";
+
     if (!ui->clearNoise->isChecked())
         l << "--do-not-clear-noise";
 
@@ -91,9 +94,15 @@ void PreciseSearchGui::runSearcher() {
 void PreciseSearchGui::preciseSearchMode() {
     ui->skipMultiplePeriods->setEnabled(true);
     ui->skipPeriodsLabel->setEnabled(true);
+    ui->runAnalytics->setEnabled(true);
 }
 
 void PreciseSearchGui::nonPreciseSearchMode() {
     ui->skipMultiplePeriods->setEnabled(false);
     ui->skipPeriodsLabel->setEnabled(false);
+
+    if (ui->spectre->isChecked())
+        ui->runAnalytics->setEnabled(false);
+    else
+        ui->runAnalytics->setEnabled(true);
 }

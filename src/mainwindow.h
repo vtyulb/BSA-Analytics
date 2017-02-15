@@ -54,10 +54,12 @@ private slots:
     void runPreciseGui();
     void runPreciseTimingGui();
     void runFlowGui();
-    void runRotationGui();
 
     void clone();
     void soundModeTriggered();
+
+    void setRotationMeasureMode();
+    void setFluxDensityMode();
     void setStair();
 
 public slots:

@@ -26,7 +26,6 @@ class PulsarList : public QWidget
         Pulsar *currentPulsar;
 
         void closeEvent(QCloseEvent*);
-        QString getJName(int module, int ray, QTime time);
 
         QVector<int> pulsarsIndex;
 

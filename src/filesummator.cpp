@@ -266,6 +266,7 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                         if (module == data.modules - 1 && ray == data.rays - 1 && channel == data.channels - 1)
                             dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
 
+                        qDebug() << "Behaviour is strange. Please show this message to <vtyulb@vtyulb.ru>";
                         for (int k = 0; k < PC; k++) {
                             multifile.data[module][channel][ray][startPoint + k + offset] += data.data[module][channel][ray][j * PC + k + offset];
                             coefficients.data[module][channel][ray][startPoint + k + offset] += 1;

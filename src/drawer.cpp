@@ -166,11 +166,12 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
 }
 
 void Drawer::checkBoxStateChanged() {
-    QVector<bool> v;
+    raysEnabled.clear();
     for (int i = 0; i < rays; i++)
-        v.push_back(checkBoxes[i]->isChecked());
+        raysEnabled.push_back(checkBoxes[i]->isChecked());
 
-    drawer->setRayVisibles(v);
+    drawer->setRayVisibles(raysEnabled);
+    controller->resetSky(drawer->data, drawer->module, raysEnabled);
 }
 
 void Drawer::channelChanged(int channel) {
@@ -221,6 +222,7 @@ void Drawer::moduleChanged() {
         if (modules[i]->isChecked())
             drawer->module = i;
 
+    controller->resetSky(drawer->data, drawer->module, raysEnabled);
     drawer->resetVisibleRectangle(true, true);
 }
 
@@ -245,7 +247,7 @@ void Drawer::timeToDie() {
 
 void Drawer::deltaChanged(double d) {
     drawer->data.delta_lucha = d;
-    controller->resetSky(drawer->data);
+    controller->resetSky(drawer->data, drawer->module, raysEnabled);
     drawer->drawAxes();
     drawer->repaint();
 }

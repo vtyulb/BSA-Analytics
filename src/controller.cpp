@@ -1,6 +1,7 @@
 #include <controller.h>
 #include <startime.h>
 #include <settings.h>
+#include <pulsar.h>
 
 #include <QVBoxLayout>
 #include <QDebug>
@@ -58,11 +59,28 @@ void Controller::setModules(int m) {
     modules->setText(QString("%1 modules").arg(QString::number(m)));
 }
 
-void Controller::resetSky(Data newData) {
+void Controller::resetSky(Data newData, int module, QVector<bool> rays) {
     data = newData;
-    sky->setText(StarTime::StarTime(data));
     if (Settings::settings()->fourierAnalytics())
         setFileName(data.previousLifeName);
+    else {
+        int first = 1;
+        int last = 1;
+        for (int i = 0; i < rays.size(); i++)
+            if (rays[i]) {
+                first = i;
+                break;
+            }
+
+        for (int i = rays.size() - 1; i >= 0; i--)
+            if (rays[i]) {
+                last = i;
+                break;
+            }
+
+        QString res = getPulsarJName(module, (first + last) / 2 + 1, QTime(0,0)).right(5);
+        sky->setText(res.left(3) + "°" + res.right(2) + "'");
+    }
 }
 
 void Controller::setFileName(QString s) {

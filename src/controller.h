@@ -34,7 +34,7 @@ signals:
 
 public slots:
     void setCoords(QPointF);
-    void resetSky(Data newData);
+    void resetSky(Data newData, int module = 1, QVector<bool> ray = QVector<bool>());
 };
 
 #endif // CONTROLLER_H

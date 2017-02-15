@@ -34,6 +34,7 @@ private:
     QVector<QLineEdit* > colors;
     QSpinBox *channel;
     QVector<QRadioButton* > modules;
+    QVector<bool> raysEnabled;
     Controller *controller;
     int rays, numberChannels, numberModules;
 

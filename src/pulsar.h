@@ -309,6 +309,16 @@ static QString getPulsarJName(int module, int ray, QTime time) {
         {"-250", "-325", "-402", "-482", "-562", "-646", "-732", "-820"}
     };
 
+    if (module < 0)
+        module = 0;
+    else if (module > 5)
+        module = 5;
+
+    if (ray < 0)
+        ray = 0;
+    else if (ray > 7)
+        ray = 7;
+
     QString numb = degree[module][ray];
     if (!Settings::settings()->getFourierHighGround())
         numb = lowDegree[module][ray];

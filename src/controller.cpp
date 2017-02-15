@@ -79,7 +79,7 @@ void Controller::resetSky(Data newData, int module, QVector<bool> rays) {
                 break;
             }
 
-        QString res = getPulsarJName(module, (first + last) / 2 + 1, QTime(0,0)).right(5);
+        QString res = getPulsarJName(module + 1, (first + last) / 2 + 1, QTime(0,0)).right(5);
         sky->setText(res.left(3) + "°" + res.right(2) + "'");
     }
 }

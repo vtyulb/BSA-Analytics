@@ -225,6 +225,11 @@ void pulsarEngine(int argc, char **argv) {
     }
 
     if (preciseSearch) {
+        QCoreApplication a(argc, argv);
+        a.setOrganizationDomain("bsa.vtyulb.ru");
+        a.setOrganizationName("vtyulb");
+        a.setApplicationName("BSA-Analytics");
+
         qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray << "with time" << time;
         Settings::settings()->setPreciseSearch(true);
         Settings::settings()->setModule(module - 1);
@@ -250,17 +255,19 @@ void pulsarEngine(int argc, char **argv) {
         p.wait();
 
 #ifndef Q_OS_LINUX
-        output.replace("/", "\\");
 
         QStringList l;
-        l << "/select," + output;
-        qDebug() << l;
         if (runAnalyticsAfter) {
             l.clear();
             l << "--analytics" << output;
+            qDebug() << l;
             QProcess::startDetached(qApp->arguments().first(), l);
-        } else
+        } else {
+            output.replace("/", "\\");
+            l << "/select," + output;
+            qDebug() << l;
             QProcess::startDetached("explorer.exe", l);
+        }
 #endif
 
 

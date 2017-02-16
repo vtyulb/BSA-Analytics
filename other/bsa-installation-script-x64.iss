@@ -27,6 +27,7 @@ OutputBaseFilename=BSA-Analytics-x64
 Compression=lzma
 SolidCompression=yes
 ArchitecturesAllowed=x64
+ChangesAssociations=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -50,3 +51,13 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
+[Registry]
+Root: HKCR; Subkey: ".pnt"; ValueType: string; ValueName: ""; ValueData: "BSAShortData"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "BSAShortData"; ValueType: string; ValueName: ""; ValueData: "BSA Short Data"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "BSAShortData\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\BSA-Analytics.exe,0"
+Root: HKCR; Subkey: "BSAShortData\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""%1"""
+
+Root: HKCR; Subkey: ".pnthr"; ValueType: string; ValueName: ""; ValueData: "BSALongData"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "BSALongData"; ValueType: string; ValueName: ""; ValueData: "BSA Long Data"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "BSALongData\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\BSA-Analytics.exe,0"
+Root: HKCR; Subkey: "BSALongData\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""%1"""

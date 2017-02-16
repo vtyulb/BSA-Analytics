@@ -15,7 +15,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QString file = "", QWidget *parent = 0);
     ~MainWindow();
 
     static QString nativeDecodeLastPath(QString path);
@@ -26,6 +26,7 @@ private:
     QProgressBar *progress;
 
     QString lastOpenPath;
+    QString fileToOpen;
 
     void saveSettings();
     void loadSettings();
@@ -38,6 +39,7 @@ private slots:
     void openFourierAnalytics();
     void openFile();
     void openBinaryFile();
+    void openStartFile();
     void customOpen();
 
     void nativeOpenFile(QString fileName, int skip = 0, int skipFirstRay = 2, QDateTime = QDateTime(), bool binary = false);
@@ -48,6 +50,8 @@ private slots:
     void drawNet(bool);
     void drawFast(bool);
     void drawLive(bool);
+
+    void showHelp();
     void showAbout();
     void showAboutQt();
 

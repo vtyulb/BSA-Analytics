@@ -44,6 +44,7 @@ CustomOpenDialog::CustomOpenDialog(QString lastOpenPath, QWidget *parent) :
     ui->dateTimeEdit->setDisplayFormat("dd.MM.yyyy hh:mm:ss");
 
     ui->binary->click();
+    resize(minimumSize());
 }
 
 CustomOpenDialog::~CustomOpenDialog()

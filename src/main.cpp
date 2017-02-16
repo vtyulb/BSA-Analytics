@@ -92,7 +92,9 @@ void precisePacket(QString me, QString fileName) {
 
 void pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
-        printf("Usage:\nBSA-Analytics\n");
+        printf("Usage:\n");
+        printf("BSA-Analytics\n");
+        printf("BSA-Analytics [311217_01_N1_00.pnt | 311217_23_N2_00.pnthr]\n");
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
         printf("BSA-Analytics --analytics [path-to-data] [--fourier] [--low-memory]\n");
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
@@ -287,6 +289,26 @@ void pulsarEngine(int argc, char **argv) {
         a.exec();
         delete an;
         exit(0);
+    }
+
+    if (argc == 2) {
+        QString data = argv[1];
+        if (data.endsWith(".pnt") || data.endsWith(".pnthr")) {
+            QApplication a(argc, argv);
+            a.setOrganizationDomain("bsa.vtyulb.ru");
+            a.setOrganizationName("vtyulb");
+            a.setApplicationName("BSA-Analytics");
+
+#ifdef WIN32
+            FreeConsole();
+#endif
+
+            mainSpace::program = QString(argv[0]);
+            mainSpace::w = new MainWindow(data);
+            mainSpace::w->show();
+
+            exit(a.exec());
+        }
     }
 
     if (dataPath == "" || savePath == "")

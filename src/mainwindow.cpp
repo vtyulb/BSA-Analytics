@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <QProcess>
+#include <QDesktopServices>
 
 #include <customopendialog.h>
 #include <pulsarlist.h>
@@ -15,9 +16,10 @@
 #include <flowdetecter.h>
 #include <settings.h>
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(QString file, QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
+    fileToOpen(file),
     drawer(NULL)
 {
     ui->setupUi(this);
@@ -45,6 +47,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(ui->actionSound_mode, SIGNAL(triggered()), this, SLOT(soundModeTriggered()));
     QObject::connect(ui->actionRotation_Measure, SIGNAL(triggered()), this, SLOT(setRotationMeasureMode()));
     QObject::connect(ui->actionFlux_Density, SIGNAL(triggered()), this, SLOT(setFluxDensityMode()));
+    QObject::connect(ui->actionHandBook, SIGNAL(triggered()), this, SLOT(showHelp()));
 
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
@@ -55,8 +58,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionAxes->setChecked(true);
     loadSettings();
 
-    if (!parent)
-        QTimer::singleShot(400, this, SLOT(customOpen()));
+    if (!parent) {
+        if (file != "")
+            QTimer::singleShot(400, this, SLOT(openStartFile()));
+        else
+            QTimer::singleShot(400, this, SLOT(customOpen()));
+    }
 }
 
 MainWindow::~MainWindow()
@@ -81,6 +88,11 @@ void MainWindow::openBinaryFile() {
         return;
 
     nativeOpenFile(path, 0, 0, QDateTime(), true);
+}
+
+void MainWindow::openStartFile() {
+    nativeOpenFile(fileToOpen, 0, 2, QDateTime(), true);
+    QDir::setCurrent(qApp->applicationDirPath());
 }
 
 void MainWindow::openAnalytics(bool hasMemory, bool fourier) {
@@ -287,4 +299,8 @@ void MainWindow::setStair() {
         Settings::settings()->setSourceMode(RotationMeasure);
     else
         Settings::settings()->setSourceMode(FluxDensity);
+}
+
+void MainWindow::showHelp() {
+    QDesktopServices::openUrl(QUrl::fromLocalFile("HandBook.pdf"));
 }

@@ -32,6 +32,8 @@ PreciseSearchGui::PreciseSearchGui(QWidget *parent) :
     group->addButton(ui->preciseSearch);
     group->addButton(ui->spectre);
     group->addButton(ui->singlePeriod);
+
+    resize(minimumSize());
 }
 
 PreciseSearchGui::~PreciseSearchGui()

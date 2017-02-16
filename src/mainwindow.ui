@@ -79,6 +79,7 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
+    <addaction name="actionHandBook"/>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
@@ -132,7 +133,7 @@
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionOpen">
    <property name="text">
-    <string>Open RK8 BSA1/3</string>
+    <string>Open RK8 &amp;BSA1/3</string>
    </property>
   </action>
   <action name="actionExit">
@@ -184,12 +185,12 @@
   </action>
   <action name="actionCustom_open">
    <property name="text">
-    <string>Open custom</string>
+    <string>Open &amp;custom</string>
    </property>
   </action>
   <action name="actionOpen_Binary">
    <property name="text">
-    <string>Open Binary BSA3</string>
+    <string>&amp;Open Binary BSA3</string>
    </property>
   </action>
   <action name="actionFast">
@@ -293,7 +294,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Rotation Measure</string>
+    <string>&amp;Rotation Measure</string>
    </property>
   </action>
   <action name="actionFlux_Density">
@@ -301,7 +302,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Flux Density</string>
+    <string>&amp;Flux Density</string>
+   </property>
+  </action>
+  <action name="actionHandBook">
+   <property name="text">
+    <string>HandBook</string>
    </property>
   </action>
  </widget>

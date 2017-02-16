@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>261</width>
-    <height>299</height>
+    <width>232</width>
+    <height>304</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -91,7 +91,7 @@
       <item>
        <widget class="QRadioButton" name="text">
         <property name="text">
-         <string>&amp;text</string>
+         <string>te&amp;xt</string>
         </property>
        </widget>
       </item>

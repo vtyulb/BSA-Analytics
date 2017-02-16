@@ -92,7 +92,7 @@ void Analytics::init() {
 
     s.setValue("openPath", folder);
 
-    window = new MainWindow(this);
+    window = new MainWindow("", this);
     window->show();
 
     loadPulsars(folder);

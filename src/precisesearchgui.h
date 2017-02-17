@@ -20,8 +20,7 @@ private slots:
     void runSearcher();
     void runPacketSearcher();
 
-    void preciseSearchMode();
-    void nonPreciseSearchMode();
+    void determineSearchMode();
 
 private:
     Ui::PreciseSearchGui *ui;

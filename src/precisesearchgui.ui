@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>283</width>
-    <height>496</height>
+    <width>325</width>
+    <height>538</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -196,9 +196,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QRadioButton" name="fluxDensity">
+        <property name="text">
+         <string>Flu&amp;x density</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QRadioButton" name="singlePeriod">
         <property name="text">
-         <string>S&amp;ingle period</string>
+         <string>Sin&amp;gle period</string>
         </property>
        </widget>
       </item>

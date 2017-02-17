@@ -111,7 +111,7 @@
    </widget>
    <widget class="QMenu" name="menuPulsars_investigation">
     <property name="title">
-     <string>&amp;Investigation of pusars</string>
+     <string>&amp;Investigation of pulsars</string>
     </property>
     <addaction name="actionPrecise_search"/>
     <addaction name="actionPrecise_timing"/>
@@ -307,7 +307,7 @@
   </action>
   <action name="actionHandBook">
    <property name="text">
-    <string>HandBook</string>
+    <string>&amp;HandBook</string>
    </property>
   </action>
  </widget>

@@ -8,6 +8,7 @@
 #include <QTimer>
 #include <QProcess>
 #include <QDesktopServices>
+#include <QStyleFactory>
 
 #include <customopendialog.h>
 #include <pulsarlist.h>
@@ -64,6 +65,10 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
         else
             QTimer::singleShot(400, this, SLOT(customOpen()));
     }
+
+#ifdef WIN32
+    qApp->setStyle(QStyleFactory::create("fusion"));
+#endif
 }
 
 MainWindow::~MainWindow()

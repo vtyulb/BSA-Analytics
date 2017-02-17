@@ -12,6 +12,7 @@
 #include <QSpinBox>
 #include <QThread>
 #include <QLabel>
+#include <QMessageBox>
 
 PreciseSearchGui::PreciseSearchGui(QWidget *parent) :
     QDialog(parent),
@@ -22,9 +23,10 @@ PreciseSearchGui::PreciseSearchGui(QWidget *parent) :
     QObject::connect(ui->selectButton, SIGNAL(clicked()), this, SLOT(selectFile()));
     QObject::connect(this, SIGNAL(accepted()), this, SLOT(runSearcher()));
 
-    QObject::connect(ui->preciseSearch, SIGNAL(clicked(bool)), this, SLOT(preciseSearchMode()));
-    QObject::connect(ui->spectre, SIGNAL(clicked(bool)), this, SLOT(nonPreciseSearchMode()));
-    QObject::connect(ui->singlePeriod, SIGNAL(clicked(bool)), this, SLOT(nonPreciseSearchMode()));
+    QObject::connect(ui->preciseSearch, SIGNAL(clicked(bool)), this, SLOT(determineSearchMode()));
+    QObject::connect(ui->fluxDensity, SIGNAL(clicked(bool)), this, SLOT(determineSearchMode()));
+    QObject::connect(ui->spectre, SIGNAL(clicked(bool)), this, SLOT(determineSearchMode()));
+    QObject::connect(ui->singlePeriod, SIGNAL(clicked(bool)), this, SLOT(determineSearchMode()));
 
     ui->threadCount->setMaximum(QThread::idealThreadCount());
 
@@ -32,6 +34,7 @@ PreciseSearchGui::PreciseSearchGui(QWidget *parent) :
     group->addButton(ui->preciseSearch);
     group->addButton(ui->spectre);
     group->addButton(ui->singlePeriod);
+    group->addButton(ui->fluxDensity);
 
     resize(minimumSize());
 }
@@ -87,24 +90,34 @@ void PreciseSearchGui::runSearcher() {
     if (ui->spectre->isChecked())
         l << "--draw-spectre";
 
+    if (ui->fluxDensity->isChecked()) {
+        QMessageBox::information(this, "Error", "This function is not implemented yet!");
+        return;
+    }
+
     l << "--threads" << QString::number(ui->threadCount->value());
 
     qDebug() << "running with" << l;
     QProcess::startDetached(qApp->arguments().at(0), l);
 }
 
-void PreciseSearchGui::preciseSearchMode() {
+void PreciseSearchGui::determineSearchMode() {
     ui->skipMultiplePeriods->setEnabled(true);
     ui->skipPeriodsLabel->setEnabled(true);
     ui->runAnalytics->setEnabled(true);
-}
 
-void PreciseSearchGui::nonPreciseSearchMode() {
-    ui->skipMultiplePeriods->setEnabled(false);
-    ui->skipPeriodsLabel->setEnabled(false);
+    if (ui->singlePeriod->isChecked()) {
+        ui->skipMultiplePeriods->setEnabled(false);
+        ui->skipPeriodsLabel->setEnabled(false);
+    }
 
-    if (ui->spectre->isChecked())
+    if (ui->spectre->isChecked()) {
         ui->runAnalytics->setEnabled(false);
-    else
-        ui->runAnalytics->setEnabled(true);
+        ui->skipMultiplePeriods->setEnabled(false);
+    }
+
+    if (ui->fluxDensity->isChecked()) {
+        ui->skipMultiplePeriods->setEnabled(false);
+        ui->runAnalytics->setEnabled(false);
+    }
 }

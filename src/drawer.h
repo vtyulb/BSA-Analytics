@@ -29,7 +29,7 @@ private:
     QPushButton *disableAll;
     QPushButton *enableAll;
     QDoubleSpinBox *delta;
-    QCommandLinkButton *drawButton;
+    QPushButton *drawButton;
     QVector<QCheckBox* > checkBoxes;
     QVector<QLineEdit* > colors;
     QSpinBox *channel;

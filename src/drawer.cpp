@@ -51,13 +51,14 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
 
     QVBoxLayout *l = new QVBoxLayout(controlFrame);
     for (int i = 0; i < data.rays; i++) {
-        checkBoxes.push_back(new QCheckBox(QString("ray %1%2").arg(QString::number((i + 1)/10), QString::number((i + 1)%10)), this));
+        checkBoxes.push_back(new QCheckBox(QString("Ray %1%2").arg(QString::number((i + 1)/10), QString::number((i + 1)%10)), this));
         checkBoxes[i]->setChecked(true);
         QObject::connect(checkBoxes[i], SIGNAL(clicked()), this, SLOT(checkBoxStateChanged()));
 
         QWidget *widget = new QWidget(this);
         colors.push_back(new QLineEdit(this));
         colors[i]->setText(colorNames[i]);
+        colors[i]->setMaximumWidth(QFontMetrics(colors[i]->font()).width("FFFFFF") + 80);
 
         ColorWidget *w = new ColorWidget(colors[i], this);
         w->setMinimumWidth(20);
@@ -72,12 +73,16 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
         l->addWidget(widget);
     }
 
+    QWidget *enableAndDisableButtons = new QWidget;
+    QHBoxLayout *enableAndDisableButtonsLayout = new QHBoxLayout(enableAndDisableButtons);
     disableAll = new QPushButton(this);
-    disableAll->setText("Disable all rays");
-    l->addWidget(disableAll);
+    disableAll->setText("Disable all");
+    enableAndDisableButtonsLayout->addWidget(disableAll);
     enableAll = new QPushButton(this);
-    enableAll->setText("Enable all rays");
-    l->addWidget(enableAll);
+    enableAll->setText("Enable all");
+    enableAndDisableButtonsLayout->addWidget(enableAll);
+    enableAndDisableButtonsLayout->setContentsMargins(0, 0, 0, 0);
+    l->addWidget(enableAndDisableButtons);
 
     if (data.channels > 1) {
         channel = new QSpinBox(this);
@@ -103,7 +108,7 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
         modulesLayout->setContentsMargins(1, 1, 1, 1);
         QButtonGroup *randomGroup = new QButtonGroup(this);
         for (int i = 0; i < data.modules; i++) {
-            modules.push_back(new QRadioButton(QString("module %1").arg(QString::number(i + 1)), this));
+            modules.push_back(new QRadioButton(QString("Module %1").arg(QString::number(i + 1)), this));
             modulesLayout->addWidget(modules[i]);
             randomGroup->addButton(modules[i]);
 
@@ -129,12 +134,17 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     l->addWidget(deltaFrame);
 
     l->addStretch(10);
-    resetButton = new QPushButton(this);
-    resetButton->setText("reset");
-    l->addWidget(resetButton);
-    drawButton = new QCommandLinkButton(this);
+
+    QWidget *resetAndDraw = new QWidget;
+    QHBoxLayout *resetAndDrawLayout = new QHBoxLayout(resetAndDraw);
+    drawButton = new QPushButton(this);
     drawButton->setText("Draw");
-    l->addWidget(drawButton);
+    resetAndDrawLayout->addWidget(drawButton);
+    resetButton = new QPushButton(this);
+    resetButton->setText("Reset");
+    resetAndDrawLayout->addWidget(resetButton);
+    resetAndDrawLayout->setContentsMargins(0, 0, 0, 0);
+    l->addWidget(resetAndDraw);
 
     QObject::connect(enableAll, SIGNAL(clicked()), this, SLOT(enableAllRays()));
     QObject::connect(disableAll, SIGNAL(clicked()), this, SLOT(disableAllRays()));

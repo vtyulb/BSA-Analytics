@@ -66,3 +66,6 @@ Root: HKCR; Subkey: ".pulsar"; ValueType: string; ValueName: ""; ValueData: "BSA
 Root: HKCR; Subkey: "BSAPulsar"; ValueType: string; ValueName: ""; ValueData: "BSA-Analytics Pulsar"; Flags: uninsdeletevalue
 Root: HKCR; Subkey: "BSAPulsar\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\BSA-Analytics.exe,0"
 Root: HKCR; Subkey: "BSAPulsar\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""--analytics"" ""%1"""
+
+Root: HKCR; Subkey: "Directory\shell\Run BSA-Analytics"; ValueType: string; ValueName: ""; ValueData: "Run BSA-Analytics"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "Directory\shell\Run BSA-Analytics\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""--analytics"" ""%1"""

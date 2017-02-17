@@ -16,6 +16,7 @@
 #include <precisetiming.h>
 #include <flowdetecter.h>
 #include <settings.h>
+#include <updater.h>
 
 MainWindow::MainWindow(QString file, QWidget *parent) :
     QMainWindow(parent),
@@ -65,6 +66,9 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
         else
             QTimer::singleShot(400, this, SLOT(customOpen()));
     }
+
+    static Updater updater;
+    QObject::connect(ui->actionUpdate, SIGNAL(triggered()), &updater, SLOT(download()));
 
 #ifdef WIN32
     qApp->setStyle(QStyleFactory::create("fusion"));

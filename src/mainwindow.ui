@@ -80,6 +80,9 @@
      <string>&amp;Help</string>
     </property>
     <addaction name="actionHandBook"/>
+    <addaction name="separator"/>
+    <addaction name="actionUpdate"/>
+    <addaction name="separator"/>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
    </widget>
@@ -308,6 +311,11 @@
   <action name="actionHandBook">
    <property name="text">
     <string>&amp;HandBook</string>
+   </property>
+  </action>
+  <action name="actionUpdate">
+   <property name="text">
+    <string>Update</string>
    </property>
   </action>
  </widget>

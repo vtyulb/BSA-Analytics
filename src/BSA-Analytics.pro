@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport
+QT       += core gui printsupport network
 
 CONFIG += console
 
@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     datadumper.cpp \
     flowingwindow.cpp \
     fourier.cpp \
-    fouriersearch.cpp
+    fouriersearch.cpp \
+    updater.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -80,7 +81,8 @@ HEADERS  += mainwindow.h \
     datadumper.h \
     flowingwindow.h \
     fourier.h \
-    fouriersearch.h
+    fouriersearch.h \
+    updater.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

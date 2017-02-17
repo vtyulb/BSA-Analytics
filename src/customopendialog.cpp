@@ -58,7 +58,9 @@ void CustomOpenDialog::openClicked() {
 }
 
 void CustomOpenDialog::successFinish() {
-    int skip = ui->spinBox->value() * ui->checkBox->isChecked();
-    emit customOpen(ui->lineEdit->text(), skip, ui->radioButton_2->isChecked() + ui->radioButton_3->isChecked() * 2, ui->dateTimeEdit->dateTime(), ui->binary->isChecked());
+    if (ui->lineEdit->text() != "") {
+        int skip = ui->spinBox->value() * ui->checkBox->isChecked();
+        emit customOpen(ui->lineEdit->text(), skip, ui->radioButton_2->isChecked() + ui->radioButton_3->isChecked() * 2, ui->dateTimeEdit->dateTime(), ui->binary->isChecked());
+    }
     deleteLater();
 }

@@ -43,7 +43,12 @@ void restart(int signal = 0) {
         exit(0); // to avoid warnings
 
     qDebug() << "restarting";
-    QMessageBox::about(mainSpace::w, "Critical error", "Wrong file format or any other critical error...");
+    QMessageBox::about(mainSpace::w, "Critical error", "Critical error occured!\n"
+                                                       "If it's not first time,\n"
+                                                       "please do write a letter\n"
+                                                       "describing what you have done\n"
+                                                       "to <vtyulb@vtyulb.ru>\n\n"
+                                                       "Program will be restarted now");
     QProcess::startDetached(mainSpace::program);
     exit(0);
 }
@@ -115,6 +120,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("\t--analytics to run in analytics mode\n");
         printf("\t--low-memory to do not save data roads in analytics mode\n");
         printf("\t--long-roads to display more than two periods\n");
+        printf("\t--debug for keeping debug terminal open in Windows\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
         printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
         exit(0);
@@ -125,7 +131,7 @@ void pulsarEngine(int argc, char **argv) {
     QString analyticsPath;
     int threads = -1;
     bool analytics = false;
-
+    bool debug = false;
     bool preciseSearch = false;
     bool drawSpectre = false;
     bool fourier = false;
@@ -196,13 +202,16 @@ void pulsarEngine(int argc, char **argv) {
             fourier = true;
         else if (strcmp(argv[i], "--run-analytics-after") == 0)
             runAnalyticsAfter = true;
+        else if (strcmp(argv[i], "--debug") == 0)
+            debug = true;
     }
 
 
 
     if (drawSpectre) {
 #ifdef WIN32
-        FreeConsole();
+        if (!debug)
+            FreeConsole();
 #endif
         QApplication a(argc, argv);
         a.setOrganizationDomain("bsa.vtyulb.ru");
@@ -279,7 +288,8 @@ void pulsarEngine(int argc, char **argv) {
 
     if (analytics) {
 #ifdef WIN32
-        FreeConsole();
+        if (!debug)
+            FreeConsole();
 #endif
         QApplication a(argc, argv);
         a.setOrganizationDomain("bsa.vtyulb.ru");
@@ -309,6 +319,17 @@ void pulsarEngine(int argc, char **argv) {
 
             exit(a.exec());
         }
+    }
+
+    if (argc == 2 && debug) {
+        QApplication a(argc, argv);
+        a.setOrganizationDomain("bsa.vtyulb.ru");
+        a.setOrganizationName("vtyulb");
+        a.setApplicationName("BSA-Analytics");
+        mainSpace::program = QString(argv[0]);
+        mainSpace::w = new MainWindow;
+        mainSpace::w->show();
+        exit(a.exec());
     }
 
     if (dataPath == "" || savePath == "")

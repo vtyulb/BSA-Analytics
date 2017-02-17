@@ -36,7 +36,9 @@ PreciseSearchGui::PreciseSearchGui(QWidget *parent) :
     group->addButton(ui->singlePeriod);
     group->addButton(ui->fluxDensity);
 
+#ifdef WIN32
     resize(minimumSize());
+#endif
 }
 
 PreciseSearchGui::~PreciseSearchGui()

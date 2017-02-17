@@ -30,6 +30,7 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     resetVisibleRectangle();
     setMouseTracking(true);
     Settings::settings()->setLastData(data);
+    setMinimumSize(100, 100);
 }
 
 NativeDrawer::~NativeDrawer() {

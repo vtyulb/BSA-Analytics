@@ -64,7 +64,6 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
         w->setMinimumWidth(20);
         w->setMaximumWidth(20);
 
-
         QHBoxLayout *lay = new QHBoxLayout(widget);
         lay->addWidget(checkBoxes[i]);
         lay->addWidget(w);

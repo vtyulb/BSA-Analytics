@@ -83,6 +83,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     show();
     init();
+
+    resize(minimumWidth(), height());
 }
 
 void Analytics::init() {

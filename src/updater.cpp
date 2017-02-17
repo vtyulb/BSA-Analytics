@@ -31,6 +31,7 @@ void Updater::download() {
     QVBoxLayout *layout = new QVBoxLayout(downloaderWidget);
     layout->addWidget(new QLabel("Downloading latest version of BSA-Analytics-x64 installer"));
     progress = new QProgressBar();
+    progress->setFormat("Downloaded %vK of %mK");
     QWidget *downWidget = new QWidget;
     QHBoxLayout *downLayout = new QHBoxLayout(downWidget);
     downLayout->setContentsMargins(0, 0, 0, 0);
@@ -49,8 +50,8 @@ void Updater::download() {
 }
 
 void Updater::downloadProgressChanged(qint64 current, qint64 total) {
-    progress->setMaximum(total);
-    progress->setValue(current);
+    progress->setMaximum(total / 1000);
+    progress->setValue(current / 1000);
 
     if (total == latestInstallerSize && networkReply && total) {
         cancelUpdate();

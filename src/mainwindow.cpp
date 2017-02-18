@@ -9,6 +9,7 @@
 #include <QProcess>
 #include <QDesktopServices>
 #include <QStyleFactory>
+#include <QApplication>
 
 #include <customopendialog.h>
 #include <pulsarlist.h>
@@ -224,7 +225,11 @@ void MainWindow::showAboutQt() {
 }
 
 void MainWindow::showAbout() {
-    QMessageBox::about(this, "About", "Written specially for S.A.Tyulbashev\nby V.S.Tyulbashev\n<vtyulb@vtyulb.ru>");
+    QMessageBox::about(this, "About", "Program was written specially\n"
+                                      "for S.A.Tyulbashev <serg@prao.ru>\n"
+                                      "by V.S.Tyulbashev <vtyulb@vtyulb.ru>\n\n"
+                                      "This version compiled\n" +
+                                      QFileInfo(qApp->arguments().first()).lastModified().toString());
 }
 
 void MainWindow::saveSettings() {

@@ -46,7 +46,6 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionLive, SIGNAL(triggered(bool)), this, SLOT(drawLive(bool)));
     QObject::connect(ui->actionPrecise_search, SIGNAL(triggered()), this, SLOT(runPreciseGui()));
     QObject::connect(ui->actionPrecise_timing, SIGNAL(triggered()), this, SLOT(runPreciseTimingGui()));
-//    QObject::connect(ui->actionFlow_detecter, SIGNAL(triggered(bool)), this, SLOT(runFlowGui()));
     QObject::connect(ui->actionSound_mode, SIGNAL(triggered()), this, SLOT(soundModeTriggered()));
     QObject::connect(ui->actionRotation_Measure, SIGNAL(triggered()), this, SLOT(setRotationMeasureMode()));
     QObject::connect(ui->actionFlux_Density, SIGNAL(triggered()), this, SLOT(setFluxDensityMode()));
@@ -278,11 +277,6 @@ void MainWindow::runPreciseGui() {
 void MainWindow::runPreciseTimingGui() {
     static PreciseTiming *gui = new PreciseTiming(this);
     gui->show();
-}
-
-void MainWindow::runFlowGui() {
-    static FlowDetecter *detecter = new FlowDetecter(this);
-    detecter->show();
 }
 
 void MainWindow::soundModeTriggered() {

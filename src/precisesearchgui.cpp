@@ -1,6 +1,7 @@
 #include "precisesearchgui.h"
 #include "ui_precisesearchgui.h"
 #include "ui_precisepacket.h"
+#include <flowdetecter.h>
 
 #include <QFileDialog>
 #include <QSettings>
@@ -10,6 +11,7 @@
 #include <QButtonGroup>
 #include <QRadioButton>
 #include <QSpinBox>
+#include <QTimeEdit>
 #include <QThread>
 #include <QLabel>
 #include <QMessageBox>
@@ -93,7 +95,10 @@ void PreciseSearchGui::runSearcher() {
         l << "--draw-spectre";
 
     if (ui->fluxDensity->isChecked()) {
-        QMessageBox::information(this, "Error", "This function is not implemented yet!");
+        FlowDetecter detecter(ui->module->value() - 1, ui->dispersion->value(), ui->ray->value() - 1,
+                              ui->points->value(), ui->bigImpulses->isChecked(), ui->sensitivity->value(),
+                              ui->period->value(), ui->time->time(), ui->fileName->text(), this);
+        detecter.run();
         return;
     }
 
@@ -107,6 +112,8 @@ void PreciseSearchGui::determineSearchMode() {
     ui->skipMultiplePeriods->setEnabled(true);
     ui->skipPeriodsLabel->setEnabled(true);
     ui->runAnalytics->setEnabled(true);
+    ui->threadCount->setEnabled(true);
+    ui->fluxDensityWidget->setEnabled(false);
 
     if (ui->singlePeriod->isChecked()) {
         ui->skipMultiplePeriods->setEnabled(false);
@@ -116,6 +123,7 @@ void PreciseSearchGui::determineSearchMode() {
     if (ui->spectre->isChecked()) {
         ui->runAnalytics->setEnabled(false);
         ui->skipMultiplePeriods->setEnabled(false);
+        ui->threadCount->setEnabled(false);
     }
 
     if (ui->fluxDensity->isChecked()) {
@@ -128,6 +136,6 @@ void PreciseSearchGui::determineSearchMode() {
         ui->fluxDensityWidget->setEnabled(true);
         ui->skipMultiplePeriods->setEnabled(false);
         ui->runAnalytics->setEnabled(false);
-    } else
-        ui->fluxDensityWidget->setEnabled(false);
+        ui->threadCount->setEnabled(false);
+    }
 }

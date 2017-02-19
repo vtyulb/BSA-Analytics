@@ -18,17 +18,24 @@
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
       <layout class="QFormLayout" name="formLayout">
-       <item row="0" column="0">
-        <widget class="QLineEdit" name="fileName"/>
-       </item>
-       <item row="0" column="1">
+       <item row="1" column="0">
         <widget class="QPushButton" name="selectButton">
          <property name="text">
           <string>Select</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="fileName"/>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Period</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
         <widget class="QDoubleSpinBox" name="period">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
@@ -41,14 +48,14 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="label">
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_2">
          <property name="text">
-          <string>Period</string>
+          <string>Module</string>
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="4" column="1">
         <widget class="QSpinBox" name="module">
          <property name="minimum">
           <number>1</number>
@@ -58,14 +65,14 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="label_2">
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_3">
          <property name="text">
-          <string>Module</string>
+          <string>Ray</string>
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="5" column="1">
         <widget class="QSpinBox" name="ray">
          <property name="minimum">
           <number>1</number>
@@ -75,82 +82,48 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QLabel" name="label_3">
-         <property name="text">
-          <string>Ray</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QSpinBox" name="dispersion">
-         <property name="minimum">
-          <number>-1</number>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-         <property name="value">
-          <number>-1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
+       <item row="6" column="0">
         <widget class="QLabel" name="label_5">
          <property name="text">
           <string>Dispersion</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="0">
-        <widget class="QTimeEdit" name="time">
-         <property name="displayFormat">
-          <string>HH:mm:ss</string>
+       <item row="6" column="1">
+        <widget class="QSpinBox" name="dispersion">
+         <property name="minimum">
+          <number>-1</number>
+         </property>
+         <property name="maximum">
+          <number>999</number>
+         </property>
+         <property name="value">
+          <number>-1</number>
          </property>
         </widget>
        </item>
-       <item row="5" column="1">
+       <item row="7" column="0">
         <widget class="QLabel" name="label_6">
          <property name="text">
           <string>Time</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="0">
-        <widget class="QCheckBox" name="skipMultiplePeriods">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
        <item row="7" column="1">
-        <widget class="QLabel" name="skipPeriodsLabel">
-         <property name="text">
-          <string>Skip multiple periods</string>
+        <widget class="QTimeEdit" name="time">
+         <property name="displayFormat">
+          <string>HH:mm:ss</string>
          </property>
         </widget>
        </item>
        <item row="8" column="0">
-        <widget class="QCheckBox" name="clearNoise">
+        <widget class="QLabel" name="label_8">
          <property name="text">
-          <string/>
-         </property>
-         <property name="checked">
-          <bool>true</bool>
+          <string>Thread count</string>
          </property>
         </widget>
        </item>
        <item row="8" column="1">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Clear noise</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
         <widget class="QSpinBox" name="threadCount">
          <property name="minimum">
           <number>1</number>
@@ -160,24 +133,51 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
-        <widget class="QLabel" name="label_8">
-         <property name="text">
-          <string>Thread count</string>
-         </property>
-        </widget>
-       </item>
        <item row="9" column="0">
-        <widget class="QCheckBox" name="runAnalytics">
+        <widget class="QLabel" name="skipPeriodsLabel">
          <property name="text">
-          <string/>
+          <string>Skip multiple periods</string>
          </property>
         </widget>
        </item>
        <item row="9" column="1">
+        <widget class="QCheckBox" name="skipMultiplePeriods">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>Clear noise</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QCheckBox" name="clearNoise">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
         <widget class="QLabel" name="label_4">
          <property name="text">
           <string>Run Analytics after</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="1">
+        <widget class="QCheckBox" name="runAnalytics">
+         <property name="text">
+          <string/>
          </property>
         </widget>
        </item>
@@ -278,7 +278,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QSpinBox" name="spinBox">
+             <widget class="QSpinBox" name="points">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -319,7 +319,7 @@
              <number>0</number>
             </property>
             <item>
-             <widget class="QSpinBox" name="spinBox_2">
+             <widget class="QSpinBox" name="sensitivity">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -327,7 +327,7 @@
                </sizepolicy>
               </property>
               <property name="minimum">
-               <number>2</number>
+               <number>10</number>
               </property>
               <property name="maximum">
                <number>99</number>

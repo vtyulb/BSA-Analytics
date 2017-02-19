@@ -1,46 +1,41 @@
 #ifndef FLOWDETECTER_H
 #define FLOWDETECTER_H
 
-#include <QDialog>
+#include <QObject>
 #include <QTime>
 #include <QVector>
 
 #include <data.h>
 
-namespace Ui {
-class FlowDetecter;
-}
-
-class FlowDetecter : public QDialog
+class FlowDetecter: public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
-    explicit FlowDetecter(QWidget *parent = 0);
-    ~FlowDetecter();
+  public:
+    explicit FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses,
+                          int sensitivity, double period, QTime time, QString fileName, QObject *parent = 0);
+    ~FlowDetecter() {};
 
-private:
-    Ui::FlowDetecter *ui;
+    void run();
 
+  private:
     int module;
     int dispersion;
     int ray;
     int points;
 
-    double period;
+    bool trackImpulses;
+    int sensitivity;
 
+    double period;
 
     QTime time;
     QVector<double> res;
     Data data;
+    QString fileName;
 
     QVector<double> applyDispersion();
     void subtract(double *res, int size);
-
-private slots:
-    void run();
-    void setStairFileName();
-    void setFileName();
 };
 
 #endif // FLOWDETECTER_H

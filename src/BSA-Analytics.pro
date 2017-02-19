@@ -93,7 +93,6 @@ FORMS    += mainwindow.ui \
     knownpulsarsgui.ui \
     knownnoise.ui \
     spectre.ui \
-    precisetiming.ui \
-    flowdetecter.ui
+    precisetiming.ui
 
 win32:RC_FILE = icon.rc

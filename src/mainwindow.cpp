@@ -50,6 +50,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionSound_mode, SIGNAL(triggered()), this, SLOT(soundModeTriggered()));
     QObject::connect(ui->actionRotation_Measure, SIGNAL(triggered()), this, SLOT(setRotationMeasureMode()));
     QObject::connect(ui->actionFlux_Density, SIGNAL(triggered()), this, SLOT(setFluxDensityMode()));
+    QObject::connect(ui->actionSet_stair, SIGNAL(triggered(bool)), this, SLOT(setStair(bool)));
     QObject::connect(ui->actionHandBook, SIGNAL(triggered()), this, SLOT(showHelp()));
 
     progress = new QProgressBar(this);
@@ -290,29 +291,33 @@ void MainWindow::soundModeTriggered() {
 
 void MainWindow::setRotationMeasureMode() {
     ui->actionFlux_Density->setChecked(false);
-    setStair();
+    if (ui->actionRotation_Measure->isChecked()) {
+        if (!Settings::settings()->loadStair())
+            setStair();
+
+        Settings::settings()->setSourceMode(RotationMeasure);
+    }
 }
 
 void MainWindow::setFluxDensityMode() {
     ui->actionRotation_Measure->setChecked(false);
-    setStair();
+    if (ui->actionFlux_Density->isChecked()) {
+        if (!Settings::settings()->loadStair())
+            setStair();
+
+        Settings::settings()->setSourceMode(FluxDensity);
+    }
 }
 
-void MainWindow::setStair() {
-    bool on = ui->actionRotation_Measure->isChecked() || ui->actionFlux_Density->isChecked();
+void MainWindow::setStair(bool force) {
+    Settings::settings()->setStairStatus(NoStair);
+    bool on = ui->actionRotation_Measure->isChecked() || ui->actionFlux_Density->isChecked() || force;
     if (on) {
-        Settings::settings()->setStairStatus(NoStair);
         Settings::settings()->setStairStatus(SettingStair);
         QMessageBox::information(this, "Setting stair",
                                  "Open file with the stair, make a rectangular around it.\n"
                                  "Rectangular height does not matter, only width and position");
-    } else
-        Settings::settings()->setStairStatus(NoStair);
-
-    if (ui->actionRotation_Measure->isChecked())
-        Settings::settings()->setSourceMode(RotationMeasure);
-    else
-        Settings::settings()->setSourceMode(FluxDensity);
+    }
 }
 
 void MainWindow::showHelp() {

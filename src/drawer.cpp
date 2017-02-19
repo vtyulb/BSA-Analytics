@@ -234,8 +234,6 @@ void Drawer::moduleChanged() {
     drawer->resetVisibleRectangle(true, true);
 }
 
-
-
 void Drawer::keyPressEvent(QKeyEvent *event) {
     if (event->text() == "f")
         if (parent() == NULL) {

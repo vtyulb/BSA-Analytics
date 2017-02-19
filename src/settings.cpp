@@ -286,8 +286,7 @@ void Settings::saveStair() {
     }
 }
 
-void Settings::loadStair() {
-    _stairStatus = DetectedStair;
+bool Settings::loadStair() {
     QList<QVariant> stairList;
     if (lastData().isLong()) {
         stairList = QSettings().value("LongStair").toList();
@@ -297,17 +296,22 @@ void Settings::loadStair() {
         _stairFileName = QSettings().value("ShortStairName").toString();
     }
 
-    if (stairList.isEmpty())
-        for (int i = 0; i < 10000; i++)
-            stairList.push_back(QVariant(1.0));
+    if (stairList.isEmpty()) {
+        _stairStatus = NoStair;
+        return false;
+    } else
+        _stairStatus = DetectedStair;
 
     auto current = stairList.begin();
     stairs.resize(lastData().modules);
     for (int i = 0; i < stairs.size(); i++) {
         stairs[i].resize(lastData().rays);
         for (int j = 0; j < lastData().rays; j++)
+            for (int k = 0; k < lastData().channels; k++)
             stairs[i][j].push_back((current++)->toDouble());
     }
+
+    return true;
 }
 
 QString Settings::stairFileName() {

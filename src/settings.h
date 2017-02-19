@@ -85,7 +85,7 @@ class Settings {
         void setSourceMode(SourceMode);
         QString stairFileName();
         void saveStair();
-        void loadStair();
+        bool loadStair();
 
     private:
         Settings();

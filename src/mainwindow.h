@@ -64,7 +64,7 @@ private slots:
 
     void setRotationMeasureMode();
     void setFluxDensityMode();
-    void setStair();
+    void setStair(bool force = false);
 
 public slots:
     void regenerate(Data &data);

@@ -125,6 +125,8 @@
     </property>
     <addaction name="actionRotation_Measure"/>
     <addaction name="actionFlux_Density"/>
+    <addaction name="separator"/>
+    <addaction name="actionSet_stair"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPulsars"/>
@@ -279,11 +281,6 @@
     <string>Pulsar &amp;fourier analytics</string>
    </property>
   </action>
-  <action name="actionSet_stair">
-   <property name="text">
-    <string>S&amp;et stair</string>
-   </property>
-  </action>
   <action name="actionEstimation_of_flux">
    <property name="checkable">
     <bool>true</bool>
@@ -315,7 +312,12 @@
   </action>
   <action name="actionUpdate">
    <property name="text">
-    <string>Update</string>
+    <string>&amp;Update</string>
+   </property>
+  </action>
+  <action name="actionSet_stair">
+   <property name="text">
+    <string>&amp;Set stair</string>
    </property>
   </action>
  </widget>

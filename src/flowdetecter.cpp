@@ -1,5 +1,4 @@
 #include "flowdetecter.h"
-#include "ui_flowdetecter.h"
 
 #include <reader.h>
 #include <startime.h>

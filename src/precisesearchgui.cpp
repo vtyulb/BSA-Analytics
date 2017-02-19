@@ -70,6 +70,9 @@ void PreciseSearchGui::runPacketSearcher() {
 }
 
 void PreciseSearchGui::runSearcher() {
+    if (ui->fileName->text() == "")
+        return;
+
     QStringList l;
     l << "--precise-pulsar-search";
     l << ui->fileName->text();

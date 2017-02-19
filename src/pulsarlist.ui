@@ -23,7 +23,7 @@
    <item>
     <widget class="QTableWidget" name="tableWidget">
      <property name="horizontalScrollBarPolicy">
-      <enum>Qt::ScrollBarAlwaysOff</enum>
+      <enum>Qt::ScrollBarAsNeeded</enum>
      </property>
     </widget>
    </item>

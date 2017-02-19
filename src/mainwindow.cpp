@@ -50,7 +50,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionSound_mode, SIGNAL(triggered()), this, SLOT(soundModeTriggered()));
     QObject::connect(ui->actionRotation_Measure, SIGNAL(triggered()), this, SLOT(setRotationMeasureMode()));
     QObject::connect(ui->actionFlux_Density, SIGNAL(triggered()), this, SLOT(setFluxDensityMode()));
-    QObject::connect(ui->actionSet_stair, SIGNAL(triggered(bool)), this, SLOT(setStair(bool)));
+    QObject::connect(ui->actionSet_stair, SIGNAL(triggered()), this, SLOT(setStair()));
     QObject::connect(ui->actionHandBook, SIGNAL(triggered()), this, SLOT(showHelp()));
 
     progress = new QProgressBar(this);
@@ -107,7 +107,7 @@ void MainWindow::openStartFile() {
 }
 
 void MainWindow::openAnalytics(bool hasMemory, bool fourier) {
-    QString path = QFileDialog::getExistingDirectory(this, "analytics folder", lastOpenPath);
+    QString path = QFileDialog::getExistingDirectory(this, "Analytics folder", lastOpenPath);
     if (path == "")
         return;
 
@@ -128,7 +128,7 @@ void MainWindow::openFourierAnalytics() {
 }
 
 void MainWindow::openPulsarFile() {
-    QString path = QFileDialog::getOpenFileName(this, "void", lastOpenPath, "Pulsar files (*.pulsar)");
+    QString path = QFileDialog::getOpenFileName(this, "Opening *.pulsar file", lastOpenPath, "Pulsar files (*.pulsar)");
 
     if (path == "")
         return;
@@ -311,15 +311,12 @@ void MainWindow::setFluxDensityMode() {
     }
 }
 
-void MainWindow::setStair(bool force) {
+void MainWindow::setStair() {
     Settings::settings()->setStairStatus(NoStair);
-    bool on = ui->actionRotation_Measure->isChecked() || ui->actionFlux_Density->isChecked() || force;
-    if (on) {
-        Settings::settings()->setStairStatus(SettingStair);
-        QMessageBox::information(this, "Setting stair",
-                                 "Open file with the stair, make a rectangular around it.\n"
-                                 "Rectangular height does not matter, only width and position");
-    }
+    Settings::settings()->setStairStatus(SettingStair);
+    QMessageBox::information(this, "Setting stair",
+                                   "Open file with the stair, make a rectangular around it.\n"
+                                   "Rectangular height does not matter, only width and position");
 }
 
 void MainWindow::showHelp() {

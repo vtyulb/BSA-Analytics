@@ -79,7 +79,7 @@ private:
     void closeEvent(QCloseEvent *);
 
 private slots:
-    void apply();
+    void apply(bool fullFilters = true);
     void init();
     void loadFourierData(bool cashOnly = false);
     void calculateCashes();

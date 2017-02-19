@@ -107,7 +107,7 @@ void Analytics::init() {
 
     QObject::connect(ui->fileNames, SIGNAL(currentIndexChanged(int)), this, SLOT(apply()));
     ui->progressBar->hide();
-    ui->currentFile->hide();
+    ui->currentStatus->hide();
 }
 
 void Analytics::loadKnownPulsars() {
@@ -165,7 +165,7 @@ void Analytics::loadPulsars(QString dir) {
     for (int i = 0; i < list.size(); i++) {
         ui->progressBar->setValue((i + 1) * 100 / list.size());
         qApp->processEvents();
-        ui->currentFile->setText(list[i].fileName());
+        ui->currentStatus->setText(list[i].fileName());
         Pulsars p = PulsarReader::ReadPulsarFile(list[i].absoluteFilePath(), ui->progressBar);
         Settings::settings()->setFourierHighGround(list[i].fileName().contains("N1"));
         *pulsars += (*p);
@@ -183,12 +183,12 @@ void Analytics::loadPulsars(QString dir) {
     pulsarsEnabled.resize(pulsars->size());
 }
 
-void Analytics::apply() {
+void Analytics::apply(bool fullFilters) {
     ui->progressBar->setValue(0);
     ui->progressBar->show();
 
     loadKnownPulsars();
-    if (fourier)
+    if (fourier && fullFilters)
         applyFourierFilters();
 
     pulsarsEnabled.resize(pulsars->size());
@@ -500,9 +500,9 @@ void Analytics::addPulsarCatalog() {
         QSettings().setValue("openPath", MainWindow::nativeDecodeLastPath(catalog));
 
         ui->progressBar->show();
-        ui->currentFile->show();
+        ui->currentStatus->show();
         loadPulsars(catalog);
-        ui->currentFile->hide();
+        ui->currentStatus->hide();
         ui->progressBar->hide();
     }
 }
@@ -542,8 +542,8 @@ void Analytics::loadFourierData(bool cashOnly) {
 
     ui->pulsarsTotal->hide();
     ui->progressBar->show();
-    ui->currentFile->show();
-    ui->currentFile->setText("Releasing previous data");
+    ui->currentStatus->show();
+    ui->currentStatus->setText("Releasing previous data");
 
     QString path = QDir(folder).absolutePath() + "/";
     for (int j = 0; j < fourierData.size(); j++) {
@@ -564,7 +564,7 @@ void Analytics::loadFourierData(bool cashOnly) {
 
 
 
-    ui->currentFile->setText("Reading files");
+    ui->currentStatus->setText("Reading files");
 
     int blockNumber = ui->fourierBlockNo->value();
     QString cashPath = path + "cash/";
@@ -630,7 +630,7 @@ void Analytics::loadFourierData(bool cashOnly) {
             for (int ray = 0; ray < 8; ray++)
                 std::sort(fourierRawNoises[module][ray].begin(), fourierRawNoises[module][ray].end());
 
-        ui->currentFile->setText("Running fourier");
+        ui->currentStatus->setText("Running fourier");
         QVector<double> fourierNoises[6][8];
 
         for (int j = 0; j < fourierData.size(); j++) {
@@ -716,7 +716,7 @@ void Analytics::loadFourierData(bool cashOnly) {
 
     ui->fourierLoad->setDisabled(true);
     ui->fourierLoad->setText("Data loaded");
-    ui->currentFile->hide();
+    ui->currentStatus->hide();
 
     ui->pulsarsTotal->setText(QString("Loaded %1 files").arg(fourierData.size()));
     ui->pulsarsTotal->show();
@@ -725,7 +725,7 @@ void Analytics::loadFourierData(bool cashOnly) {
         if (!ui->fourierFullGrayZone->isEnabled())
             fourierFullGrayZone();
         else
-            apply();
+            apply(false);
     }
 }
 
@@ -812,8 +812,12 @@ void Analytics::applyFourierFilters() {
             good[i] = false;
         }
 
+    ui->progressBar->show();
+    ui->currentStatus->show();
+    ui->currentStatus->setText("Adding whitezone peaks");
     for (int module = 5; module >= 0; module--)
         for (int ray = 7; ray >= 0; ray--) {
+            ui->progressBar->setValue(100 * (7 - ray + (5 - module) * 8) / 48);
             Data data;
             data.npoints = fourierSpectreSize;
             data.modules = 1;
@@ -853,6 +857,10 @@ void Analytics::applyFourierFilters() {
                     }
                 }
         }
+
+    ui->currentStatus->hide();
+    ui->progressBar->hide();
+    qApp->processEvents();
 
     pulsarsEnabled.resize(pulsars->size());
 }

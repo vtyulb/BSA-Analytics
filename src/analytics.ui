@@ -799,7 +799,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="currentFile">
+    <widget class="QLabel" name="currentStatus">
      <property name="text">
       <string>Loading</string>
      </property>

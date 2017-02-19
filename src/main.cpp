@@ -44,11 +44,11 @@ void restart(int signal = 0) {
 
     qDebug() << "restarting";
     QMessageBox::warning(mainSpace::w, "Critical error", "Critical error occured!\n"
-                                                       "If it's not first time,\n"
-                                                       "please do write a letter\n"
-                                                       "describing what you have done\n"
-                                                       "to <vtyulb@vtyulb.ru>\n\n"
-                                                       "Program will be restarted now");
+                                                         "If it's not first time,\n"
+                                                         "please do write a letter\n"
+                                                         "describing what have you done\n"
+                                                         "to <vtyulb@vtyulb.ru>\n\n"
+                                                         "Program will be restarted now");
     QProcess::startDetached(mainSpace::program);
     exit(0);
 }

@@ -125,7 +125,9 @@ void PreciseSearchGui::determineSearchMode() {
             ui->preciseSearch->click();
             return;
         }
+        ui->fluxDensityWidget->setEnabled(true);
         ui->skipMultiplePeriods->setEnabled(false);
         ui->runAnalytics->setEnabled(false);
-    }
+    } else
+        ui->fluxDensityWidget->setEnabled(false);
 }

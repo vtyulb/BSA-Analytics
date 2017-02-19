@@ -140,7 +140,7 @@ void Settings::detectStair(const Data &data, int pointStart, int pointEnd) {
     }
 
     _stairFileName = data.name;
-    setLastData(data);
+    _lastData = data;
     saveStair();
 }
 
@@ -206,6 +206,8 @@ QVector<double> Settings::dispersionData() {
 
 void Settings::setLastData(const Data &d) {
     _lastData = d;
+    if (sourceMode())
+        loadStair();
 }
 
 void Settings::setSinglePeriod(bool b) {
@@ -303,6 +305,7 @@ bool Settings::loadStair() {
         _stairStatus = DetectedStair;
 
     auto current = stairList.begin();
+    stairs.clear();
     stairs.resize(lastData().modules);
     for (int i = 0; i < stairs.size(); i++) {
         stairs[i].resize(lastData().rays);

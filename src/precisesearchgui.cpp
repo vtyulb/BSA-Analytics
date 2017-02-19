@@ -119,6 +119,12 @@ void PreciseSearchGui::determineSearchMode() {
     }
 
     if (ui->fluxDensity->isChecked()) {
+        if (!QSettings().contains("LongStair") || !QSettings().contains("ShortStair")) {
+            QMessageBox::warning(this, "We need more stairs!", "Please do set stairs in both long and short data!\n"
+                                                               "I can't run flux density without stairs.");
+            ui->preciseSearch->click();
+            return;
+        }
         ui->skipMultiplePeriods->setEnabled(false);
         ui->runAnalytics->setEnabled(false);
     }

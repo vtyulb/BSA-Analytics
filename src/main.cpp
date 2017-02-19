@@ -43,7 +43,7 @@ void restart(int signal = 0) {
         exit(0); // to avoid warnings
 
     qDebug() << "restarting";
-    QMessageBox::about(mainSpace::w, "Critical error", "Critical error occured!\n"
+    QMessageBox::warning(mainSpace::w, "Critical error", "Critical error occured!\n"
                                                        "If it's not first time,\n"
                                                        "please do write a letter\n"
                                                        "describing what you have done\n"

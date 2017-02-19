@@ -84,7 +84,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::openFile() {
-    QString path = QFileDialog::getOpenFileName(this, "void", lastOpenPath);
+    QString path = QFileDialog::getOpenFileName(this, "Opening RK8 BSA1/3 (text data)", lastOpenPath);
 
     if (path == "")
         return;
@@ -93,7 +93,7 @@ void MainWindow::openFile() {
 }
 
 void MainWindow::openBinaryFile() {
-    QString path = QFileDialog::getOpenFileName(this, "void", lastOpenPath);
+    QString path = QFileDialog::getOpenFileName(this, "Opening Binary BSA3", lastOpenPath);
 
     if (path == "")
         return;
@@ -290,6 +290,7 @@ void MainWindow::soundModeTriggered() {
 }
 
 void MainWindow::setRotationMeasureMode() {
+    Settings::settings()->setStairStatus(NoStair);
     ui->actionFlux_Density->setChecked(false);
     if (ui->actionRotation_Measure->isChecked()) {
         if (!Settings::settings()->loadStair())
@@ -300,6 +301,7 @@ void MainWindow::setRotationMeasureMode() {
 }
 
 void MainWindow::setFluxDensityMode() {
+    Settings::settings()->setStairStatus(NoStair);
     ui->actionRotation_Measure->setChecked(false);
     if (ui->actionFlux_Density->isChecked()) {
         if (!Settings::settings()->loadStair())

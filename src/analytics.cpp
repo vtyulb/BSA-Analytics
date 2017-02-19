@@ -244,7 +244,7 @@ void Analytics::apply() {
             pl->push_back(pulsars->at(i));
 
     if (!pl->size()) {
-        QMessageBox::information(this, "Houston... We've Got a Problem", "There are no such pulsars");
+        QMessageBox::warning(this, "Houston... We've Got a Problem", "There are no such pulsars");
         return;
     }
 
@@ -479,7 +479,7 @@ void Analytics::dispersionMplus() {
     Data data = dispersionGenerateData();
     QVector<double> dt = Settings::settings()->dispersionData();
     if (!dt.size()) {
-        QMessageBox::information(this, "error", "Memory is not filled now");
+        QMessageBox::warning(this, "error", "Memory is not filled now");
         return;
     }
 

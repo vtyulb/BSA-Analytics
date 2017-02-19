@@ -304,7 +304,7 @@ bool Settings::loadStair() {
     } else
         _stairStatus = DetectedStair;
 
-    auto current = stairList.begin();
+    QList<QVariant>::Iterator current = stairList.begin();
     stairs.clear();
     stairs.resize(lastData().modules);
     for (int i = 0; i < stairs.size(); i++) {

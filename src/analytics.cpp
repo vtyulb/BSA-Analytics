@@ -954,8 +954,6 @@ void Analytics::preciseDataMode() {
     ui->multiplePicks->setEnabled(false);
     ui->strangeData->setEnabled(false);
     ui->differentNoise->setEnabled(false);
-    ui->SNR->setEnabled(false);
-    ui->SNRCheckBox->setEnabled(false);
 }
 
 void Analytics::closeEvent(QCloseEvent *) {

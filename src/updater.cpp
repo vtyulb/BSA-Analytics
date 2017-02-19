@@ -28,6 +28,7 @@ void Updater::download() {
     QObject::connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(runSetup(QNetworkReply*)));
 
     downloaderWidget = new QWidget;
+    downloaderWidget->setWindowTitle("Updating BSA-Analytics");
     QVBoxLayout *layout = new QVBoxLayout(downloaderWidget);
     layout->addWidget(new QLabel("Downloading latest version of BSA-Analytics-x64 installer"));
     progress = new QProgressBar();
@@ -61,6 +62,9 @@ void Updater::downloadProgressChanged(qint64 current, qint64 total) {
 }
 
 void Updater::cancelUpdate() {
+    if (!networkReply)
+        return;
+
     QNetworkReply *tmp = networkReply;
     networkReply = NULL;
     tmp->abort();
@@ -84,6 +88,7 @@ void Updater::runSetup(QNetworkReply *newVersion) {
         QMessageBox::information(NULL, "Error", "Can't write to temp: " + installerName);
     else {
         exe.write(installer);
+        exe.setPermissions(QFileDevice::ExeOwner);
         exe.close();
         qDebug() << "Running setup: " << installerName;
         QDesktopServices::openUrl(QUrl::fromLocalFile(installerName));

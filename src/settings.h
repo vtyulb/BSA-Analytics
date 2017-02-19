@@ -4,6 +4,8 @@
 #include <QVector>
 #include <QTime>
 #include <QProgressBar>
+#include <QByteArray>
+
 #include <data.h>
 
 enum Stair {
@@ -78,8 +80,12 @@ class Settings {
         void setFourierStepConstant(double);
         void setFourierSpectreSize(int);
         void setFourierHighGround(bool);
-        void setStairStatus(int);
+
+        void setStairStatus(Stair);
         void setSourceMode(SourceMode);
+        QString stairFileName();
+        void saveStair();
+        void loadStair();
 
     private:
         Settings();
@@ -105,7 +111,8 @@ class Settings {
         double _fourierStepConstant;
         int _fourierSpectreSize;
         bool _fourierHighGround;
-        bool _stairStatus;
+        Stair _stairStatus;
+        QString _stairFileName;
         SourceMode _sourceMode;
         QVector<double> dispersionPlotData;
         QVector<QVector<QVector<double> > > stairs;

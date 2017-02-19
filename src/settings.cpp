@@ -1,5 +1,8 @@
-#include "settings.h"
+#include <settings.h>
 #include <reader.h>
+
+#include <QVariant>
+#include <QSettings>
 
 Settings::Settings() {
     filter = true;
@@ -135,6 +138,10 @@ void Settings::detectStair(const Data &data, int pointStart, int pointEnd) {
                 stairs[i][j].push_back(tmp[tmp.size() - 5] - tmp[5]);
             }
     }
+
+    _stairFileName = data.name;
+    setLastData(data);
+    saveStair();
 }
 
 double Settings::getStairHeight(int module, int ray, int channel) {
@@ -253,7 +260,7 @@ bool Settings::getFourierHighGround() {
     return _fourierHighGround;
 }
 
-void Settings::setStairStatus(int status) {
+void Settings::setStairStatus(Stair status) {
     _stairStatus = status;
     if (status == NoStair)
         stairs.clear();
@@ -261,4 +268,48 @@ void Settings::setStairStatus(int status) {
 
 int Settings::stairStatus() {
     return _stairStatus;
+}
+
+void Settings::saveStair() {
+    QList<QVariant> stairList;
+    for (int i = 0; i < stairs.size(); i++)
+        for (int j = 0; j < stairs[0].size(); j++)
+            for (int k = 0; k < stairs[0][0].size(); k++)
+                stairList.push_back(stairs[i][j][k]);
+
+    if (lastData().isLong()) {
+        QSettings().setValue("LongStair", stairList);
+        QSettings().setValue("LongStairName", lastData().name);
+    } else {
+        QSettings().setValue("ShortStair", stairList);
+        QSettings().setValue("ShortStairName", lastData().name);
+    }
+}
+
+void Settings::loadStair() {
+    _stairStatus = DetectedStair;
+    QList<QVariant> stairList;
+    if (lastData().isLong()) {
+        stairList = QSettings().value("LongStair").toList();
+        _stairFileName = QSettings().value("LongStairName").toString();
+    } else {
+        stairList = QSettings().value("ShortStair").toList();
+        _stairFileName = QSettings().value("ShortStairName").toString();
+    }
+
+    if (stairList.isEmpty())
+        for (int i = 0; i < 10000; i++)
+            stairList.push_back(QVariant(1.0));
+
+    auto current = stairList.begin();
+    stairs.resize(lastData().modules);
+    for (int i = 0; i < stairs.size(); i++) {
+        stairs[i].resize(lastData().rays);
+        for (int j = 0; j < lastData().rays; j++)
+            stairs[i][j].push_back((current++)->toDouble());
+    }
+}
+
+QString Settings::stairFileName() {
+    return _stairFileName;
 }

@@ -27,6 +27,7 @@ private:
     QLabel *sky;
     QLabel *fileName;
     QLabel *nativeXCoord;
+    QLabel *stairFileName;
 
     Data data;
 

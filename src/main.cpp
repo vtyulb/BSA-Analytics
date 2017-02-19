@@ -296,6 +296,7 @@ void pulsarEngine(int argc, char **argv) {
         a.setOrganizationName("vtyulb");
         a.setApplicationName("BSA-Analytics");
         Analytics *an = new Analytics(analyticsPath, fourier);
+        QDir::setCurrent(qApp->applicationDirPath());
         a.exec();
         delete an;
         exit(0);

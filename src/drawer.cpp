@@ -36,9 +36,8 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     controlFrame = new QFrame(this);
     QScrollArea *scrollArea = new QScrollArea(this);
     scrollArea->setWidget(controlFrame);
-//    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-//    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
-    scrollArea->setContentsMargins(2, 2, 2, 2);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scrollArea->setContentsMargins(0, 0, 0, 0);
     scrollArea->setWidgetResizable(true);
 
     drawer = new NativeDrawer(data, this);

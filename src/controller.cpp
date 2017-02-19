@@ -21,6 +21,7 @@ Controller::Controller(QWidget *parent) :
     sky = new QLabel(this);
     fileName = new QLabel(this);
     nativeXCoord = new QLabel(this);
+    stairFileName = new QLabel(this);
 
     layout->addWidget(rays);
     layout->addWidget(channels);
@@ -30,7 +31,10 @@ Controller::Controller(QWidget *parent) :
     layout->addWidget(coords);
     layout->addWidget(nativeXCoord);
     layout->addWidget(fileName);
+    layout->addWidget(stairFileName);
     layout->addStretch(5);
+
+    stairFileName->hide();
 }
 
 void Controller::setCoords(QPointF p) {
@@ -41,6 +45,12 @@ void Controller::setCoords(QPointF p) {
     nativeXCoord->setText(QString("X: %1").arg(p.x()));
     if (Settings::settings()->fourierAnalytics())
         nativeXCoord->setText(QString("X: %1; p=%2s").arg(QString::number(p.x(), 'f', 1), QString::number(2048.0 / p.x() * 0.0999424, 'f', 5)));
+
+    if (Settings::settings()->sourceMode()) {
+        stairFileName->setText("Stair from " + Settings::settings()->stairFileName());
+        stairFileName->show();
+    } else
+        stairFileName->hide();
 }
 
 void Controller::setRays(int r) {

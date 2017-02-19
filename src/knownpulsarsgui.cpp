@@ -9,9 +9,10 @@
 #include <QDir>
 
 KnownPulsarsGUI::KnownPulsarsGUI(QWidget *parent) :
-    QWidget(parent),
+    QWidget(NULL),
     ui(new Ui::KnownPulsarsGUI)
 {
+    QObject::setParent(parent);
     ui->setupUi(this);
     ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
 

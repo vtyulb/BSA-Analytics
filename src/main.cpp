@@ -95,6 +95,20 @@ void precisePacket(QString me, QString fileName) {
     }
 }
 
+void makeConsoleApp(int &argc, char **argv) {
+    QCoreApplication *a = new QCoreApplication(argc, argv);
+    a->setOrganizationDomain("bsa.vtyulb.ru");
+    a->setOrganizationName("vtyulb");
+    a->setApplicationName("BSA-Analytics");
+}
+
+void makeApp(int &argc, char **argv) {
+    QApplication *a = new QApplication(argc, argv);
+    a->setOrganizationDomain("bsa.vtyulb.ru");
+    a->setOrganizationName("vtyulb");
+    a->setApplicationName("BSA-Analytics");
+}
+
 void pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
         printf("Usage:\n");
@@ -213,33 +227,24 @@ void pulsarEngine(int argc, char **argv) {
         if (!debug)
             FreeConsole();
 #endif
-        QApplication a(argc, argv);
-        a.setOrganizationDomain("bsa.vtyulb.ru");
-        a.setOrganizationName("vtyulb");
-        a.setApplicationName("BSA-Analytics");
+        makeApp(argc, argv);
 
         SpectreDrawer sd;
         sd.drawSpectre(module - 1, ray - 1, dataPath, time, period);
 
-        exit(a.exec());
+        exit(qApp->exec());
     }
 
     if (QString(argv[1]) == "--precise-timing") {
-        QApplication a(argc, argv);
-        a.setOrganizationDomain("bsa.vtyulb.ru");
-        a.setOrganizationName("vtyulb");
-        a.setApplicationName("BSA-Analytics");
+        makeApp(argc, argv);
 
         PrecisePeriodDetecter::detect(argv[2], argv[3], argv[4], module - 1, ray - 1, Settings::settings()->dispersion(), period, time);
 
-        exit(a.exec());
+        exit(qApp->exec());
     }
 
     if (preciseSearch) {
-        QCoreApplication a(argc, argv);
-        a.setOrganizationDomain("bsa.vtyulb.ru");
-        a.setOrganizationName("vtyulb");
-        a.setApplicationName("BSA-Analytics");
+        makeConsoleApp(argc, argv);
 
         qDebug() << "searching in file" << dataPath << "pulsar with period" << period << "module" << module << "ray" << ray << "with time" << time;
         Settings::settings()->setPreciseSearch(true);
@@ -291,24 +296,16 @@ void pulsarEngine(int argc, char **argv) {
         if (!debug)
             FreeConsole();
 #endif
-        QApplication a(argc, argv);
-        a.setOrganizationDomain("bsa.vtyulb.ru");
-        a.setOrganizationName("vtyulb");
-        a.setApplicationName("BSA-Analytics");
+        makeApp(argc, argv);
         Analytics *an = new Analytics(analyticsPath, fourier);
         QDir::setCurrent(qApp->applicationDirPath());
-        a.exec();
-        delete an;
-        exit(0);
+        exit(qApp->exec());
     }
 
     if (argc == 2) {
         QString data = argv[1];
         if (data.endsWith(".pnt") || data.endsWith(".pnthr")) {
-            QApplication a(argc, argv);
-            a.setOrganizationDomain("bsa.vtyulb.ru");
-            a.setOrganizationName("vtyulb");
-            a.setApplicationName("BSA-Analytics");
+            makeApp(argc, argv);
 
 #ifdef WIN32
             FreeConsole();
@@ -318,19 +315,16 @@ void pulsarEngine(int argc, char **argv) {
             mainSpace::w = new MainWindow(data);
             mainSpace::w->show();
 
-            exit(a.exec());
+            exit(qApp->exec());
         }
     }
 
     if (argc == 2 && debug) {
-        QApplication a(argc, argv);
-        a.setOrganizationDomain("bsa.vtyulb.ru");
-        a.setOrganizationName("vtyulb");
-        a.setApplicationName("BSA-Analytics");
+        makeApp(argc, argv);
         mainSpace::program = QString(argv[0]);
         mainSpace::w = new MainWindow;
         mainSpace::w->show();
-        exit(a.exec());
+        exit(qApp->exec());
     }
 
     if (dataPath == "" || savePath == "")
@@ -338,17 +332,14 @@ void pulsarEngine(int argc, char **argv) {
 
     savePath = QDir(savePath).absolutePath() + "/";
 
-    QCoreApplication a(argc, argv);
-    a.setOrganizationDomain("bsa.vtyulb.ru");
-    a.setOrganizationName("vtyulb");
-    a.setApplicationName("BSA-Analytics");
+    makeConsoleApp(argc, argv);
 
     signal(SIGSEGV, catchSigSegv);
 
     PulsarSearcher searcher(dataPath, savePath, threads);
     searcher.start();
 
-    exit(a.exec());
+    exit(qApp->exec());
 }
 
 int main(int argc, char *argv[])
@@ -362,17 +353,15 @@ int main(int argc, char *argv[])
 #ifdef WIN32
     FreeConsole();
 #endif
-    QApplication a(argc, argv);
-    a.setApplicationName("BSA-Analytics");
-    a.setOrganizationName("vtyulb");
-    a.setOrganizationDomain("bsa.vtyulb.ru");
+
+    makeApp(argc, argv);
 
     mainSpace::program = QString(argv[0]);
     mainSpace::w = new MainWindow;
     mainSpace::w->show();
 
     try {
-        a.exec();
+        qApp->exec();
         delete mainSpace::w;
     } catch (...) {
         restart();

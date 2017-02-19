@@ -15,6 +15,7 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget
     QWidget(NULL),
     ui(new Ui::PulsarList)
 {
+    QObject::setParent(parent);
     if (pl == NULL)
         pulsars = PulsarReader::ReadPulsarFile(fileName);
     else

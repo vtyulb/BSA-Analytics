@@ -29,7 +29,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     ui(new Ui::Analytics),
     pulsars(new QVector<Pulsar>),
     list(NULL),
-    noises(new KnownNoise)
+    noises(new KnownNoise(this))
 {
     ui->setupUi(this);
 
@@ -78,8 +78,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->groupBox_6->hide();
     }
 
-    QSettings s;
-    this->restoreGeometry(s.value("AnalyticsGeometry").toByteArray());
+    this->restoreGeometry(QSettings().value("AnalyticsGeometry").toByteArray());
 
     show();
     init();
@@ -528,7 +527,7 @@ void Analytics::showInfo() {
 }
 
 void Analytics::knownPulsarsGUI() {
-    static KnownPulsarsGUI *gui = new KnownPulsarsGUI();
+    static KnownPulsarsGUI *gui = new KnownPulsarsGUI(this);
     gui->show();
 }
 
@@ -812,9 +811,7 @@ void Analytics::applyFourierFilters() {
             good[i] = false;
         }
 
-    ui->progressBar->show();
-    ui->currentStatus->show();
-    ui->currentStatus->setText("Adding whitezone peaks");
+    QVector<Pulsar> *whiteZone = new QVector<Pulsar>;
     for (int module = 5; module >= 0; module--)
         for (int ray = 7; ray >= 0; ray--) {
             ui->progressBar->setValue(100 * (7 - ray + (5 - module) * 8) / 48);
@@ -840,7 +837,7 @@ void Analytics::applyFourierFilters() {
 
             pl.findFourierData(ui->fourierPointsToSkip->value());
             pl.data.sigma = pl.firstPoint;
-            pulsars->push_front(pl);
+            whiteZone->push_front(pl);
 
             if (ui->fourierAllPeaks->isChecked())
                 while (pl.snr > std::max(ui->SNR->value(), 5.0)) {
@@ -850,7 +847,7 @@ void Analytics::applyFourierFilters() {
                     pl.findFourierData(pl.firstPoint + (3 + longData * 10));
                     pl.data.sigma = pl.firstPoint;
                     if (pl.snr > 0)
-                        pulsars->push_front(pl);
+                        whiteZone->push_front(pl);
                     else {
                         pl.data.releaseProtected = false;
                         pl.data.releaseData();
@@ -858,10 +855,14 @@ void Analytics::applyFourierFilters() {
                 }
         }
 
-    ui->currentStatus->hide();
+    for (int i = 0; i < pulsars->size(); i++)
+        whiteZone->push_back(pulsars->at(i));
+
+    delete pulsars;
+    pulsars = whiteZone;
+
     ui->progressBar->hide();
     qApp->processEvents();
-
     pulsarsEnabled.resize(pulsars->size());
 }
 
@@ -921,9 +922,15 @@ void Analytics::fourierFullGrayZone() {
     ui->fourierFullGrayZone->setDisabled(true);
     ui->fourierShortGrayZone->setEnabled(true);
 
+    ui->currentStatus->setText("Generating yellow zone");
+    ui->currentStatus->show();
+    ui->progressBar->show();
     int size = pulsars->size();
     for (int i = 0; i < size; i++)
         if (pulsars->at(i).filtered && pulsars->at(i).snr > 2) {
+            if (i % 100)
+                ui->progressBar->setValue(100 * i / size);
+
             Pulsar pl = pulsars->at(i);
 
             pl.findFourierData(ui->fourierPointsToSkip->value());
@@ -940,6 +947,9 @@ void Analytics::fourierFullGrayZone() {
                     pulsars->push_back(pl);
             }
         }
+
+    ui->currentStatus->hide();
+    ui->progressBar->hide();
 
     ui->groupBox->show();
     apply();

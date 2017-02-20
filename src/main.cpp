@@ -111,8 +111,7 @@ void makeApp(int &argc, char **argv) {
 
 void pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
-        printf("Usage:\n");
-        printf("BSA-Analytics\n");
+        printf("BSA-Analytics usage:\n");
         printf("BSA-Analytics [311217_01_N1_00.pnt | 311217_23_N2_00.pnthr]\n");
         printf("BSA-Analytics --pulsar-search <string> --save-path <string> [--threads <int>] [--skip <int>]\n");
         printf("BSA-Analytics --analytics [path-to-data] [--fourier] [--low-memory]\n");
@@ -132,11 +131,13 @@ void pulsarEngine(int argc, char **argv) {
         printf("\t--skip <int> for skipping first N files\n");
         printf("\t--sub-zero for output pulsars with snr 2-5 (only good)\n");
         printf("\t--analytics to run in analytics mode\n");
-        printf("\t--low-memory to do not save data roads in analytics mode\n");
+        printf("\t--low-memory to do not saving data roads in analytics mode\n");
         printf("\t--long-roads to display more than two periods\n");
         printf("\t--debug for keeping debug terminal open in Windows\n");
         printf("\nWritten by Vladislav Tyulbashev.\n");
-        printf("About any errors please write to <vtyulb@vtyulb.ru>\n");
+        printf("This program is distributed under GPLv3 License.\n");
+        printf("Please report about any errors to <vtyulb@vtyulb.ru>\n");
+        printf("or directly to bugtracker: https://github.com/vtyulb/BSA-Analytics/issues\n");
         exit(0);
     }
 

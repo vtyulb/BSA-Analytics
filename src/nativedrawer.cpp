@@ -54,8 +54,8 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
     p.setBrush(QBrush(QColor(0, 50, 200, 100)));
     if (mousePressed) {
         if (Settings::settings()->sourceMode()) {
-            mouseRect.setBottom(0);
-            mouseRect.setTop(height());
+            mouseRect.setBottom(-2);
+            mouseRect.setTop(height()+1);
         }
         p.drawRect(mouseRect);
     } else if (Settings::settings()->sourceMode()) {

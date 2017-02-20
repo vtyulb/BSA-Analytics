@@ -54,18 +54,18 @@ Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChang
 [Registry]
 Root: HKCR; Subkey: ".pnt"; ValueType: string; ValueName: ""; ValueData: "BSAShortData"; Flags: uninsdeletevalue
 Root: HKCR; Subkey: "BSAShortData"; ValueType: string; ValueName: ""; ValueData: "BSA Short Data"; Flags: uninsdeletevalue
-Root: HKCR; Subkey: "BSAShortData\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\BSA-Analytics.exe,0"
-Root: HKCR; Subkey: "BSAShortData\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""%1"""
+Root: HKCR; Subkey: "BSAShortData\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\BSA-Analytics.exe,0"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "BSAShortData\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""%1"""; Flags: uninsdeletevalue
 
 Root: HKCR; Subkey: ".pnthr"; ValueType: string; ValueName: ""; ValueData: "BSALongData"; Flags: uninsdeletevalue
 Root: HKCR; Subkey: "BSALongData"; ValueType: string; ValueName: ""; ValueData: "BSA Long Data"; Flags: uninsdeletevalue
-Root: HKCR; Subkey: "BSALongData\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\BSA-Analytics.exe,0"
-Root: HKCR; Subkey: "BSALongData\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""%1"""
+Root: HKCR; Subkey: "BSALongData\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\BSA-Analytics.exe,0"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "BSALongData\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""%1"""; Flags: uninsdeletevalue
 
 Root: HKCR; Subkey: ".pulsar"; ValueType: string; ValueName: ""; ValueData: "BSAPulsar"; Flags: uninsdeletevalue
 Root: HKCR; Subkey: "BSAPulsar"; ValueType: string; ValueName: ""; ValueData: "BSA-Analytics Pulsar"; Flags: uninsdeletevalue
-Root: HKCR; Subkey: "BSAPulsar\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\BSA-Analytics.exe,0"
-Root: HKCR; Subkey: "BSAPulsar\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""--analytics"" ""%1"""
+Root: HKCR; Subkey: "BSAPulsar\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: "{app}\BSA-Analytics.exe,0"; Flags: uninsdeletevalue
+Root: HKCR; Subkey: "BSAPulsar\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""--analytics"" ""%1"""; Flags: uninsdeletevalue
 
 Root: HKCR; Subkey: "Directory\shell\Run BSA-Analytics"; ValueType: string; ValueName: ""; ValueData: "Run BSA-Analytics"; Flags: uninsdeletevalue
-Root: HKCR; Subkey: "Directory\shell\Run BSA-Analytics\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""--analytics"" ""%1"""
+Root: HKCR; Subkey: "Directory\shell\Run BSA-Analytics\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""--analytics"" ""%1"""; Flags: uninsdeletevalue

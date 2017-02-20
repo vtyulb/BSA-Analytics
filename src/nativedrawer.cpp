@@ -5,6 +5,7 @@
 #include <QtPrintSupport/QPrintDialog>
 #include <QMessageBox>
 #include <QClipboard>
+#include <QTimer>
 
 #include <startime.h>
 #include <cmath>
@@ -20,16 +21,15 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     channel(0),
     module(0),
     data(data),
-    art(new QImage(100, 100, QImage::Format_ARGB32)),
+    art(NULL),
     mousePressed(false),
     verticalLine(-1)
 {
     for (int i = 0; i < data.rays; i++)
         rayVisibles.push_back(true);
 
-    resetVisibleRectangle();
+    resetVisibleRectangle(false);
     setMouseTracking(true);
-    Settings::settings()->setLastData(data);
     setMinimumSize(100, 100);
 }
 
@@ -45,10 +45,15 @@ void NativeDrawer::setRayVisibles(QVector<bool> v) {
 }
 
 void NativeDrawer::paintEvent(QPaintEvent *event) {
+    if (width() <= 100 && height() <= 100)
+        return;
+
     QPainter p(this);
 
     if (art)
         p.drawImage(QRect(0, 0, width(), height()), *art);
+    else
+        return;
 
     p.setPen(QColor("black"));
     p.setBrush(QBrush(QColor(0, 50, 200, 100)));
@@ -73,10 +78,12 @@ void NativeDrawer::nativePaint(bool forPrinter) {
     if (!drawing.tryLock())
         return;
 
-    if (width() < 100 || height() < 100) {
+    if (width() <= 100 && height() <= 100) {
         drawing.unlock();
         return;
     }
+
+    qDebug() << "native paint" << width() << height();
 
     if (!forPrinter) {
         delete art;
@@ -132,7 +139,8 @@ void NativeDrawer::nativePaint(bool forPrinter) {
     drawAxes();
 
     drawing.unlock();
-    repaint();
+    if (width() > 100 || height() > 100)
+        repaint();
 }
 
 void NativeDrawer::fourierDraw(QPainter &p) {
@@ -222,6 +230,9 @@ void NativeDrawer::mousePressEvent(QMouseEvent *event) {
 }
 
 void NativeDrawer::mouseMoveEvent(QMouseEvent *event) {
+    if (!art)
+        return;
+
     verticalLine = event->pos().x();
     mouseRect = QRect(mouseClicked, event->pos());
     if (mousePressed || Settings::settings()->sourceMode())
@@ -330,7 +341,7 @@ void NativeDrawer::setColors(QVector<QString> c) {
 }
 
 void NativeDrawer::drawAxes() {
-    if (!drawAxesFlag)
+    if (!drawAxesFlag || !art)
         return;
 
     QPainter p(art);

@@ -72,6 +72,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         QObject::connect(ui->fourierShortGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierShortGrayZone()));
         QObject::connect(ui->fourierFullGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierFullGrayZone()));
 
+        setWindowTitle("Fourier Analytics");
         fourierData.resize(500);
     } else {
         ui->groupBox_5->hide();
@@ -975,8 +976,8 @@ void Analytics::preciseDataMode() {
 }
 
 void Analytics::closeEvent(QCloseEvent *) {
-    QSettings s;
-    s.setValue("AnalyticsGeometry", this->saveGeometry());
+    QSettings().setValue("AnalyticsGeometry", this->saveGeometry());
+    qApp->quit();
 }
 
 Analytics::~Analytics()

@@ -76,10 +76,13 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
 #endif
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     saveSettings();
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *) {
+    QTimer::singleShot(100, qApp, SLOT(quit()));
 }
 
 void MainWindow::openFile() {
@@ -138,10 +141,6 @@ void MainWindow::openPulsarFile() {
     l << "--analytics" << path;
     QProcess::startDetached(qApp->arguments()[0], l);
     qApp->exit(0);
-
-//    PulsarList *list = new PulsarList(path, NULL, this);
-//    QObject::connect(list, SIGNAL(switchData(Data&)), this, SLOT(regenerate(Data&)));
-//    QObject::connect(this, SIGNAL(destroyed()), list, SLOT(deleteLater()));
 }
 
 QString MainWindow::nativeDecodeLastPath(QString path) {
@@ -233,6 +232,7 @@ void MainWindow::showAbout() {
 }
 
 void MainWindow::saveSettings() {
+    qDebug() << "saving global settings";
     QSettings s;
     s.setValue("geometry", QVariant(saveGeometry()));
     s.setValue("autoDraw", QVariant(ui->actionAutoDraw->isChecked()));

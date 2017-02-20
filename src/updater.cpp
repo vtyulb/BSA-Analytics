@@ -87,8 +87,8 @@ void Updater::runSetup(QNetworkReply *newVersion) {
     if (!exe.open(QIODevice::WriteOnly))
         QMessageBox::information(NULL, "Error", "Can't write to temp: " + installerName);
     else {
+        exe.setPermissions(QFileDevice::ExeOwner | QFileDevice::ReadOwner | QFileDevice::WriteOwner);
         exe.write(installer);
-        exe.setPermissions(QFileDevice::ExeOwner);
         exe.close();
         qDebug() << "Running setup: " << installerName;
         QDesktopServices::openUrl(QUrl::fromLocalFile(installerName));

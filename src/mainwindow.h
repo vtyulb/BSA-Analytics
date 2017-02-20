@@ -33,6 +33,8 @@ private:
 
     void decodeLastPath(QString path);
 
+    void closeEvent(QCloseEvent*);
+
 private slots:
     void openPulsarFile();
     void openAnalytics(bool hasMemory = true, bool fourier = false);

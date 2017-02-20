@@ -96,6 +96,7 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget
 
 void PulsarList::closeEvent(QCloseEvent *) {
     QSettings().setValue("pulsar-list-geometry", saveGeometry());
+    qApp->quit();
 }
 
 PulsarList::~PulsarList() {

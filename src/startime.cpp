@@ -97,7 +97,7 @@ namespace {
 namespace StarTime {
     QString StarTime(Data data, int point, double *realSeconds) {
         if (!data.time.isValid()) {
-            qDebug() << "invalid time";
+//            qDebug() << "invalid time";
             return "";
         }
 

@@ -1,5 +1,8 @@
-#include "reader.h"
+#include <reader.h>
+#include <settings.h>
+
 #include <malloc.h>
+
 #include <QFile>
 #include <QStringList>
 
@@ -174,6 +177,7 @@ Data Reader::readBinaryFile(QString file) {
                 }
         }
 
+    Settings::settings()->setLastData(data);
     return data;
 }
 

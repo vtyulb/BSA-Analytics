@@ -113,20 +113,25 @@ void PreciseSearchGui::runSearcher() {
 
 void PreciseSearchGui::determineSearchMode() {
     ui->skipMultiplePeriods->setEnabled(true);
-    ui->skipPeriodsLabel->setEnabled(true);
+    ui->skipMultiplePeriodsLabel->setEnabled(true);
     ui->runAnalytics->setEnabled(true);
+    ui->runAnalyticsAfterLabel->setEnabled(true);
     ui->threadCount->setEnabled(true);
+    ui->threadCountLabel->setEnabled(true);
     ui->fluxDensityWidget->setEnabled(false);
 
     if (ui->singlePeriod->isChecked()) {
         ui->skipMultiplePeriods->setEnabled(false);
-        ui->skipPeriodsLabel->setEnabled(false);
+        ui->skipMultiplePeriodsLabel->setEnabled(false);
     }
 
     if (ui->spectre->isChecked()) {
         ui->runAnalytics->setEnabled(false);
+        ui->runAnalyticsAfterLabel->setEnabled(false);
         ui->skipMultiplePeriods->setEnabled(false);
+        ui->skipMultiplePeriodsLabel->setEnabled(false);
         ui->threadCount->setEnabled(false);
+        ui->threadCountLabel->setEnabled(false);
     }
 
     if (ui->fluxDensity->isChecked()) {
@@ -138,7 +143,10 @@ void PreciseSearchGui::determineSearchMode() {
         }
         ui->fluxDensityWidget->setEnabled(true);
         ui->skipMultiplePeriods->setEnabled(false);
+        ui->skipMultiplePeriodsLabel->setEnabled(false);
         ui->runAnalytics->setEnabled(false);
+        ui->runAnalyticsAfterLabel->setEnabled(false);
         ui->threadCount->setEnabled(false);
+        ui->threadCountLabel->setEnabled(false);
     }
 }

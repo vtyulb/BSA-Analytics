@@ -287,7 +287,6 @@ void pulsarEngine(int argc, char **argv) {
         }
 #endif
 
-
         exit(0);
     }
 

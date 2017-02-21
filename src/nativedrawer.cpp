@@ -83,8 +83,6 @@ void NativeDrawer::nativePaint(bool forPrinter) {
         return;
     }
 
-    qDebug() << "native paint" << width() << height();
-
     if (!forPrinter) {
         delete art;
         art = new QImage(this->width(), this->height(), QImage::Format_RGB32);
@@ -355,8 +353,8 @@ void NativeDrawer::drawAxes() {
 
     p.setPen(QColor("black"));
 
-    p.drawLine(QPoint(0, art->height() - 3), QPoint(art->width(), art->height() - 3));
-    p.drawLine(QPoint(0, 3), QPoint(art->width(), 3));
+    p.drawLine(QPoint(0, art->height() - 1), QPoint(art->width(), art->height() - 1));
+    p.drawLine(QPoint(0, 0), QPoint(art->width(), 0));
     for (int i = 50; i < art->width() - 20; i+=50) {
         if (drawNet) {
             QPen backup = p.pen();
@@ -373,8 +371,8 @@ void NativeDrawer::drawAxes() {
         }
     }
 
-    p.drawLine(QPoint(3, 0), QPoint(3, art->height()));
-    p.drawLine(QPoint(art->width() - 3, 0), QPoint(art->width() - 3, art->height()));
+    p.drawLine(QPoint(0, 0), QPoint(0, art->height()));
+    p.drawLine(QPoint(art->width() - 1, 0), QPoint(art->width() - 1, art->height()));
     for (int i = 50; i < art->height() - 20; i+=50) {
         if (drawNet) {
             QPen backup = p.pen();

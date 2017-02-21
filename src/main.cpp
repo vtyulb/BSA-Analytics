@@ -327,8 +327,11 @@ void pulsarEngine(int argc, char **argv) {
         exit(qApp->exec());
     }
 
-    if (dataPath == "" || savePath == "")
+    if (dataPath == "" || savePath == "") {
+        printf("You've messed up with command line options.\n");
+        printf("Use 'BSA-Analytics --help' to understand why\n");
         exit(-1);
+    }
 
     savePath = QDir(savePath).absolutePath() + "/";
 

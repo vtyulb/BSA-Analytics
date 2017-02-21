@@ -455,7 +455,7 @@ void NativeDrawer::sourceDetect(int a, int b) {
         std::sort(res.data(), res.data() + res.size());
         double current = (res[res.size() - 5] - res[5])/ Settings::settings()->getStairHeight(module, ray, k) * 2100;
         average += current / (data.channels - 1);
-        resStr = resStr + " " + QString::number(current);
+        resStr = resStr + " " + QString::number(current, 'f', 2);
     }
 
     if (Settings::settings()->sourceMode() == RotationMeasure)

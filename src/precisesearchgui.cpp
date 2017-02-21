@@ -3,6 +3,7 @@
 #include "ui_precisepacket.h"
 #include <flowdetecter.h>
 
+#include <QApplication>
 #include <QFileDialog>
 #include <QSettings>
 #include <QStringList>
@@ -96,6 +97,9 @@ void PreciseSearchGui::runSearcher() {
 
     if (ui->spectre->isChecked())
         l << "--draw-spectre";
+
+    if (qApp->arguments().contains("--debug"))
+        l << "--debug";
 
     if (ui->fluxDensity->isChecked()) {
         FlowDetecter detecter(ui->module->value() - 1, ui->dispersion->value(), ui->ray->value() - 1,

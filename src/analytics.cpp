@@ -112,6 +112,7 @@ void Analytics::init() {
 
 void Analytics::loadKnownPulsars() {
     knownPulsars.clear();
+    static bool firstLoad = true;
     QString fileName = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/known-pulsars.txt";
     QFile f(fileName);
     if (f.open(QIODevice::ReadOnly)) {
@@ -124,7 +125,16 @@ void Analytics::loadKnownPulsars() {
             KnownPulsar pulsar;
             QString time;
             stream >> pulsar.module >> pulsar.ray >> pulsar.period >> time;
+            if (time.size() < 6) {
+                if (firstLoad)
+                    qDebug() << "known-pulsars.txt line" << line << "damaged";
+                continue;
+            }
+
             pulsar.time = QTime::fromString(time, "hh:mm:ss");
+            if (firstLoad)
+                qDebug() << "known pulsar" << pulsar.module << pulsar.ray << pulsar.period << pulsar.time << "loaded";
+
             knownPulsars.push_back(pulsar);
         }
     } else {
@@ -137,6 +147,8 @@ void Analytics::loadKnownPulsars() {
             f.write("6\t7\t1.336\t19:20:18\n");
         }
     }
+
+    firstLoad = false;
 }
 
 void Analytics::loadPulsars(QString dir) {
@@ -815,6 +827,7 @@ void Analytics::applyFourierFilters() {
             good[i] = false;
         }
 
+    ui->currentStatus->setText("Generating white zone");
     QVector<Pulsar> *whiteZone = new QVector<Pulsar>;
     for (int module = 5; module >= 0; module--)
         for (int ray = 7; ray >= 0; ray--) {

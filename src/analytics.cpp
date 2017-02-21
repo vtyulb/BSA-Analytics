@@ -5,7 +5,6 @@
 #include <pulsarworker.h>
 #include <pulsarlist.h>
 #include <settings.h>
-#include <knownpulsarsgui.h>
 #include <fourier.h>
 
 #include <QFileDialog>
@@ -17,6 +16,7 @@
 #include <QSet>
 #include <QTextBrowser>
 #include <QStandardPaths>
+#include <QDesktopServices>
 
 #include <algorithm>
 
@@ -111,7 +111,32 @@ void Analytics::init() {
 }
 
 void Analytics::loadKnownPulsars() {
-    knownPulsars = KnownPulsarsGUI::load();
+    knownPulsars.clear();
+    QString fileName = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/known-pulsars.txt";
+    QFile f(fileName);
+    if (f.open(QIODevice::ReadOnly)) {
+        f.readLine();
+        while (f.canReadLine()) {
+            QByteArray line = f.readLine();
+            if (line[0] == '#')
+                continue;
+            QTextStream stream(&line, QIODevice::ReadOnly);
+            KnownPulsar pulsar;
+            QString time;
+            stream >> pulsar.module >> pulsar.ray >> pulsar.period >> time;
+            pulsar.time = QTime::fromString(time, "hh:mm:ss");
+            knownPulsars.push_back(pulsar);
+        }
+    } else {
+        QDir().mkpath(QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation));
+        if (!f.open(QIODevice::WriteOnly))
+            qDebug() << "can't create file" << fileName;
+        else {
+            f.write("module\tray\tperiod\ttime\n");
+            f.write("#This is commented line\n");
+            f.write("6\t7\t1.336\t19:20:18\n");
+        }
+    }
 }
 
 void Analytics::loadPulsars(QString dir) {
@@ -506,8 +531,8 @@ void Analytics::showInfo() {
 }
 
 void Analytics::knownPulsarsGUI() {
-    static KnownPulsarsGUI *gui = new KnownPulsarsGUI(this);
-    gui->show();
+    QString fileName = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/known-pulsars.txt";
+    QDesktopServices::openUrl(QUrl::fromLocalFile(fileName));
 }
 
 void Analytics::applyKnownNoiseFilter() {

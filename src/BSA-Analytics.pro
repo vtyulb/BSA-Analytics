@@ -34,7 +34,6 @@ SOURCES += main.cpp\
     wavplayer.cpp \
     filecompressor.cpp \
     precisesearchgui.cpp \
-    knownpulsarsgui.cpp \
     knownnoise.cpp \
     spectredrawer.cpp \
     nativespectredrawer.cpp \
@@ -70,7 +69,6 @@ HEADERS  += mainwindow.h \
     filecompressor.h \
     knownpulsar.h \
     precisesearchgui.h \
-    knownpulsarsgui.h \
     knownnoise.h \
     spectredrawer.h \
     nativespectredrawer.h \
@@ -90,7 +88,6 @@ FORMS    += mainwindow.ui \
     analytics.ui \
     precisesearchgui.ui \
     precisepacket.ui \
-    knownpulsarsgui.ui \
     knownnoise.ui \
     spectre.ui \
     precisetiming.ui

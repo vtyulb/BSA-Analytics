@@ -23,6 +23,8 @@ public:
     void saveFile(QString);
     NativeDrawer *drawer;
 
+    void pushNewData(const Data &data);
+
 private:
     QFrame *controlFrame;
     QPushButton *resetButton;
@@ -39,7 +41,6 @@ private:
     int rays, numberChannels, numberModules;
 
     void keyPressEvent(QKeyEvent *);
-signals:
 
 private slots:
     void checkBoxStateChanged();

@@ -168,6 +168,13 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QD
 void MainWindow::regenerate(Data &data) {
     show();
     ui->label->hide();
+    if (drawer) {
+        Data *old = &drawer->drawer->data;
+        if (old->modules == data.modules && old->rays == data.rays && old->channels == data.channels) {
+            drawer->pushNewData(data);
+            return;
+        }
+    }
     delete drawer;
     drawer = new Drawer(data, this);
     ui->centralWidget->layout()->addWidget(drawer);

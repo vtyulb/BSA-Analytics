@@ -839,6 +839,7 @@ void Analytics::applyFourierFilters() {
             data.modules = 1;
             data.rays = 1;
             data.channels = 1;
+            data.previousLifeName = "whitezone";
             data.init();
             data.releaseProtected = true;
             memcpy(data.data[0][0][0], fourierSumm[module][ray].constData(), sizeof(float) * fourierSpectreSize);

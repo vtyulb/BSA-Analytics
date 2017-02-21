@@ -23,6 +23,8 @@ Controller::Controller(QWidget *parent) :
     nativeXCoord = new QLabel(this);
     stairFileName = new QLabel(this);
 
+    fileName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+
     layout->addWidget(rays);
     layout->addWidget(channels);
     layout->addWidget(modules);
@@ -72,7 +74,7 @@ void Controller::setModules(int m) {
 void Controller::resetSky(Data newData, int module, QVector<bool> rays) {
     data = newData;
     if (Settings::settings()->fourierAnalytics()) {
-        setFileName(data.previousLifeName);
+        setFileName(data.previousLifeName.replace("file ", "").replace("from", "<-"));
         sky->hide();
     } else {
         int first = 1;

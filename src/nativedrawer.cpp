@@ -100,8 +100,8 @@ void NativeDrawer::nativePaint(bool forPrinter) {
             if (live)
                 repaint();
 
-        emit progress(5000000*k/(data.npoints + 1));
-
+        if (data.npoints > 50000)
+            emit progress(5000000*k/(data.npoints + 1));
 
         for (int j = 0; j < rays; j++) {
             QByteArray c = QByteArray::fromHex(colors[j].toUtf8());

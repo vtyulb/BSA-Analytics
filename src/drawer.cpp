@@ -173,6 +173,15 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     deltaChanged(delta->value());
 }
 
+void Drawer::pushNewData(const Data &data) {
+    controller->resetSky(data);
+    controller->setPoints(data.npoints);
+
+    drawer->data.releaseData();
+    drawer->data = data;
+    drawer->resetVisibleRectangle();
+}
+
 void Drawer::checkBoxStateChanged() {
     raysEnabled.clear();
     for (int i = 0; i < rays; i++)

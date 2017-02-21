@@ -7,6 +7,7 @@
 #include <settings.h>
 #include <fourier.h>
 
+#include <QGroupBox>
 #include <QFileDialog>
 #include <QDir>
 #include <QDebug>
@@ -68,6 +69,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->duplicatesIterations->hide();
         ui->label_9->hide();
 
+        ui->widget_5->layout()->addWidget(ui->knownPulsarsAndNoises);
 
         QObject::connect(ui->fourierShortGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierShortGrayZone()));
         QObject::connect(ui->fourierFullGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierFullGrayZone()));
@@ -295,7 +297,7 @@ void Analytics::applyModuleFilter() {
 void Analytics::applyPeriodRangeFilter() {
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] &= (ui->periodRangeLeft->value() < pulsars->at(i).period) &&
-                                (ui->periodRangeRight->value() > pulsars->at(i).period);
+                             (ui->periodRangeRight->value() > pulsars->at(i).period);
 }
 
 void Analytics::applyPeriodFilter() {
@@ -775,8 +777,8 @@ void Analytics::applyFourierFilters() {
     QVector<bool> good(pulsars->size(), !ui->fourierPeak->isChecked());
 
     if (ui->fourierPeak->isChecked()) {
-        int start = fourierSpectreSize * 2 / ui->fourierPeakTo->value()*Settings::settings()->getFourierStepConstant();
-        int end = fourierSpectreSize * 2 / ui->fourierPeakFrom->value()*Settings::settings()->getFourierStepConstant();
+        int start = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() - 2;
+        int end = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() + 3;
         for (int i = 0; i < pulsars->size(); i++) {
             for (int j = start; j < end; j++)
                 if ((pulsars->at(i).data.data[0][0][0][j] - pulsars->at(i).fourierAverage) / pulsars->at(i).fourierRealNoise > ui->fourierPeakSNR->value())

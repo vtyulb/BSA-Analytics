@@ -111,29 +111,7 @@ void Analytics::init() {
 }
 
 void Analytics::loadKnownPulsars() {
-    qDebug() << QStandardPaths::standardLocations(QStandardPaths::DataLocation)[0];
-    QFile f(QStandardPaths::standardLocations(QStandardPaths::DataLocation)[0] + KNOWN_PULSARS_FILENAME);
-    knownPulsars.clear();
-    if (f.open(QIODevice::ReadOnly)) {
-        f.readLine();
-        while (f.canReadLine()) {
-            QByteArray line = f.readLine();
-            if (line[0] == '#')
-                continue;
-            QTextStream stream(&line, QIODevice::ReadOnly);
-            KnownPulsar pulsar;
-            QString time;
-            stream >> pulsar.module >> pulsar.ray >> pulsar.period >> time;
-            if (time.size() < 6)
-                break;
-
-            pulsar.time = QTime::fromString(time, "hh:mm:ss");
-
-            qDebug() << "loaded pulsar" << pulsar.module << pulsar.ray << pulsar.period << pulsar.time;
-            knownPulsars.push_back(pulsar);
-        }
-    } else
-        qDebug() << "can't find file" << f.fileName();
+    knownPulsars = KnownPulsarsGUI::load();
 }
 
 void Analytics::loadPulsars(QString dir) {

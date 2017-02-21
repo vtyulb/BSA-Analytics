@@ -7,25 +7,27 @@
 #include "knownpulsar.h"
 
 namespace Ui {
-class KnownPulsarsGUI;
+    class KnownPulsarsGUI;
 }
 
 class KnownPulsarsGUI : public QWidget
 {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
+  public:
     explicit KnownPulsarsGUI(QWidget *parent = 0);
     ~KnownPulsarsGUI();
 
-private:
+    static QVector<KnownPulsar> load();
+
+  private:
     Ui::KnownPulsarsGUI *ui;
     QVector<KnownPulsar> pulsars;
 
     void reload();
     void dump();
 
-private slots:
+  private slots:
     void add();
     void remove();
 };

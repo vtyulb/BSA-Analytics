@@ -88,6 +88,8 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget
     ui->tableWidget->setColumnWidth(5, 50);
     ui->tableWidget->selectRow(0);
 
+    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
     QTimer::singleShot(200, this, SLOT(selectionChanged()));
 
     restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());

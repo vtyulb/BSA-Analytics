@@ -3,12 +3,22 @@
 
 #include <QTime>
 #include <QString>
+#include <QVariant>
+
 #include <pulsar.h>
 
 const QString KNOWN_PULSARS_FILENAME = "/known-pulsars.pls";
 
 struct KnownPulsar {
     KnownPulsar() {};
+    KnownPulsar(QVariant data) {
+        QList<QVariant> res = data.toList();
+        module = res[0].toInt();
+        ray = res[1].toInt();
+        period = res[2].toDouble();
+        time = res[3].toTime();
+    }
+
     KnownPulsar(int _module, int _ray, double _period, QTime _time):
         module(_module),
         ray(_ray),
@@ -26,6 +36,15 @@ struct KnownPulsar {
                 (ray == p.ray) &&
                 (globalGoodDoubles(period, p.period)) &&
                 abs(p.nativeTime.secsTo(time)) <= 120;
+    }
+
+    QVariant toVariant() {
+        QList<QVariant> res;
+        res.push_back(module);
+        res.push_back(ray);
+        res.push_back(period);
+        res.push_back(time);
+        return res;
     }
 };
 

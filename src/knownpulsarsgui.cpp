@@ -5,8 +5,10 @@
 #include <QTextStream>
 #include <QTime>
 #include <QDebug>
+#include <QTableWidget>
 #include <QStandardPaths>
 #include <QDir>
+#include <QSettings>
 
 KnownPulsarsGUI::KnownPulsarsGUI(QWidget *parent) :
     QWidget(NULL),
@@ -41,7 +43,12 @@ void KnownPulsarsGUI::reload() {
             pulsar.time = QTime::fromString(time, "hh:mm:ss");
             pulsars.push_back(pulsar);
         }
+
+        f.remove();
+        dump();
     }
+
+    pulsars = load();
 
     ui->tableWidget->setRowCount(pulsars.size());
     ui->tableWidget->setColumnCount(4);
@@ -61,6 +68,8 @@ void KnownPulsarsGUI::reload() {
         ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(pulsars[i].period)));
         ui->tableWidget->setItem(i, 3, new QTableWidgetItem(pulsars[i].time.toString("HH:mm:ss")));
     }
+
+    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 void KnownPulsarsGUI::add() {
@@ -88,19 +97,22 @@ void KnownPulsarsGUI::remove() {
 }
 
 void KnownPulsarsGUI::dump() {
-    QDir().mkpath(QStandardPaths::standardLocations(QStandardPaths::DataLocation)[0]);
-    QFile f(QStandardPaths::standardLocations(QStandardPaths::DataLocation)[0] + KNOWN_PULSARS_FILENAME);
-    f.open(QIODevice::WriteOnly);
-    QTextStream s(&f);
-    s << "module\tray\tperiod\ttime\n";
+    QList<QVariant> pulsarsList;
     for (int i = 0; i < pulsars.size(); i++)
-        s << pulsars[i].module << "\t" << pulsars[i].ray << "\t" << pulsars[i].period << "\t" << pulsars[i].time.toString("HH:mm:ss") << "\n";
+        pulsarsList.push_back(pulsars[i].toVariant());
 
-    s.flush();
-    f.close();
+    QSettings().setValue("KnownPulsars", QVariant(pulsarsList));
 }
 
-KnownPulsarsGUI::~KnownPulsarsGUI()
-{
+QVector<KnownPulsar> KnownPulsarsGUI::load() {
+    QVector<KnownPulsar> res;
+    QList<QVariant> pulsarsList = QSettings().value("KnownPulsars").toList();
+    for (int i = 0; i < pulsarsList.size(); i++)
+        res.push_back(KnownPulsar(pulsarsList[i]));
+
+    return res;
+}
+
+KnownPulsarsGUI::~KnownPulsarsGUI() {
     delete ui;
 }

@@ -36,6 +36,8 @@ void KnownNoise::reload() {
     ui->tableWidget->setRowCount(doubles.size());
     for (int i = 0; i < doubles.size(); i++)
         ui->tableWidget->setItem(i, 0, new QTableWidgetItem(QString::number(doubles[i])));
+
+    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 void KnownNoise::save() {

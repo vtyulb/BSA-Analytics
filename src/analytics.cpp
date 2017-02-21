@@ -932,8 +932,10 @@ void Analytics::fourierFullGrayZone() {
     int size = pulsars->size();
     for (int i = 0; i < size; i++)
         if (pulsars->at(i).filtered && pulsars->at(i).snr > 2) {
-            if (i % 100)
+            if (i % 100 == 0) {
                 ui->progressBar->setValue(100 * i / size);
+                qApp->processEvents();
+            }
 
             Pulsar pl = pulsars->at(i);
 

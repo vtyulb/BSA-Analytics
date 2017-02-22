@@ -297,6 +297,12 @@
    <property name="text">
     <string>&amp;HandBook</string>
    </property>
+   <property name="shortcut">
+    <string>F1</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::ApplicationShortcut</enum>
+   </property>
   </action>
   <action name="actionUpdate">
    <property name="text">

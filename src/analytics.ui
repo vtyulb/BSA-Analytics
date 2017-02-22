@@ -773,13 +773,6 @@
     </spacer>
    </item>
    <item>
-    <widget class="QLabel" name="pulsarsTotal">
-     <property name="text">
-      <string>Loaded 0 pulsar files</string>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QLabel" name="currentStatus">
      <property name="text">
       <string>Loading</string>

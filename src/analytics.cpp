@@ -194,7 +194,7 @@ void Analytics::loadPulsars(QString dir) {
                 (*pulsars)[j].squeeze();
 
         total++;
-        ui->pulsarsTotal->setText(QString("Loaded %1 pulsar files").arg(total));
+        ui->currentStatus->setText(QString("Loaded %1 pulsar files").arg(total));
     }
 
     pulsarsEnabled.resize(pulsars->size());
@@ -557,7 +557,6 @@ void Analytics::applyKnownNoiseFilter() {
 void Analytics::loadFourierData(bool cashOnly) {
     qDebug() << "fourier load called";
 
-    ui->pulsarsTotal->hide();
     ui->progressBar->show();
     ui->currentStatus->show();
     ui->currentStatus->setText("Releasing previous data");
@@ -733,10 +732,7 @@ void Analytics::loadFourierData(bool cashOnly) {
 
     ui->fourierLoad->setDisabled(true);
     ui->fourierLoad->setText("Data loaded");
-    ui->currentStatus->hide();
-
-    ui->pulsarsTotal->setText(QString("Loaded %1 files").arg(fourierData.size()));
-    ui->pulsarsTotal->show();
+    ui->currentStatus->setText(QString("Loaded %1 files").arg(fourierData.size()));
 
     if (!cashOnly) {
         if (!ui->fourierFullGrayZone->isEnabled())
@@ -940,7 +936,6 @@ void Analytics::fourierShortGrayZone() {
 
 void Analytics::fourierFullGrayZone() {
     ui->fourierFullGrayZone->setDisabled(true);
-    ui->fourierShortGrayZone->setEnabled(true);
 
     ui->currentStatus->setText("Generating yellow zone");
     ui->currentStatus->show();
@@ -972,6 +967,7 @@ void Analytics::fourierFullGrayZone() {
 
     ui->currentStatus->hide();
     ui->progressBar->hide();
+    ui->fourierShortGrayZone->setEnabled(true);
 
     ui->groupBox->show();
     apply();

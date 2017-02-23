@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>313</width>
+    <width>295</width>
     <height>1540</height>
    </rect>
   </property>
@@ -474,7 +474,7 @@
       <item>
        <widget class="QCheckBox" name="fourierOnlyNightData">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="text">
          <string>Only night data</string>
@@ -608,8 +608,14 @@
          </item>
          <item>
           <widget class="QDoubleSpinBox" name="fourierPeakAt">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="decimals">
-            <number>3</number>
+            <number>4</number>
            </property>
            <property name="value">
             <double>1.120000000000000</double>
@@ -625,6 +631,12 @@
          </item>
          <item>
           <widget class="QDoubleSpinBox" name="fourierPeakSNR">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="decimals">
             <number>1</number>
            </property>

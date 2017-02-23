@@ -472,6 +472,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="fourierOnlyNightData">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Only night data</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="fourierRemoveBadRawData">
         <property name="text">
          <string>Remove bad raw data from table</string>

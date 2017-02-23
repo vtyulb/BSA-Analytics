@@ -185,6 +185,9 @@
    <property name="text">
     <string>&amp;Open Binary BSA3</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actionFast">
    <property name="checkable">

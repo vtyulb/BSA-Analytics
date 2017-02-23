@@ -41,15 +41,15 @@ private:
     bool fourier;
     int fourierSpectreSize;
     bool longData;
+    int totalFilesLoaded;
 
     QVector<KnownPulsar> knownPulsars;
     QVector<QString> fileNames;
     QVector<Data> fourierData;
     QVector<float> fourierSumm[6][8];
     QVector<double> fourierRawNoises[6][8];
-    QSet<QString> fourierAllowedNames;
 
-    void parseFourierAllowedNames();
+    void parseFourierAllowedDates();
 
     void loadPulsars(QString);
 
@@ -81,8 +81,9 @@ private:
 private slots:
     void apply(bool fullFilters = true);
     void init();
-    void loadFourierData(bool cashOnly = false);
-    void calculateCashes();
+    void loadFourierData(bool cacheOnly = false, bool loadCache = false);
+    void loadFourierCache();
+    void calculateCaches();
     void applyFourierFilters();
 
     void actualFourierDataChanged();

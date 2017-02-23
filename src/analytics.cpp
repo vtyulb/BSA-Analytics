@@ -30,6 +30,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     ui(new Ui::Analytics),
     pulsars(new QVector<Pulsar>),
     list(NULL),
+    totalFilesLoaded(0),
     noises(new KnownNoise(this))
 {
     ui->setupUi(this);
@@ -46,7 +47,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     QObject::connect(ui->fourierBlockNo, SIGNAL(valueChanged(int)), this, SLOT(actualFourierDataChanged()));
     QObject::connect(ui->fourierLoad, SIGNAL(clicked(bool)), this, SLOT(loadFourierData()));
-    QObject::connect(ui->fourierCalculateCashes, SIGNAL(clicked(bool)), this, SLOT(calculateCashes()));
+    QObject::connect(ui->fourierCalculateCaches, SIGNAL(clicked(bool)), this, SLOT(calculateCaches()));
+    QObject::connect(ui->fourierLoadCache, SIGNAL(clicked(bool)), this, SLOT(loadFourierCache()));
 
     maxModule = 6;
     maxRay = 8;
@@ -163,9 +165,6 @@ void Analytics::loadPulsars(QString dir) {
 
     catalogs.push_back(dir);
 
-    static int total = 0;
-
-
     QFileInfoList list;
     QDir d(dir);
     list = d.entryInfoList(QDir::Dirs);
@@ -193,8 +192,8 @@ void Analytics::loadPulsars(QString dir) {
             for (static int j = 0; j < pulsars->size(); j++)
                 (*pulsars)[j].squeeze();
 
-        total++;
-        ui->currentStatus->setText(QString("Loaded %1 pulsar files").arg(total));
+        totalFilesLoaded++;
+        ui->currentStatus->setText(QString("Loaded %1 pulsar files").arg(totalFilesLoaded));
     }
 
     pulsarsEnabled.resize(pulsars->size());
@@ -274,6 +273,11 @@ void Analytics::apply(bool fullFilters) {
     QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
 
     ui->progressBar->hide();
+
+    if (fourier)
+        ui->currentStatus->setText(QString("Loaded %1 files").arg(fourierData.size()));
+    else
+        ui->currentStatus->setText(QString("Loaded %1 files").arg(totalFilesLoaded));
 }
 
 void Analytics::applyFileNameFilter() {
@@ -554,7 +558,11 @@ void Analytics::applyKnownNoiseFilter() {
         pulsarsEnabled[i] &= !noises->contains(pulsars->at(i).period);
 }
 
-void Analytics::loadFourierData(bool cashOnly) {
+void Analytics::loadFourierCache() {
+    loadFourierData(false, true);
+}
+
+void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     qDebug() << "fourier load called";
 
     ui->progressBar->show();
@@ -578,18 +586,16 @@ void Analytics::loadFourierData(bool cashOnly) {
 
     pulsars->clear();
 
-
-
     ui->currentStatus->setText("Reading files");
 
     int blockNumber = ui->fourierBlockNo->value();
-    QString cashPath = path + "cash/";
-    QString cashFile = cashPath + QString::number(blockNumber);
+    QString cachePath = path + "cach/";
+    QString cacheFile = cachePath + QString::number(blockNumber);
 
-    if (ui->fourierCashOnly->isChecked() && QFile::exists(cashFile)) {
-        QFile cash(cashFile);
-        cash.open(QIODevice::ReadOnly);
-        QDataStream stream(&cash);
+    if (loadCache && QFile::exists(cacheFile)) {
+        QFile cache(cacheFile);
+        cache.open(QIODevice::ReadOnly);
+        QDataStream stream(&cache);
         while (!stream.atEnd()) {
             Pulsar p;
             p.load(stream);
@@ -603,9 +609,8 @@ void Analytics::loadFourierData(bool cashOnly) {
             for (int ray = 0; ray < 8; ray++)
                 fourierRawNoises[module][ray].clear();
 
-        parseFourierAllowedNames();
         for (int j = 0; j < names.size(); j++)
-            if (fourierAllowedNames.contains(names[j])) {
+            {
                 ui->progressBar->setValue(100 * j / names.size());
                 QApplication::processEvents();
 
@@ -714,15 +719,16 @@ void Analytics::loadFourierData(bool cashOnly) {
 
         applyFourierFilters();
 
-        if (cashOnly || ui->fourierCashResult->isChecked()) {
-            QDir().mkpath(cashPath);
-            QFile f(cashFile);
+        if (cacheOnly || ui->fourierGenerateCache->isChecked()) {
+            QDir().mkpath(cachePath);
+            QFile f(cacheFile);
             if (f.open(QIODevice::WriteOnly)) {
                 QDataStream s(&f);
                 for (int i = 0; i < pulsars->size(); i++)
                     if (!pulsars->at(i).filtered)
                         pulsars->at(i).save(s);
-            }
+            } else
+                qDebug() << "can't create cache file: " << cacheFile;
 
             f.close();
         }
@@ -734,7 +740,7 @@ void Analytics::loadFourierData(bool cashOnly) {
     ui->fourierLoad->setText("Data loaded");
     ui->currentStatus->setText(QString("Loaded %1 files").arg(fourierData.size()));
 
-    if (!cashOnly) {
+    if (!cacheOnly) {
         if (!ui->fourierFullGrayZone->isEnabled())
             fourierFullGrayZone();
         else
@@ -751,7 +757,7 @@ void Analytics::actualFourierDataChanged() {
 }
 
 void Analytics::applyFourierFilters() {
-    if (ui->fourierCashOnly->isChecked() || !fourier)
+    if (!fourier)
         return;
 
     QVector<Pulsar>::Iterator end, start = pulsars->begin();
@@ -882,16 +888,16 @@ void Analytics::applyFourierFilters() {
     pulsarsEnabled.resize(pulsars->size());
 }
 
-void Analytics::calculateCashes() {
+void Analytics::calculateCaches() {
     static bool calculating = false;
     if (calculating) {
         calculating = false;
-        ui->fourierCalculateCashes->setText("Stopping...");
+        ui->fourierCalculateCaches->setText("Stopping...");
         return;
     } else
         calculating = true;
 
-    ui->fourierCalculateCashes->setText("Stop calculating");
+    ui->fourierCalculateCaches->setText("Stop calculating");
     for (int i = 1; i < 425; i++) {
         if (!calculating)
             break;
@@ -900,16 +906,16 @@ void Analytics::calculateCashes() {
         loadFourierData(true);
     }
 
-    ui->fourierCalculateCashes->setText("Calculate cashes");
+    ui->fourierCalculateCaches->setText("Calculate caches");
 }
 
-void Analytics::parseFourierAllowedNames() {
-    QString data = ui->fourierAllowedNames->text();
+void Analytics::parseFourierAllowedDates() {
+    QString data = ui->fourierAllowedDates->text();
     data.replace('-', ' ');
     data.replace('\n', ' ');
     data.replace(',', ' ');
-    fourierAllowedNames.clear();
-    QTextStream stream(&data);
+
+    /*QTextStream stream(&data);
     while (!stream.atEnd()) {
         int a, b;
         stream >> a >> b;
@@ -920,7 +926,7 @@ void Analytics::parseFourierAllowedNames() {
 
         for (int i = a; i <= b; i++)
             fourierAllowedNames << QString::number(i) + ".pnt";
-    }
+    }*/
 }
 
 void Analytics::fourierShortGrayZone() {

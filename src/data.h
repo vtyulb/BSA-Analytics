@@ -115,9 +115,26 @@ struct Data {
         }
     }
 
+    QDate dateFromPreviousLifeName() const {
+        QString res;
+        if (previousLifeName.endsWith("pnthr"))
+            res = previousLifeName.right(21);
+        else
+            res = previousLifeName.right(19);
+
+        res = res.left(6);
+        QDate date = QDate::fromString(res, "ddMMyy");
+        if (date.year() < 2000)
+            date.setDate(date.year() + 100, date.month(), date.day());
+
+        return date;
+    }
+
     bool isValid() {
         return modules != -1;
     }
+
+
 };
 
 

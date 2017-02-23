@@ -278,6 +278,8 @@ void Analytics::apply(bool fullFilters) {
         ui->currentStatus->setText(QString("Loaded %1 files").arg(fourierData.size()));
     else
         ui->currentStatus->setText(QString("Loaded %1 files").arg(totalFilesLoaded));
+
+    ui->currentStatus->show();
 }
 
 void Analytics::applyFileNameFilter() {
@@ -777,7 +779,6 @@ void Analytics::applyFourierFilters() {
         }
 
     QVector<bool> good(pulsars->size(), !ui->fourierPeak->isChecked());
-
     if (ui->fourierPeak->isChecked()) {
         int start = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() - 2;
         int end = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() + 3;
@@ -785,6 +786,18 @@ void Analytics::applyFourierFilters() {
             for (int j = start; j < end; j++)
                 if ((pulsars->at(i).data.data[0][0][0][j] - pulsars->at(i).fourierAverage) / pulsars->at(i).fourierRealNoise > ui->fourierPeakSNR->value())
                     good[i] = true;
+        }
+    }
+
+    if (ui->fourierAllowedDatesCheckbox->isChecked()) {
+        parseFourierAllowedDates();
+        for (int i = 0; i < pulsars->size(); i++) {
+            bool gd = false;
+            QDate date = pulsars->at(i).data.dateFromPreviousLifeName();
+            for (int j = 0; j < fourierAllowedDates.size(); j += 2)
+                gd = gd || (fourierAllowedDates[j] < date && date < fourierAllowedDates[j + 1]);
+
+            good[i] = good[i] && gd;
         }
     }
 
@@ -914,19 +927,24 @@ void Analytics::parseFourierAllowedDates() {
     data.replace('-', ' ');
     data.replace('\n', ' ');
     data.replace(',', ' ');
+    data.replace(';', ' ');
+    data.replace("  ", " ");
 
-    /*QTextStream stream(&data);
-    while (!stream.atEnd()) {
-        int a, b;
-        stream >> a >> b;
-        if (a < 0)
-            a = 0;
-        if (b > 2000)
-            b = 2000;
+    QStringList dates = data.split(' ');
 
-        for (int i = a; i <= b; i++)
-            fourierAllowedNames << QString::number(i) + ".pnt";
-    }*/
+    fourierAllowedDates.clear();
+
+    for (int i = 0; i < dates.size(); i++)
+        if (dates[i].size() > 6)
+            fourierAllowedDates.push_back(QDate::fromString(dates[i], "dd.MM.yyyy"));
+
+    fourierAllowedDates.resize(fourierAllowedDates.size() / 2 * 2);
+
+    qDebug() << "parsed dates";
+    for (int i = 0; i < fourierAllowedDates.size(); i += 2)
+        qDebug() << fourierAllowedDates[i].toString() << "-" << fourierAllowedDates[i + 1].toString();
+
+    qDebug() << "============";
 }
 
 void Analytics::fourierShortGrayZone() {

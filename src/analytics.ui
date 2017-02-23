@@ -494,9 +494,9 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QLabel" name="label_16">
+          <widget class="QCheckBox" name="fourierAllowedDatesCheckbox">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
@@ -515,7 +515,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>02.12.2010 - 31.12.2029, 06.09.2001-30.08.2002</string>
+            <string>08.11.2015-28.11.2015;</string>
            </property>
           </widget>
          </item>

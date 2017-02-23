@@ -130,6 +130,17 @@ struct Data {
         return date;
     }
 
+    int hourFromPreviousLifeName() const {
+        QString res;
+        if (previousLifeName.endsWith("pnthr"))
+            res = previousLifeName.right(21);
+        else
+            res = previousLifeName.right(19);
+
+        res = res.left(9).right(2);
+        return res.toInt();
+    }
+
     bool isValid() {
         return modules != -1;
     }

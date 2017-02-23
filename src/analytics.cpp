@@ -801,6 +801,13 @@ void Analytics::applyFourierFilters() {
         }
     }
 
+    if (ui->fourierOnlyNightData->isChecked()) {
+        for (int i = 0; i < pulsars->size(); i++) {
+            int hour = pulsars->at(i).data.hourFromPreviousLifeName();
+            good[i] = good[i] && (1 <= hour && hour <= 6);
+        }
+    }
+
     if (ui->fourierSelectBest->isChecked()) {
         int top = ui->fourierBestNumber->value();
         if (top < 1)

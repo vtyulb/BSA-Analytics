@@ -21,7 +21,7 @@
 #include <updater.h>
 
 MainWindow::MainWindow(QString file, QWidget *parent) :
-    QMainWindow(parent),
+    QMainWindow(NULL),
     ui(new Ui::MainWindow),
     fileToOpen(file),
     drawer(NULL)
@@ -240,7 +240,9 @@ void MainWindow::showAbout() {
 void MainWindow::saveSettings() {
     qDebug() << "saving global settings";
     QSettings s;
-    s.setValue("geometry", QVariant(saveGeometry()));
+    if (!isMaximized())
+        s.setValue("geometry", QVariant(saveGeometry()));
+
     s.setValue("autoDraw", QVariant(ui->actionAutoDraw->isChecked()));
     s.setValue("openPath", QVariant(lastOpenPath));
     s.setValue("fast", QVariant(ui->actionFast->isChecked()));

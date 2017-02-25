@@ -282,6 +282,8 @@ void Analytics::apply(bool fullFilters) {
     if (!list) {
         list = new PulsarList(pl, ui->fourierRemoveBadRawData->isChecked(), this);
         QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
+        QObject::connect(window, SIGNAL(destroyed(QObject*)), list, SLOT(deleteLater()));
+        QObject::connect(window, SIGNAL(destroyed(QObject*)), qApp, SLOT(quit()));
         list->show();
     } else
         list->init(pl, ui->fourierRemoveBadRawData->isChecked());

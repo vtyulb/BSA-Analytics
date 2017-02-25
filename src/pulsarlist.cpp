@@ -116,6 +116,7 @@ void PulsarList::saveSettings() {
     qDebug() << "Pulsar list saving settings";
     QSettings().setValue("pulsar-list-geometry", saveGeometry());
     QSettings().setValue("pulsar-list-header", horizontalHeader()->saveState());
+    qApp->quit();
 }
 
 void PulsarList::selectionChanged() {

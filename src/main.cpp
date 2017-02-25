@@ -365,7 +365,6 @@ int main(int argc, char *argv[])
 
     try {
         qApp->exec();
-        delete mainSpace::w;
     } catch (...) {
         restart();
     }

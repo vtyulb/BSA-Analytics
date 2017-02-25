@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QMessageBox>
+#include <QScrollBar>
 #include <QApplication>
 
 PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
@@ -19,6 +20,7 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
 
     QObject::connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     QObject::connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
+    QObject::connect(horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(headerGeometriesChanged()));
 
     QAction *showUTCtime = new QAction("Show UTC time", this);
     QObject::connect(showUTCtime, SIGNAL(triggered(bool)), this, SLOT(showTime()));
@@ -46,12 +48,11 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
 
     init(pl, removeBadData);
 
-    setMinimumWidth(432);
-    setMaximumWidth(432);
     setWindowTitle("Pulsar list");
 
     restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
     horizontalHeader()->restoreState(QSettings().value("pulsar-list-header").toByteArray());
+    QTimer::singleShot(10, this, SLOT(headerGeometriesChanged()));
     show();
 }
 
@@ -127,4 +128,10 @@ void PulsarList::selectionChanged() {
 
 void PulsarList::showTime() {
     QMessageBox::information(this, "Peak UTC time", currentPulsar->UTCtime());
+}
+
+void PulsarList::headerGeometriesChanged() {
+    qDebug() << "header" << horizontalHeader()->length();
+    setMinimumWidth(horizontalHeader()->length() + 15 + verticalHeader()->width() + verticalScrollBar()->width());
+    setMaximumWidth(horizontalHeader()->length() + 15 + verticalHeader()->width() + verticalScrollBar()->width());
 }

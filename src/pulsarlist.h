@@ -31,6 +31,7 @@ class PulsarList : public QTableWidget
     private slots:
         void selectionChanged();
         void showTime();
+        void headerGeometriesChanged();
 
     signals:
         void switchData(Data &data);

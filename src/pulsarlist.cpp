@@ -20,7 +20,6 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
 
     QObject::connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     QObject::connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
-    QObject::connect(horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(headerGeometriesChanged()));
 
     QAction *showUTCtime = new QAction("Show UTC time", this);
     QObject::connect(showUTCtime, SIGNAL(triggered(bool)), this, SLOT(showTime()));
@@ -33,7 +32,12 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
     setSizeIncrement(1, 1);
 
     QStringList header;
-    header << "time" << "module" << "ray" << "dispersion" << "period" << "snr";
+    header << "time" << "module" << "ray";
+    if (Settings::settings()->fourierAnalytics())
+        header << "sigma";
+    else
+        header << "dispersion";
+    header << "period" << "snr";
     setHorizontalHeaderLabels(header);
 
     setStyleSheet("QMenu::item:selected{border:1px solid red;}");
@@ -105,6 +109,9 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
         selectRow(0);
         QTimer::singleShot(200, this, SLOT(selectionChanged()));
     }
+
+    resizeColumnsToContents();
+    headerGeometriesChanged();
 }
 
 void PulsarList::closeEvent(QCloseEvent *) {
@@ -136,6 +143,6 @@ void PulsarList::showTime() {
 }
 
 void PulsarList::headerGeometriesChanged() {
-//    setMinimumWidth(horizontalHeader()->length() + 10 + verticalHeader()->width() + verticalScrollBar()->width());
-//    setMaximumWidth(horizontalHeader()->length() + 20 + verticalHeader()->width() + verticalScrollBar()->width());
+    setMinimumWidth(horizontalHeader()->length() + 20 + verticalHeader()->width() + verticalScrollBar()->width());
+    setMaximumWidth(horizontalHeader()->length() + 20 + verticalHeader()->width() + verticalScrollBar()->width());
 }

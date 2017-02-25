@@ -10,6 +10,7 @@
 #include <QMenu>
 #include <QAction>
 #include <QMessageBox>
+#include <QApplication>
 
 PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
     QTableWidget(NULL)
@@ -24,6 +25,8 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
     addAction(showUTCtime);
     setContextMenuPolicy(Qt::ActionsContextMenu);
     setColumnCount(6);
+
+    setAttribute(Qt::WA_DeleteOnClose);
 
     QStringList header;
     header << "time" << "module" << "ray" << "dispersion" << "period" << "snr";
@@ -48,7 +51,7 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
     setWindowTitle("Pulsar list");
 
     restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
-    horizontalHeader()->restoreGeometry(QSettings().value("pulsar-list-header").toByteArray());
+    horizontalHeader()->restoreState(QSettings().value("pulsar-list-header").toByteArray());
     show();
 }
 
@@ -99,10 +102,19 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
     }
 }
 
+void PulsarList::closeEvent(QCloseEvent *) {
+    saveSettings();
+}
+
 PulsarList::~PulsarList() {
+    saveSettings();
     qDebug() << "Pulsar list destroyed";
+}
+
+void PulsarList::saveSettings() {
+    qDebug() << "Pulsar list saving settings";
     QSettings().setValue("pulsar-list-geometry", saveGeometry());
-    QSettings().setValue("pulsar-list-header", horizontalHeader()->saveGeometry());
+    QSettings().setValue("pulsar-list-header", horizontalHeader()->saveState());
 }
 
 void PulsarList::selectionChanged() {

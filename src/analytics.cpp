@@ -60,6 +60,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     fileNames.push_back("all files");
 
+    setAttribute(Qt::WA_DeleteOnClose);
+
     if (fourier) {
         Settings::settings()->setFourierAnalytics(true);
         ui->groupBox_2->hide();
@@ -1062,5 +1064,6 @@ void Analytics::oneWindow() {
 }
 
 Analytics::~Analytics() {
+    qDebug() << "analytics destroyed";
     delete ui;
 }

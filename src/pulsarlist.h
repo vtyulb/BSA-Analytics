@@ -24,6 +24,10 @@ class PulsarList : public QTableWidget
 
         QVector<int> pulsarsIndex;
 
+        void closeEvent(QCloseEvent *);
+
+        void saveSettings();
+
     private slots:
         void selectionChanged();
         void showTime();

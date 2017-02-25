@@ -57,6 +57,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     progress->setRange(0, 100);
 
     Settings::settings()->setProgressBar(progress);
+    setAttribute(Qt::WA_DeleteOnClose);
 
     statusBar()->addWidget(progress, 1);
     ui->actionAxes->setChecked(true);
@@ -78,6 +79,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
 }
 
 MainWindow::~MainWindow() {
+    qDebug() << "MainWindow destroyed";
     saveSettings();
     delete ui;
 }

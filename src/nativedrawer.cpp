@@ -27,11 +27,11 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     for (int i = 0; i < data.rays; i++)
         rayVisibles.push_back(true);
 
-    resetVisibleRectangle(false);
     setMouseTracking(true);
     setMinimumSize(100, 100);
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored));
     setData(data);
+    resetVisibleRectangle(false);
 }
 
 NativeDrawer::~NativeDrawer() {

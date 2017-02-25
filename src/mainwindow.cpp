@@ -322,6 +322,9 @@ void MainWindow::showHelp() {
 }
 
 void MainWindow::addWidgetToMainLayout(QWidget *w1, QWidget *w2) {
+    if (w1 == NULL)
+        return;
+
     ui->centralWidget->layout()->removeWidget(drawer);
     ui->centralWidget->layout()->addWidget(w1);
     ui->centralWidget->layout()->addWidget(w2);

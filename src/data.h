@@ -95,9 +95,6 @@ struct Data {
                 for (int k = 0; k < rays; k++)
                     for (int z = 0; z < npoints; z++)
                         data[j][i][k][z] = tmp.data[j][i][k][z];
-
-        for (int i = 0; i < modules; i++)
-            fbands[i] = tmp.fbands[i];
     }
 
     void init() {

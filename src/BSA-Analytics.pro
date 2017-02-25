@@ -84,7 +84,6 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \
-    pulsarlist.ui \
     analytics.ui \
     precisesearchgui.ui \
     precisepacket.ui \

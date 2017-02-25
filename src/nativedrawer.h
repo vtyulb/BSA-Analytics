@@ -21,6 +21,7 @@ public:
     explicit NativeDrawer(const Data &data, QWidget *parent = 0);
     ~NativeDrawer();
 
+    void setData(const Data &newData);
     void setRayVisibles(QVector<bool>);
     void setColors(QVector<QString>);
     void saveFile(QString);

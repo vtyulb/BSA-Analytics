@@ -1,5 +1,4 @@
 #include "pulsarlist.h"
-#include "ui_pulsarlist.h"
 
 #include <pulsarreader.h>
 
@@ -7,58 +6,75 @@
 #include <QTimer>
 #include <QSettings>
 #include <QTableWidget>
+#include <QHeaderView>
 #include <QMenu>
 #include <QAction>
 #include <QMessageBox>
 
-PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget *parent) :
-    QWidget(NULL),
-    ui(new Ui::PulsarList)
+PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
+    QTableWidget(NULL)
 {
     QObject::setParent(parent);
-    if (pl == NULL)
-        pulsars = PulsarReader::ReadPulsarFile(fileName);
-    else
-        pulsars = pl;
-
-    if (!pulsars->size()) {
-        deleteLater();
-        return;
-    }
-
-    ui->setupUi(this);
 
     QObject::connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
-    QObject::connect(ui->tableWidget->selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
+    QObject::connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
 
     QAction *showUTCtime = new QAction("Show UTC time", this);
     QObject::connect(showUTCtime, SIGNAL(triggered(bool)), this, SLOT(showTime()));
-    ui->tableWidget->addAction(showUTCtime);
-    ui->tableWidget->setContextMenuPolicy(Qt::ActionsContextMenu);
+    addAction(showUTCtime);
+    setContextMenuPolicy(Qt::ActionsContextMenu);
+    setColumnCount(6);
 
-    ui->tableWidget->setRowCount(pulsars->size());
-    ui->tableWidget->setColumnCount(6);
     QStringList header;
     header << "time" << "module" << "ray" << "dispersion" << "period" << "snr";
-    ui->tableWidget->setHorizontalHeaderLabels(header);
+    setHorizontalHeaderLabels(header);
+
+    setStyleSheet("QMenu::item:selected{border:1px solid red;}");
+
+    setSelectionBehavior(QAbstractItemView::SelectRows);
+    for (int i = 0; i < columnCount(); i++)
+        setColumnWidth(i, 68);
+
+    setColumnWidth(2, 30);
+    setColumnWidth(3, 80);
+    setColumnWidth(5, 50);
+
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    init(pl, removeBadData);
+
+    setMinimumWidth(432);
+    setMaximumWidth(432);
+    setWindowTitle("Pulsar list");
+
+    restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
+    horizontalHeader()->restoreGeometry(QSettings().value("pulsar-list-header").toByteArray());
+    show();
+}
+
+void PulsarList::init(Pulsars pl, bool removeBadData) {
+//    delete pulsars;
+    pulsars = pl;
+
+    setRowCount(pulsars->size());
     for (int i = 0; i < pulsars->size(); i++) {
-        ui->tableWidget->setItem(i, 0, new QTableWidgetItem(getPulsarJName(pulsars->at(i).module, pulsars->at(i).ray, pulsars->at(i).nativeTime)));
-        ui->tableWidget->setItem(i, 1, new QTableWidgetItem(QString::number(pulsars->at(i).module)));
-        ui->tableWidget->setItem(i, 2, new QTableWidgetItem(QString::number(pulsars->at(i).ray)));
-        ui->tableWidget->setItem(i, 3, new QTableWidgetItem(QString::number(pulsars->at(i).dispersion)));
-        ui->tableWidget->setItem(i, 4, new QTableWidgetItem(QString::number(pulsars->at(i).period, 'f', 5)));
-        ui->tableWidget->setItem(i, 5, new QTableWidgetItem(QString::number(pulsars->at(i).snr, 'f', 1)));
+        setItem(i, 0, new QTableWidgetItem(getPulsarJName(pulsars->at(i).module, pulsars->at(i).ray, pulsars->at(i).nativeTime)));
+        setItem(i, 1, new QTableWidgetItem(QString::number(pulsars->at(i).module)));
+        setItem(i, 2, new QTableWidgetItem(QString::number(pulsars->at(i).ray)));
+        setItem(i, 3, new QTableWidgetItem(QString::number(pulsars->at(i).dispersion)));
+        setItem(i, 4, new QTableWidgetItem(QString::number(pulsars->at(i).period, 'f', 5)));
+        setItem(i, 5, new QTableWidgetItem(QString::number(pulsars->at(i).snr, 'f', 1)));
 
         if (pulsars->at(i).filtered)
-            for (int j = 0; j < ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(i, j)->setBackgroundColor(QColor("lightgray"));
+            for (int j = 0; j < columnCount(); j++)
+                item(i, j)->setBackgroundColor(QColor("lightgray"));
 
         if (pulsars->at(i).dispersion == -7777)
-            for (int j = 0; j < ui->tableWidget->columnCount(); j++)
-                ui->tableWidget->item(i, j)->setBackgroundColor(QColor(200, 100, 100));
+            for (int j = 0; j < columnCount(); j++)
+                item(i, j)->setBackgroundColor(QColor(200, 100, 100));
 
         if (pulsars->at(i).fourierDuplicate)
-            ui->tableWidget->item(i, 0)->setBackgroundColor(QColor(255, 255, 150));
+            item(i, 0)->setBackgroundColor(QColor(255, 255, 150));
 
         pulsarsIndex.push_back(i);
     }
@@ -67,48 +83,32 @@ PulsarList::PulsarList(QString fileName, Pulsars pl, bool removeBadData, QWidget
         int v = 0;
         for (int i = 0; i < pulsars->size(); i++)
             if (!(pulsars->at(i).dispersion == -7777)) {
-                for (int j = 0; j < ui->tableWidget->columnCount(); j++)
-                    ui->tableWidget->setItem(v, j, new QTableWidgetItem(*(ui->tableWidget->item(i, j))));
+                for (int j = 0; j < columnCount(); j++)
+                    setItem(v, j, new QTableWidgetItem(*(item(i, j))));
 
                 pulsarsIndex[v] = i;
                 v++;
             }
 
-        ui->tableWidget->setRowCount(v);
+        setRowCount(v);
     }
 
-    ui->tableWidget->setStyleSheet("QMenu::item:selected{border:1px solid red;}");
-
-    ui->tableWidget->setSelectionBehavior(QAbstractItemView::SelectRows);
-    for (int i = 0; i < ui->tableWidget->columnCount(); i++)
-        ui->tableWidget->setColumnWidth(i, 68);
-
-    ui->tableWidget->setColumnWidth(2, 30);
-    ui->tableWidget->setColumnWidth(3, 80);
-    ui->tableWidget->setColumnWidth(5, 50);
-    ui->tableWidget->selectRow(0);
-
-    ui->tableWidget->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-    QTimer::singleShot(200, this, SLOT(selectionChanged()));
-
-    restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
-    show();
-}
-
-void PulsarList::closeEvent(QCloseEvent *) {
-    QSettings().setValue("pulsar-list-geometry", saveGeometry());
-    qApp->quit();
+    if (pulsars) {
+        selectRow(0);
+        QTimer::singleShot(200, this, SLOT(selectionChanged()));
+    }
 }
 
 PulsarList::~PulsarList() {
-    delete ui;
+    qDebug() << "Pulsar list destroyed";
+    QSettings().setValue("pulsar-list-geometry", saveGeometry());
+    QSettings().setValue("pulsar-list-header", horizontalHeader()->saveGeometry());
 }
 
 void PulsarList::selectionChanged() {
-    if (ui->tableWidget->selectionModel()->selection().indexes().size())
-        if (ui->tableWidget->selectionModel()->selection().indexes().at(0).row() < pulsars->size()) {
-            currentPulsar = &(*pulsars)[pulsarsIndex[ui->tableWidget->selectionModel()->selection().indexes().at(0).row()]];
+    if (selectionModel()->selection().indexes().size())
+        if (selectionModel()->selection().indexes().at(0).row() < pulsars->size()) {
+            currentPulsar = &(*pulsars)[pulsarsIndex[selectionModel()->selection().indexes().at(0).row()]];
             emit switchData(currentPulsar->data);
         }
 }

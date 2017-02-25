@@ -29,6 +29,9 @@ private:
     KnownNoise *noises;
     QString folder;
     QStringList catalogs;
+    bool oneWindowMode;
+
+    QProgressBar *progressBar;
 
     Pulsars pulsars;
     QVector<bool> pulsarsEnabled;
@@ -77,8 +80,6 @@ private:
 
     Data dispersionGenerateData();
 
-    void closeEvent(QCloseEvent *);
-
 private slots:
     void apply(bool fullFilters = true);
     void init();
@@ -99,6 +100,7 @@ private slots:
     void addPulsarCatalog();
     void showInfo();
     void knownPulsarsGUI();
+    void oneWindow();
 };
 
 #endif // ANALYTICS_H

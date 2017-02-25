@@ -4,6 +4,7 @@
 #include <QFileDialog>
 #include <QHBoxLayout>
 #include <QMessageBox>
+#include <QStackedLayout>
 #include <QSettings>
 #include <QTimer>
 #include <QProcess>
@@ -79,10 +80,6 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
 MainWindow::~MainWindow() {
     saveSettings();
     delete ui;
-}
-
-void MainWindow::closeEvent(QCloseEvent *) {
-    QTimer::singleShot(100, qApp, SLOT(quit()));
 }
 
 void MainWindow::openFile() {
@@ -322,4 +319,11 @@ void MainWindow::setStair() {
 
 void MainWindow::showHelp() {
     QDesktopServices::openUrl(QUrl::fromLocalFile("HandBook.pdf"));
+}
+
+void MainWindow::addWidgetToMainLayout(QWidget *w1, QWidget *w2) {
+    ui->centralWidget->layout()->removeWidget(drawer);
+    ui->centralWidget->layout()->addWidget(w1);
+    ui->centralWidget->layout()->addWidget(w2);
+    ui->centralWidget->layout()->addWidget(drawer);
 }

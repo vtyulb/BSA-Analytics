@@ -26,6 +26,7 @@ using std::max;
 Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     folder(analyticsPath),
     fourier(fourier),
+    oneWindowMode(false),
     QWidget(parent),
     ui(new Ui::Analytics),
     pulsars(new QVector<Pulsar>),
@@ -34,6 +35,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     noises(new KnownNoise(this))
 {
     ui->setupUi(this);
+    progressBar = ui->progressBar;
 
     QObject::connect(ui->applyButton, SIGNAL(clicked()), this, SLOT(apply()));
     QObject::connect(ui->addPulsarCatalog, SIGNAL(clicked()), this, SLOT(addPulsarCatalog()));
@@ -46,9 +48,11 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->dispersionRemember, SIGNAL(clicked()), this, SLOT(dispersionRemember()));
 
     QObject::connect(ui->fourierBlockNo, SIGNAL(valueChanged(int)), this, SLOT(actualFourierDataChanged()));
-    QObject::connect(ui->fourierLoad, SIGNAL(clicked(bool)), this, SLOT(loadFourierData()));
-    QObject::connect(ui->fourierCalculateCaches, SIGNAL(clicked(bool)), this, SLOT(calculateCaches()));
-    QObject::connect(ui->fourierLoadCache, SIGNAL(clicked(bool)), this, SLOT(loadFourierCache()));
+    QObject::connect(ui->fourierLoad, SIGNAL(clicked()), this, SLOT(loadFourierData()));
+    QObject::connect(ui->fourierCalculateCaches, SIGNAL(clicked()), this, SLOT(calculateCaches()));
+    QObject::connect(ui->fourierLoadCache, SIGNAL(clicked()), this, SLOT(loadFourierCache()));
+
+    QObject::connect(ui->oneWindow, SIGNAL(clicked()), this, SLOT(oneWindow()));
 
     maxModule = 6;
     maxRay = 8;
@@ -110,7 +114,7 @@ void Analytics::init() {
     }
 
     QObject::connect(ui->fileNames, SIGNAL(currentIndexChanged(int)), this, SLOT(apply()));
-    ui->progressBar->hide();
+    progressBar->hide();
     ui->currentStatus->hide();
 }
 
@@ -179,10 +183,10 @@ void Analytics::loadPulsars(QString dir) {
         list.push_back(QFileInfo(dir));
 
     for (int i = 0; i < list.size(); i++) {
-        ui->progressBar->setValue((i + 1) * 100 / list.size());
+        progressBar->setValue((i + 1) * 100 / list.size());
         qApp->processEvents();
         ui->currentStatus->setText(list[i].fileName());
-        Pulsars p = PulsarReader::ReadPulsarFile(list[i].absoluteFilePath(), ui->progressBar);
+        Pulsars p = PulsarReader::ReadPulsarFile(list[i].absoluteFilePath(), progressBar);
         Settings::settings()->setFourierHighGround(list[i].fileName().contains("N1"));
         *pulsars += (*p);
         delete p;
@@ -200,8 +204,14 @@ void Analytics::loadPulsars(QString dir) {
 }
 
 void Analytics::apply(bool fullFilters) {
-    ui->progressBar->setValue(0);
-    ui->progressBar->show();
+    QSize currentSize = this->size();
+    if (oneWindowMode)
+        progressBar = Settings::settings()->getProgressBar();
+    else
+        progressBar = ui->progressBar;
+
+    progressBar->setValue(0);
+    progressBar->show();
 
     loadKnownPulsars();
     if (fourier && fullFilters)
@@ -267,12 +277,14 @@ void Analytics::apply(bool fullFilters) {
     if (!fourier)
         std::sort(pl->data(), pl->data() + pl->size());
 
-    delete list;
-    list = new PulsarList("void", pl, ui->fourierRemoveBadRawData->isChecked(), this);
-    list->show();
-    QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
+    if (!list) {
+        list = new PulsarList(pl, ui->fourierRemoveBadRawData->isChecked(), this);
+        QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
+        list->show();
+    } else
+        list->init(pl, ui->fourierRemoveBadRawData->isChecked());
 
-    ui->progressBar->hide();
+    progressBar->hide();
 
     if (fourier)
         ui->currentStatus->setText(QString("Loaded %1 files").arg(fourierData.size()));
@@ -280,6 +292,7 @@ void Analytics::apply(bool fullFilters) {
         ui->currentStatus->setText(QString("Loaded %1 files").arg(totalFilesLoaded));
 
     ui->currentStatus->show();
+    resize(currentSize);
 }
 
 void Analytics::applyFileNameFilter() {
@@ -415,7 +428,7 @@ void Analytics::applyDuplicatesFilter() {
             pl[pulsars->at(i).module - 1][pulsars->at(i).ray - 1].push_back(i);
 
     for (int module = 0; module < 6; module++) {
-        ui->progressBar->setValue(100 * module / 6);
+        progressBar->setValue(100 * module / 6);
         update();
         qApp->processEvents();
 
@@ -522,11 +535,11 @@ void Analytics::addPulsarCatalog() {
     if (catalog != "") {
         QSettings().setValue("openPath", MainWindow::nativeDecodeLastPath(catalog));
 
-        ui->progressBar->show();
+        progressBar->show();
         ui->currentStatus->show();
         loadPulsars(catalog);
         ui->currentStatus->hide();
-        ui->progressBar->hide();
+        progressBar->hide();
     }
 }
 
@@ -567,13 +580,13 @@ void Analytics::loadFourierCache() {
 void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     qDebug() << "fourier load called";
 
-    ui->progressBar->show();
+    progressBar->show();
     ui->currentStatus->show();
     ui->currentStatus->setText("Releasing previous data");
 
     QString path = QDir(folder).absolutePath() + "/";
     for (int j = 0; j < fourierData.size(); j++) {
-        ui->progressBar->setValue(100 * j / fourierData.size());
+        progressBar->setValue(100 * j / fourierData.size());
         fourierData[j].releaseData();
     }
     fourierData.clear();
@@ -613,7 +626,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
 
         for (int j = 0; j < names.size(); j++)
             {
-                ui->progressBar->setValue(100 * j / names.size());
+                progressBar->setValue(100 * j / names.size());
                 QApplication::processEvents();
 
                 fourierData.push_back(Reader().readBinaryFile(currentPath + names[j]));
@@ -657,7 +670,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
         QVector<double> fourierNoises[6][8];
 
         for (int j = 0; j < fourierData.size(); j++) {
-            ui->progressBar->setValue(100 * j / fourierData.size());
+            progressBar->setValue(100 * j / fourierData.size());
 
             for (int module = 0; module < 6; module++)
                 for (int ray = 0; ray < 8; ray++) {
@@ -855,7 +868,7 @@ void Analytics::applyFourierFilters() {
     QVector<Pulsar> *whiteZone = new QVector<Pulsar>;
     for (int module = 5; module >= 0; module--)
         for (int ray = 7; ray >= 0; ray--) {
-            ui->progressBar->setValue(100 * (7 - ray + (5 - module) * 8) / 48);
+            progressBar->setValue(100 * (7 - ray + (5 - module) * 8) / 48);
             Data data;
             data.npoints = fourierSpectreSize;
             data.modules = 1;
@@ -903,7 +916,7 @@ void Analytics::applyFourierFilters() {
     delete pulsars;
     pulsars = whiteZone;
 
-    ui->progressBar->hide();
+    progressBar->hide();
     qApp->processEvents();
     pulsarsEnabled.resize(pulsars->size());
 }
@@ -970,12 +983,12 @@ void Analytics::fourierFullGrayZone() {
 
     ui->currentStatus->setText("Generating yellow zone");
     ui->currentStatus->show();
-    ui->progressBar->show();
+    progressBar->show();
     int size = pulsars->size();
     for (int i = 0; i < size; i++)
         if (pulsars->at(i).filtered && pulsars->at(i).snr > 2) {
             if (i % 100 == 0) {
-                ui->progressBar->setValue(100 * i / size);
+                progressBar->setValue(100 * i / size);
                 qApp->processEvents();
             }
 
@@ -997,7 +1010,7 @@ void Analytics::fourierFullGrayZone() {
         }
 
     ui->currentStatus->hide();
-    ui->progressBar->hide();
+    progressBar->hide();
     ui->fourierShortGrayZone->setEnabled(true);
 
     ui->groupBox->show();
@@ -1023,12 +1036,31 @@ void Analytics::preciseDataMode() {
     ui->differentNoise->setEnabled(false);
 }
 
-void Analytics::closeEvent(QCloseEvent *) {
-    QSettings().setValue("AnalyticsGeometry", this->saveGeometry());
-    qApp->quit();
+void Analytics::oneWindow() {
+    window->setParent(NULL);
+    list->setParent(NULL);
+    setParent(NULL);
+    progressBar = ui->progressBar;
+    if (oneWindowMode) {
+        ui->oneWindow->setText("One window");
+        oneWindowMode = false;
+        window->addWidgetToMainLayout(NULL, NULL);
+        list->show();
+        show();
+        return;
+    } else
+        ui->oneWindow->setText("Gimp mode");
+
+    oneWindowMode = true;
+    progressBar = Settings::settings()->getProgressBar();
+
+    setContentsMargins(0, 0, 0, 0);
+    list->setContentsMargins(0, 0, 0, 0);
+
+    window->addWidgetToMainLayout(this, list);
+    window->show();
 }
 
-Analytics::~Analytics()
-{
+Analytics::~Analytics() {
     delete ui;
 }

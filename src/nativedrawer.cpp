@@ -20,7 +20,6 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     drawNet(false),
     channel(0),
     module(0),
-    data(data),
     art(NULL),
     mousePressed(false),
     verticalLine(-1)
@@ -31,12 +30,23 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     resetVisibleRectangle(false);
     setMouseTracking(true);
     setMinimumSize(100, 100);
+    setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored));
+    setData(data);
 }
 
 NativeDrawer::~NativeDrawer() {
     delete art;
     data.releaseData();
     qDebug() << "data released";
+}
+
+void NativeDrawer::setData(const Data &newData) {
+    data = newData;
+    if (data.modules == 1 && data.channels == 1 && data.rays == 1 && data.npoints < 15000) {
+        double sigma = data.sigma;
+        data.fork();
+        data.sigma = sigma;
+    }
 }
 
 void NativeDrawer::setRayVisibles(QVector<bool> v) {

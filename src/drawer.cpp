@@ -170,6 +170,8 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     QObject::connect(timer, SIGNAL(timeout()), this, SLOT(timeToDie()));
     timer->start();
 
+    setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored));
+
     deltaChanged(delta->value());
 }
 
@@ -178,7 +180,7 @@ void Drawer::pushNewData(const Data &data) {
     controller->setPoints(data.npoints);
 
     drawer->data.releaseData();
-    drawer->data = data;
+    drawer->setData(data);
     drawer->resetVisibleRectangle();
 }
 

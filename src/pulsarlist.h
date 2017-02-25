@@ -1,31 +1,26 @@
 #ifndef PULSARLIST_H
 #define PULSARLIST_H
 
-#include <QWidget>
+#include <QTableWidget>
 #include <QVector>
 #include <QTime>
 #include <QPoint>
 
 #include <pulsar.h>
 
-namespace Ui {
-    class PulsarList;
-}
-
-class PulsarList : public QWidget
+class PulsarList : public QTableWidget
 {
     Q_OBJECT
 
     public:
-        explicit PulsarList(QString fileName, Pulsars pl = 0, bool removeBadData = false, QWidget *parent = 0);
+        explicit PulsarList(Pulsars pl = 0, bool removeBadData = false, QWidget *parent = 0);
         ~PulsarList();
 
+        void init(Pulsars pl = 0, bool removeBadData = false);
+
     private:
-        Ui::PulsarList *ui;
         Pulsars pulsars;
         Pulsar *currentPulsar;
-
-        void closeEvent(QCloseEvent*);
 
         QVector<int> pulsarsIndex;
 

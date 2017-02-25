@@ -3,24 +3,27 @@
 
 #include <QMainWindow>
 #include <QProgressBar>
+#include <QLayout>
+
 #include <reader.h>
 #include <drawer.h>
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+  Q_OBJECT
 
-public:
+  public:
     explicit MainWindow(QString file = "", QWidget *parent = 0);
     ~MainWindow();
 
     static QString nativeDecodeLastPath(QString path);
+    void addWidgetToMainLayout(QWidget *w1, QWidget *w2);
 
-private:
+  private:
     Ui::MainWindow *ui;
     Drawer *drawer;
     QProgressBar *progress;
@@ -33,9 +36,7 @@ private:
 
     void decodeLastPath(QString path);
 
-    void closeEvent(QCloseEvent*);
-
-private slots:
+  private slots:
     void openPulsarFile();
     void openAnalytics(bool hasMemory = true, bool fourier = false);
     void openFourierAnalytics();
@@ -67,9 +68,8 @@ private slots:
     void setFluxDensityMode();
     void setStair();
 
-public slots:
+  public slots:
     void regenerate(Data &data);
-
 };
 
 #endif // MAINWINDOW_H

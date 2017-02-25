@@ -297,6 +297,7 @@ void Analytics::apply(bool fullFilters) {
 
     ui->currentStatus->show();
     resize(currentSize);
+    list->setFocus();
 }
 
 void Analytics::applyFileNameFilter() {
@@ -1061,6 +1062,7 @@ void Analytics::oneWindow() {
     setContentsMargins(0, 0, 0, 0);
     list->setContentsMargins(0, 0, 0, 0);
 
+    window->showMaximized();
     window->addWidgetToMainLayout(this, list);
     window->show();
 }

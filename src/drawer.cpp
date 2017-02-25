@@ -44,7 +44,7 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     layout->addWidget(drawer);
     layout->addWidget(scrollArea);
 
-    drawer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
     scrollArea->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::MinimumExpanding);
 
 

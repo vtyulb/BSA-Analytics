@@ -1063,6 +1063,7 @@ void Analytics::oneWindow() {
     list->setContentsMargins(0, 0, 0, 0);
 
     window->showMaximized();
+    QTimer::singleShot(500, window, SLOT(update()));
     window->addWidgetToMainLayout(this, list);
     window->show();
 }

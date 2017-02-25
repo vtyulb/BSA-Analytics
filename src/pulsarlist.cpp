@@ -29,12 +29,16 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
     setColumnCount(6);
 
     setAttribute(Qt::WA_DeleteOnClose);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setSizeIncrement(1, 1);
 
     QStringList header;
     header << "time" << "module" << "ray" << "dispersion" << "period" << "snr";
     setHorizontalHeaderLabels(header);
 
     setStyleSheet("QMenu::item:selected{border:1px solid red;}");
+    setMinimumWidth(430);
+    setMaximumWidth(430);
 
     setSelectionBehavior(QAbstractItemView::SelectRows);
     for (int i = 0; i < columnCount(); i++)
@@ -132,7 +136,6 @@ void PulsarList::showTime() {
 }
 
 void PulsarList::headerGeometriesChanged() {
-    qDebug() << "header" << horizontalHeader()->length();
-    setMinimumWidth(horizontalHeader()->length() + 15 + verticalHeader()->width() + verticalScrollBar()->width());
-    setMaximumWidth(horizontalHeader()->length() + 15 + verticalHeader()->width() + verticalScrollBar()->width());
+//    setMinimumWidth(horizontalHeader()->length() + 10 + verticalHeader()->width() + verticalScrollBar()->width());
+//    setMaximumWidth(horizontalHeader()->length() + 20 + verticalHeader()->width() + verticalScrollBar()->width());
 }

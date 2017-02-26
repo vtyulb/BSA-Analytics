@@ -100,7 +100,7 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
 
     if (pulsars) {
         selectRow(0);
-        QTimer::singleShot(200, this, SLOT(selectionChanged()));
+//        QTimer::singleShot(200, this, SLOT(selectionChanged()));
     }
 
     resizeColumnsToContents();

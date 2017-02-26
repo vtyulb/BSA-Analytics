@@ -290,6 +290,8 @@ void Analytics::apply(bool fullFilters) {
         list->show();
     }
 
+    ui->currentStatus->setText("Generating GUI list");
+    qApp->processEvents();
     list->init(pl, ui->fourierRemoveBadRawData->isChecked());
 
     progressBar->hide();
@@ -877,6 +879,7 @@ void Analytics::applyFourierFilters() {
         }
 
     ui->currentStatus->setText("Generating white zone");
+    progressBar->show();
     QVector<Pulsar> *whiteZone = new QVector<Pulsar>;
     for (int module = 5; module >= 0; module--)
         for (int ray = 7; ray >= 0; ray--) {
@@ -929,7 +932,6 @@ void Analytics::applyFourierFilters() {
     pulsars = whiteZone;
 
     progressBar->hide();
-    qApp->processEvents();
     pulsarsEnabled.resize(pulsars->size());
 }
 

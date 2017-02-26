@@ -35,7 +35,6 @@
 
 namespace mainSpace {
     MainWindow *w;
-    QString program;
 }
 
 void restart(int signal = 0) {
@@ -49,7 +48,7 @@ void restart(int signal = 0) {
                                                          "describing what have you done\n"
                                                          "to <vtyulb@vtyulb.ru>\n\n"
                                                          "Program will be restarted now");
-    QProcess::startDetached(mainSpace::program);
+    QProcess::startDetached(qApp->arguments().first());
     exit(0);
 }
 
@@ -311,7 +310,6 @@ void pulsarEngine(int argc, char **argv) {
             FreeConsole();
 #endif
 
-            mainSpace::program = QString(argv[0]);
             mainSpace::w = new MainWindow(data);
             mainSpace::w->show();
 
@@ -321,7 +319,6 @@ void pulsarEngine(int argc, char **argv) {
 
     if (argc == 2 && debug) {
         makeApp(argc, argv);
-        mainSpace::program = QString(argv[0]);
         mainSpace::w = new MainWindow;
         mainSpace::w->show();
         exit(qApp->exec());
@@ -359,7 +356,6 @@ int main(int argc, char *argv[])
 
     makeApp(argc, argv);
 
-    mainSpace::program = QString(argv[0]);
     mainSpace::w = new MainWindow;
     mainSpace::w->show();
 

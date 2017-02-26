@@ -136,7 +136,7 @@ void PulsarList::showTime() {
 
 QSize PulsarList::sizeHint() const {
     QSize res = QTableWidget::sizeHint();
-    res.setWidth(horizontalHeader()->length() + 20 + verticalHeader()->width() + verticalScrollBar()->width());
+    res.setWidth(horizontalHeader()->length() + 5 + verticalHeader()->width() + verticalScrollBar()->width());
     return res;
 }
 

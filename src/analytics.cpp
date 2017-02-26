@@ -292,6 +292,7 @@ void Analytics::apply(bool fullFilters) {
 
     ui->currentStatus->setText("Generating GUI list");
     progressBar->setValue(80);
+    progressBar->show();
     qApp->processEvents();
     list->init(pl, ui->fourierRemoveBadRawData->isChecked());
 

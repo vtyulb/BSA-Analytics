@@ -291,6 +291,7 @@ void Analytics::apply(bool fullFilters) {
     }
 
     ui->currentStatus->setText("Generating GUI list");
+    progressBar->setValue(80);
     qApp->processEvents();
     list->init(pl, ui->fourierRemoveBadRawData->isChecked());
 
@@ -304,6 +305,7 @@ void Analytics::apply(bool fullFilters) {
     ui->currentStatus->show();
     resize(currentSize);
     list->setFocus();
+    window->update();
 }
 
 void Analytics::applyFileNameFilter() {
@@ -552,6 +554,8 @@ void Analytics::addPulsarCatalog() {
         ui->currentStatus->hide();
         progressBar->hide();
     }
+
+    window->update();
 }
 
 void Analytics::showInfo() {

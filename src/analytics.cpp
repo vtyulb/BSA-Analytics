@@ -95,6 +95,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     init();
 
     resize(minimumWidth(), height());
+    if (!QSettings().value("GimpMode", true).toBool())
+        QTimer::singleShot(100, this, SLOT(oneWindow()));
 }
 
 void Analytics::init() {
@@ -1070,5 +1072,6 @@ void Analytics::oneWindow() {
 
 Analytics::~Analytics() {
     qDebug() << "analytics destroyed";
+    QSettings().setValue("GimpMode", QVariant(!oneWindowMode));
     delete ui;
 }

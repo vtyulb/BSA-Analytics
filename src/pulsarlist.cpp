@@ -20,6 +20,7 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
 
     QObject::connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     QObject::connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
+    QObject::connect(horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(headerGeometriesChanged()));
 
     QAction *showUTCtime = new QAction("Show UTC time", this);
     QObject::connect(showUTCtime, SIGNAL(triggered(bool)), this, SLOT(showTime()));
@@ -41,16 +42,9 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
     setHorizontalHeaderLabels(header);
 
     setStyleSheet("QMenu::item:selected{border:1px solid red;}");
-    setMinimumWidth(430);
-    setMaximumWidth(430);
+    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Ignored);
 
     setSelectionBehavior(QAbstractItemView::SelectRows);
-    for (int i = 0; i < columnCount(); i++)
-        setColumnWidth(i, 68);
-
-    setColumnWidth(2, 30);
-    setColumnWidth(3, 80);
-    setColumnWidth(5, 50);
 
     setEditTriggers(QAbstractItemView::NoEditTriggers);
 
@@ -59,13 +53,12 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
     setWindowTitle("Pulsar list");
 
     restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
-    horizontalHeader()->restoreState(QSettings().value("pulsar-list-header").toByteArray());
+//    horizontalHeader()->restoreState(QSettings().value("pulsar-list-header").toByteArray());
     QTimer::singleShot(10, this, SLOT(headerGeometriesChanged()));
     show();
 }
 
 void PulsarList::init(Pulsars pl, bool removeBadData) {
-//    delete pulsars;
     pulsars = pl;
 
     setRowCount(pulsars->size());
@@ -111,7 +104,9 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
     }
 
     resizeColumnsToContents();
-    headerGeometriesChanged();
+    resizeRowsToContents();
+
+    QTimer::singleShot(100, this, SLOT(headerGeometriesChanged()));
 }
 
 void PulsarList::closeEvent(QCloseEvent *) {
@@ -126,7 +121,7 @@ PulsarList::~PulsarList() {
 void PulsarList::saveSettings() {
     qDebug() << "Pulsar list saving settings";
     QSettings().setValue("pulsar-list-geometry", saveGeometry());
-    QSettings().setValue("pulsar-list-header", horizontalHeader()->saveState());
+//    QSettings().setValue("pulsar-list-header", horizontalHeader()->saveState());
     qApp->quit();
 }
 
@@ -142,7 +137,16 @@ void PulsarList::showTime() {
     QMessageBox::information(this, "Peak UTC time", currentPulsar->UTCtime());
 }
 
+QSize PulsarList::sizeHint() const {
+    QSize res = QTableWidget::sizeHint();
+    res.setWidth(horizontalHeader()->length() + 20 + verticalHeader()->width() + verticalScrollBar()->width());
+    return res;
+}
+
+QSize PulsarList::minimumSizeHint() const {
+    return sizeHint();
+}
+
 void PulsarList::headerGeometriesChanged() {
-    setMinimumWidth(horizontalHeader()->length() + 20 + verticalHeader()->width() + verticalScrollBar()->width());
-    setMaximumWidth(horizontalHeader()->length() + 20 + verticalHeader()->width() + verticalScrollBar()->width());
+    updateGeometry();
 }

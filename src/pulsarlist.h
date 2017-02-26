@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QTime>
 #include <QPoint>
+#include <QSize>
 
 #include <pulsar.h>
 
@@ -25,6 +26,8 @@ class PulsarList : public QTableWidget
         QVector<int> pulsarsIndex;
 
         void closeEvent(QCloseEvent *);
+        QSize sizeHint() const;
+        QSize minimumSizeHint() const;
 
         void saveSettings();
 

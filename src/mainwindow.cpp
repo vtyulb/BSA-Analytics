@@ -166,7 +166,7 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QD
 
 void MainWindow::regenerate(Data &data) {
     show();
-    ui->label->hide();
+    delete ui->label; ui->label = NULL;
     if (drawer) {
         Data *old = &drawer->drawer->data;
         if (old->modules == data.modules && old->rays == data.rays && old->channels == data.channels) {
@@ -332,5 +332,6 @@ void MainWindow::addWidgetToMainLayout(QWidget *w1, QWidget *w2) {
     ui->centralWidget->layout()->removeWidget(drawer);
     ui->centralWidget->layout()->addWidget(w1);
     ui->centralWidget->layout()->addWidget(w2);
-    ui->centralWidget->layout()->addWidget(drawer);
+    if (drawer)
+        ui->centralWidget->layout()->addWidget(drawer);
 }

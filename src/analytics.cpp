@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QDir>
 #include <QDebug>
+#include <QEventLoop>
 #include <QMessageBox>
 #include <QSettings>
 #include <QTimer>
@@ -282,13 +283,14 @@ void Analytics::apply(bool fullFilters) {
         std::sort(pl->data(), pl->data() + pl->size());
 
     if (!list) {
-        list = new PulsarList(pl, ui->fourierRemoveBadRawData->isChecked(), this);
+        list = new PulsarList(this);
         QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
         QObject::connect(window, SIGNAL(destroyed(QObject*)), list, SLOT(deleteLater()));
         QObject::connect(window, SIGNAL(destroyed(QObject*)), qApp, SLOT(quit()));
         list->show();
-    } else
-        list->init(pl, ui->fourierRemoveBadRawData->isChecked());
+    }
+
+    list->init(pl, ui->fourierRemoveBadRawData->isChecked());
 
     progressBar->hide();
 
@@ -587,6 +589,9 @@ void Analytics::loadFourierCache() {
 void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     qDebug() << "fourier load called";
 
+    ui->fourierLoad->setDisabled(true);
+    ui->fourierLoad->setText("Loading data");
+
     progressBar->show();
     ui->currentStatus->show();
     ui->currentStatus->setText("Releasing previous data");
@@ -634,7 +639,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
         for (int j = 0; j < names.size(); j++)
             {
                 progressBar->setValue(100 * j / names.size());
-                QApplication::processEvents();
+                qApp->processEvents();
 
                 fourierData.push_back(Reader().readBinaryFile(currentPath + names[j]));
                 Settings::settings()->setFourierHighGround(fourierData.first().previousLifeName.contains("N1"));
@@ -678,6 +683,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
 
         for (int j = 0; j < fourierData.size(); j++) {
             progressBar->setValue(100 * j / fourierData.size());
+            qApp->processEvents();
 
             for (int module = 0; module < 6; module++)
                 for (int ray = 0; ray < 8; ray++) {
@@ -758,7 +764,6 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
 
     pulsarsEnabled.resize(pulsars->size());
 
-    ui->fourierLoad->setDisabled(true);
     ui->fourierLoad->setText("Data loaded");
     ui->currentStatus->setText(QString("Loaded %1 files").arg(fourierData.size()));
 
@@ -1065,7 +1070,6 @@ void Analytics::oneWindow() {
     list->setContentsMargins(0, 0, 0, 0);
 
     window->showMaximized();
-    QTimer::singleShot(500, window, SLOT(update()));
     window->addWidgetToMainLayout(this, list);
     window->show();
 }

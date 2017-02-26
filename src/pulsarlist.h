@@ -14,10 +14,10 @@ class PulsarList : public QTableWidget
     Q_OBJECT
 
     public:
-        explicit PulsarList(Pulsars pl = 0, bool removeBadData = false, QWidget *parent = 0);
+        explicit PulsarList(QWidget *parent);
         ~PulsarList();
 
-        void init(Pulsars pl = 0, bool removeBadData = false);
+        void init(Pulsars pl, bool removeBadData);
 
     private:
         Pulsars pulsars;
@@ -34,7 +34,6 @@ class PulsarList : public QTableWidget
     private slots:
         void selectionChanged();
         void showTime();
-        void headerGeometriesChanged();
 
     signals:
         void switchData(Data &data);

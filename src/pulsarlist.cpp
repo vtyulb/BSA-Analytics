@@ -13,14 +13,13 @@
 #include <QScrollBar>
 #include <QApplication>
 
-PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
+PulsarList::PulsarList(QWidget *parent) :
     QTableWidget(NULL)
 {
     QObject::setParent(parent);
 
     QObject::connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     QObject::connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
-    QObject::connect(horizontalHeader(), SIGNAL(sectionResized(int,int,int)), this, SLOT(headerGeometriesChanged()));
 
     QAction *showUTCtime = new QAction("Show UTC time", this);
     QObject::connect(showUTCtime, SIGNAL(triggered(bool)), this, SLOT(showTime()));
@@ -48,13 +47,10 @@ PulsarList::PulsarList(Pulsars pl, bool removeBadData, QWidget *parent) :
 
     setEditTriggers(QAbstractItemView::NoEditTriggers);
 
-    init(pl, removeBadData);
-
     setWindowTitle("Pulsar list");
 
     restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
 //    horizontalHeader()->restoreState(QSettings().value("pulsar-list-header").toByteArray());
-    QTimer::singleShot(10, this, SLOT(headerGeometriesChanged()));
     show();
 }
 
@@ -98,15 +94,16 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
         setRowCount(v);
     }
 
-    if (pulsars) {
-        selectRow(0);
-//        QTimer::singleShot(200, this, SLOT(selectionChanged()));
-    }
-
     resizeColumnsToContents();
     resizeRowsToContents();
 
-    QTimer::singleShot(100, this, SLOT(headerGeometriesChanged()));
+    hide();
+    show();
+
+    if (pulsars->size()) {
+        selectRow(0);
+        selectionChanged();
+    }
 }
 
 void PulsarList::closeEvent(QCloseEvent *) {
@@ -145,8 +142,4 @@ QSize PulsarList::sizeHint() const {
 
 QSize PulsarList::minimumSizeHint() const {
     return sizeHint();
-}
-
-void PulsarList::headerGeometriesChanged() {
-    updateGeometry();
 }

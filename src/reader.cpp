@@ -5,6 +5,7 @@
 
 #include <QFile>
 #include <QStringList>
+#include <QApplication>
 
 Reader::Reader(QObject *parent) :
     QObject(parent)
@@ -161,6 +162,8 @@ Data Reader::readBinaryFile(QString file) {
     for (int i = 0; i < npoints; i++) {
         if (i % 1000 == 0)
             emit progress(i * 100 / npoints);
+
+        qApp->processEvents();
 
         for (int m = 0; m < modulus; m++)
             for (int j = 0; j < rays; j++)

@@ -104,6 +104,10 @@ void NativeDrawer::nativePaint(bool forPrinter) {
     p.setPen(QColor("white"));
     p.drawRect(0, 0, art->width(), art->height());
     p.setPen(QPen("black"));
+    p.end();
+
+    drawAxes();
+    p.begin(art);
 
     int rays = data.rays;
     for (int k = 0; k < data.npoints / 50000 + 1; k++) {

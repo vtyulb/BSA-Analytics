@@ -59,6 +59,9 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
 
     setRowCount(pulsars->size());
     for (int i = 0; i < pulsars->size(); i++) {
+        if (i % 100 == 0)
+            emit progress(90 * i / pulsars->size());
+
         setItem(i, 0, new QTableWidgetItem(getPulsarJName(pulsars->at(i).module, pulsars->at(i).ray, pulsars->at(i).nativeTime)));
         setItem(i, 1, new QTableWidgetItem(QString::number(pulsars->at(i).module)));
         setItem(i, 2, new QTableWidgetItem(QString::number(pulsars->at(i).ray)));
@@ -82,7 +85,10 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
 
     if (removeBadData) {
         int v = 0;
-        for (int i = 0; i < pulsars->size(); i++)
+        for (int i = 0; i < pulsars->size(); i++) {
+            if (i % 100 == 0)
+                emit progress(90 + 5 * i / pulsars->size());
+
             if (!(pulsars->at(i).dispersion == -7777)) {
                 for (int j = 0; j < columnCount(); j++)
                     setItem(v, j, new QTableWidgetItem(*(item(i, j))));
@@ -91,11 +97,12 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
                 v++;
             }
 
+        }
+
         setRowCount(v);
     }
 
     resizeColumnsToContents();
-    resizeRowsToContents();
 
     hide();
     show();

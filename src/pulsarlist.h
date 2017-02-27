@@ -37,6 +37,7 @@ class PulsarList : public QTableWidget
 
     signals:
         void switchData(Data &data);
+        void progress(int);
 };
 
 #endif // PULSARLIST_H

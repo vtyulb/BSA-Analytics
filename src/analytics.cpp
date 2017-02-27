@@ -120,7 +120,6 @@ void Analytics::init() {
 
     QObject::connect(ui->fileNames, SIGNAL(currentIndexChanged(int)), this, SLOT(apply()));
     progressBar->hide();
-    ui->currentStatus->hide();
 }
 
 void Analytics::loadKnownPulsars() {
@@ -285,13 +284,13 @@ void Analytics::apply(bool fullFilters) {
     if (!list) {
         list = new PulsarList(this);
         QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
+        QObject::connect(list, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
         QObject::connect(window, SIGNAL(destroyed(QObject*)), list, SLOT(deleteLater()));
         QObject::connect(window, SIGNAL(destroyed(QObject*)), qApp, SLOT(quit()));
         list->show();
     }
 
     ui->currentStatus->setText("Generating GUI list");
-    progressBar->setValue(80);
     progressBar->show();
     qApp->processEvents();
     list->init(pl, ui->fourierRemoveBadRawData->isChecked());
@@ -303,7 +302,6 @@ void Analytics::apply(bool fullFilters) {
     else
         ui->currentStatus->setText(QString("Loaded %1 files").arg(totalFilesLoaded));
 
-    ui->currentStatus->show();
     resize(currentSize);
     list->setFocus();
     window->update();
@@ -550,9 +548,7 @@ void Analytics::addPulsarCatalog() {
         QSettings().setValue("openPath", MainWindow::nativeDecodeLastPath(catalog));
 
         progressBar->show();
-        ui->currentStatus->show();
         loadPulsars(catalog);
-        ui->currentStatus->hide();
         progressBar->hide();
     }
 
@@ -600,7 +596,6 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     ui->fourierLoad->setText("Loading data");
 
     progressBar->show();
-    ui->currentStatus->show();
     ui->currentStatus->setText("Releasing previous data");
 
     QString path = QDir(folder).absolutePath() + "/";
@@ -799,6 +794,10 @@ void Analytics::applyFourierFilters() {
     while (end != pulsars->end() && end->filtered == false)
         end++;
 
+    for (QVector<Pulsar>::Iterator i = start; i != end; i++) {
+        (*i).data.releaseProtected = false;
+        (*i).data.releaseData();
+    }
     pulsars->erase(start, end);
 
     for (int i = 0; i < pulsars->size(); i++)
@@ -1001,7 +1000,6 @@ void Analytics::fourierFullGrayZone() {
     ui->fourierFullGrayZone->setDisabled(true);
 
     ui->currentStatus->setText("Generating yellow zone");
-    ui->currentStatus->show();
     progressBar->show();
     int size = pulsars->size();
     for (int i = 0; i < size; i++)
@@ -1028,7 +1026,6 @@ void Analytics::fourierFullGrayZone() {
             }
         }
 
-    ui->currentStatus->hide();
     progressBar->hide();
     ui->fourierShortGrayZone->setEnabled(true);
 
@@ -1059,6 +1056,7 @@ void Analytics::oneWindow() {
     window->setParent(NULL);
     list->setParent(NULL);
     setParent(NULL);
+    QObject::disconnect(list, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
     progressBar = ui->progressBar;
     if (oneWindowMode) {
         ui->oneWindow->setText("One window");
@@ -1066,6 +1064,7 @@ void Analytics::oneWindow() {
         window->addWidgetToMainLayout(NULL, NULL);
         list->show();
         show();
+        QObject::connect(list, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
         return;
     } else
         ui->oneWindow->setText("Gimp mode");
@@ -1074,7 +1073,8 @@ void Analytics::oneWindow() {
     progressBar = Settings::settings()->getProgressBar();
 
     setContentsMargins(0, 0, 0, 0);
-    list->setContentsMargins(0, 0, 0, 0);
+
+    QObject::connect(list, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
 
     window->showMaximized();
     window->addWidgetToMainLayout(this, list);

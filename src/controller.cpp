@@ -42,8 +42,12 @@ Controller::Controller(QWidget *parent) :
 void Controller::setCoords(QPointF p) {
     double realSeconds;
     QString starTime = StarTime::StarTime(data, p.x(), &realSeconds);
-    starTime += "." + QString::number(int(realSeconds * 100) / 10 % 10) + QString::number(int(realSeconds * 100) % 10);
-    coords->setText(QString("X: %1; Y: %2").arg(starTime, QString::number(p.y())));
+    if (starTime != "") {
+        starTime += "." + QString::number(int(realSeconds * 100) / 10 % 10) + QString::number(int(realSeconds * 100) % 10);
+        coords->setText(QString("X: %1; Y: %2").arg(starTime, QString::number(p.y())));
+    } else
+        coords->setText(QString("Y: %1").arg(p.y()));
+
     nativeXCoord->setText(QString("X: %1").arg(p.x()));
     if (Settings::settings()->fourierAnalytics())
         nativeXCoord->setText(QString("X: %1; p=%2s").arg(QString::number(p.x(), 'f', 1), QString::number(2048.0 / p.x() * 0.0999424, 'f', 5)));

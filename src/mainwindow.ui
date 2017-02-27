@@ -84,10 +84,10 @@
     <addaction name="actionLive"/>
     <addaction name="actionFast"/>
     <addaction name="separator"/>
-    <addaction name="separator"/>
     <addaction name="actionClone"/>
     <addaction name="separator"/>
     <addaction name="actionSound_mode"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuPulsars">
     <property name="title">

@@ -160,6 +160,8 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     controller->setFileName(data.name);
     l->addWidget(controller);
 
+    setContentsMargins(0, 0, 0, 0);
+
     QObject::connect(drawer, SIGNAL(coordsChanged(QPointF)), controller, SLOT(setCoords(QPointF)));
 
     show();

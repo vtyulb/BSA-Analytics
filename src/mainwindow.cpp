@@ -7,6 +7,7 @@
 #include <QStackedLayout>
 #include <QSettings>
 #include <QTimer>
+#include <QMenu>
 #include <QProcess>
 #include <QDesktopServices>
 #include <QStyleFactory>
@@ -27,6 +28,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     drawer(NULL)
 {
     ui->setupUi(this);
+    generateStyles();
 
     QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
     QObject::connect(ui->actionOpen_Binary, SIGNAL(triggered()), this, SLOT(openBinaryFile()));
@@ -72,10 +74,6 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
 
     static Updater updater;
     QObject::connect(ui->actionUpdate, SIGNAL(triggered()), &updater, SLOT(download()));
-
-#ifdef WIN32
-    qApp->setStyle(QStyleFactory::create("fusion"));
-#endif
 }
 
 MainWindow::~MainWindow() {
@@ -335,4 +333,44 @@ void MainWindow::addWidgetToMainLayout(QWidget *w1, QWidget *w2) {
     ui->centralWidget->layout()->addWidget(w2);
     if (drawer)
         ui->centralWidget->layout()->addWidget(drawer);
+}
+
+void MainWindow::generateStyles() {
+    styles = new QMenu("Style");
+    QStringList styleNames = QStyleFactory::keys();
+
+#ifdef WIN32
+    qApp->setStyle(QSettings().value("Style", "Fusion").toString());
+#else
+    qApp->setStyle(QSettings().value("Style").toString());
+#endif
+
+    for (int i = 0; i < styleNames.size(); i++) {
+        styles->addAction(new QAction(styleNames[i], this));
+        styles->actions().last()->setCheckable(true);
+#ifdef WIN32
+        if (styleNames[i] == "Fusion") {
+            styles->actions().last()->setText("Fusion (default)");
+        }
+#endif
+        if (styleNames[i].toUpper() == qApp->style()->objectName().toUpper())
+            styles->actions().last()->setChecked(true);
+    }
+
+    qDebug() << qApp->style()->objectName();
+
+    QObject::connect(styles, SIGNAL(triggered(QAction*)), this, SLOT(setStyle(QAction*)));
+    ui->menuEdit->addMenu(styles);
+}
+
+void MainWindow::setStyle(QAction *action) {
+    QString style = action->text().replace("&", "").replace(" (default)", "");
+    qDebug() << "setting style to" << style;
+    qApp->setStyle(QStyleFactory::create(style));
+    QSettings().setValue("Style", style);
+
+    for (int i = 0; i < styles->actions().size(); i++)
+        styles->actions()[i]->setChecked(false);
+
+    action->setChecked(true);
 }

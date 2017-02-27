@@ -27,12 +27,14 @@ class MainWindow : public QMainWindow
     Ui::MainWindow *ui;
     Drawer *drawer;
     QProgressBar *progress;
+    QMenu *styles;
 
     QString lastOpenPath;
     QString fileToOpen;
 
     void saveSettings();
     void loadSettings();
+    void generateStyles();
 
     void decodeLastPath(QString path);
 
@@ -67,6 +69,8 @@ class MainWindow : public QMainWindow
     void setRotationMeasureMode();
     void setFluxDensityMode();
     void setStair();
+
+    void setStyle(QAction*);
 
   public slots:
     void regenerate(Data &data);

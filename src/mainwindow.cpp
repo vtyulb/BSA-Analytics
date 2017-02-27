@@ -157,6 +157,7 @@ void MainWindow::decodeLastPath(QString path) {
 void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QDateTime time, bool binary) {
     decodeLastPath(fileName);
     Reader reader;
+    progress->show();
     QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
     Data data = reader.readFile(fileName, skip, skipFirstRay, time, binary);
     statusBar()->showMessage("Done", 2000);

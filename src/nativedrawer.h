@@ -53,6 +53,8 @@ private:
 
     QPoint newCoord(float x, float y);
     QPointF backwardCoord(QPointF);
+    QPoint mirr(QPoint);
+    void drawText(QPainter *p, QPoint point, QString text);
 
     void mousePressEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
@@ -71,7 +73,6 @@ private:
     void sourceDetect(int, int);
     void fourierDraw(QPainter &p);
 
-    QPoint mirr(QPoint);
 
 signals:
     void progress(int);

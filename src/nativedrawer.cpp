@@ -1,6 +1,7 @@
 #include "nativedrawer.h"
 #include <QRgb>
 #include <QApplication>
+#include <QFontMetrics>
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
 #include <QMessageBox>
@@ -179,7 +180,6 @@ void NativeDrawer::fourierDraw(QPainter &p) {
 }
 
 void NativeDrawer::resetVisibleRectangle(bool repaint, bool resetLeftRight) {
-
     screens.clear();
 
     float min = 1e+30;
@@ -354,13 +354,7 @@ void NativeDrawer::drawAxes() {
 
     QPainter p(art);
 
-    p.setPen(QPen(QColor("white")));
     p.setBrush(QBrush(QColor("white")));
-    p.drawRect(0, 0, 46, art->height());
-    p.drawRect(0, 0, art->width(), 10);
-    p.drawRect(0, height() - 15, art->width(), height());
-    p.drawRect(art->width() - 25, 0, art->width(), art->height());
-
     p.setPen(QColor("black"));
 
     p.drawLine(QPoint(0, art->height() - 1), QPoint(art->width(), art->height() - 1));
@@ -376,8 +370,8 @@ void NativeDrawer::drawAxes() {
         p.drawLine(QPoint(i, art->height()), QPoint(i, art->height() - 6 - (4 + art->height() * drawNet) * (i%250 == 0)));
         p.drawLine(QPoint(i, 0), QPoint(i, 6 + 4 * (i%250 == 0)));
         if (i%250==0) {
-            p.drawText(QPoint(i + 1, art->height() - 12), QString::number(backwardCoord(QPoint(i, 0)).x()));
-            p.drawText(QPoint(i + 1, art->height() - 24), StarTime::StarTime(data, backwardCoord(QPointF(i, 0)).x()));
+            drawText(&p, QPoint(i + 1, art->height() - 12), QString::number(backwardCoord(QPoint(i, 0)).x()));
+            drawText(&p, QPoint(i + 1, art->height() - 24), StarTime::StarTime(data, backwardCoord(QPointF(i, 0)).x()));
         }
     }
 
@@ -394,7 +388,7 @@ void NativeDrawer::drawAxes() {
         p.drawLine(QPoint(0, i), QPoint(6 + (4 + art->width() * drawNet) * (i%250==0), i));
         p.drawLine(QPoint(art->width() - 6 - 4 * (i%250==0), i), QPoint(art->width(), i));
         if (i%250==0)
-            p.drawText(QPoint(5, i + 12), QString::number(backwardCoord(mirr(QPoint(0,i))).y()));
+            drawText(&p, QPoint(5, i + 12), QString::number(backwardCoord(mirr(QPoint(0,i))).y()));
     }
 
     p.end();
@@ -410,6 +404,15 @@ int NativeDrawer::minimum(int a, int b) {
 QPoint NativeDrawer::mirr(QPoint p) {
     p.setY(art->height() - p.y());
     return p;
+}
+
+void NativeDrawer::drawText(QPainter *p, QPoint point, QString text) {
+    if (text == "")
+        return;
+
+    QFontMetrics fm(p->font());
+    p->fillRect(point.x(), point.y() + 1, fm.width(text) + 2, -11, QBrush(QColor(255, 255, 255, 200)));
+    p->drawText(point, text);
 }
 
 void NativeDrawer::leaveEvent(QEvent *event) {

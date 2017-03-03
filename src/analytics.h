@@ -52,6 +52,7 @@ private:
     QVector<Data> fourierData;
     QVector<float> fourierSumm[6][8];
     QVector<double> fourierRawNoises[6][8];
+    QVector<bool> fourierGood;
 
     void parseFourierAllowedDates();
 

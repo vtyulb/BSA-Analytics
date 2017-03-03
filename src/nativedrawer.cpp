@@ -76,7 +76,6 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
             mouseRect.setBottom(-2);
             mouseRect.setTop(height()+1);
         }
-        qDebug() << mouseRect.width() << mouseRect.height();
         p.drawRect(min(mouseRect.left(), mouseRect.right()),
                    min(mouseRect.top(), mouseRect.bottom()),
                    abs(mouseRect.width()),

@@ -297,9 +297,15 @@ void Analytics::apply(bool fullFilters) {
 
     progressBar->hide();
 
-    if (fourier)
-        ui->currentStatus->setText(QString("Loaded %1 files").arg(fourierData.size()));
-    else
+    if (fourier) {
+        QSet<QString> filesUsed;
+        for (int i = 0; i < pl->size(); i++)
+            if (!pl->at(i).fourierDuplicate && pl->at(i).dispersion != -7777)
+                filesUsed.insert(pl->at(i).data.previousLifeName);
+
+        filesUsed.remove("whitezone");
+        ui->currentStatus->setText(QString("Used %1 of %2 files").arg(filesUsed.size()).arg(fourierData.size()));
+    } else
         ui->currentStatus->setText(QString("Loaded %1 files").arg(totalFilesLoaded));
 
     resize(currentSize);
@@ -809,14 +815,15 @@ void Analytics::applyFourierFilters() {
             fourierSumm[i][j].fill(0);
         }
 
-    QVector<bool> good(pulsars->size(), !ui->fourierPeak->isChecked());
+    fourierGood.resize(pulsars->size());
+    fourierGood.fill(!ui->fourierPeak->isChecked());
     if (ui->fourierPeak->isChecked()) {
         int start = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() - 2;
         int end = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() + 3;
         for (int i = 0; i < pulsars->size(); i++) {
             for (int j = start; j < end; j++)
                 if ((pulsars->at(i).data.data[0][0][0][j] - pulsars->at(i).fourierAverage) / pulsars->at(i).fourierRealNoise > ui->fourierPeakSNR->value())
-                    good[i] = true;
+                    fourierGood[i] = true;
         }
     }
 
@@ -828,14 +835,14 @@ void Analytics::applyFourierFilters() {
             for (int j = 0; j < fourierAllowedDates.size(); j += 2)
                 gd = gd || (fourierAllowedDates[j] < date && date < fourierAllowedDates[j + 1]);
 
-            good[i] = good[i] && gd;
+            fourierGood[i] = fourierGood[i] && gd;
         }
     }
 
     if (ui->fourierOnlyNightData->isChecked()) {
         for (int i = 0; i < pulsars->size(); i++) {
             int hour = pulsars->at(i).data.hourFromPreviousLifeName();
-            good[i] = good[i] && (1 <= hour && hour <= 6);
+            fourierGood[i] = fourierGood[i] && (1 <= hour && hour <= 6);
         }
     }
 
@@ -851,20 +858,29 @@ void Analytics::applyFourierFilters() {
                                 [pulsars->at(i).ray - 1][top - 1];
 
             if (-pulsars->at(i).data.sigma <= eqt)
-                good[i] = true;
+                fourierGood[i] = true;
             else
-                good[i] = false;
+                fourierGood[i] = false;
         }
     }
+
+    if (ui->fourierGoodLookingSpectresOnly->isChecked()) {
+        for (int i = 0; i < pulsars->size(); i++) {
+            fourierGood[i] &= pulsars->at(i).snr > 0;
+            if (!fourierGood[i] || pulsars->at(i).snr == -666 || pulsars->at(i).snr == -42)
+                (*pulsars)[i].dispersion = -7777;
+        }
+    }
+
 
     for (int i = 0; i < pulsars->size(); i++) {
         if (ui->fourierPeak->isChecked())
             (*pulsars)[i].dispersion = 0;
 
         if (ui->fourierSelectBest->isChecked())
-            (*pulsars)[i].dispersion = good[i];
+            (*pulsars)[i].dispersion = fourierGood[i];
 
-        if ((!ui->fourierGoodLookingSpectresOnly->isChecked() || pulsars->at(i).snr > 0) && good[i] && !pulsars->at(i).fourierDuplicate) {
+        if (fourierGood[i] && !pulsars->at(i).fourierDuplicate) {
             int module = pulsars->at(i).module - 1;
             int ray = pulsars->at(i).ray - 1;
             for (int k = 0; k < fourierSpectreSize; k++)
@@ -872,15 +888,9 @@ void Analytics::applyFourierFilters() {
 
 
             if (ui->fourierPeak->isChecked() || ui->fourierSelectBest->isChecked())
-                (*pulsars)[i].dispersion = (int)good[i];
+                (*pulsars)[i].dispersion = (int)fourierGood[i];
         }
     }
-
-    for (int i = 0; i < pulsars->size(); i++)
-        if (!good[i] || pulsars->at(i).snr == -666 || pulsars->at(i).snr == -42) {
-            (*pulsars)[i].dispersion = -7777;
-            good[i] = false;
-        }
 
     ui->currentStatus->setText("Generating white zone");
     progressBar->show();

@@ -475,6 +475,9 @@
         <property name="text">
          <string>Only good-looking spectres</string>
         </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
        </widget>
       </item>
       <item>

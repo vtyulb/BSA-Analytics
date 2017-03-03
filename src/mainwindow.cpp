@@ -321,8 +321,9 @@ void MainWindow::setStair() {
 }
 
 void MainWindow::showHelp() {
-    qDebug() << "opening help" << QDir::currentPath() + "/HandBook.pdf";
-    QDesktopServices::openUrl(QUrl::fromLocalFile("HandBook.pdf"));
+    const QUrl help = QUrl::fromLocalFile(DOCPATH + "/HandBook.pdf");
+    qDebug() << "opening help" << help;
+    QDesktopServices::openUrl(help);
 }
 
 void MainWindow::addWidgetToMainLayout(QWidget *w1, QWidget *w2) {

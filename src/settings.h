@@ -20,6 +20,12 @@ enum SourceMode {
     FluxDensity = 2
 };
 
+#ifdef WIN32
+    const QString DOCPATH = ".";
+#else
+    const QString DOCPATH = "/usr/share/doc/bsa-analytics";
+#endif
+
 class Settings {
     public:
         static Settings *settings();

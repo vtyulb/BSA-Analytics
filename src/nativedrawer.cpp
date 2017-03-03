@@ -1,4 +1,3 @@
-#include "nativedrawer.h"
 #include <QRgb>
 #include <QApplication>
 #include <QFontMetrics>
@@ -8,10 +7,14 @@
 #include <QClipboard>
 #include <QTimer>
 
-#include <startime.h>
 #include <cmath>
+
+#include <startime.h>
 #include <settings.h>
 #include <wavplayer.h>
+#include "nativedrawer.h"
+
+using std::min;
 
 NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     QWidget(parent),
@@ -73,7 +76,11 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
             mouseRect.setBottom(-2);
             mouseRect.setTop(height()+1);
         }
-        p.drawRect(mouseRect);
+        qDebug() << mouseRect.width() << mouseRect.height();
+        p.drawRect(min(mouseRect.left(), mouseRect.right()),
+                   min(mouseRect.top(), mouseRect.bottom()),
+                   abs(mouseRect.width()),
+                   abs(mouseRect.height()));
     } else if (Settings::settings()->sourceMode()) {
         p.drawLine(verticalLine, 0, verticalLine, height());
     }
@@ -123,7 +130,7 @@ void NativeDrawer::nativePaint(bool forPrinter) {
             p.setPen(QColor((unsigned char)c[0], (unsigned char)c[1], (unsigned char)c[2]));
 
             if (rayVisibles[j])
-                for (int i = k * 50000 + 1 + drawFast * 5; i < minimum(data.npoints, (k + 1)*50000 + 1); i += 1 + drawFast * 5) {
+                for (int i = k * 50000 + 1 + drawFast * 5; i < min(data.npoints, (k + 1)*50000 + 1); i += 1 + drawFast * 5) {
                     int x = newCoord(i, 0).x();
                     if (x < 0 || x > art->width())
                         continue;
@@ -396,13 +403,6 @@ void NativeDrawer::drawAxes() {
     }
 
     p.end();
-}
-
-int NativeDrawer::minimum(int a, int b) {
-    if (a < b)
-        return a;
-    else
-        return b;
 }
 
 QPoint NativeDrawer::mirr(QPoint p) {

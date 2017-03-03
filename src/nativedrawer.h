@@ -68,8 +68,6 @@ private:
 
     int verticalLine;
 
-    int minimum(int, int);
-
     void sourceDetect(int, int);
     void fourierDraw(QPainter &p);
 

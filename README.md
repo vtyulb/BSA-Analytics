@@ -3,8 +3,8 @@ BSA-Analytics
 
 PRAO BSA telescope data viewer, pulsar searching & analytics software
 
-Documentation:
-  [docs/HandBook.pdf](HandBook.pdf)
+Documentation (russian language):
+  [HandBook.pdf](docs/HandBook.pdf)
 
 BUILD:
  - mkdir build

@@ -12,8 +12,8 @@ class FlowDetecter: public QObject
   Q_OBJECT
 
   public:
-    explicit FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses,
-                          int sensitivity, double period, QTime time, QString fileName, QObject *parent = 0);
+    explicit FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses, int sensitivity,
+                          double period, QTime time, QString fileName, bool clearNoise, QObject *parent = 0);
     ~FlowDetecter() {};
 
     void run();
@@ -26,6 +26,7 @@ class FlowDetecter: public QObject
 
     bool trackImpulses;
     int sensitivity;
+    bool clearNoise;
 
     double period;
 
@@ -35,7 +36,6 @@ class FlowDetecter: public QObject
     QString fileName;
 
     QVector<double> applyDispersion();
-    void subtract(double *res, int size);
 };
 
 #endif // FLOWDETECTER_H

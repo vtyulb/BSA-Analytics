@@ -7,12 +7,13 @@
 
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QClipboard>
 
 using std::max;
 using std::sort;
 
-FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses,
-                           int sensitivity, double period, QTime time, QString fileName, QObject *parent):
+FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses, int sensitivity,
+                           double period, QTime time, QString fileName, bool clearNoise, QObject *parent):
     QObject(parent),
     module(module),
     dispersion(dispersion),
@@ -20,6 +21,7 @@ FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool
     points(points),
     trackImpulses(trackImpulses),
     sensitivity(sensitivity),
+    clearNoise(clearNoise),
     period(period),
     time(time),
     fileName(fileName)
@@ -32,34 +34,67 @@ void FlowDetecter::run() {
 
     Settings::settings()->loadStair();
 
+    for (int channel = 0; channel < data.channels; channel++)
+        for (int i = 0; i < data.npoints; i++)
+            data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100;
+
     res = applyDispersion();
-    for (int i = 0; i < res.size() - 20; i += 20)
-        subtract(res.data() + i, 20);
+    const int subtractStep = 17 / data.oneStep;
+    for (int i = 0; i < res.size() - subtractStep; i += subtractStep) {
+        PulsarWorker::subtract(res.data() + i, subtractStep);
+        for (int channel = 0; channel < data.channels; channel++)
+            PulsarWorker::subtract(data.data[module][channel][ray] + i, subtractStep);
+    }
 
     int start = 0;
     while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > 90)
         start++;
 
     QVector<double> profile;
+    QString profileString;
     int maximumAt = 0;
     double maximum = 0;
     for (int j = 0; j < period / data.oneStep + 1; j++) {
         double result = 0;
-        int number = 0;
+        int count = 0;
         for (double i = start + j; i < start + 180 / data.oneStep; i += period / data.oneStep) {
             result += res[int(i + 0.5)];
-            number++;
+            count++;
         }
 
-        if (maximum < result / number) {
-            maximum = result / number;
+        if (maximum < result / count) {
+            maximum = result / count;
             maximumAt = j;
         }
-        profile.push_back(result / number);
+        profile.push_back(result / count);
+        profileString += QString::number(result / count) + " ";
     }
 
+    double v1 = data.fbands[0];
+    double v2 = data.fbands[1];
+    double average = 0;
+
+    QString resString;
+    for (int channel = 0; channel < data.channels - 1; channel++) {
+        double res = 0;
+        int count = 0;
+        int offset = 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dispersion * channel / data.oneStep + 0.5;
+        for (double i = start + maximumAt; i < start + maximumAt + 180 / data.oneStep; i += period / data.oneStep) {
+            res += data.data[module][channel][ray][int(i + offset + 0.5)];
+            count++;
+        }
+        average += res / count;
+        resString += " " + QString::number(res / count);
+    }
+
+    average /= data.channels - 1;
+    qApp->clipboard()->setText(QString::number(average) + " " + resString);
+    QMessageBox::information(NULL, "Flow", QString("Average flow is %1\n"
+                                                   "By channels: %2\n"
+                                                   "One period profile: %3").arg(QString::number(average))
+                                                                     .arg(resString).arg(profileString));
+
     if (trackImpulses) {
-        //int impulses = 0;
         for (double i = start + maximumAt; i < start + 180 / data.oneStep; i += period / data.oneStep)
             if (maximum * sensitivity < res[int(i + 0.5)]) {
 
@@ -99,18 +134,6 @@ void FlowDetecter::run() {
                 }
             }
     }
-
-
-
-    sort(profile.data(), profile.data() + profile.size());
-
-    double final = 0;
-    for (int i = profile.size() - 1; i > profile.size() - points - 1; i--)
-        final += profile[i];
-
-    final /= points;
-
-    QMessageBox::information(NULL, "Flow", QString("Res is %1").arg(QString::number(final)));
     data.releaseData();
 }
 
@@ -136,18 +159,3 @@ QVector<double> FlowDetecter::applyDispersion() {
 
     return res;
 }
-
-void FlowDetecter::subtract(double *res, int size) {
-    // Hello, void PulsarWorker::subtract(real *res, int size)
-    double a = 0;
-    double b = 0;
-    for (int i = 0; i < size / 2; i++)
-        a += res[i] / (size / 2);
-
-    for (int i = 1; i <= size / 2; i++)
-        b += res[size - i] / (size / 2);
-
-    for (int i = 0; i < size; i++)
-        res[i] -= (b - a) * i / size + a;
-}
-

@@ -270,8 +270,6 @@ void pulsarEngine(int argc, char **argv) {
         p.start();
         p.wait();
 
-#ifndef Q_OS_LINUX
-
         QStringList l;
         if (runAnalyticsAfter) {
             l.clear();
@@ -279,12 +277,13 @@ void pulsarEngine(int argc, char **argv) {
             qDebug() << l;
             QProcess::startDetached(qApp->arguments().first(), l);
         } else {
+#ifndef Q_OS_LINUX
             output.replace("/", "\\");
             l << "/select," + output;
             qDebug() << l;
             QProcess::startDetached("explorer.exe", l);
-        }
 #endif
+        }
 
         exit(0);
     }
@@ -297,6 +296,7 @@ void pulsarEngine(int argc, char **argv) {
 #endif
         makeApp(argc, argv);
         Analytics *an = new Analytics(analyticsPath, fourier);
+        an->show();
         QDir::setCurrent(qApp->applicationDirPath());
         exit(qApp->exec());
     }

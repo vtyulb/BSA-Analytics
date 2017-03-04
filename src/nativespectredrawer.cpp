@@ -10,7 +10,7 @@ NativeSpectreDrawer::NativeSpectreDrawer(QWidget *parent):
 
 }
 
-void NativeSpectreDrawer::paintEvent(QPaintEvent *event) {
+void NativeSpectreDrawer::paintEvent(QPaintEvent*) {
     qDebug() << "drawing spectre" << QTime();
     QPainter p(this);
 

@@ -25,15 +25,15 @@
 using std::max;
 
 Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
-    folder(analyticsPath),
-    fourier(fourier),
-    oneWindowMode(false),
     QWidget(parent),
     ui(new Ui::Analytics),
-    pulsars(new QVector<Pulsar>),
     list(NULL),
-    totalFilesLoaded(0),
-    noises(new KnownNoise(this))
+    noises(new KnownNoise(this)),
+    folder(analyticsPath),
+    oneWindowMode(false),
+    pulsars(new QVector<Pulsar>),
+    fourier(fourier),
+    totalFilesLoaded(0)
 {
     ui->setupUi(this);
     progressBar = ui->progressBar;
@@ -462,9 +462,9 @@ void Analytics::applyDuplicatesFilter() {
 
                     if (abs(pulsars->at(i).nativeTime.secsTo(pulsars->at(j).nativeTime)) < 120 &&
                             globalGoodDoubles(pulsars->at(i).period, pulsars->at(j).period, ui->doublePeriods->isChecked()) &&
-                            (pulsars->at(i).data.name != pulsars->at(j).data.name &&
+                            ((pulsars->at(i).data.name != pulsars->at(j).data.name &&
                             !set[i].contains(pulsars->at(j).data.name) &&
-                            !set[j].contains(pulsars->at(i).data.name) || fourier)) {
+                            !set[j].contains(pulsars->at(i).data.name)) || fourier)) {
                         set[i].insert(pulsars->at(j).data.name);
                         set[j].insert(pulsars->at(i).data.name);
                         (*pulsars)[i].firstPoint++;

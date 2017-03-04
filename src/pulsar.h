@@ -266,7 +266,7 @@ struct Pulsar {
     }
 };
 
-static bool globalGoodDoubles(double a, double b, bool twice = false) {
+static inline bool globalGoodDoubles(double a, double b, bool twice = false) {
     if (a < b) {
         double c = a;
         a = b;
@@ -288,10 +288,10 @@ static bool globalGoodDoubles(double a, double b, bool twice = false) {
         return a < 0.5;
 }
 
-static QString getPulsarJName(int module, int ray, QTime time) {
+static inline QString getPulsarJName(int module, int ray, QTime time) {
     module--;
     ray--;
-    static char *degree[6][8] = {
+    static const char *degree[6][8] = {
         {"4213", "4172", "4131", "4089", "4047", "4006", "3964", "3923"},
         {"3879", "3838", "3795", "3754", "3711", "3669", "3626", "3585"},
         {"3540", "3497", "3454", "3412", "3369", "3325", "3282", "3238"},
@@ -300,7 +300,7 @@ static QString getPulsarJName(int module, int ray, QTime time) {
         {"2470", "2423", "2376", "2329", "2281", "2234", "2186", "2138"}
     };
 
-    static char *lowDegree[6][8] = {
+    static const char *lowDegree[6][8] = {
         {"2083", "2039", "1989", "1941", "1891", "1841", "1791", "1740"},
         {"1687", "1636", "1584", "1532", "1480", "1427", "1374", "1320"},
         {"1263", "1210", "1154", "1098", "1042", "0985", "0928", "0870"},

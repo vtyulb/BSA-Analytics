@@ -88,8 +88,6 @@ void SpectreDrawer::reDraw() {
     double v1 = data.fbands[0];
     double v2 = data.fbands[1];
 
-    int y = ui->channels->value();
-
     QVector<QVector<int> > matrix;
 
     int chs = ui->channels->value();

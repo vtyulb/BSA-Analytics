@@ -12,7 +12,7 @@ public:
     QImage spectre;
 
 private:
-    void paintEvent(QPaintEvent *event);
+    void paintEvent(QPaintEvent*);
 
 signals:
 

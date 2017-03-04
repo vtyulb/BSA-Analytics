@@ -24,8 +24,8 @@
 MainWindow::MainWindow(QString file, QWidget *parent) :
     QMainWindow(NULL),
     ui(new Ui::MainWindow),
-    fileToOpen(file),
-    drawer(NULL)
+    drawer(NULL),
+    fileToOpen(file)
 {
     ui->setupUi(this);
     generateStyles();

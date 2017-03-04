@@ -13,6 +13,7 @@ using std::sort;
 
 FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses,
                            int sensitivity, double period, QTime time, QString fileName, QObject *parent):
+    QObject(parent),
     module(module),
     dispersion(dispersion),
     ray(ray),
@@ -21,8 +22,7 @@ FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool
     sensitivity(sensitivity),
     period(period),
     time(time),
-    fileName(fileName),
-    QObject(parent)
+    fileName(fileName)
 {
 }
 
@@ -59,14 +59,14 @@ void FlowDetecter::run() {
     }
 
     if (trackImpulses) {
-        int impulses = 0;
+        //int impulses = 0;
         for (double i = start + maximumAt; i < start + 180 / data.oneStep; i += period / data.oneStep)
             if (maximum * sensitivity < res[int(i + 0.5)]) {
 
-                double v1 = data.fbands[0];
+                /*double v1 = data.fbands[0];
                 double v2 = data.fbands[1];
 
-                /*bool stop = false;
+                bool stop = false;
 
                 for (int k = 0; k < data.channels; k++) {
                     int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dispersion * k / data.oneStep + 0.5);

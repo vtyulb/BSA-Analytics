@@ -324,9 +324,6 @@ void FileSummator::processLongData(Data &data) {
                     noise /= PC;
                     noise = pow(noise, 0.5);
 
-
-                    int point = (startPoint) / PC;
-
                     if (module == data.modules - 1 && ray == data.rays - 1 && channel == data.channels - 1)
                         dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
                 }

@@ -50,7 +50,8 @@ void Controller::setCoords(QPointF p) {
 
     nativeXCoord->setText(QString("X: %1").arg(p.x()));
     if (Settings::settings()->fourierAnalytics())
-        nativeXCoord->setText(QString("X: %1; p=%2s").arg(QString::number(p.x(), 'f', 1), QString::number(2048.0 / p.x() * 0.0999424, 'f', 5)));
+        nativeXCoord->setText(QString("X: %1; p=%2s").arg(QString::number(p.x(), 'f', 1),
+                              QString::number(Settings::settings()->getFourierSpectreSize() * 2 / (p.x() + 1) * Settings::settings()->getFourierStepConstant(), 'f', 5)));
 
     if (Settings::settings()->sourceMode()) {
         stairFileName->setText("Stair from " + Settings::settings()->stairFileName());

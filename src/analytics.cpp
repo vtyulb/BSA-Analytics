@@ -208,6 +208,9 @@ void Analytics::loadPulsars(QString dir) {
 }
 
 void Analytics::apply(bool fullFilters) {
+    if (list)
+        list->setDisabled(true);
+
     QSize currentSize = this->size();
     if (oneWindowMode)
         progressBar = Settings::settings()->getProgressBar();
@@ -309,6 +312,7 @@ void Analytics::apply(bool fullFilters) {
         ui->currentStatus->setText(QString("Loaded %1 files").arg(totalFilesLoaded));
 
     resize(currentSize);
+    list->setEnabled(true);
     list->setFocus();
     window->update();
 }
@@ -597,6 +601,8 @@ void Analytics::loadFourierCache() {
 
 void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     qDebug() << "fourier load called";
+    if (list)
+        list->setDisabled(true);
 
     ui->fourierLoad->setDisabled(true);
     ui->fourierLoad->setText("Loading data");
@@ -781,6 +787,8 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
         else
             apply(false);
     }
+
+    list->setEnabled(true);
 }
 
 void Analytics::actualFourierDataChanged() {
@@ -908,7 +916,6 @@ void Analytics::applyFourierFilters() {
             data.releaseProtected = true;
             memcpy(data.data[0][0][0], fourierSumm[module][ray].constData(), sizeof(float) * fourierSpectreSize);
 
-
             Pulsar pl;
             pl.module = module + 1;
             pl.ray = ray + 1;
@@ -928,13 +935,14 @@ void Analytics::applyFourierFilters() {
                     pl.data.fork();
                     pl.data.releaseProtected = true;
                     pl.snr = -777;
-                    pl.findFourierData(pl.firstPoint + (3 + longData * 10));
+                    pl.findFourierData(pl.firstPoint + 1);
                     pl.data.sigma = pl.firstPoint;
                     if (pl.snr > 0)
                         whiteZone->push_front(pl);
                     else {
                         pl.data.releaseProtected = false;
                         pl.data.releaseData();
+                        break;
                     }
                 }
         }

@@ -109,7 +109,7 @@ struct Pulsar {
 
     void findFourierData(int startPoint) {
         int st = 50;
-        int ls = Settings::settings()->getFourierSpectreSize() - 1;
+        int ls = Settings::settings()->getFourierSpectreSize() - 2;
         QVector<float> ns;
         for (int i = st; i < ls; i++)
             ns.push_back(data.data[0][0][0][i]);
@@ -148,7 +148,7 @@ struct Pulsar {
                 firstPoint = i + 1;
                 period = Settings::settings()->getFourierSpectreSize() * 2 / double(i + 1) * Settings::settings()->getFourierStepConstant();
 
-                if (snr > 5 && data.data[0][0][0][i + 1] < mx)
+                if (snr > 5 && data.data[0][0][0][i + 1] < mx && data.data[0][0][0][i - 1] < mx)
                     break;
             }
     }

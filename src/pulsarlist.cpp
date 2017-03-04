@@ -57,6 +57,7 @@ PulsarList::PulsarList(QWidget *parent) :
 void PulsarList::init(Pulsars pl, bool removeBadData) {
     pulsars = pl;
 
+    pulsarsIndex.clear();
     setRowCount(pulsars->size());
     for (int i = 0; i < pulsars->size(); i++) {
         if (i % 100 == 0)

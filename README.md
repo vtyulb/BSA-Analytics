@@ -3,17 +3,22 @@ BSA-Analytics
 
 PRAO BSA telescope data viewer, pulsar searching & analytics software
 
-Documentation (russian language):
+### Documentation:
   [HandBook.pdf](docs/HandBook.pdf)
 
-BUILD:
- - mkdir build
- - cd build
- - qmake-qt5 ../src/
- - make
+### BUILD
+```
+mkdir build
+cd build
+qmake-qt5 ../src/
+make
+```
 
-ArchLinux:
-  yaourt -S bsa-analytics-git
+### ArchLinux
+AUR package: https://aur.archlinux.org/packages/bsa-analytics-git
 
-Simple installation script for Windows:  
-  other/*.iss (InnoSetup)
+### Windows builds & sample data
+https://bsa.vtyulb.ru
+
+### Windows InnoSetup script
+other/*.iss

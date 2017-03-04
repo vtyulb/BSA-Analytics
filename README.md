@@ -1,7 +1,10 @@
 BSA-Analytics
 =============
 
-BSA graphics generator
+PRAO BSA telescope data viewer, pulsar searching & analytics software
+
+Documentation:
+  [docs/HandBook.pdf](HandBook.pdf)
 
 BUILD:
  - mkdir build
@@ -9,5 +12,8 @@ BUILD:
  - qmake-qt5 ../src/
  - make
 
-Simple installation script:  
-other/*.iss (InnoSetup)
+ArchLinux:
+  yaourt -S bsa-analytics-git
+
+Simple installation script for Windows:  
+  other/*.iss (InnoSetup)

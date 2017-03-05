@@ -13,7 +13,7 @@ using std::max;
 using std::sort;
 
 FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses, int sensitivity,
-                           double period, QTime time, QString fileName, bool clearNoise, QObject *parent):
+                           double period, QTime time, QString fileName, QObject *parent):
     QObject(parent),
     module(module),
     dispersion(dispersion),
@@ -21,7 +21,6 @@ FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool
     points(points),
     trackImpulses(trackImpulses),
     sensitivity(sensitivity),
-    clearNoise(clearNoise),
     period(period),
     time(time),
     fileName(fileName)

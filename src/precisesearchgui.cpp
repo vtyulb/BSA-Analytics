@@ -102,8 +102,7 @@ void PreciseSearchGui::runSearcher() {
     if (ui->fluxDensity->isChecked()) {
         FlowDetecter detecter(ui->module->value() - 1, ui->dispersion->value(), ui->ray->value() - 1,
                               ui->points->value(), ui->bigImpulses->isChecked(), ui->sensitivity->value(),
-                              ui->period->value(), ui->time->time(), ui->fileName->text(),
-                              ui->clearNoise->isChecked(), this);
+                              ui->period->value(), ui->time->time(), ui->fileName->text(), this);
         detecter.run();
         return;
     }
@@ -147,11 +146,14 @@ void PreciseSearchGui::determineSearchMode() {
         ui->fluxDensityWidget->setEnabled(true);
         ui->skipMultiplePeriods->setEnabled(false);
         ui->skipMultiplePeriodsLabel->setEnabled(false);
+        ui->clearNoise->setEnabled(false);
+        ui->clearNoiseLabel->setEnabled(false);
         ui->runAnalytics->setEnabled(false);
         ui->runAnalyticsAfterLabel->setEnabled(false);
         ui->threadCount->setEnabled(false);
         ui->threadCountLabel->setEnabled(false);
     }
 
-    ui->points->setDisabled(true);
+    ui->points->setEnabled(false);
+    ui->pointsLabel->setEnabled(false);
 }

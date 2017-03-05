@@ -105,6 +105,7 @@ void FlowDetecter::run() {
                                                                      .arg(resString).arg(profileString));
 
     if (trackImpulses) {
+        double noise = calculateNoise(res);
         bool forceStop = false;
         for (double i = start + maximumAt; i < start + 180 / data.oneStep; i += period / data.oneStep)
             if (maximum * sensitivity < res[int(i + 0.5)])
@@ -116,7 +117,7 @@ void FlowDetecter::run() {
                     impulseDialog->setWindowTitle("Found big impulse!");
 
                     QVBoxLayout *layout = new QVBoxLayout(impulseDialog);
-                    layout->addWidget(new QLabel("Found big impulse at point " + QString::number(int(i + 0.5)) +
+                    layout->addWidget(new QLabel("Found big impulse at point " + QString::number(int(i + 0.5)) + " on SNR " + QString::number(res[int(i + 0.5)] / noise) +
                                                  "\n" + QString::number(res[int(i+0.5)]/maximum) + " times bigger than average impulse"));
                     layout->addWidget(drawer);
                     layout->addWidget(buttons);
@@ -157,4 +158,17 @@ QVector<double> FlowDetecter::applyDispersion() {
             res[i] += data.data[module][j][ray][i];
 
     return res;
+}
+
+double FlowDetecter::calculateNoise(const QVector<double> &r) {
+    QVector<double> v = r;
+    sort(v.begin(), v.end());
+    double noise = 0;
+    for (int i = v.size() * 0.1; i < v.size() * 0.9; i++)
+        noise += pow(v[i]-v[v.size()/2], 2);
+
+    noise /= (v.size() * 0.9 - v.size() * 0.1);
+    noise = sqrt(noise);
+
+    return noise;
 }

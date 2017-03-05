@@ -34,6 +34,7 @@ class FlowDetecter: public QObject
     Data data;
     QString fileName;
 
+    double calculateNoise(const QVector<double> &r);
     QVector<double> applyDispersion();
 };
 

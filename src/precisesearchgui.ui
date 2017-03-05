@@ -209,7 +209,7 @@
          <item>
           <widget class="QRadioButton" name="preciseSearch">
            <property name="text">
-            <string>Prec&amp;ise search</string>
+            <string>P&amp;recise search</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -324,7 +324,7 @@
                </sizepolicy>
               </property>
               <property name="minimum">
-               <number>10</number>
+               <number>2</number>
               </property>
               <property name="maximum">
                <number>99</number>

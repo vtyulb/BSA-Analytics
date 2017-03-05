@@ -5,11 +5,17 @@
 #include <pulsarworker.h>
 #include <spectredrawer.h>
 
-#include <QMessageBox>
-#include <QFileDialog>
 #include <QClipboard>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QEventLoop>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QSettings>
+#include <QVBoxLayout>
 
 using std::max;
+using std::min;
 using std::sort;
 
 FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses, int sensitivity,
@@ -37,13 +43,18 @@ void FlowDetecter::run() {
         for (int i = 0; i < data.npoints; i++)
             data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100;
 
+    const int subtractStep = 5 / data.oneStep;
+    for (int i = 0; i < data.npoints - subtractStep / data.oneStep; i += subtractStep)
+        for (int channel = 0; channel < data.channels; channel++) {
+            float mn = 1e+100;
+            for (int k = i; k < i + subtractStep; k++)
+                mn = min(mn, data.data[module][channel][ray][k]);
+
+            for (int k = i; k < i + subtractStep; k++)
+                data.data[module][channel][ray][k] -= mn;
+        }
+
     res = applyDispersion();
-    const int subtractStep = 17 / data.oneStep;
-    for (int i = 0; i < res.size() - subtractStep; i += subtractStep) {
-        PulsarWorker::subtract(res.data() + i, subtractStep);
-        for (int channel = 0; channel < data.channels; channel++)
-            PulsarWorker::subtract(data.data[module][channel][ray] + i, subtractStep);
-    }
 
     int start = 0;
     while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > 90)
@@ -94,45 +105,34 @@ void FlowDetecter::run() {
                                                                      .arg(resString).arg(profileString));
 
     if (trackImpulses) {
+        bool forceStop = false;
         for (double i = start + maximumAt; i < start + 180 / data.oneStep; i += period / data.oneStep)
-            if (maximum * sensitivity < res[int(i + 0.5)]) {
-
-                /*double v1 = data.fbands[0];
-                double v2 = data.fbands[1];
-
-                bool stop = false;
-
-                for (int k = 0; k < data.channels; k++) {
-                    int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dispersion * k / data.oneStep + 0.5);
-                    double v = data.data[module][k][ray][int(i + 0.5) + dt];
-                    if (v > res[int(i + 0.5)] / data.channels * 10)
-                        stop = true;
-                }
-
-                if (stop)
-                    continue;*/
-
-                static bool forceStop = false;
+            if (maximum * sensitivity < res[int(i + 0.5)])
                 if (!forceStop) {
-                    SpectreDrawer drawer;
-                    drawer.drawSpectre(module, ray, data, QTime::fromString(StarTime::StarTime(data, i), "HH:mm:ss"), 100500, i);
+                    SpectreDrawer *drawer = new SpectreDrawer;
+                    QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Close);
+                    QDialog *impulseDialog = new QDialog;
+                    impulseDialog->restoreGeometry(QSettings().value("ImpulseDialogGeometry").toByteArray());
+                    impulseDialog->setWindowTitle("Found big impulse!");
 
-                    QMessageBox question(0);
-                    question.setWindowModality(Qt::NonModal);
-                    question.setWindowTitle("Found big impulse!");
-                    question.setText("Found big impulse at point " + QString::number(int(i + 0.5)));
-//                    question.addButton(QString("Continue"), QMessageBox::AcceptRole);
-//                    question.addButton(QString("Stop"), QMessageBox::RejectRole);
-                    question.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-                    question.setModal(false);
+                    QVBoxLayout *layout = new QVBoxLayout(impulseDialog);
+                    layout->addWidget(new QLabel("Found big impulse at point " + QString::number(int(i + 0.5)) +
+                                                 "\n" + QString::number(res[int(i+0.5)]/maximum) + " times bigger than average impulse"));
+                    layout->addWidget(drawer);
+                    layout->addWidget(buttons);
 
-                    int res = question.exec();
+                    QObject::connect(buttons, SIGNAL(accepted()), impulseDialog, SLOT(accept()));
+                    QObject::connect(buttons, SIGNAL(rejected()), impulseDialog, SLOT(reject()));
+                    drawer->drawSpectre(module, ray, data, QTime::fromString(StarTime::StarTime(data, i), "HH:mm:ss"), 100500, i);
 
-                    if (res != QMessageBox::Ok)
-                        break;
+                    if (impulseDialog->exec() == QDialog::Rejected)
+                        forceStop = true;
+
+                    QSettings().setValue("ImpulseDialogGeometry", impulseDialog->saveGeometry());
+                    delete impulseDialog;
                 }
-            }
     }
+
     data.releaseData();
 }
 

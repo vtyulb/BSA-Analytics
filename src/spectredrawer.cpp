@@ -153,6 +153,7 @@ QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data)
     const int offset = 50;
 
     QImage image(matrix[0].size() * nrm + offset, matrix.size() * nrm, QImage::Format_ARGB32);
+    ui->drawer->setMinimumSize(image.width(), image.height());
     QPainter p(&image);
     p.fillRect(0, 0, image.width(), image.height(), Qt::white);
 

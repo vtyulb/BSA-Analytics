@@ -8,6 +8,7 @@
 #include <QUrl>
 #include <QProcess>
 #include <QFileDialog>
+#include <QSettings>
 
 #include <reader.h>
 #include <pulsarworker.h>
@@ -17,6 +18,16 @@
 #include <algorithm>
 
 using std::min;
+
+SpectreDrawer::SpectreDrawer() {
+    restoreGeometry(QSettings().value("SpectreGeometry").toByteArray());
+    setAttribute(Qt::WA_DeleteOnClose);
+}
+
+SpectreDrawer::~SpectreDrawer() {
+    QSettings().setValue("SpectreGeometry", saveGeometry());
+    data.releaseData();
+}
 
 QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period, int startPoint) {
     int start = startPoint + 1;
@@ -167,8 +178,4 @@ void SpectreDrawer::saveAs() {
     QString savePath = QFileDialog::getSaveFileName(this, "Spectre");
     if (savePath != "")
         ui->drawer->spectre.save(savePath);
-}
-
-SpectreDrawer::~SpectreDrawer() {
-    data.releaseData();
 }

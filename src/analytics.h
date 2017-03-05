@@ -75,6 +75,7 @@ private:
     void applyDifferentMaximumsFilter();
 
     void preciseDataMode();
+    void compressLayout();
 
     void preCalc();
     void loadKnownPulsars();
@@ -97,6 +98,9 @@ private slots:
     void dispersionPlot();
     void dispersionRemember();
     void dispersionMplus();
+
+    void profileRemember();
+    void profileMplus();
 
     void addPulsarCatalog();
     void showInfo();

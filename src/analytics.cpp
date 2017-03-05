@@ -48,6 +48,9 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->dispersionM, SIGNAL(clicked()), this, SLOT(dispersionMplus()));
     QObject::connect(ui->dispersionRemember, SIGNAL(clicked()), this, SLOT(dispersionRemember()));
 
+    QObject::connect(ui->profileRemember, SIGNAL(clicked()), this, SLOT(profileRemember()));
+    QObject::connect(ui->profileM, SIGNAL(clicked()), this, SLOT(profileMplus()));
+
     QObject::connect(ui->fourierBlockNo, SIGNAL(valueChanged(int)), this, SLOT(actualFourierDataChanged()));
     QObject::connect(ui->fourierLoad, SIGNAL(clicked()), this, SLOT(loadFourierData()));
     QObject::connect(ui->fourierCalculateCaches, SIGNAL(clicked()), this, SLOT(calculateCaches()));
@@ -65,9 +68,10 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     if (fourier) {
         Settings::settings()->setFourierAnalytics(true);
-        ui->groupBox_2->hide();
         ui->groupBox->hide();
+        ui->groupBox_2->hide();
         ui->groupBox_4->hide();
+        ui->groupBox_7->hide();
         ui->fileNames->hide();
         ui->fourierShortGrayZone->setDisabled(true);
 
@@ -92,6 +96,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     this->restoreGeometry(QSettings().value("AnalyticsGeometry").toByteArray());
 
+    compressLayout();
     show();
     init();
 
@@ -537,7 +542,7 @@ void Analytics::dispersionMplus() {
     Data data = dispersionGenerateData();
     QVector<double> dt = Settings::settings()->dispersionData();
     if (!dt.size()) {
-        QMessageBox::warning(this, "error", "Memory is not filled now");
+        QMessageBox::warning(this, "Error", "Memory is not filled");
         return;
     }
 
@@ -548,6 +553,35 @@ void Analytics::dispersionMplus() {
     }
 
     Settings::settings()->setDispersionData(dt);
+
+    window->regenerate(data);
+}
+
+void Analytics::profileRemember() {
+    Data data = Settings::settings()->lastData();
+    QVector<double> dt;
+    for (int i = 0; i < data.npoints; i++)
+        dt.push_back(data.data[0][0][0][i]);
+
+    Settings::settings()->setProfileData(dt);
+}
+
+void Analytics::profileMplus() {
+    Data data = Settings::settings()->lastData();
+    data.fork();
+    QVector<double> dt = Settings::settings()->profileData();
+    if (!dt.size()) {
+        QMessageBox::warning(this, "Error", "Memory is not filled");
+        return;
+    }
+
+    for (int i = 0; i < std::min(data.npoints, dt.size()); i++) {
+        double tmp = dt[i];
+        dt[i] += data.data[0][0][0][i];
+        data.data[0][0][0][i] += tmp;
+    }
+
+    Settings::settings()->setProfileData(dt);
 
     window->regenerate(data);
 }
@@ -1097,6 +1131,24 @@ void Analytics::oneWindow() {
     window->showMaximized();
     window->addWidgetToMainLayout(this, list);
     window->show();
+}
+
+void Analytics::compressLayout() {
+#ifdef Q_OS_LINUX
+    ui->groupBox->layout()->setSpacing(1);
+    ui->groupBox_2->layout()->setSpacing(1);
+    ui->groupBox_3->layout()->setSpacing(1);
+    ui->groupBox_4->layout()->setSpacing(1);
+    ui->groupBox_5->layout()->setSpacing(1);
+    ui->groupBox_6->layout()->setSpacing(1);
+    ui->groupBox_7->layout()->setSpacing(1);
+    ui->widget->layout()->setSpacing(1);
+    ui->widget_4->layout()->setSpacing(1);
+    ui->widget_7->layout()->setSpacing(1);
+    ui->widget_10->layout()->setSpacing(1);
+    ui->gridLayout->setSpacing(1);
+    layout()->setSpacing(1);
+#endif
 }
 
 Analytics::~Analytics() {

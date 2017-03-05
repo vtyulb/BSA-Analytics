@@ -46,6 +46,7 @@ NativeDrawer::~NativeDrawer() {
 
 void NativeDrawer::setData(const Data &newData) {
     data = newData;
+    Settings::settings()->setLastData(data);
     if (data.modules == 1 && data.channels == 1 && data.rays == 1 && data.npoints < 15000) {
         double sigma = data.sigma;
         data.fork();

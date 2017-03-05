@@ -204,6 +204,14 @@ QVector<double> Settings::dispersionData() {
     return dispersionPlotData;
 }
 
+void Settings::setProfileData(const QVector<double> &data) {
+    profilePlotData = data;
+}
+
+QVector<double> Settings::profileData() {
+    return profilePlotData;
+}
+
 void Settings::setLastData(const Data &d) {
     _lastData = d;
     if (sourceMode())

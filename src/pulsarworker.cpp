@@ -11,7 +11,7 @@
 using std::min;
 using std::max;
 
-PulsarWorker::PulsarWorker(int module, int ray, int D, Data data, bool sigmaCut):
+PulsarWorker::PulsarWorker(int module, int ray, double D, Data data, bool sigmaCut):
     QObject(),
     QRunnable(),
     finished(false),

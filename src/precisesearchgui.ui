@@ -94,19 +94,6 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QSpinBox" name="dispersion">
-     <property name="minimum">
-      <number>-1</number>
-     </property>
-     <property name="maximum">
-      <number>999</number>
-     </property>
-     <property name="value">
-      <number>-1</number>
-     </property>
-    </widget>
-   </item>
    <item row="5" column="0">
     <widget class="QLabel" name="label_6">
      <property name="text">
@@ -361,6 +348,22 @@
     <widget class="QCheckBox" name="runAnalytics">
      <property name="text">
       <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QDoubleSpinBox" name="dispersion">
+     <property name="decimals">
+      <number>1</number>
+     </property>
+     <property name="minimum">
+      <double>-1.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>999.899999999999977</double>
+     </property>
+     <property name="value">
+      <double>-1.000000000000000</double>
      </property>
     </widget>
    </item>

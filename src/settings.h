@@ -43,7 +43,7 @@ class Settings {
         bool longRoads();
         bool periodTester();
         QProgressBar *getProgressBar();
-        int dispersion();
+        double dispersion();
         QVector<double> dispersionData();
         QVector<double> profileData();
         Data lastData();
@@ -79,7 +79,7 @@ class Settings {
         void setPeriod(double);
         void setTime(QTime);
         void setNoMultiplePeriods(bool);
-        void setDispersion(int);
+        void setDispersion(double);
         void setDispersionData(const QVector<double>&);
         void setProfileData(const QVector<double>&);
         void setLastData(const Data&);
@@ -114,7 +114,7 @@ class Settings {
         bool _longRoads;
         QTime _time;
         double _period;
-        int _dispersion;
+        double _dispersion;
         bool _fourierAnalytics;
         double _fourierStepConstant;
         int _fourierSpectreSize;

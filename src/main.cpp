@@ -274,6 +274,9 @@ void pulsarEngine(int argc, char **argv) {
         if (runAnalyticsAfter) {
             l.clear();
             l << "--analytics" << output;
+            if (Settings::settings()->lowMemory())
+                l << "--low-memory";
+
             qDebug() << l;
             QProcess::startDetached(qApp->arguments().first(), l);
         } else {

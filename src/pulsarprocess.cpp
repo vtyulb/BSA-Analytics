@@ -48,14 +48,14 @@ void PulsarProcess::run() {
         pool->start(workers[0]);
     } else {
         int mx = 200;
-        if (Settings::settings()->dispersion() != -1)
+        if (Settings::settings()->dispersion() > -0.5)
             mx = Settings::settings()->dispersion() + 6;
 
         int step = 1;
         if (data.oneStep > 0.05)
             step = 3;
 
-        for (int D = max(Settings::settings()->dispersion() - 6, 0); D < mx; D += step) {
+        for (double D = max(Settings::settings()->dispersion() - 6, 0.0); D < mx; D += step) {
             workers.push_back(new PulsarWorker(Settings::settings()->module(), Settings::settings()->ray(), D, data));
             workers[workers.size() - 1]->setAutoDelete(false);
             pool->start(workers[workers.size() - 1]);

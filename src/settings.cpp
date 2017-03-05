@@ -45,11 +45,11 @@ bool Settings::longRoads() {
     return _longRoads;
 }
 
-void Settings::setDispersion(int d) {
+void Settings::setDispersion(double d) {
     _dispersion = d;
 }
 
-int Settings::dispersion() {
+double Settings::dispersion() {
     return _dispersion;
 }
 

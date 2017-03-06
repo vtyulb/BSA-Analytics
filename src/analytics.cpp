@@ -316,7 +316,7 @@ void Analytics::apply(bool fullFilters) {
     if (fourier) {
         QSet<QString> filesUsed;
         for (int i = 0; i < pl->size(); i++)
-            if (!pl->at(i).fourierDuplicate && pl->at(i).dispersion != -7777)
+            if (!pl->at(i).fourierDuplicate && pl->at(i).showInTable)
                 filesUsed.insert(pl->at(i).data.previousLifeName);
 
         filesUsed.remove("whitezone");
@@ -729,9 +729,8 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                         double noise = 0;                        
                         for (int channel = 0; channel < data.channels - 1; channel++)
                             for (int point = 0; point < data.npoints; point++)
-                                noise += pow(data.data[module][channel][ray][point], 2);
+                                noise += double(data.data[module][channel][ray][point])*data.data[module][channel][ray][point];
 
-                        data.sigma = -noise;
                         fourierRawNoises[module][ray].push_back(noise);
                     }
             }
@@ -757,7 +756,6 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     data.init();
                     data.releaseProtected = true;
                     data.previousLifeName = "file " + fourierData[j].name + " from " + fourierData[j].previousLifeName;
-                    data.sigma = fourierData[j].sigma;
 
                     if (longData) {
                         memcpy(data.data[0][0][0], fourierData[j].data[module][0][ray], sizeof(float) * fourierSpectreSize);
@@ -780,6 +778,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     pl.filtered = true;
                     pl.data = data;
                     pl.valid = true;
+                    pl.sigma = fourierRawNoises[module][ray][j];
                     pl.findFourierData(ui->fourierPointsToSkip->value());
                     pl.data.sigma = pl.firstPoint;
                     QTime time(0, 0, 0);
@@ -805,7 +804,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                 (*pulsars)[i].snr = -42;
         }
 
-        std::sort(pulsars->data(), pulsars->data() + pulsars->size());
+        std::sort(pulsars->begin(), pulsars->end());
 
         applyFourierFilters();
 
@@ -872,14 +871,14 @@ void Analytics::applyFourierFilters() {
         }
 
     fourierGood.resize(pulsars->size());
-    fourierGood.fill(!ui->fourierPeak->isChecked());
+    fourierGood.fill(true);
     if (ui->fourierPeak->isChecked()) {
         int start = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() - 2;
         int end = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() + 3;
         for (int i = 0; i < pulsars->size(); i++) {
             for (int j = start; j < end; j++)
-                if ((pulsars->at(i).data.data[0][0][0][j] - pulsars->at(i).fourierAverage) / pulsars->at(i).fourierRealNoise > ui->fourierPeakSNR->value())
-                    fourierGood[i] = true;
+                if ((pulsars->at(i).data.data[0][0][0][j] - pulsars->at(i).fourierAverage) / pulsars->at(i).fourierRealNoise < ui->fourierPeakSNR->value())
+                    fourierGood[i] = false;
         }
     }
 
@@ -904,26 +903,24 @@ void Analytics::applyFourierFilters() {
 
     if (ui->fourierSelectBest->isChecked()) {
         int top = ui->fourierBestNumber->value();
-        if (top < 1)
-            top = 1;
-        if (top > 500)
-            top = 500;
-
         for (int i = 0; i < pulsars->size(); i++) {
-            double eqt = fourierRawNoises[pulsars->at(i).module - 1]
-                                [pulsars->at(i).ray - 1][top - 1];
+            int module = pulsars->at(i).module - 1;
+            int ray = pulsars->at(i).ray - 1;
+            double eqt = fourierRawNoises[module][ray]
+                                [std::min(top - 1,
+                                          fourierRawNoises[module][ray].size() - 1)];
 
-            if (-pulsars->at(i).data.sigma <= eqt)
-                fourierGood[i] = true;
-            else
+            if (pulsars->at(i).sigma > eqt) {
                 fourierGood[i] = false;
+                (*pulsars)[i].dispersion = -55;
+            }
         }
     }
 
     if (ui->fourierGoodLookingSpectresOnly->isChecked()) {
         for (int i = 0; i < pulsars->size(); i++) {
             fourierGood[i] &= pulsars->at(i).snr > 0;
-            if (!fourierGood[i] || pulsars->at(i).snr == -666 || pulsars->at(i).snr == -42)
+            if ((!fourierGood[i] && pulsars->at(i).dispersion >= 0) || pulsars->at(i).snr == -666 || pulsars->at(i).snr == -42)
                 (*pulsars)[i].dispersion = -7777;
         }
     }
@@ -933,8 +930,7 @@ void Analytics::applyFourierFilters() {
         if (ui->fourierPeak->isChecked())
             (*pulsars)[i].dispersion = 0;
 
-        if (ui->fourierSelectBest->isChecked())
-            (*pulsars)[i].dispersion = fourierGood[i];
+        (*pulsars)[i].showInTable = fourierGood[i];
 
         if (fourierGood[i] && !pulsars->at(i).fourierDuplicate) {
             int module = pulsars->at(i).module - 1;
@@ -971,6 +967,7 @@ void Analytics::applyFourierFilters() {
             pl.filtered = false;
             pl.data = data;
             pl.valid = true;
+            pl.showInTable = true;
             if (pulsars->size())
                 pl.nativeTime = pulsars->last().nativeTime;
 
@@ -979,7 +976,7 @@ void Analytics::applyFourierFilters() {
             whiteZone->push_front(pl);
 
             if (ui->fourierAllPeaks->isChecked())
-                while (pl.snr > std::max(ui->SNR->value(), 5.0)) {
+                while (pl.snr > std::max(ui->SNR->value(), FOURIER_PULSAR_LEVEL_SNR)) {
                     pl.data.fork();
                     pl.data.releaseProtected = true;
                     pl.snr = -777;
@@ -1166,6 +1163,7 @@ void Analytics::compressLayout() {
     ui->widget_7->layout()->setSpacing(1);
     ui->widget_10->layout()->setSpacing(1);
     ui->gridLayout->setSpacing(1);
+    ui->knownPulsarsAndNoises->layout()->setSpacing(1);
     layout()->setSpacing(1);
 #endif
 }

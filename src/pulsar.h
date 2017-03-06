@@ -31,7 +31,9 @@ struct Pulsar {
     int firstPoint;
     double period; // in seconds;
     double snr;
+    double sigma;
     bool filtered;
+    bool showInTable;
 
     bool badNoiseKnown = false;
     bool badNoiseRes;

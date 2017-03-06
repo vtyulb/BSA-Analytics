@@ -74,7 +74,7 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
             for (int j = 0; j < columnCount(); j++)
                 item(i, j)->setBackgroundColor(QColor("lightgray"));
 
-        if (pulsars->at(i).dispersion == -7777)
+        if (!pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics())
             for (int j = 0; j < columnCount(); j++)
                 item(i, j)->setBackgroundColor(QColor(200, 100, 100));
 
@@ -90,7 +90,7 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
             if (i % 100 == 0)
                 emit progress(90 + 5 * i / pulsars->size());
 
-            if (!(pulsars->at(i).dispersion == -7777)) {
+            if (pulsars->at(i).showInTable) {
                 for (int j = 0; j < columnCount(); j++)
                     setItem(v, j, new QTableWidgetItem(*(item(i, j))));
 

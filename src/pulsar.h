@@ -17,6 +17,7 @@ const double INTERVAL = 17;
 const double MINIMUM_PERIOD = 0.5;
 const double MAXIMUM_PERIOD = 10;
 const double PERIOD_STEP = 0.01;
+const double FOURIER_PULSAR_LEVEL_SNR = 4.0;
 
 const int interval = 180;
 const int CATEGORIES = 4;
@@ -148,7 +149,7 @@ struct Pulsar {
                 firstPoint = i + 1;
                 period = Settings::settings()->getFourierSpectreSize() * 2 / double(i + 1) * Settings::settings()->getFourierStepConstant();
 
-                if (snr > 5 && data.data[0][0][0][i + 1] < mx && data.data[0][0][0][i - 1] < mx)
+                if (snr > FOURIER_PULSAR_LEVEL_SNR && data.data[0][0][0][i + 1] < mx && data.data[0][0][0][i - 1] < mx)
                     break;
             }
     }

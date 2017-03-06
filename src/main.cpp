@@ -191,7 +191,7 @@ void pulsarEngine(int argc, char **argv) {
         } else if (strcmp(argv[i], "--no-multiple-periods") == 0)
             Settings::settings()->setNoMultiplePeriods(true);
         else if (strcmp(argv[i], "--dispersion") == 0)
-            Settings::settings()->setDispersion(next.toInt());
+            Settings::settings()->setDispersion(next.toDouble());
         else if (strcmp(argv[i], "--precise-packet") == 0) {
             precisePacket(argv[0], next);
             exit(0);

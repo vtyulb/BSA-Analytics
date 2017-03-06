@@ -354,13 +354,13 @@
    <item row="4" column="1">
     <widget class="QDoubleSpinBox" name="dispersion">
      <property name="decimals">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="minimum">
       <double>-1.000000000000000</double>
      </property>
      <property name="maximum">
-      <double>999.899999999999977</double>
+      <double>999.000000000000000</double>
      </property>
      <property name="value">
       <double>-1.000000000000000</double>

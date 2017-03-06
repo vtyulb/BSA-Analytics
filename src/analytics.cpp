@@ -118,9 +118,10 @@ void Analytics::init() {
     loadPulsars(folder);
     loadKnownPulsars();
     if (!fourier) {
-        apply();
         if (pulsars->size() <= 200)
             preciseDataMode();
+
+        apply();
     }
 
     QObject::connect(ui->fileNames, SIGNAL(currentIndexChanged(int)), this, SLOT(apply()));
@@ -283,7 +284,13 @@ void Analytics::apply(bool fullFilters) {
 
     if (!pl->size()) {
         QMessageBox::warning(this, "Houston... We've Got a Problem", "There are no such pulsars");
-        return;
+        Pulsar p;
+        p.data.npoints = 1;
+        p.data.modules = 1;
+        p.data.channels = 1;
+        p.data.rays = 1;
+        p.data.init();
+        pl->push_back(p);
     }
 
     if (!fourier)
@@ -996,6 +1003,7 @@ void Analytics::calculateCaches() {
     if (calculating) {
         calculating = false;
         ui->fourierCalculateCaches->setText("Stopping...");
+        ui->fourierCalculateCaches->setEnabled(false);
         return;
     } else
         calculating = true;
@@ -1010,6 +1018,7 @@ void Analytics::calculateCaches() {
     }
 
     ui->fourierCalculateCaches->setText("Calculate caches");
+    ui->fourierCalculateCaches->setEnabled(true);
 }
 
 void Analytics::parseFourierAllowedDates() {
@@ -1068,7 +1077,7 @@ void Analytics::fourierFullGrayZone() {
             pl.fourierDuplicate = true;
             pulsars->push_back(pl);
 
-            while (pl.snr > 5.0) {
+            while (pl.snr > FOURIER_PULSAR_LEVEL_SNR) {
                 pl.data.releaseProtected = true;
                 pl.snr = -777;
                 pl.findFourierData(pl.firstPoint + (3 + longData * 10));
@@ -1102,6 +1111,9 @@ void Analytics::preciseDataMode() {
     ui->multiplePicks->setEnabled(false);
     ui->strangeData->setEnabled(false);
     ui->differentNoise->setEnabled(false);
+
+    ui->knownPulsars->setChecked(false);
+    ui->knownNoise->setChecked(false);
 }
 
 void Analytics::oneWindow() {

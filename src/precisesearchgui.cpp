@@ -121,10 +121,12 @@ void PreciseSearchGui::determineSearchMode() {
     ui->threadCount->setEnabled(true);
     ui->threadCountLabel->setEnabled(true);
     ui->fluxDensityWidget->setEnabled(false);
+    ui->dispersion->setDecimals(0);
 
     if (ui->singlePeriod->isChecked()) {
         ui->skipMultiplePeriods->setEnabled(false);
         ui->skipMultiplePeriodsLabel->setEnabled(false);
+        ui->dispersion->setDecimals(1);
     }
 
     if (ui->spectre->isChecked()) {

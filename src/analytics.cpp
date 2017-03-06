@@ -211,6 +211,7 @@ void Analytics::loadPulsars(QString dir) {
     }
 
     pulsarsEnabled.resize(pulsars->size());
+    ui->currentStatus->setText(QString("Loaded %1 pulsar files").arg(totalFilesLoaded));
 }
 
 void Analytics::apply(bool fullFilters) {
@@ -324,8 +325,10 @@ void Analytics::apply(bool fullFilters) {
         ui->currentStatus->setText(QString("Loaded %1 files").arg(totalFilesLoaded));
 
     resize(currentSize);
-    list->setEnabled(true);
-    list->setFocus();
+    if (fourier) {
+        list->setEnabled(true);
+        list->setFocus();
+    }
     window->update();
 }
 
@@ -594,6 +597,8 @@ void Analytics::profileMplus() {
 }
 
 void Analytics::addPulsarCatalog() {
+    if (list)
+        list->setEnabled(false);
     QString catalog = QFileDialog::getExistingDirectory(this, QString("Pulsar directory"), QSettings().value("openPath").toString());
     if (catalog != "") {
         QSettings().setValue("openPath", MainWindow::nativeDecodeLastPath(catalog));
@@ -603,6 +608,8 @@ void Analytics::addPulsarCatalog() {
         progressBar->hide();
     }
 
+    list->setEnabled(true);
+    list->setFocus();
     window->update();
 }
 

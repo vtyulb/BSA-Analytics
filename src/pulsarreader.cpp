@@ -33,6 +33,7 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
     QVector<Pulsar> &res = *data;
 
     bool filtered = false;
+    bar->show();
 
     while (!file.atEnd()) {
         QByteArray line = file.readLine();
@@ -42,7 +43,7 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
             QDataStream stream(&file);
 
             for (int i = 0; i < res.size(); i++) {
-                if (bar && i % 5000 == 0) {
+                if (bar && i % 100 == 0) {
                     bar->setValue(file.pos() * 100 / file.size());
                     qApp->processEvents();
                 }
@@ -102,6 +103,8 @@ Pulsars PulsarReader::ReadPulsarFile(QString name, QProgressBar *bar) {
             res.push_back(pulsar);
         }
     }
+
+    bar->hide();
 
     return data;
 }

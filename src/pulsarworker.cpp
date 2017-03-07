@@ -53,7 +53,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         Settings::settings()->getTime().secsTo(QTime::fromString(StarTime::StarTime(data, end)));
 
         if (Settings::settings()->singlePeriod())
-            end = start + 1;
+            end = start + 1 + Settings::settings()->period() / data.oneStep;
     }
 
 

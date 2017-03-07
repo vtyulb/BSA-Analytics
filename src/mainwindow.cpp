@@ -58,6 +58,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
 
+    Settings::settings()->setMainWindow(this);
     Settings::settings()->setProgressBar(progress);
     setAttribute(Qt::WA_DeleteOnClose);
 

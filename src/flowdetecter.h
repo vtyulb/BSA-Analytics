@@ -36,6 +36,7 @@ class FlowDetecter: public QObject
 
     double calculateNoise(const QVector<double> &r);
     QVector<double> applyDispersion();
+    void showProfile(const QVector<double>&);
 };
 
 #endif // FLOWDETECTER_H

@@ -20,6 +20,7 @@ Settings::Settings() {
     _fourierStepConstant = 0.1;
     _fourierSpectreSize = 1024;
     _fourierHighGround = true;
+    _sourceMode = NoSourceMode,
     _stairStatus = NoStair;
     bar = NULL;
 }
@@ -327,4 +328,12 @@ bool Settings::loadStair() {
 
 QString Settings::stairFileName() {
     return _stairFileName;
+}
+
+void Settings::setMainWindow(MainWindow *window) {
+    _mainWindow = window;
+}
+
+MainWindow *Settings::getMainWindow() {
+    return _mainWindow;
 }

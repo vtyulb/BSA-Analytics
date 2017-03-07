@@ -8,6 +8,8 @@
 
 #include <data.h>
 
+class MainWindow;
+
 enum Stair {
     NoStair = 0,
     SettingStair = 1,
@@ -56,6 +58,7 @@ class Settings {
         double getFourierStepConstant();
         int getFourierSpectreSize();
         bool getFourierHighGround();
+        MainWindow *getMainWindow();
 
         double getStairHeight(int module, int ray, int channel);
         SourceMode sourceMode();
@@ -88,6 +91,8 @@ class Settings {
         void setFourierStepConstant(double);
         void setFourierSpectreSize(int);
         void setFourierHighGround(bool);
+
+        void setMainWindow(MainWindow*);
 
         void setStairStatus(Stair);
         void setSourceMode(SourceMode);
@@ -126,6 +131,7 @@ class Settings {
         QVector<double> profilePlotData;
         QVector<QVector<QVector<double> > > stairs;
         Data _lastData;
+        MainWindow *_mainWindow;
         QProgressBar *bar;
 };
 

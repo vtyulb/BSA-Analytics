@@ -4,6 +4,7 @@
 #include <startime.h>
 #include <pulsarworker.h>
 #include <spectredrawer.h>
+#include <mainwindow.h>
 
 #include <QClipboard>
 #include <QDialog>
@@ -35,7 +36,10 @@ FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool
 
 void FlowDetecter::run() {
     Reader r;
+    Settings::settings()->getProgressBar()->show();
+    QObject::connect(&r, SIGNAL(progress(int)), Settings::settings()->getProgressBar(), SLOT(setValue(int)));
     data = r.readBinaryFile(fileName);
+    Settings::settings()->getProgressBar()->setValue(100);
 
     Settings::settings()->loadStair();
 
@@ -46,12 +50,14 @@ void FlowDetecter::run() {
     const int subtractStep = 5 / data.oneStep;
     for (int i = 0; i < data.npoints - subtractStep / data.oneStep; i += subtractStep)
         for (int channel = 0; channel < data.channels; channel++) {
-            float mn = 1e+100;
+            QVector<float> tmp;
             for (int k = i; k < i + subtractStep; k++)
-                mn = min(mn, data.data[module][channel][ray][k]);
+                tmp.push_back(data.data[module][channel][ray][k]);
+
+            std::sort(tmp.begin(), tmp.end());
 
             for (int k = i; k < i + subtractStep; k++)
-                data.data[module][channel][ray][k] -= mn;
+                data.data[module][channel][ray][k] -= (tmp[tmp.size() * 0.8] + tmp[5]) / 2;
         }
 
     res = applyDispersion();
@@ -76,9 +82,11 @@ void FlowDetecter::run() {
             maximum = result / count;
             maximumAt = j;
         }
-        profile.push_back(result / count);
-        profileString += QString::number(result / count) + " ";
+        profile.push_back(result / count / (data.channels - 1));
+        profileString += QString::number(result / count / (data.channels - 1)) + " ";
     }
+
+    showProfile(profile);
 
     double v1 = data.fbands[0];
     double v2 = data.fbands[1];
@@ -171,4 +179,17 @@ double FlowDetecter::calculateNoise(const QVector<double> &r) {
     noise = sqrt(noise);
 
     return noise;
+}
+
+void FlowDetecter::showProfile(const QVector<double> &profile) {
+    Data data;
+    data.modules = 1;
+    data.rays = 1;
+    data.channels = 1;
+    data.npoints = profile.size();
+    data.init();
+    for (int i = 0; i < profile.size(); i++)
+        data.data[0][0][0][i] = profile[i];
+
+    Settings::settings()->getMainWindow()->regenerate(data);
 }

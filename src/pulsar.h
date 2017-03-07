@@ -153,7 +153,7 @@ struct Pulsar {
         float currentMin = 1e+10;
         for (int i = startPoint; i < ls; i++) {
             float mx = data.data[0][0][0][i];
-            if (i > 10)
+            if (i > 20)
                 currentMin = std::min(currentMin, mx);
 
             snr = (mx-std::max(avr, currentMin+float(noise)))/noise;

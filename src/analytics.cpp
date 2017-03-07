@@ -232,8 +232,7 @@ void Analytics::apply(bool fullFilters) {
         applyFourierFilters();
 
     pulsarsEnabled.resize(pulsars->size());
-    for (int i = 0; i < pulsars->size(); i++)
-        pulsarsEnabled[i] = true;
+    pulsarsEnabled.fill(true);
 
     if (ui->periodRangeCheckBox->isChecked())
         applyPeriodRangeFilter();
@@ -976,7 +975,7 @@ void Analytics::applyFourierFilters() {
             whiteZone->push_front(pl);
 
             if (ui->fourierAllPeaks->isChecked())
-                while (pl.snr > std::max(ui->SNR->value(), FOURIER_PULSAR_LEVEL_SNR)) {
+                while (pl.snr > FOURIER_PULSAR_LEVEL_SNR) {
                     pl.data.fork();
                     pl.data.releaseProtected = true;
                     pl.snr = -777;

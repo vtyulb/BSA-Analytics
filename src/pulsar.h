@@ -156,7 +156,7 @@ struct Pulsar {
             if (i > 10)
                 currentMin = std::min(currentMin, mx);
 
-            snr = (mx-std::max(avr, currentMin))/noise;
+            snr = (mx-std::max(avr, currentMin+float(noise)))/noise;
             if (snr > FOURIER_PULSAR_LEVEL_SNR) {
                 firstPoint = i + 1;
                 period = Settings::settings()->getFourierSpectreSize() * 2 / double(i + 1) * Settings::settings()->getFourierStepConstant();

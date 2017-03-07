@@ -40,7 +40,7 @@ struct Pulsar {
 
     double noiseLevel;
 
-    double fourierRealNoise;
+    double fourierRealNoise = -1;
     float fourierAverage;
     bool fourierDuplicate = false;
 
@@ -113,35 +113,42 @@ struct Pulsar {
     void findFourierData(int startPoint) {
         int st = 50;
         int ls = data.npoints - 2;
-        QVector<float> ns;
-        for (int i = st; i < ls; i++)
-            ns.push_back(data.data[0][0][0][i]);
+        double noise;
+        float avr;
+        if (fourierRealNoise < 0) {
+            QVector<float> ns;
+            for (int i = st; i < ls; i++)
+                ns.push_back(data.data[0][0][0][i]);
 
-        std::sort(ns.begin(), ns.end());
-        int stt = 0;
-        int lst = ns.size() * 0.7;
+            std::sort(ns.begin(), ns.end());
+            int stt = 20;
+            int lst = ns.size() * 0.7;
 
-        float avr = ns[ns.size() * 0.5];
+            avr = ns[ns.size() * 0.5];
 
-        double noise = 0;
-        for (int i = stt; i < lst; i++)
-            noise += pow(ns[i] - avr, 2);
+            noise = 0;
+            for (int i = stt; i < lst; i++)
+                noise += pow(ns[i] - avr, 2);
 
-        noise /= (lst - stt);
-        noise = pow(noise, 0.5);
+            noise /= (lst - stt);
+            noise = pow(noise, 0.5);
 
-        noise *= 2;
+            noise *= 2;
 
-        fourierRealNoise = noise;
-        fourierAverage = avr;
+            fourierRealNoise = noise;
+            fourierAverage = avr;
 
-        noiseLevel = 0;
-        for (int i = 0; i < data.npoints; i++)
-            noiseLevel += pow(data.data[0][0][0][i]-avr, 2);
-        noiseLevel /= data.npoints;
-        noiseLevel = pow(noiseLevel, 0.5);
+            noiseLevel = 0;
+            for (int i = 0; i < data.npoints; i++)
+                noiseLevel += pow(data.data[0][0][0][i]-avr, 2);
+            noiseLevel /= data.npoints;
+            noiseLevel = pow(noiseLevel, 0.5);
 
-        dispersion = noiseLevel * 1000000;
+            dispersion = noiseLevel * 1000000;
+        } else {
+            avr = fourierAverage;
+            noise = fourierRealNoise;
+        }
 
         float currentMin = 1e+10;
         for (int i = startPoint; i < ls; i++) {

@@ -17,7 +17,7 @@ const double INTERVAL = 17;
 const double MINIMUM_PERIOD = 0.5;
 const double MAXIMUM_PERIOD = 10;
 const double PERIOD_STEP = 0.01;
-const double FOURIER_PULSAR_LEVEL_SNR = 4.0;
+const double FOURIER_PULSAR_LEVEL_SNR = 2.2;
 
 const int interval = 180;
 const int CATEGORIES = 4;
@@ -121,7 +121,7 @@ struct Pulsar {
         int stt = 0;
         int lst = ns.size() * 0.7;
 
-        float avr = ns[ns.size() * 0.35];
+        float avr = ns[ns.size() * 0.5];
 
         double noise = 0;
         for (int i = stt; i < lst; i++)
@@ -137,23 +137,28 @@ struct Pulsar {
 
         noiseLevel = 0;
         for (int i = 0; i < data.npoints; i++)
-            noiseLevel += pow(data.data[0][0][0][i], 2);
+            noiseLevel += pow(data.data[0][0][0][i]-avr, 2);
         noiseLevel /= data.npoints;
         noiseLevel = pow(noiseLevel, 0.5);
 
         dispersion = noiseLevel * 1000000;
 
-        float mx = 0;
-        for (int i = startPoint; i < ls; i++)
-            if (data.data[0][0][0][i] > mx) {
-                mx = data.data[0][0][0][i];
-                snr = (mx-avr)/noise;
+        float currentMin = 1e+10;
+        for (int i = startPoint; i < ls; i++) {
+            float mx = data.data[0][0][0][i];
+            if (i > 10)
+                currentMin = std::min(currentMin, mx);
+
+            snr = (mx-std::max(avr, currentMin))/noise;
+            if (snr > FOURIER_PULSAR_LEVEL_SNR) {
                 firstPoint = i + 1;
                 period = Settings::settings()->getFourierSpectreSize() * 2 / double(i + 1) * Settings::settings()->getFourierStepConstant();
 
                 if (snr > FOURIER_PULSAR_LEVEL_SNR && data.data[0][0][0][i + 1] < mx && data.data[0][0][0][i - 1] < mx)
                     break;
-            }
+            } else
+                snr = -555;
+        }
     }
 
     void squeeze() {

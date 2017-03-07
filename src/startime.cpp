@@ -1,6 +1,11 @@
 #include "startime.h"
+
 #include <math.h>
 #include <QDebug>
+
+#ifndef M_PI
+#define M_PI 3.141592653589793238
+#endif
 
 namespace {
     double sqr(double a) {

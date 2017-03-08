@@ -653,7 +653,9 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
         list->setDisabled(true);
 
     ui->fourierLoad->setDisabled(true);
+    ui->fourierLoadCache->setDisabled(true);
     ui->fourierLoad->setText("Loading data");
+    ui->fourierLoadCache->setText("Loading data");
 
     progressBar->show();
     ui->currentStatus->setText("Releasing previous data");
@@ -826,6 +828,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     pulsarsEnabled.resize(pulsars->size());
 
     ui->fourierLoad->setText("Data loaded");
+    ui->fourierLoadCache->setText("Data loaded");
     ui->currentStatus->setText(QString("Loaded %1 files").arg(fourierData.size()));
 
     if (!cacheOnly) {
@@ -840,7 +843,9 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
 
 void Analytics::actualFourierDataChanged() {
     ui->fourierLoad->setEnabled(true);
+    ui->fourierLoadCache->setEnabled(true);
     ui->fourierLoad->setText("Load data");
+    ui->fourierLoadCache->setText("Load cache");
 
     int t = (ui->fourierBlockNo->value() + 0.5) * fourierSpectreSize * 2 * Settings::settings()->getFourierStepConstant();
     ui->fourierTime->setText(QTime(t / 3600, t / 60 % 60, t % 60).toString("HH:mm:ss"));

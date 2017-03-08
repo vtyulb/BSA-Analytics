@@ -25,9 +25,12 @@ class PulsarList : public QTableWidget
 
         QVector<int> pulsarsIndex;
 
+        void keyPressEvent(QKeyEvent*);
         void closeEvent(QCloseEvent *);
         QSize sizeHint() const;
         QSize minimumSizeHint() const;
+
+        bool sameFile(int, int);
 
         void saveSettings();
 

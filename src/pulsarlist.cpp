@@ -3,6 +3,7 @@
 #include <pulsarreader.h>
 
 #include <QDebug>
+#include <QKeyEvent>
 #include <QTimer>
 #include <QSettings>
 #include <QTableWidget>
@@ -146,6 +147,45 @@ QSize PulsarList::sizeHint() const {
     QSize res = QTableWidget::sizeHint();
     res.setWidth(horizontalHeader()->length() + 5 + verticalHeader()->width() + verticalScrollBar()->width());
     return res;
+}
+
+void PulsarList::keyPressEvent(QKeyEvent *event) {
+    int current = selectionModel()->selection().indexes().at(0).row();
+    if ((!pulsars->at(pulsarsIndex[current]).filtered || pulsars->at(pulsarsIndex[current]).fourierDuplicate) &&
+           (rowCount() > 10))
+    {
+        if (event->key() == Qt::Key_PageDown) {
+            current++;
+            if (current >= rowCount())
+                return;
+
+            while (sameFile(current, current - 1) && current != rowCount() - 1)
+                current++;
+
+            selectRow(current);
+            event->accept();
+        } else if (event->key() == Qt::Key_PageUp) {
+            current--;
+            if (current < 0)
+                return;
+
+            while (sameFile(current, current + 1) && current)
+                current--;
+
+            selectRow(current);
+            event->accept();
+        } else
+            QTableWidget::keyPressEvent(event);
+    } else
+        QTableWidget::keyPressEvent(event);
+}
+
+bool PulsarList::sameFile(int f1, int f2) {
+    const Pulsar &p1 = pulsars->at(pulsarsIndex[f1]);
+    const Pulsar &p2 = pulsars->at(pulsarsIndex[f2]);
+    return p1.module == p2.module &&
+            p1.ray == p2.ray &&
+            p1.name == p2.name;
 }
 
 QSize PulsarList::minimumSizeHint() const {

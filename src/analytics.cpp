@@ -568,32 +568,33 @@ void Analytics::dispersionMplus() {
 }
 
 void Analytics::profileRemember() {
-    Data data = Settings::settings()->lastData();
-    QVector<double> dt;
-    for (int i = 0; i < data.npoints; i++)
-        dt.push_back(data.data[0][0][0][i]);
+    for (int i = 0; i < pulsars->size(); i++) {
+        const Data data = pulsars->at(i).data;
+        QVector<double> dt;
+        for (int i = 0; i < data.npoints; i++)
+            dt.push_back(data.data[0][0][0][i]);
 
-    Settings::settings()->setProfileData(dt);
+        Settings::settings()->setProfileData(dt, pulsars->at(i).dispersion);
+    }
 }
 
 void Analytics::profileMplus() {
-    Data data = Settings::settings()->lastData();
-    data.fork();
-    QVector<double> dt = Settings::settings()->profileData();
-    if (!dt.size()) {
-        QMessageBox::warning(this, "Error", "Memory is not filled");
-        return;
+    for (int current = 0; current < pulsars->size(); current++) {
+        QVector<double> dt = Settings::settings()->profileData(pulsars->at(current).dispersion);
+        if (!dt.size()) {
+            qDebug() << "no profile at current dispersion" << pulsars->at(current).dispersion << "found";
+            continue;
+        }
+
+        const Data &data = pulsars->at(current).data;
+        for (int i = 0; i < std::min(data.npoints, dt.size()); i++)
+            data.data[0][0][0][i] += dt[i];
     }
 
-    for (int i = 0; i < std::min(data.npoints, dt.size()); i++) {
-        double tmp = dt[i];
-        dt[i] += data.data[0][0][0][i];
-        data.data[0][0][0][i] += tmp;
-    }
+    profileRemember();
 
-    Settings::settings()->setProfileData(dt);
-
-    window->regenerate(data);
+    Data last = Settings::settings()->lastData();
+    window->regenerate(last);
 }
 
 void Analytics::addPulsarCatalog() {

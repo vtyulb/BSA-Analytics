@@ -205,12 +205,18 @@ QVector<double> Settings::dispersionData() {
     return dispersionPlotData;
 }
 
-void Settings::setProfileData(const QVector<double> &data) {
-    profilePlotData = data;
+void Settings::setProfileData(const QVector<double> &profile, int dispersion) {
+    if (dispersion < 0 || dispersion >= 200)
+        qDebug() << "error setting profile data";
+    else
+        profilePlotData[dispersion] = profile;
 }
 
-QVector<double> Settings::profileData() {
-    return profilePlotData;
+QVector<double> Settings::profileData(int dispersion) {
+    if (dispersion < 0 || dispersion >= 200)
+        qDebug() << "error checking profile data";
+    else
+        return profilePlotData[dispersion];
 }
 
 void Settings::setLastData(const Data &d) {

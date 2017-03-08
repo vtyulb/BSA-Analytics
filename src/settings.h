@@ -47,7 +47,7 @@ class Settings {
         QProgressBar *getProgressBar();
         double dispersion();
         QVector<double> dispersionData();
-        QVector<double> profileData();
+        QVector<double> profileData(int dispersion);
         Data lastData();
         int stairStatus();
 
@@ -84,7 +84,7 @@ class Settings {
         void setNoMultiplePeriods(bool);
         void setDispersion(double);
         void setDispersionData(const QVector<double>&);
-        void setProfileData(const QVector<double>&);
+        void setProfileData(const QVector<double> &profile, int dispersion);
         void setLastData(const Data&);
         void setLongRoads(bool);
         void setFourierAnalytics(bool);
@@ -128,7 +128,7 @@ class Settings {
         QString _stairFileName;
         SourceMode _sourceMode;
         QVector<double> dispersionPlotData;
-        QVector<double> profilePlotData;
+        QVector<double> profilePlotData[200];
         QVector<QVector<QVector<double> > > stairs;
         Data _lastData;
         MainWindow *_mainWindow;

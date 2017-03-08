@@ -36,7 +36,7 @@ SpectreDrawer::~SpectreDrawer() {
 QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period, int startPoint) {
     int start = startPoint + 1;
 
-    if (startPoint == -1)
+    if (startPoint == -1) {
         while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 1.5)
             if (start > data.npoints) {
                 QMessageBox::warning(this, "Error", "Time is invalid!\n"
@@ -45,6 +45,7 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
                 return QVector<double>();
             } else
                 start++;
+    }
 
 
     QVector<double> res;

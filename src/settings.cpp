@@ -213,9 +213,10 @@ void Settings::setProfileData(const QVector<double> &profile, int dispersion) {
 }
 
 QVector<double> Settings::profileData(int dispersion) {
-    if (dispersion < 0 || dispersion >= 200)
+    if (dispersion < 0 || dispersion >= 200) {
         qDebug() << "error checking profile data";
-    else
+        return QVector<double>();
+    } else
         return profilePlotData[dispersion];
 }
 

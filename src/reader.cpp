@@ -180,6 +180,8 @@ Data Reader::readBinaryFile(QString file) {
                 }
         }
 
+    emit progress(100);
+
     Settings::settings()->setLastData(data);
     return data;
 }

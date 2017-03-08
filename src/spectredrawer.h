@@ -27,11 +27,17 @@ private:
     Data data;
     int module, ray;
     double period;
+    bool addFromMem;
     QTime time;
     QVector<QVector<double> > r;
+    QVector<QVector<double> > rawRes;
 
-public slots:
+    void rotateMatrix();
+
+private slots:
     void reDraw();
+    void memPlus();
+    void mem();
     void saveAs();
 };
 

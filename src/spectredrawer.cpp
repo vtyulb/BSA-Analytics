@@ -8,6 +8,7 @@
 #include <QUrl>
 #include <QProcess>
 #include <QFileDialog>
+#include <QMessageBox>
 #include <QSettings>
 
 #include <reader.h>
@@ -19,14 +20,17 @@
 
 using std::min;
 
-SpectreDrawer::SpectreDrawer() {
+SpectreDrawer::SpectreDrawer():
+    QWidget(NULL)
+{
+    addFromMem = false;
     restoreGeometry(QSettings().value("SpectreGeometry").toByteArray());
     setAttribute(Qt::WA_DeleteOnClose);
 }
 
 SpectreDrawer::~SpectreDrawer() {
     QSettings().setValue("SpectreGeometry", saveGeometry());
-    data.releaseData();
+    delete ui;
 }
 
 QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period, int startPoint) {
@@ -34,7 +38,13 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
 
     if (startPoint == -1)
         while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 1.5)
-            start++;
+            if (start > data.npoints) {
+                QMessageBox::warning(this, "Error", "Time is invalid!\n"
+                                                    "There is no points inside data with these time.");
+                deleteLater();
+                return QVector<double>();
+            } else
+                start++;
 
 
     QVector<double> res;
@@ -56,6 +66,7 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
 
 void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime time, double period) {
     Reader reader;
+    QObject::connect(&reader, SIGNAL(progress(int)), Settings::settings()->getProgressBar(), SLOT(setValue(int)));
     Data data = reader.readBinaryFile(fileName);
     drawSpectre(module, ray, data, time, period);
     data.releaseData();
@@ -79,6 +90,7 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
 
     ui = new Ui::SpectreUI;
     ui->setupUi(this);
+    ui->dispersion->setValue(std::max(Settings::settings()->dispersion(), 0.0));
 
     ui->channels->setMaximum(data.channels - 1);
 
@@ -86,9 +98,14 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
     QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
     QObject::connect(ui->dispersion, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
     QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
+    QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
+    QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
 
-    for (int i = 0; i < data.channels; i++)
+    for (int i = 0; i < data.channels; i++) {
         r.push_back(getAnswer(data, i, module, ray, time, period, startPoint));
+        if (r[i].size() == 0)
+            return;
+    }
 
     this->reDraw();
     this->show();
@@ -105,6 +122,7 @@ void SpectreDrawer::reDraw() {
     int tms = ui->time->value();
     int dsp = ui->dispersion->value();
 
+    rawRes.clear();
     for (int  i = 0; i < data.channels / chs - 1; i++) {
         QVector<double> res;
         for (int j = 0; j < r[0].size() - tms; j++) {
@@ -122,27 +140,40 @@ void SpectreDrawer::reDraw() {
             res.push_back(sum / n);
         }
 
+        rawRes.push_back(res);
+    }
 
-        double max = -1e+20;
-        double min = 1e+20;
-        for (int i = 0; i < res.size(); i++) {
-            if (max < res[i])
-                max = res[i];
+    rotateMatrix();
+    if (addFromMem) {
+        addFromMem = false;
+        QList<QVariant> lastSpectre = QSettings().value("LastSpectre").toList();
+        if (lastSpectre.size() < rawRes.size() * rawRes[0].size()) {
+            QMessageBox::warning(this, "Error", "Memory is not filled!");
+        } else {
+            for (int i = 0; i < rawRes.size(); i++)
+                for (int j = 0; j < rawRes[i].size(); j++)
+                    rawRes[i][j] += lastSpectre[i * rawRes[0].size() + j].toDouble();
+            mem();
+        }
+    }
 
-            if (min > res[i])
-                min = res[i];
+    for (int channel = 0; channel < data.channels / chs - 1; channel++) {
+        double max = rawRes[channel][0];
+        double min = rawRes[channel][0];
+        for (int i = 0; i < rawRes[channel].size(); i++) {
+            if (max < rawRes[channel][i])
+                max = rawRes[channel][i];
+
+            if (min > rawRes[channel][i])
+                min = rawRes[channel][i];
         }
 
         QVector<int> norm;
-        for (int i = 0; i < res.size(); i++)
-            norm.push_back(255 * (res[i] - min) / (max - min));
-
-
+        for (int i = 0; i < rawRes[channel].size(); i++)
+            norm.push_back(255 * (rawRes[channel][i] - min) / (max - min));
 
         matrix.push_back(norm);
     }
-
-
 
     ui->drawer->spectre = drawImage(matrix, data);
     ui->drawer->repaint();
@@ -153,7 +184,7 @@ QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data)
     const int offset = 50;
 
     QImage image(matrix[0].size() * nrm + offset, matrix.size() * nrm, QImage::Format_ARGB32);
-    ui->drawer->setMinimumSize(image.width(), image.height());
+    ui->drawer->setMinimumSize(std::min(image.width(), 1024), image.height());
     QPainter p(&image);
     p.fillRect(0, 0, image.width(), image.height(), Qt::white);
 
@@ -175,8 +206,48 @@ QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data)
     return image;
 }
 
+void SpectreDrawer::rotateMatrix() {
+    double v1 = data.fbands[0];
+    double v2 = data.fbands[1];
+
+    int dsp = ui->dispersion->value();
+    int maxAt = 0;
+    double maxRes = 1e-10;
+    for (int i = 0; i < rawRes[0].size(); i++) {
+        double cur = 0;
+        for (int channel = 0; channel < rawRes.size(); channel++) {
+            int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dsp * channel / data.oneStep + 0.5);
+            int v = (i + dt + rawRes[0].size() * 100) % rawRes[0].size();
+            cur += rawRes[channel][v];
+        }
+
+        if (cur > maxRes) {
+            maxAt = i;
+            maxRes = cur;
+        }
+    }
+
+    int rotateCount = (rawRes[0].size() * 100000 - maxAt - 1) % rawRes[0].size();
+    for (int channel = 0; channel < rawRes.size(); channel++)
+        std::rotate(rawRes[channel].begin(), rawRes[channel].begin() + rotateCount, rawRes[channel].end());
+}
+
 void SpectreDrawer::saveAs() {
     QString savePath = QFileDialog::getSaveFileName(this, "Spectre");
     if (savePath != "")
         ui->drawer->spectre.save(savePath);
+}
+
+void SpectreDrawer::mem() {
+    QList<QVariant> lastSpectre;
+    for (int i = 0; i < rawRes.size(); i++)
+        for (int j = 0; j < rawRes[i].size(); j++)
+            lastSpectre.push_back(rawRes[i][j]);
+
+    QSettings().setValue("LastSpectre", lastSpectre);
+}
+
+void SpectreDrawer::memPlus() {
+    addFromMem = true;
+    reDraw();
 }

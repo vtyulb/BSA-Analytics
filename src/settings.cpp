@@ -47,7 +47,7 @@ bool Settings::longRoads() {
 }
 
 void Settings::setDispersion(double d) {
-    _dispersion = d;
+    _dispersion = d + 1e-9;
 }
 
 double Settings::dispersion() {

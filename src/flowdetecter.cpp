@@ -39,7 +39,6 @@ void FlowDetecter::run() {
     Settings::settings()->getProgressBar()->show();
     QObject::connect(&r, SIGNAL(progress(int)), Settings::settings()->getProgressBar(), SLOT(setValue(int)));
     data = r.readBinaryFile(fileName);
-    Settings::settings()->getProgressBar()->setValue(100);
 
     Settings::settings()->loadStair();
 

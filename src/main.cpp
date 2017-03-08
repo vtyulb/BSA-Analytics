@@ -229,8 +229,8 @@ void pulsarEngine(int argc, char **argv) {
 #endif
         makeApp(argc, argv);
 
-        SpectreDrawer sd;
-        sd.drawSpectre(module - 1, ray - 1, dataPath, time, period);
+        SpectreDrawer *sd = new SpectreDrawer;
+        sd->drawSpectre(module - 1, ray - 1, dataPath, time, period);
 
         exit(qApp->exec());
     }

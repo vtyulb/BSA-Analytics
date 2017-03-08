@@ -2,6 +2,8 @@
 #include "ui_precisesearchgui.h"
 #include "ui_precisepacket.h"
 #include <flowdetecter.h>
+#include <spectredrawer.h>
+#include <settings.h>
 
 #include <QApplication>
 #include <QFileDialog>
@@ -93,8 +95,12 @@ void PreciseSearchGui::runSearcher() {
     if (ui->singlePeriod->isChecked())
         l << "--single-period";
 
-    if (ui->spectre->isChecked())
-        l << "--draw-spectre";
+    if (ui->spectre->isChecked()) {
+        SpectreDrawer *drawer = new SpectreDrawer;
+        Settings::settings()->setDispersion(ui->dispersion->value());
+        drawer->drawSpectre(ui->module->value() - 1, ui->ray->value() - 1, ui->fileName->text(), ui->time->time(), ui->period->value());
+        return;
+    }
 
     if (qApp->arguments().contains("--debug"))
         l << "--debug";

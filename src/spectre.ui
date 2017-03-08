@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>264</width>
-    <height>238</height>
+    <width>587</width>
+    <height>445</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -86,7 +86,7 @@
          <item row="3" column="0">
           <widget class="QSpinBox" name="dispersion">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="maximum">
             <number>500</number>
@@ -96,10 +96,24 @@
          <item row="3" column="1">
           <widget class="QLabel" name="label_3">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="text">
             <string>Dispersion</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="2">
+          <widget class="QPushButton" name="mem">
+           <property name="text">
+            <string>Mem</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QPushButton" name="memPlus">
+           <property name="text">
+            <string>M+</string>
            </property>
           </widget>
          </item>

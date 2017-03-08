@@ -681,7 +681,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     ui->currentStatus->setText("Reading files");
 
     int blockNumber = ui->fourierBlockNo->value();
-    QString cachePath = path + "cach/";
+    QString cachePath = path + "cache/";
     QString cacheFile = cachePath + QString::number(blockNumber);
 
     if (loadCache && QFile::exists(cacheFile)) {

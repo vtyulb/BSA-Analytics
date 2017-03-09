@@ -609,6 +609,7 @@ void Analytics::addPulsarCatalog() {
         progressBar->hide();
     }
 
+    apply();
     list->setEnabled(true);
     list->setFocus();
     window->update();
@@ -986,7 +987,7 @@ void Analytics::applyFourierFilters() {
                     pl.data.fork();
                     pl.data.releaseProtected = true;
                     pl.snr = -777;
-                    pl.findFourierData(pl.firstPoint + 1);
+                    pl.findFourierData(pl.firstPoint);
                     pl.data.sigma = pl.firstPoint;
                     if (pl.snr > 0)
                         whiteZone->push_front(pl);

@@ -17,7 +17,7 @@ const double INTERVAL = 17;
 const double MINIMUM_PERIOD = 0.5;
 const double MAXIMUM_PERIOD = 10;
 const double PERIOD_STEP = 0.01;
-const double FOURIER_PULSAR_LEVEL_SNR = 2.2;
+const double FOURIER_PULSAR_LEVEL_SNR = 1.5;
 
 const int interval = 180;
 const int CATEGORIES = 4;
@@ -282,11 +282,8 @@ struct Pulsar {
 };
 
 static inline bool globalGoodDoubles(double a, double b, bool twice = false) {
-    if (a < b) {
-        double c = a;
-        a = b;
-        b = c;
-    }
+    if (a < b)
+        std::swap(a, b);
 
     if (a > (1.1 + twice) * b)
         return false;
@@ -294,13 +291,7 @@ static inline bool globalGoodDoubles(double a, double b, bool twice = false) {
     if (a > 1.9 * b)
         a /= 2;
 
-    a = fabs(a - b);
-    a = (a * interval / b);
-
-    if (0.1 * b > 0.5)
-        return a < 0.1 * b;
-    else
-        return a < 0.5;
+    return fabs(a - b) < 0.005;
 }
 
 static inline QString getPulsarJName(int module, int ray, QTime time) {

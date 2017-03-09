@@ -51,6 +51,7 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
     QVector<double> res;
     //hello pulsar.h::calculateAdditionalData
     for (int offset = (period < 1000 ? -period / data.oneStep / 2 : -20); offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1; offset++) {
+        qApp->processEvents();
         double sum = 0;
         int n = 0;
         for (double i = start + offset; i < start + offset  + interval / data.oneStep; i += period / data.oneStep * 2, n++)
@@ -67,6 +68,8 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
 
 void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime time, double period) {
     Reader reader;
+    if (Settings::settings()->getProgressBar())
+        Settings::settings()->getProgressBar()->show();
     QObject::connect(&reader, SIGNAL(progress(int)), Settings::settings()->getProgressBar(), SLOT(setValue(int)));
     Data data = reader.readBinaryFile(fileName);
     drawSpectre(module, ray, data, time, period);
@@ -125,6 +128,11 @@ void SpectreDrawer::reDraw() {
 
     rawRes.clear();
     for (int  i = 0; i < data.channels / chs - 1; i++) {
+        if (Settings::settings()->getProgressBar()) {
+            Settings::settings()->getProgressBar()->setValue(i * 100 / (data.channels / chs));
+            qApp->processEvents();
+        }
+
         QVector<double> res;
         for (int j = 0; j < r[0].size() - tms; j++) {
             double  sum = 0;
@@ -213,7 +221,7 @@ void SpectreDrawer::rotateMatrix() {
 
     int dsp = ui->dispersion->value();
     int maxAt = 0;
-    double maxRes = 1e-10;
+    double maxRes = -1e+100;
     for (int i = 0; i < rawRes[0].size(); i++) {
         double cur = 0;
         for (int channel = 0; channel < rawRes.size(); channel++) {
@@ -223,12 +231,12 @@ void SpectreDrawer::rotateMatrix() {
         }
 
         if (cur > maxRes) {
-            maxAt = i;
+            maxAt = (i + int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dsp * (rawRes.size()) / data.oneStep + 0.5) + rawRes[0].size()*10000) % rawRes[0].size();
             maxRes = cur;
         }
     }
 
-    int rotateCount = (rawRes[0].size() * 100000 - maxAt - 1) % rawRes[0].size();
+    int rotateCount = (rawRes[0].size() * 100000 + maxAt - 1) % rawRes[0].size();
     for (int channel = 0; channel < rawRes.size(); channel++)
         std::rotate(rawRes[channel].begin(), rawRes[channel].begin() + rotateCount, rawRes[channel].end());
 }

@@ -100,11 +100,10 @@ void FlowDetecter::run() {
             res += data.data[module][channel][ray][int(i + offset + 0.5)];
             count++;
         }
-        average += res / count;
-        resString += " " + QString::number(res / count);
+        average += res / count / (data.channels - 1);
+        resString += " " + QString::number(res / count / (data.channels - 1));
     }
 
-    average /= data.channels - 1;
     qApp->clipboard()->setText(QString::number(average) + " " + resString);
     QMessageBox::information(NULL, "Flow", QString("Average flow is %1\n"
                                                    "By channels: %2\n"

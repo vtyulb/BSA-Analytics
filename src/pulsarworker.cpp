@@ -76,6 +76,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         periodTester = 1;
     }
 
+    double noise = 0;
     for (double period = MINIMUM_PERIOD_INC / data.oneStep; period < MAXIMUM_PERIOD_INC / data.oneStep; period += data.oneStep / interval)
         if (!Settings::settings()->preciseSearch() || (goodDoubles(period * data.oneStep, Settings::settings()->period()) &&
                                                        (!Settings::settings()->noMultiplePeriods())) ||
@@ -89,7 +90,9 @@ QVector<Pulsar> PulsarWorker::searchIn() {
         pulsar.snr = pulsar.module = pulsar.ray = 0;
         pulsar.data = data;
         int calc = 0;
-        double noise = calculateNoise(res.data(), (interval / data.oneStep + 1) * 2);
+        if (!Settings::settings()->preciseSearch() || period == MINIMUM_PERIOD_INC / data.oneStep)
+            noise = calculateNoise(res.data(), (interval / data.oneStep + 1) * 2);
+
         for (int i = start; i < end; i++) {
             if (calc++ == int(period + 1)) {
                 calc = 0;

@@ -3,9 +3,10 @@
 
 #include <QThreadPool>
 
-class CalculationPool {
-    public:
-        static QThreadPool *pool();
+class CalculationPool
+{
+public:
+    static QThreadPool *pool();
 };
 
 #endif // CALCULATIONPOOL_H

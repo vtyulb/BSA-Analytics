@@ -14,16 +14,16 @@ namespace Ui {
 
 class MainWindow : public QMainWindow
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  public:
+public:
     explicit MainWindow(QString file = "", QWidget *parent = 0);
     ~MainWindow();
 
     static QString nativeDecodeLastPath(QString path);
     void addWidgetToMainLayout(QWidget *w1, QWidget *w2);
 
-  private:
+private:
     Ui::MainWindow *ui;
     Drawer *drawer;
     QProgressBar *progress;
@@ -38,7 +38,7 @@ class MainWindow : public QMainWindow
 
     void decodeLastPath(QString path);
 
-  private slots:
+private slots:
     void openPulsarFile();
     void openAnalytics(bool hasMemory = true, bool fourier = false);
     void openFourierAnalytics();
@@ -72,7 +72,7 @@ class MainWindow : public QMainWindow
 
     void setStyle(QAction*);
 
-  public slots:
+public slots:
     void regenerate(Data &data);
 };
 

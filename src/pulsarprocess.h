@@ -10,6 +10,7 @@
 class PulsarProcess : public QThread
 {
     Q_OBJECT
+
 public:
     explicit PulsarProcess(QString file, QString savePath = "./", QObject *parent = 0);
     ~PulsarProcess();
@@ -21,11 +22,6 @@ private:
 
     QString savePath;
     QString file;
-
-signals:
-
-public slots:
-
 };
 
 #endif // PULSARPROCESS_H

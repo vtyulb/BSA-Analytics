@@ -9,6 +9,7 @@
 class Controller : public QFrame
 {
     Q_OBJECT
+
 public:
     explicit Controller(QWidget *parent = 0);
 

@@ -4,7 +4,7 @@
 #include <QDialog>
 
 namespace Ui {
-class PreciseSearchGui;
+    class PreciseSearchGui;
 }
 
 class PreciseSearchGui : public QDialog

@@ -20,7 +20,6 @@ private:
 
 private slots:
     void checkIfCalculated();
-
 };
 
 #endif // PULSARSEARCHER_H

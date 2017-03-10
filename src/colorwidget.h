@@ -9,15 +9,12 @@
 class ColorWidget : public QWidget
 {
     Q_OBJECT
+
 public:
     explicit ColorWidget(QLineEdit *l, QWidget *parent = 0);
     QLineEdit *color;
 private:
     void paintEvent(QPaintEvent *);
-signals:
-
-public slots:
-
 };
 
 #endif // COLORWIDGET_H

@@ -7,21 +7,21 @@
 
 class Updater : public QObject
 {
-  Q_OBJECT
-  public:
+    Q_OBJECT
+public:
     explicit Updater(QObject *parent = 0);
 
-  private:
+private:
     QProgressBar *progress;
     QWidget *downloaderWidget;
     QNetworkReply *networkReply;
     qint64 latestInstallerSize;
 
-  private slots:
+private slots:
     void runSetup(QNetworkReply*);
     void downloadProgressChanged(qint64, qint64);
 
-  public slots:
+public slots:
     void download();
     void cancelUpdate();
 };

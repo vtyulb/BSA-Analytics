@@ -17,6 +17,7 @@
 class Drawer : public QWidget
 {
     Q_OBJECT
+
 public:
     explicit Drawer(const Data &data, QWidget *parent = 0);
 

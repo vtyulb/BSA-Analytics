@@ -5,7 +5,7 @@
 #include <QDateTime>
 
 namespace Ui {
-class CustomOpenDialog;
+    class CustomOpenDialog;
 }
 
 class CustomOpenDialog : public QDialog

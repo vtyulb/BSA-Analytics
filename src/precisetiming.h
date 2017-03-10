@@ -4,7 +4,7 @@
 #include <QDialog>
 
 namespace Ui {
-class PreciseTiming;
+    class PreciseTiming;
 }
 
 class PreciseTiming : public QDialog

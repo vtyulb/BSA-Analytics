@@ -13,34 +13,34 @@ class PulsarList : public QTableWidget
 {
     Q_OBJECT
 
-    public:
-        explicit PulsarList(QWidget *parent);
-        ~PulsarList();
+public:
+    explicit PulsarList(QWidget *parent);
+    ~PulsarList();
 
-        void init(Pulsars pl, bool removeBadData);
+    void init(Pulsars pl, bool removeBadData);
 
-    private:
-        Pulsars pulsars;
-        Pulsar *currentPulsar;
+private:
+    Pulsars pulsars;
+    Pulsar *currentPulsar;
 
-        QVector<int> pulsarsIndex;
+    QVector<int> pulsarsIndex;
 
-        void keyPressEvent(QKeyEvent*);
-        void closeEvent(QCloseEvent *);
-        QSize sizeHint() const;
-        QSize minimumSizeHint() const;
+    void keyPressEvent(QKeyEvent*);
+    void closeEvent(QCloseEvent *);
+    QSize sizeHint() const;
+    QSize minimumSizeHint() const;
 
-        bool sameFile(int, int);
+    bool sameFile(int, int);
 
-        void saveSettings();
+    void saveSettings();
 
-    private slots:
-        void selectionChanged();
-        void showTime();
+private slots:
+    void selectionChanged();
+    void showTime();
 
-    signals:
-        void switchData(Data &data);
-        void progress(int);
+signals:
+    void switchData(Data &data);
+    void progress(int);
 };
 
 #endif // PULSARLIST_H

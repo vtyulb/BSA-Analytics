@@ -11,7 +11,7 @@
 #include <knownnoise.h>
 
 namespace Ui {
-class Analytics;
+    class Analytics;
 }
 
 class Analytics : public QWidget

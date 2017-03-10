@@ -5,7 +5,7 @@
 #include <QVector>
 
 namespace Ui {
-class KnownNoise;
+    class KnownNoise;
 }
 
 class KnownNoise : public QWidget

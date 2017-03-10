@@ -7,8 +7,8 @@
 #include <QProgressBar>
 
 class PulsarReader {
-    public:
-        static Pulsars ReadPulsarFile(QString name, QProgressBar *bar = NULL);
+public:
+    static Pulsars ReadPulsarFile(QString name, QProgressBar *bar = NULL);
 };
 
 #endif // PULSARREADER_H

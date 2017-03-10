@@ -141,8 +141,6 @@ struct Data {
     bool isValid() {
         return modules != -1;
     }
-
-
 };
 
 

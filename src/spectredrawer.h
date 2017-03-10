@@ -12,7 +12,6 @@
 class SpectreDrawer: public QWidget
 {
     Q_OBJECT
-
 public:
     SpectreDrawer();
     ~SpectreDrawer();

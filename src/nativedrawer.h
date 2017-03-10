@@ -17,6 +17,7 @@
 class NativeDrawer : public QWidget
 {
     Q_OBJECT
+
 public:
     explicit NativeDrawer(const Data &data, QWidget *parent = 0);
     ~NativeDrawer();

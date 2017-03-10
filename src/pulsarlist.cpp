@@ -73,7 +73,7 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
             for (int j = 0; j < columnCount(); j++)
                 item(i, j)->setBackgroundColor(QColor("lightgray"));
 
-        if (!pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics())
+        if (!pulsars->at(i).filtered && !pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics())
             for (int j = 0; j < columnCount(); j++)
                 item(i, j)->setBackgroundColor(QColor(200, 100, 100));
 
@@ -147,6 +147,9 @@ QSize PulsarList::sizeHint() const {
 }
 
 void PulsarList::keyPressEvent(QKeyEvent *event) {
+    if (!selectionModel()->selection().indexes().size())
+        return;
+
     int current = selectionModel()->selection().indexes().at(0).row();
     if ((!pulsars->at(pulsarsIndex[current]).filtered || pulsars->at(pulsarsIndex[current]).fourierDuplicate) &&
            (rowCount() > 10))

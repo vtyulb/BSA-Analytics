@@ -886,9 +886,12 @@ void Analytics::applyFourierFilters() {
         int start = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() - 2;
         int end = fourierSpectreSize * 2 / ui->fourierPeakAt->value()*Settings::settings()->getFourierStepConstant() + 3;
         for (int i = 0; i < pulsars->size(); i++) {
+            bool good = false;
             for (int j = start; j < end; j++)
-                if ((pulsars->at(i).data.data[0][0][0][j] - pulsars->at(i).fourierAverage) / pulsars->at(i).fourierRealNoise < ui->fourierPeakSNR->value())
-                    fourierGood[i] = false;
+                if ((pulsars->at(i).data.data[0][0][0][j] - pulsars->at(i).fourierAverage) / pulsars->at(i).fourierRealNoise > ui->fourierPeakSNR->value())
+                    good = true;
+
+            fourierGood[i] = good;
         }
     }
 

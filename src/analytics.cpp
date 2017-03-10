@@ -569,28 +569,30 @@ void Analytics::dispersionMplus() {
 }
 
 void Analytics::profileRemember() {
-    for (int i = 0; i < pulsars->size(); i++) {
-        const Data data = pulsars->at(i).data;
-        QVector<double> dt;
-        for (int i = 0; i < data.npoints; i++)
-            dt.push_back(data.data[0][0][0][i]);
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i]) {
+            const Data data = pulsars->at(i).data;
+            QVector<double> dt;
+            for (int i = 0; i < data.npoints; i++)
+                dt.push_back(data.data[0][0][0][i]);
 
-        Settings::settings()->setProfileData(dt, pulsars->at(i).dispersion);
-    }
+            Settings::settings()->setProfileData(dt, pulsars->at(i).dispersion);
+        }
 }
 
 void Analytics::profileMplus() {
-    for (int current = 0; current < pulsars->size(); current++) {
-        QVector<double> dt = Settings::settings()->profileData(pulsars->at(current).dispersion);
-        if (!dt.size()) {
-            qDebug() << "no profile at current dispersion" << pulsars->at(current).dispersion << "found";
-            continue;
-        }
+    for (int current = 0; current < pulsars->size(); current++)
+        if (pulsarsEnabled[current]) {
+            QVector<double> dt = Settings::settings()->profileData(pulsars->at(current).dispersion);
+            if (!dt.size()) {
+                qDebug() << "no profile at current dispersion" << pulsars->at(current).dispersion << "found";
+                continue;
+            }
 
-        const Data &data = pulsars->at(current).data;
-        for (int i = 0; i < std::min(data.npoints, dt.size()); i++)
-            data.data[0][0][0][i] += dt[i];
-    }
+            const Data &data = pulsars->at(current).data;
+            for (int i = 0; i < std::min(data.npoints, dt.size()); i++)
+                data.data[0][0][0][i] += dt[i];
+        }
 
     profileRemember();
 

@@ -73,7 +73,7 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
             for (int j = 0; j < columnCount(); j++)
                 item(i, j)->setBackgroundColor(QColor("lightgray"));
 
-        if (!pulsars->at(i).filtered && !pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics())
+        if (!pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics())
             for (int j = 0; j < columnCount(); j++)
                 item(i, j)->setBackgroundColor(QColor(200, 100, 100));
 

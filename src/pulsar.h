@@ -247,7 +247,7 @@ struct Pulsar {
         out << data.npoints << data.modules << data.channels;
         out << data.rays << data.time << data.previousLifeName;
         out << data.name << data.oneStep << data.delta_lucha;
-        out << data.fbands;
+        out << data.fbands << showInTable;
         out << data.sigma << data.releaseProtected;
         for (int i = 0; i < data.npoints; i++)
             out << data.data[0][0][0][i];
@@ -264,7 +264,7 @@ struct Pulsar {
         in >> data.npoints >> data.modules >> data.channels;
         in >> data.rays >> data.time >> data.previousLifeName;
         in >> data.name >> data.oneStep >> data.delta_lucha;
-        in >> data.fbands;
+        in >> data.fbands >> showInTable;
         in >> data.sigma >> data.releaseProtected;
         double sg = data.sigma;
         data.init();

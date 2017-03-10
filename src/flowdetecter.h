@@ -9,16 +9,16 @@
 
 class FlowDetecter: public QObject
 {
-  Q_OBJECT
+    Q_OBJECT
 
-  public:
+public:
     explicit FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses, int sensitivity,
                           double period, QTime time, QString fileName, QObject *parent = 0);
     ~FlowDetecter() {};
 
     void run();
 
-  private:
+private:
     int module;
     int dispersion;
     int ray;

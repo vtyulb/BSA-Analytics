@@ -30,7 +30,6 @@ PulsarList::PulsarList(QWidget *parent) :
 
     setAttribute(Qt::WA_DeleteOnClose);
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setSizeIncrement(1, 1);
 
     QStringList header;
     header << "time" << "module" << "ray";
@@ -45,13 +44,12 @@ PulsarList::PulsarList(QWidget *parent) :
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Ignored);
 
     setSelectionBehavior(QAbstractItemView::SelectRows);
+    setSelectionMode(QAbstractItemView::SingleSelection);
 
     setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     setWindowTitle("Pulsar list");
 
-    restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
-//    horizontalHeader()->restoreState(QSettings().value("pulsar-list-header").toByteArray());
     show();
 }
 
@@ -127,7 +125,6 @@ PulsarList::~PulsarList() {
 void PulsarList::saveSettings() {
     qDebug() << "Pulsar list saving settings";
     QSettings().setValue("pulsar-list-geometry", saveGeometry());
-//    QSettings().setValue("pulsar-list-header", horizontalHeader()->saveState());
     qApp->quit();
 }
 

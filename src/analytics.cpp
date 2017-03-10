@@ -298,6 +298,7 @@ void Analytics::apply(bool fullFilters) {
 
     if (!list) {
         list = new PulsarList(this);
+        list->restoreGeometry(QSettings().value("pulsar-list-geometry").toByteArray());
         QObject::connect(list, SIGNAL(switchData(Data&)), window, SLOT(regenerate(Data&)));
         QObject::connect(list, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
         QObject::connect(window, SIGNAL(destroyed(QObject*)), list, SLOT(deleteLater()));

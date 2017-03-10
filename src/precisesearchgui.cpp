@@ -106,7 +106,7 @@ void PreciseSearchGui::runSearcher() {
         l << "--debug";
 
     if (ui->fluxDensity->isChecked()) {
-        FlowDetecter detecter(ui->module->value() - 1, ui->dispersion->value(), ui->ray->value() - 1,
+        FlowDetecter detecter(ui->module->value(), ui->dispersion->value(), ui->ray->value(),
                               ui->points->value(), ui->bigImpulses->isChecked(), ui->sensitivity->value(),
                               ui->period->value(), ui->time->time(), ui->fileName->text(), this);
         detecter.run();

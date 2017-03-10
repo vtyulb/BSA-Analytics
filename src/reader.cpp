@@ -106,6 +106,7 @@ Data Reader::readBinaryFile(QString file) {
     if (!f.open(QIODevice::ReadOnly)) {
         qDebug() << "can't open file" << file << "for reading";
         Data sample;
+        sample.npoints = 0;
         return sample;
     }
 

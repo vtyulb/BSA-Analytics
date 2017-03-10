@@ -33,7 +33,7 @@ SpectreDrawer::~SpectreDrawer() {
     delete ui;
 }
 
-int SpectreDrawer::findFirstPoint(const Data &_data, int startPoint) {
+int SpectreDrawer::findFirstPoint(int startPoint) {
     int start = startPoint + 1;
 
     if (startPoint == -1) {
@@ -50,7 +50,7 @@ int SpectreDrawer::findFirstPoint(const Data &_data, int startPoint) {
     return start;
 }
 
-QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period, int start) {
+QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int start) {
     QVector<double> res;
     //hello pulsar.h::calculateAdditionalData
     for (int offset = (period < 1000 ? -period / data.oneStep / 2 : -20); offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1; offset++) {
@@ -106,17 +106,16 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
     QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
     QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
 
-    int start = findFirstPoint(data, startPoint);
+    int start = findFirstPoint(startPoint);
     for (int i = 0; i < data.channels; i++) {
-        r.push_back(getAnswer(data, i, module, ray, time, period, start));
-        Settings::settings()->setProgress(i * 100 / (data.channels - 1));
+        r.push_back(getAnswer(data, i, start));
         if (r[i].size() == 0)
             return;
     }
 
     this->reDraw();
     this->show();
-    this->resize(420, 380);
+    this->resize(420, 100);
 }
 
 void SpectreDrawer::reDraw() {

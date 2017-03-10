@@ -22,9 +22,9 @@ using std::sort;
 FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool trackImpulses, int sensitivity,
                            double period, QTime time, QString fileName, QObject *parent):
     QObject(parent),
-    module(module),
+    module(module - 1),
     dispersion(dispersion),
-    ray(ray),
+    ray(ray - 1),
     points(points),
     trackImpulses(trackImpulses),
     sensitivity(sensitivity),
@@ -55,7 +55,7 @@ void FlowDetecter::run() {
             std::sort(tmp.begin(), tmp.end());
 
             for (int k = i; k < i + subtractStep; k++)
-                data.data[module][channel][ray][k] -= (tmp[tmp.size() * 0.8] + tmp[5]) / 2;
+                data.data[module][channel][ray][k] -= tmp[tmp.size() / 2];
         }
 
     res = applyDispersion();
@@ -65,23 +65,23 @@ void FlowDetecter::run() {
         start++;
 
     QVector<double> profile;
-    QString profileString;
     int maximumAt = 0;
     double maximum = 0;
     for (int j = 0; j < period / data.oneStep + 1; j++) {
         double result = 0;
         int count = 0;
-        for (double i = start + j; i < start + 180 / data.oneStep; i += period / data.oneStep) {
+        for (double i = start + j; i < start + j + 180 / data.oneStep; i += period / data.oneStep) {
             result += res[int(i + 0.5)];
             count++;
         }
 
-        if (maximum < result / count) {
-            maximum = result / count;
+        result /= count;
+
+        if (maximum < result) {
+            maximum = result;
             maximumAt = j;
         }
-        profile.push_back(result / count / (data.channels - 1));
-        profileString += QString::number(result / count / (data.channels - 1)) + " ";
+        profile.push_back(result);
     }
 
     showProfile(profile);
@@ -100,14 +100,12 @@ void FlowDetecter::run() {
             count++;
         }
         average += res / count / (data.channels - 1);
-        resString += " " + QString::number(res / count / (data.channels - 1));
+        resString += " " + QString::number(res / count);
     }
 
     qApp->clipboard()->setText(QString::number(average) + " " + resString);
     QMessageBox::information(NULL, "Flow", QString("Average flow is %1\n"
-                                                   "By channels: %2\n"
-                                                   "One period profile: %3").arg(QString::number(average))
-                                                                     .arg(resString).arg(profileString));
+                                                   "By channels: %2\n").arg(QString::number(average)).arg(resString));
 
     if (trackImpulses) {
         double noise = calculateNoise(res);
@@ -155,12 +153,8 @@ QVector<double> FlowDetecter::applyDispersion() {
     for (int i = 0; i < data.npoints - mxd; i++)
         for (int j = 0; j < data.channels - 1; j++) {
             int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dispersion * j / data.oneStep + 0.5);
-            res[i] += data.data[module][j][ray][max(i + dt, 0)];
+            res[i] += data.data[module][j][ray][max(i + dt, 0)] / (data.channels - 1);
         }
-
-    for (int i = data.npoints - mxd; i < data.npoints; i++)
-        for (int j = 0; j < data.channels - 1; j++)
-            res[i] += data.data[module][j][ray][i];
 
     return res;
 }

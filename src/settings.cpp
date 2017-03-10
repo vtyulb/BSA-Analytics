@@ -1,5 +1,6 @@
 #include <settings.h>
 #include <reader.h>
+#include <mainwindow.h>
 
 #include <QVariant>
 #include <QSettings>
@@ -23,6 +24,7 @@ Settings::Settings() {
     _sourceMode = NoSourceMode,
     _stairStatus = NoStair;
     bar = NULL;
+    _mainWindow = NULL;
     _currentProgress = -1;
 }
 
@@ -308,9 +310,11 @@ void Settings::saveStair() {
 bool Settings::loadStair() {
     QList<QVariant> stairList;
     if (lastData().isLong()) {
+        qDebug() << "loading long stair";
         stairList = QSettings().value("LongStair").toList();
         _stairFileName = QSettings().value("LongStairName").toString();
     } else {
+        qDebug() << "loading short stair";
         stairList = QSettings().value("ShortStair").toList();
         _stairFileName = QSettings().value("ShortStairName").toString();
     }
@@ -343,6 +347,8 @@ void Settings::setMainWindow(MainWindow *window) {
 }
 
 MainWindow *Settings::getMainWindow() {
+    if (!_mainWindow)
+        _mainWindow = new MainWindow("void");
     return _mainWindow;
 }
 

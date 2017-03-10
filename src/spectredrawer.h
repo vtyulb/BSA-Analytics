@@ -20,7 +20,7 @@ public:
     void drawSpectre(int module, int ray, const Data &_data, QTime time, double period, int startPoint = -1);
 
 private:
-    QVector<double> getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period, int startPoint = -1);
+    QVector<double> getAnswer(const Data &data, int channel, int startPoint = -1);
     QImage drawImage(QVector<QVector<int> > matrix, const Data &data);
 
     Ui::SpectreUI *ui;
@@ -33,7 +33,7 @@ private:
     QVector<QVector<double> > rawRes;
 
     void rotateMatrix();
-    int findFirstPoint(const Data &_data, int startPoint = -1);
+    int findFirstPoint(int startPoint = -1);
 
 private slots:
     void reDraw();

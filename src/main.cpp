@@ -17,6 +17,7 @@
 #include <spectredrawer.h>
 #include <preciseperioddetecter.h>
 #include <filesummator.h>
+#include <flowdetecter.h>
 #include <flowingwindow.h>
 #include <fourier.h>
 #include <fouriersearch.h>
@@ -116,7 +117,8 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --analytics [path-to-data] [--fourier] [--low-memory]\n");
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
-               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads] [--period-tester] [--run-analytics-after]\n");
+               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads]\n"
+               "[--period-tester] [--flux-density] [--run-analytics-after]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double>\n"
                 "\t--time <09:01:00>\n");
@@ -148,6 +150,7 @@ void pulsarEngine(int argc, char **argv) {
     bool debug = false;
     bool preciseSearch = false;
     bool drawSpectre = false;
+    bool flowDetecter = false;
     bool fourier = false;
     bool runAnalyticsAfter = false;
     int module = 1;
@@ -218,9 +221,24 @@ void pulsarEngine(int argc, char **argv) {
             runAnalyticsAfter = true;
         else if (strcmp(argv[i], "--debug") == 0)
             debug = true;
+        else if (strcmp(argv[i], "--flux-density") == 0)
+            flowDetecter = true;
     }
 
+    if (flowDetecter) {
+#ifdef WIN32
+        if (!debug)
+            FreeConsole();
+#endif
+        makeApp(argc, argv);
 
+        FlowDetecter *detecter = new FlowDetecter(module, Settings::settings()->dispersion(),
+                                                  ray, 1, false, 0, period, time, dataPath);
+
+        detecter->run();
+
+        exit(qApp->exec());
+    }
 
     if (drawSpectre) {
 #ifdef WIN32

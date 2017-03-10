@@ -33,6 +33,7 @@ private:
     QVector<QVector<double> > rawRes;
 
     void rotateMatrix();
+    int findFirstPoint(const Data &_data, int startPoint = -1);
 
 private slots:
     void reDraw();

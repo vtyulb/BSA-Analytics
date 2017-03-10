@@ -23,6 +23,7 @@ Settings::Settings() {
     _sourceMode = NoSourceMode,
     _stairStatus = NoStair;
     bar = NULL;
+    _currentProgress = -1;
 }
 
 Settings *Settings::settings() {
@@ -343,4 +344,24 @@ void Settings::setMainWindow(MainWindow *window) {
 
 MainWindow *Settings::getMainWindow() {
     return _mainWindow;
+}
+
+void Settings::setProgress(int progress) {
+    if (!bar) {
+        if (_currentProgress != progress) {
+            printf(".");
+            if (progress == 100)
+                printf("\n");
+
+            fflush(stdout);
+            _currentProgress = progress;
+        }
+    } else {
+        if (progress == 100)
+            bar->hide();
+        else {
+            bar->show();
+            bar->setValue(progress);
+        }
+    }
 }

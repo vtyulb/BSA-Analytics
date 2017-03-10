@@ -36,8 +36,7 @@ FlowDetecter::FlowDetecter(int module, int dispersion, int ray, int points, bool
 
 void FlowDetecter::run() {
     Reader r;
-    Settings::settings()->getProgressBar()->show();
-    QObject::connect(&r, SIGNAL(progress(int)), Settings::settings()->getProgressBar(), SLOT(setValue(int)));
+    QObject::connect(&r, SIGNAL(progress(int)), Settings::settings(), SLOT(setProgress(int)));
     data = r.readBinaryFile(fileName);
 
     Settings::settings()->loadStair();

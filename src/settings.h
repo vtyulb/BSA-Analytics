@@ -5,6 +5,7 @@
 #include <QTime>
 #include <QProgressBar>
 #include <QByteArray>
+#include <QObject>
 
 #include <data.h>
 
@@ -28,7 +29,9 @@ enum SourceMode {
     const QString DOCPATH = "/usr/share/doc/bsa-analytics";
 #endif
 
-class Settings {
+class Settings: public QObject {
+    Q_OBJECT
+
     public:
         static Settings *settings();
 
@@ -133,6 +136,10 @@ class Settings {
         Data _lastData;
         MainWindow *_mainWindow;
         QProgressBar *bar;
+        int _currentProgress;
+
+    public slots:
+        void setProgress(int);
 };
 
 #endif // SETTINGS_H

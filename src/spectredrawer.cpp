@@ -33,7 +33,7 @@ SpectreDrawer::~SpectreDrawer() {
     delete ui;
 }
 
-QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period, int startPoint) {
+int SpectreDrawer::findFirstPoint(const Data &_data, int startPoint) {
     int start = startPoint + 1;
 
     if (startPoint == -1) {
@@ -42,12 +42,15 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
                 QMessageBox::warning(this, "Error", "Time is invalid!\n"
                                                     "There is no points inside data with these time.");
                 deleteLater();
-                return QVector<double>();
+                return 0;
             } else
                 start++;
     }
 
+    return start;
+}
 
+QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int module, int ray, QTime time, double period, int start) {
     QVector<double> res;
     //hello pulsar.h::calculateAdditionalData
     for (int offset = (period < 1000 ? -period / data.oneStep / 2 : -20); offset < period / data.oneStep * 2 - period / data.oneStep / 2 + 1; offset++) {
@@ -68,9 +71,7 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int modu
 
 void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime time, double period) {
     Reader reader;
-    if (Settings::settings()->getProgressBar())
-        Settings::settings()->getProgressBar()->show();
-    QObject::connect(&reader, SIGNAL(progress(int)), Settings::settings()->getProgressBar(), SLOT(setValue(int)));
+    QObject::connect(&reader, SIGNAL(progress(int)), Settings::settings(), SLOT(setProgress(int)));
     Data data = reader.readBinaryFile(fileName);
     drawSpectre(module, ray, data, time, period);
     data.releaseData();
@@ -105,8 +106,10 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
     QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
     QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
 
+    int start = findFirstPoint(data, startPoint);
     for (int i = 0; i < data.channels; i++) {
-        r.push_back(getAnswer(data, i, module, ray, time, period, startPoint));
+        r.push_back(getAnswer(data, i, module, ray, time, period, start));
+        Settings::settings()->setProgress(i * 100 / (data.channels - 1));
         if (r[i].size() == 0)
             return;
     }

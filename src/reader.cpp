@@ -150,6 +150,8 @@ Data Reader::readBinaryFile(QString file) {
     data.init();
 
     data.previousLifeName = header["native_datetime"];
+    if (data.previousLifeName == "")
+        data.previousLifeName = file;
 
     QStringList fbands = header["fbands"].split(" ");
     for (int i = 0; i < channels - 1; i++)

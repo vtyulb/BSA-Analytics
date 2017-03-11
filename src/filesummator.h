@@ -20,6 +20,8 @@ private:
     void processLongData(Data &data);
     void dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber);
 
+    void addStair(Data &stairs);
+
     void saveCuttingState();
     void loadCuttingState();
 

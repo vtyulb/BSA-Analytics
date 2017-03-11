@@ -40,6 +40,7 @@ void FileSummator::run() {
     for (int i = 0; i < extensions.size(); i++)
         printf("*.%s\n", extensions[i].toUtf8().constData());
 
+    bool stairsSearch = false;
     bool cutter = false;
     printf("Do you want to dump cutted files? [y/N] ");
     if (input.readLine().toUpper() == "Y") {
@@ -56,6 +57,10 @@ void FileSummator::run() {
         }
 
         printf("Path [%s] accepted\n\n", cutterPath.toUtf8().constData());
+    } else {
+        printf("Do you want to start stairs search? [Y/n] ");
+        if (input.readLine().toUpper() == "Y")
+            stairsSearch = true;
     }
 
     PC = cutter ? CuttingPC : PC_;
@@ -66,6 +71,8 @@ void FileSummator::run() {
 
     Reader reader;
     Data multifile;
+    Data stairs;
+    QStringList stairsNames;
     Data coefficients;
     bool multifileInited = false;
     QString path = "non-blank";
@@ -83,6 +90,8 @@ void FileSummator::run() {
             fflush(stdout);
 
             multifile = reader.readBinaryFile(fileNames[0]);
+            stairs = multifile;
+            stairs.npoints = 0;
 
             printf("readed.\n");
             printf("Memory allocation for multifile... ");
@@ -126,19 +135,19 @@ void FileSummator::run() {
         if (fileNames.size())
             printf("\nRunning stage 1 of 2\n");
         stage = 1;
-        if (!longData)
-        for (int i = 0; i < fileNames.size(); i++) {
-            printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
-            fflush(stdout);
+        if (!longData && !stairsSearch)
+            for (int i = 0; i < fileNames.size(); i++) {
+                printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
+                fflush(stdout);
 
-            Data data = reader.readBinaryFile(fileNames[i]);
-            if (!data.isValid())
-                continue;
+                Data data = reader.readBinaryFile(fileNames[i]);
+                if (!data.isValid())
+                    continue;
 
-            reader.repairWrongChannels(data);
-            processData(data, multifile, coefficients);
-            data.releaseData();
-        }
+                reader.repairWrongChannels(data);
+                processData(data, multifile, coefficients);
+                data.releaseData();
+            }
 
         if (fileNames.size())
             printf("\nRunning stage 2 of 2\n");
@@ -152,9 +161,51 @@ void FileSummator::run() {
             if (filesProcessed.contains(fileNames[i]))
                 continue;
 
-            Data data = reader.readBinaryFile(fileNames[i]);
+            Data data;
+            data.previousLifeName = fileNames[i];
+            if (stairsSearch) {
+                if (data.hourFromPreviousLifeName() == 5 ||
+                    data.hourFromPreviousLifeName() == 9 ||
+                    data.hourFromPreviousLifeName() == 13 ||
+                    data.hourFromPreviousLifeName() == 17 ||
+                    data.hourFromPreviousLifeName() == 21)
+                {
+                    int start = 3000;
+                    int end = 3200;
+                    if (data.isLong()) {
+                        start = 23000;
+                        end = 27000;
+                    }
+
+                    data = reader.readBinaryFile(fileNames[i]);
+                    Settings::settings()->detectStair(data, start, end);
+                    stairsNames.push_back(fileNames[i]);
+                    addStair(stairs);
+                    QString totalName = "./ShortStairs.pnt";
+                    if (data.isLong())
+                        totalName = "./LongStairs.pnthr";
+
+                    QString names = stairsNames[0];
+                    for (int i = 1; i < stairsNames.size(); i++)
+                        names += "," + stairsNames[i];
+
+                    QFile out(totalName);
+                    out.open(QIODevice::WriteOnly);
+
+                    QMap<QString, QString> m;
+                    m["stairs_names"] = names;
+
+                    DataDumper::dump(stairs, out, m);
+                    data.releaseData();
+                }
+
+                continue;
+            }
+
+            data = reader.readBinaryFile(fileNames[i]);
             if (!data.isValid())
                 continue;
+
 
             reader.repairWrongChannels(data);
             if (longData)
@@ -434,4 +485,20 @@ void FileSummator::saveCuttingState() {
 
         f.close();
     }
+}
+
+void FileSummator::addStair(Data &stairs) {
+    Data res = stairs;
+    res.npoints++;
+    res.init();
+    int v = res.npoints - 1;
+    for (int module = 0; module < res.modules; module++)
+        for (int channel = 0; channel < res.channels; channel++)
+            for (int ray = 0; ray < res.rays; ray++) {
+                memcpy(res.data[module][channel][ray], stairs.data[module][channel][ray], stairs.npoints * sizeof(float));
+                res.data[module][channel][ray][v] = Settings::settings()->getStairHeight(module, ray, channel);
+            }
+
+    stairs.releaseData();
+    stairs = res;
 }

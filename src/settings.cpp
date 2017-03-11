@@ -128,6 +128,7 @@ void Settings::setSourceMode(SourceMode mode) {
 }
 
 void Settings::detectStair(const Data &data, int pointStart, int pointEnd) {
+    stairs.clear();
     stairs.resize(data.modules);
     for (int i = 0; i < data.modules; i++) {
         stairs[i].resize(data.rays);

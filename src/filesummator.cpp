@@ -69,7 +69,7 @@ void FileSummator::run() {
     }
 
     PC = cutter ? CuttingPC : PC_;
-    if (cutter && extensions.contains("pnthr")) {
+    if (cutter || extensions.contains("pnthr")) {
         PC = CuttingPCLong;
         longData = true;
     }
@@ -97,6 +97,7 @@ void FileSummator::run() {
             multifile = reader.readBinaryFile(fileNames[0]);
             stairs = multifile;
             stairs.npoints = 0;
+
             if (stairsSearch)
                 initStairs(stairs, stairsNames);
 
@@ -106,7 +107,7 @@ void FileSummator::run() {
 
             multifile.npoints *= 25;
             multifile.releaseData();
-            if (!longData)
+            if (!longData )
                 multifile.init();
 
             multifileInited = true;
@@ -500,11 +501,13 @@ void FileSummator::addStair(Data &stairs) {
     for (int module = 0; module < res.modules; module++)
         for (int channel = 0; channel < res.channels; channel++)
             for (int ray = 0; ray < res.rays; ray++) {
-                memcpy(res.data[module][channel][ray], stairs.data[module][channel][ray], stairs.npoints * sizeof(float));
+                if (stairs.npoints)
+                    memcpy(res.data[module][channel][ray], stairs.data[module][channel][ray], stairs.npoints * sizeof(float));
                 res.data[module][channel][ray][v] = Settings::settings()->getStairHeight(module, ray, channel);
             }
 
-    stairs.releaseData();
+    if (stairs.npoints)
+        stairs.releaseData();
     stairs = res;
 }
 

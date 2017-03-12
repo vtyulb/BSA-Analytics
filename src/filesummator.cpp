@@ -584,7 +584,12 @@ namespace {
         else if (day(a) > day(b))
             return false;
 
-        return hour(a) < hour(b);
+        if (hour(a) < hour(b))
+            return true;
+        else if (hour(a) > hour(b))
+            return false;
+
+        return a < b;
     }
 }
 

@@ -18,9 +18,14 @@ const int PC_ = 150; // point count
 const int CuttingPC = 2048;
 const int CuttingPCLong = 16384;
 
-FileSummator::FileSummator()
-{    
+namespace {
+    void clearLine() {
+        printf("\r");
+        for (int i = 0; i < 80; i++) printf(" ");
+    }
 }
+
+FileSummator::FileSummator() {}
 
 void FileSummator::run() {
 
@@ -58,7 +63,7 @@ void FileSummator::run() {
 
         printf("Path [%s] accepted\n\n", cutterPath.toUtf8().constData());
     } else {
-        printf("Do you want to start stairs search? [Y/n] ");
+        printf("Do you want to start stairs search? [y/N] ");
         if (input.readLine().toUpper() == "Y")
             stairsSearch = true;
     }
@@ -92,8 +97,10 @@ void FileSummator::run() {
             multifile = reader.readBinaryFile(fileNames[0]);
             stairs = multifile;
             stairs.npoints = 0;
+            if (stairsSearch)
+                initStairs(stairs, stairsNames);
 
-            printf("readed.\n");
+            printf("... readed.\n");
             printf("Memory allocation for multifile... ");
             fflush(stdout);
 
@@ -137,6 +144,7 @@ void FileSummator::run() {
         stage = 1;
         if (!longData && !stairsSearch)
             for (int i = 0; i < fileNames.size(); i++) {
+                clearLine();
                 printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
                 fflush(stdout);
 
@@ -156,13 +164,14 @@ void FileSummator::run() {
             std::sort(noises[i].begin(), noises[i].end());
 
         for (int i = 0; i < fileNames.size(); i++) {
+            clearLine();
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
             fflush(stdout);
             if (filesProcessed.contains(fileNames[i]))
                 continue;
 
             Data data;
-            data.previousLifeName = fileNames[i];
+            data.previousLifeName = QFileInfo(fileNames[i]).fileName();
             if (stairsSearch) {
                 if (data.hourFromPreviousLifeName() == 5 ||
                     data.hourFromPreviousLifeName() == 9 ||
@@ -170,6 +179,9 @@ void FileSummator::run() {
                     data.hourFromPreviousLifeName() == 17 ||
                     data.hourFromPreviousLifeName() == 21)
                 {
+                    if (stairsNames.contains(data.previousLifeName))
+                        continue;
+
                     int start = 3000;
                     int end = 3200;
                     if (data.isLong()) {
@@ -179,24 +191,10 @@ void FileSummator::run() {
 
                     data = reader.readBinaryFile(fileNames[i]);
                     Settings::settings()->detectStair(data, start, end);
-                    stairsNames.push_back(fileNames[i]);
+                    stairsNames.push_back(QFileInfo(fileNames[i]).fileName());
                     addStair(stairs);
-                    QString totalName = "./ShortStairs.pnt";
-                    if (data.isLong())
-                        totalName = "./LongStairs.pnthr";
-
-                    QString names = stairsNames[0];
-                    for (int i = 1; i < stairsNames.size(); i++)
-                        names += "," + stairsNames[i];
-
-                    QFile out(totalName);
-                    out.open(QIODevice::WriteOnly);
-
-                    QMap<QString, QString> m;
-                    m["stairs_names"] = names;
-
-                    DataDumper::dump(stairs, out, m);
                     data.releaseData();
+                    dumpStairs(stairs, stairsNames);
                 }
 
                 continue;
@@ -224,6 +222,13 @@ void FileSummator::run() {
         }
 
         printf("\n\n");
+    }
+
+    if (stairsSearch) {
+        sortStairs(stairs, stairsNames);
+        dumpStairs(stairs, stairsNames);
+        printf("Stairs sorted and dumped to %s\n", getStairsName(stairs).toUtf8().constData());
+        exit(0);
     }
 
     if (!multifileInited) {
@@ -501,4 +506,93 @@ void FileSummator::addStair(Data &stairs) {
 
     stairs.releaseData();
     stairs = res;
+}
+
+QString FileSummator::getStairsName(const Data &stairs) {
+    if (stairs.isLong())
+        return "./LongStairs.pnthr";
+    else
+        return "./ShortStairs.pnt";
+}
+
+void FileSummator::dumpStairs(const Data &stairs, const QStringList &stairsNames) {
+    QString stairsResName = getStairsName(stairs);
+
+    QString names = stairsNames[0];
+    for (int i = 1; i < stairsNames.size(); i++)
+        names += "," + stairsNames[i];
+
+    QFile out(stairsResName);
+    out.open(QIODevice::WriteOnly);
+
+    QMap<QString, QString> m;
+    m["stairs_names"] = names;
+
+    DataDumper::dump(stairs, out, m);
+}
+
+void FileSummator::initStairs(Data &stairs, QStringList &names) {
+    QString stairsResName = getStairsName(stairs);
+    Data tmp = Reader().readBinaryFile(stairsResName);
+    if (tmp.isValid()) {
+        stairs = tmp;
+        names = Settings::settings()->getLastHeader()["stairs_names"].split(",");
+        qDebug() << "found previous stairs file at" << stairsResName;
+        qDebug() << names.size() << "stairs extracted";
+    }
+        qDebug() << "previous stairs search not found. Starting from scratch";
+}
+
+namespace {
+    void swap(const Data &data, int a, int b) {
+        for (int module = 0; module < data.modules; module++)
+            for (int ray = 0; ray < data.rays; ray++)
+                for (int channel = 0; channel < data.channels; channel++)
+                    std::swap(data.data[module][channel][ray][a],
+                              data.data[module][channel][ray][b]);
+    }
+
+    QString year(QString s) {
+        return s.left(6).right(2);
+    }
+
+    QString month(QString s) {
+        return s.left(4).right(2);
+    }
+
+    QString day(QString s) {
+        return s.left(2);
+    }
+
+    QString hour(QString s) {
+        return s.left(9).right(2);
+    }
+
+    bool less(QString a, QString b) {
+        if (year(a) < year(b))
+            return true;
+        else if (year(a) > year(b))
+            return false;
+
+        if (month(a) < month(b))
+            return true;
+        else if (month(a) > month(b))
+            return false;
+
+        if (day(a) < day(b))
+            return true;
+        else if (day(a) > day(b))
+            return false;
+
+        return hour(a) < hour(b);
+    }
+}
+
+void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
+    for (int i = 0; i < names.size(); i++)
+        for (int j = i; j < names.size() - 1; j++)
+            if (less(names[j + 1], names[j])) {
+                swap(stairs, j, j + 1);
+                swap(names[j], names[j + 1]);
+            }
 }

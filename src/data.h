@@ -51,7 +51,7 @@ struct Data {
                         delete[] data[i][j][k];
     }
 
-    bool isLong() {
+    bool isLong() const {
         return oneStep < 0.02;
     }
 

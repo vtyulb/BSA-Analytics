@@ -185,6 +185,7 @@ Data Reader::readBinaryFile(QString file) {
 
     emit progress(100);
 
+    Settings::settings()->setLastHeader(header);
     Settings::settings()->setLastData(data);
     return data;
 }

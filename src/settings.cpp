@@ -230,6 +230,10 @@ void Settings::setLastData(const Data &d) {
         loadStair();
 }
 
+void Settings::setLastHeader(const QMap<QString, QString> &m) {
+    _lastHeader = m;
+}
+
 void Settings::setSinglePeriod(bool b) {
     _singlePeriod = b;
 }
@@ -238,8 +242,12 @@ bool Settings::singlePeriod() {
     return _singlePeriod;
 }
 
-Data Settings::lastData() {
+Data Settings::getLastData() {
     return _lastData;
+}
+
+QMap<QString, QString> Settings::getLastHeader() {
+    return _lastHeader;
 }
 
 void Settings::setProgressBar(QProgressBar *_bar) {
@@ -299,18 +307,18 @@ void Settings::saveStair() {
             for (int k = 0; k < stairs[0][0].size(); k++)
                 stairList.push_back(stairs[i][j][k]);
 
-    if (lastData().isLong()) {
+    if (getLastData().isLong()) {
         QSettings().setValue("LongStair", stairList);
-        QSettings().setValue("LongStairName", lastData().name);
+        QSettings().setValue("LongStairName", getLastData().name);
     } else {
         QSettings().setValue("ShortStair", stairList);
-        QSettings().setValue("ShortStairName", lastData().name);
+        QSettings().setValue("ShortStairName", getLastData().name);
     }
 }
 
 bool Settings::loadStair() {
     QList<QVariant> stairList;
-    if (lastData().isLong()) {
+    if (getLastData().isLong()) {
         qDebug() << "loading long stair";
         stairList = QSettings().value("LongStair").toList();
         _stairFileName = QSettings().value("LongStairName").toString();
@@ -328,11 +336,11 @@ bool Settings::loadStair() {
 
     QList<QVariant>::Iterator current = stairList.begin();
     stairs.clear();
-    stairs.resize(lastData().modules);
+    stairs.resize(getLastData().modules);
     for (int i = 0; i < stairs.size(); i++) {
-        stairs[i].resize(lastData().rays);
-        for (int j = 0; j < lastData().rays; j++)
-            for (int k = 0; k < lastData().channels; k++)
+        stairs[i].resize(getLastData().rays);
+        for (int j = 0; j < getLastData().rays; j++)
+            for (int k = 0; k < getLastData().channels; k++)
             stairs[i][j].push_back((current++)->toDouble());
     }
 

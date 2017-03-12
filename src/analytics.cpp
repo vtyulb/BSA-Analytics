@@ -541,7 +541,7 @@ void Analytics::dispersionPlot() {
 }
 
 void Analytics::dispersionRemember() {
-    Data data = Settings::settings()->lastData();
+    Data data = Settings::settings()->getLastData();
     QVector<double> dt;
     for (int i = 0; i < data.npoints; i++)
         dt.push_back(data.data[0][0][0][i]);
@@ -596,7 +596,7 @@ void Analytics::profileMplus() {
 
     profileRemember();
 
-    Data last = Settings::settings()->lastData();
+    Data last = Settings::settings()->getLastData();
     window->regenerate(last);
 }
 

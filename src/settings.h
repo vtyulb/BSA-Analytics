@@ -5,6 +5,7 @@
 #include <QTime>
 #include <QProgressBar>
 #include <QByteArray>
+#include <QMap>
 #include <QObject>
 
 #include <data.h>
@@ -50,7 +51,8 @@ public:
     double dispersion();
     QVector<double> dispersionData();
     QVector<double> profileData(int dispersion);
-    Data lastData();
+    Data getLastData();
+    QMap<QString, QString> getLastHeader();
     int stairStatus();
 
     int module();
@@ -88,6 +90,7 @@ public:
     void setDispersionData(const QVector<double>&);
     void setProfileData(const QVector<double> &profile, int dispersion);
     void setLastData(const Data&);
+    void setLastHeader(const QMap<QString, QString>&);
     void setLongRoads(bool);
     void setFourierAnalytics(bool);
     void setFourierStepConstant(double);
@@ -133,6 +136,7 @@ private:
     QVector<double> profilePlotData[200];
     QVector<QVector<QVector<double> > > stairs;
     Data _lastData;
+    QMap<QString, QString> _lastHeader;
     MainWindow *_mainWindow;
     QProgressBar *bar;
     int _currentProgress;

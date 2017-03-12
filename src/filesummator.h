@@ -21,6 +21,10 @@ private:
     void dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber);
 
     void addStair(Data &stairs);
+    void sortStairs(const Data &stairs, QStringList &names);
+    void dumpStairs(const Data &stairs, const QStringList &names);
+    void initStairs(Data &stairs, QStringList &names);
+    QString getStairsName(const Data &data);
 
     void saveCuttingState();
     void loadCuttingState();

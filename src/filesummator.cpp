@@ -539,7 +539,7 @@ void FileSummator::initStairs(Data &stairs, QStringList &names) {
         names = Settings::settings()->getLastHeader()["stairs_names"].split(",");
         qDebug() << "found previous stairs file at" << stairsResName;
         qDebug() << names.size() << "stairs extracted";
-    }
+    } else
         qDebug() << "previous stairs search not found. Starting from scratch";
 }
 
@@ -594,10 +594,17 @@ namespace {
 }
 
 void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
-    for (int i = 0; i < names.size(); i++)
+    printf("sorting stairs");
+    for (int i = 0; i < names.size(); i++) {
+        if (i % 10 == 0) {
+            printf(".");
+            fflush(stdout);
+        }
+
         for (int j = i; j < names.size() - 1; j++)
             if (less(names[j + 1], names[j])) {
                 swap(stairs, j, j + 1);
                 swap(names[j], names[j + 1]);
             }
+    }
 }

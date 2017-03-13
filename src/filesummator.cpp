@@ -183,6 +183,7 @@ void FileSummator::run() {
                     if (stairsNames.contains(data.previousLifeName))
                         continue;
 
+                    data = reader.readBinaryFile(fileNames[i]);
                     int start = 3000;
                     int end = 3200;
                     if (data.isLong()) {
@@ -190,12 +191,14 @@ void FileSummator::run() {
                         end = 27000;
                     }
 
-                    data = reader.readBinaryFile(fileNames[i]);
-                    Settings::settings()->detectStair(data, start, end);
-                    stairsNames.push_back(QFileInfo(fileNames[i]).fileName());
-                    addStair(stairs);
+                    if (data.modules == 6 && data.rays == 8) {
+                        Settings::settings()->detectStair(data, start, end);
+                        stairsNames.push_back(QFileInfo(fileNames[i]).fileName());
+                        addStair(stairs);
+                        dumpStairs(stairs, stairsNames);
+                    }
+
                     data.releaseData();
-                    dumpStairs(stairs, stairsNames);
                 }
 
                 continue;

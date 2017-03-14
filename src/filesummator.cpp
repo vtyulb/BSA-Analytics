@@ -178,20 +178,16 @@ void FileSummator::run() {
                     data.hourFromPreviousLifeName() == 9 ||
                     data.hourFromPreviousLifeName() == 13 ||
                     data.hourFromPreviousLifeName() == 17 ||
-                    data.hourFromPreviousLifeName() == 21)
+                    data.hourFromPreviousLifeName() == 21 || true)
                 {
                     if (stairsNames.contains(data.previousLifeName))
                         continue;
 
                     data = reader.readBinaryFile(fileNames[i]);
-                    int start = 3000;
-                    int end = 3200;
-                    if (data.isLong()) {
-                        start = 23000;
-                        end = 27000;
-                    }
+                    int start = 0;
+                    int end = 0;
 
-                    if (data.modules == 6 && data.rays == 8) {
+                    if (data.modules == 6 && data.rays == 8 && findStair(data, start, end)) {
                         Settings::settings()->detectStair(data, start, end);
                         stairsNames.push_back(QFileInfo(fileNames[i]).fileName());
                         addStair(stairs);
@@ -613,4 +609,25 @@ void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
                 swap(names[j], names[j + 1]);
             }
     }
+}
+
+bool FileSummator::findStair(Data &data, int &start, int &end) {
+    QVector<QPair<double, int> > values;
+    for (int i = 0; i < data.npoints; i++)
+        values.push_back(QPair<double, int>(data.data[0][0][0][i], i));
+
+    std::sort(values.begin(), values.end());
+    start = values[0].second;
+    end = values[0].second;
+
+    int count = data.isLong() ? 780 : 90;
+    for (int i = 0; i < count; i++) {
+        start = std::min(start, values[i].second);
+        end = std::max(end, values[0].second);
+    }
+
+    if (end - start < count * 2)
+        return true;
+    else
+        return false;
 }

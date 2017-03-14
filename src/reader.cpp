@@ -4,6 +4,7 @@
 #include <malloc.h>
 
 #include <QFile>
+#include <QFileInfo>
 #include <QStringList>
 #include <QApplication>
 
@@ -138,11 +139,7 @@ Data Reader::readBinaryFile(QString file) {
 
     data.oneStep = header["tresolution"].toDouble() / 1000;
     data.delta_lucha = 0.89;
-
-    for (int i = 0; i < file.size(); i++)
-        if (file[i] == '/' || file[i] == '\\')
-            data.name = file.right(file.size() - i - 1);
-
+    data.name = QFileInfo(file).fileName();
     data.channels = channels;
     data.modules = modulus;
     data.rays = rays;

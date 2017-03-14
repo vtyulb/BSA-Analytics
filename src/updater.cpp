@@ -1,5 +1,6 @@
 #include "updater.h"
 
+#include <QApplication>
 #include <QNetworkAccessManager>
 #include <QNetworkRequest>
 #include <QNetworkReply>
@@ -108,8 +109,11 @@ void Updater::checkForUpdates() {
 
 void Updater::checkFinished(QNetworkReply *reply) {
     QObject::disconnect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkFinished(QNetworkReply*)));
-    int size = reply->header(QNetworkRequest::ContentLengthHeader).toInt();
-    if (size != latestInstallerSize) {
+    QDateTime latestInstaller = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
+    qDebug() << "Latest installer was created " << latestInstaller;
+    long long secs = QFileInfo(qApp->arguments().first()).lastModified().secsTo(latestInstaller);
+    qDebug() << "Your version is outdated by" << secs << "seconds";
+    if (secs > 3600) {
         if (QMessageBox::question(NULL, "Updater",
                                   "New update available!\n"
                                   "Should I download it now?",

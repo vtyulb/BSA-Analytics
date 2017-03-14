@@ -570,7 +570,16 @@ namespace {
         return s.left(9).right(2);
     }
 
+    QString area(QString s) {
+        return s.left(12).right(2);
+    }
+
     bool less(QString a, QString b) {
+        if (area(a) < area(b))
+            return true;
+        else if (area(a) > area(b))
+            return false;
+
         if (year(a) < year(b))
             return true;
         else if (year(a) > year(b))

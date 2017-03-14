@@ -623,7 +623,7 @@ bool FileSummator::findStair(Data &data, int &start, int &end) {
     int count = data.isLong() ? 780 : 90;
     for (int i = 0; i < count; i++) {
         start = std::min(start, values[i].second);
-        end = std::max(end, values[0].second);
+        end = std::max(end, values[i].second);
     }
 
     if (end - start < count * 2)

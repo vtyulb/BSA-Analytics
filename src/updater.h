@@ -16,8 +16,8 @@ private:
     QProgressBar *progress;
     QWidget *downloaderWidget;
     QNetworkReply *networkReply;
-    qint64 latestInstallerSize;
     QNetworkAccessManager *manager;
+    bool silentMode;
 
 private slots:
     void dumpSetup(QNetworkReply*);
@@ -28,7 +28,7 @@ private slots:
     void checkFinished(QNetworkReply*);
 
 public slots:
-    void checkForUpdates();
+    void checkForUpdates(bool silence);
 };
 
 #endif // UPDATER_H

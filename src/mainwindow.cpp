@@ -75,9 +75,9 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     }
 
     static Updater updater;
-    QObject::connect(ui->actionUpdate, SIGNAL(triggered()), &updater, SLOT(download()));
+    QObject::connect(ui->actionUpdate, SIGNAL(triggered(bool)), &updater, SLOT(checkForUpdates(bool)));
     if (ui->actionCheck_for_updates->isChecked())
-        updater.checkForUpdates();
+        updater.checkForUpdates(true);
 }
 
 MainWindow::~MainWindow() {

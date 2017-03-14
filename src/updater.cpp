@@ -13,6 +13,7 @@
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QWidget>
+#include <QSettings>
 #include <QLabel>
 
 const QString installerName = QDir::tempPath() + "/BSA-Analytics-x64.exe";
@@ -20,7 +21,6 @@ const QUrl downloadUrl("https://bsa.vtyulb.ru/BSA-Analytics-x64.exe");
 
 Updater::Updater(QObject *parent) : QObject(parent)
 {
-    latestInstallerSize = QFileInfo(installerName).size();
     manager = new QNetworkAccessManager;
 }
 
@@ -53,12 +53,6 @@ void Updater::download() {
 void Updater::downloadProgressChanged(qint64 current, qint64 total) {
     progress->setMaximum(total / 1000);
     progress->setValue(current / 1000);
-
-    if (total == latestInstallerSize && networkReply && total) {
-        cancelUpdate();
-        QMessageBox::information(downloaderWidget, "Update", "Latest version is already downloaded.\nRerunning installer!");
-        runSetup();
-    }
 }
 
 void Updater::cancelUpdate() {
@@ -101,7 +95,13 @@ void Updater::runSetup() {
     QDesktopServices::openUrl(QUrl::fromLocalFile(installerName));
 }
 
-void Updater::checkForUpdates() {
+void Updater::checkForUpdates(bool silence) {
+    silentMode = silence;
+    if (QSettings().value("LastTimeCheckedForUpdates").toDate() == QDate::currentDate() && silentMode) {
+        qDebug() << "already checked for updates today";
+        return;
+    }
+
     QNetworkRequest request(downloadUrl);
     manager->head(request);
     QObject::connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkFinished(QNetworkReply*)));
@@ -112,12 +112,19 @@ void Updater::checkFinished(QNetworkReply *reply) {
     QDateTime latestInstaller = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
     qDebug() << "Latest installer was created " << latestInstaller;
     long long secs = QFileInfo(qApp->arguments().first()).lastModified().secsTo(latestInstaller);
-    qDebug() << "Your version is outdated by" << secs << "seconds";
     if (secs > 3600) {
+        qDebug() << "Your version is outdated by" << secs << "seconds";
         if (QMessageBox::question(NULL, "Updater",
-                                  "New update available!\n"
+                                  "New update available!\n" +
+                                  QString("Your version is outdated by %1 days %2 hours.\n").arg(secs/3600/24).arg(secs/3600%24) +
                                   "Should I download it now?",
                                   QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
             download();
+        else
+            QSettings().setValue("LastTimeCheckedForUpdates", QDate::currentDate());
+    } else {
+        qDebug() << "Installed version is latest";
+        if (!silentMode)
+            QMessageBox::information(NULL, "Updater", "Installed version is latest!");
     }
 }

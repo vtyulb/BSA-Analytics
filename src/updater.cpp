@@ -117,7 +117,7 @@ void Updater::checkFinished(QNetworkReply *reply) {
         if (QMessageBox::question(NULL, "Updater",
                                   "New update available!\n" +
                                   QString("Your version is outdated by %1 days %2 hours.\n").arg(secs/3600/24).arg(secs/3600%24) +
-                                  "Should I download it now?",
+                                  "Do you want to update now?",
                                   QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
             download();
         else

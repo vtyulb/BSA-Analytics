@@ -22,10 +22,7 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, QDateTime tim
     data.modules = 1;
     data.oneStep = 0.1;
     data.time = time;
-
-    for (int i = 0; i < fileName.size(); i++)
-        if (fileName[i] == '/' || fileName[i] == '\\')
-            data.name = fileName.right(fileName.size() - i - 1);
+    data.name = QFileInfo(fileName).fileName();
 
     QFile file(fileName);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))

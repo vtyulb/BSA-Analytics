@@ -153,11 +153,7 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
 //    controlFrame->setMinimumWidth(188);
 
     controller = new Controller(this);
-    controller->setModules(data.modules);
-    controller->setChannels(data.channels);
-    controller->setPoints(data.npoints);
-    controller->setRays(data.rays);
-    controller->setFileName(data.name);
+    setControllerData(data);
     l->addWidget(controller);
 
     setContentsMargins(0, 0, 0, 0);
@@ -177,9 +173,17 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
     deltaChanged(delta->value());
 }
 
+void Drawer::setControllerData(const Data &data) {
+    controller->setModules(data.modules);
+    controller->setChannels(data.channels);
+    controller->setPoints(data.npoints);
+    controller->setRays(data.rays);
+    controller->setFileName(data.name);
+}
+
 void Drawer::pushNewData(const Data &data) {
     controller->resetSky(data);
-    controller->setPoints(data.npoints);
+    setControllerData(data);
 
     drawer->data.releaseData();
     drawer->setData(data);

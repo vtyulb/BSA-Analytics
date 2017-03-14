@@ -54,7 +54,7 @@ void Controller::setCoords(QPointF p) {
                               QString::number(Settings::settings()->getFourierSpectreSize() * 2 / (p.x() + 1) * Settings::settings()->getFourierStepConstant(), 'f', 5)));
 
     if (Settings::settings()->getLastHeader().contains("stairs_names"))
-        nativeXCoord->setText(Settings::settings()->getLastHeader()["stairs_names"].split(",").value(int(p.x())));
+        nativeXCoord->setText(Settings::settings()->getLastHeader()["stairs_names"].split(",").value(int(p.x() + 0.5)));
 
     if (Settings::settings()->sourceMode()) {
         stairFileName->setText("Stair from " + Settings::settings()->stairFileName());

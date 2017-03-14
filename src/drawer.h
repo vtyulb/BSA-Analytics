@@ -43,6 +43,8 @@ private:
 
     void keyPressEvent(QKeyEvent *);
 
+    void setControllerData(const Data &data);
+
 private slots:
     void checkBoxStateChanged();
     void channelChanged(int);

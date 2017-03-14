@@ -17,14 +17,18 @@ private:
     QWidget *downloaderWidget;
     QNetworkReply *networkReply;
     qint64 latestInstallerSize;
+    QNetworkAccessManager *manager;
 
 private slots:
-    void runSetup(QNetworkReply*);
+    void dumpSetup(QNetworkReply*);
+    void runSetup();
     void downloadProgressChanged(qint64, qint64);
+    void cancelUpdate();
+    void download();
+    void checkFinished(QNetworkReply*);
 
 public slots:
-    void download();
-    void cancelUpdate();
+    void checkForUpdates();
 };
 
 #endif // UPDATER_H

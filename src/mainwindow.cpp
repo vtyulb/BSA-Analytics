@@ -54,6 +54,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionFlux_Density, SIGNAL(triggered()), this, SLOT(setFluxDensityMode()));
     QObject::connect(ui->actionSet_stair, SIGNAL(triggered()), this, SLOT(setStair()));
     QObject::connect(ui->actionHandBook, SIGNAL(triggered()), this, SLOT(showHelp()));
+    QObject::connect(ui->actionCheck_for_updates, SIGNAL(triggered()), this, SLOT(checkForUpdatesStatusChanged()));
 
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
@@ -75,6 +76,8 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
 
     static Updater updater;
     QObject::connect(ui->actionUpdate, SIGNAL(triggered()), &updater, SLOT(download()));
+    if (ui->actionCheck_for_updates->isChecked())
+        updater.checkForUpdates();
 }
 
 MainWindow::~MainWindow() {
@@ -247,6 +250,7 @@ void MainWindow::saveSettings() {
     s.setValue("openPath", QVariant(lastOpenPath));
     s.setValue("fast", QVariant(ui->actionFast->isChecked()));
     s.setValue("live", QVariant(ui->actionLive->isChecked()));
+    s.setValue("CheckForUpdates", QVariant(ui->actionCheck_for_updates->isChecked()));
 }
 
 void MainWindow::loadSettings() {
@@ -256,6 +260,7 @@ void MainWindow::loadSettings() {
     ui->actionFast->setChecked(s.value("fast", false).toBool());
     ui->actionLive->setChecked(s.value("live", true).toBool());
     lastOpenPath = s.value("openPath").toString();
+    ui->actionCheck_for_updates->setChecked(s.value("CheckForUpdates", true).toBool());
 }
 
 void MainWindow::customOpen() {
@@ -376,4 +381,8 @@ void MainWindow::setStyle(QAction *action) {
         styles->actions()[i]->setChecked(false);
 
     action->setChecked(true);
+}
+
+void MainWindow::checkForUpdatesStatusChanged() {
+    QSettings().setValue("CheckForUpdates", ui->actionCheck_for_updates->isChecked());
 }

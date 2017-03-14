@@ -69,10 +69,12 @@
     </property>
     <addaction name="actionHandBook"/>
     <addaction name="separator"/>
+    <addaction name="actionCheck_for_updates"/>
     <addaction name="actionUpdate"/>
     <addaction name="separator"/>
     <addaction name="actionAbout"/>
     <addaction name="actionAbout_Qt"/>
+    <addaction name="separator"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -315,6 +317,14 @@
   <action name="actionSet_stair">
    <property name="text">
     <string>&amp;Set stair</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_updates">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Check for updates</string>
    </property>
   </action>
  </widget>

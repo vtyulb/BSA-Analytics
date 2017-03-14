@@ -71,6 +71,7 @@ private slots:
     void setStair();
 
     void setStyle(QAction*);
+    void checkForUpdatesStatusChanged();
 
 public slots:
     void regenerate(Data &data);

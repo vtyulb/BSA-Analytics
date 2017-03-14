@@ -21,7 +21,7 @@ const int CuttingPCLong = 16384;
 namespace {
     void clearLine() {
         printf("\r");
-        for (int i = 0; i < 80; i++) printf(" ");
+        for (int i = 0; i < 120; i++) printf(" ");
     }
 }
 

@@ -225,6 +225,7 @@ void FileSummator::run() {
     }
 
     if (stairsSearch) {
+        checkStairs(stairs, stairsNames);
         sortStairs(stairs, stairsNames);
         dumpStairs(stairs, stairsNames);
         printf("Stairs sorted and dumped to %s\n", getStairsName(stairs).toUtf8().constData());
@@ -639,4 +640,39 @@ bool FileSummator::findStair(Data &data, int &start, int &end) {
         return true;
     else
         return false;
+}
+
+void FileSummator::checkStairs(Data &stairs, QStringList &names) {
+    qDebug() << "searching for bad data";
+    for (int i = 0; i < stairs.npoints; i++) {
+        bool good = true;
+        QString reason;
+        if (!names[i].contains("_N1_") && !names[i].contains("_N2_")) {
+            good = false;
+            reason = "Does not have ground flag (_N1_ or _N2_)";
+        }
+
+        for (int module = 0; module < stairs.modules; module++)
+            for (int channel = 0; channel < stairs.channels; channel++)
+                for (int ray = 0; ray < stairs.rays; ray++)
+                    if (good) {
+                        if (stairs.data[module][channel][ray][i] < 0.05) {
+                            good = false;
+                            reason = QString("Data at module %1 ray %2 channel %3 is too small").arg(module+1).arg(ray+1).arg(channel+1);
+                        } else if (stairs.data[module][channel][ray][i] > 100) {
+                            good = false;
+                            reason = QString("Data at module %1 ray %2 channel %3 is too big").arg(module+1).arg(ray+1).arg(channel+1);
+                        }
+                    }
+
+        qDebug() << "file" << names[i] << "excluded from file for reason:" << reason;
+        for (int module = 0; module < stairs.modules; module++)
+            for (int channel = 0; channel < stairs.channels; channel++)
+                for (int ray = 0; ray < stairs.rays; ray++)
+                    std::swap(stairs.data[module][channel][ray][i], stairs.data[module][channel][ray][stairs.npoints - 1]);
+
+        std::swap(names[i], names[stairs.npoints - 1]);
+        stairs.npoints--;
+        i--;
+    }
 }

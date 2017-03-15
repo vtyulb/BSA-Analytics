@@ -22,6 +22,7 @@ private:
 
     void addStair(Data &stairs);
     bool findStair(Data &data, int &start, int &end);
+    void checkStairs(Data &stairs, QStringList &names);
     void sortStairs(const Data &stairs, QStringList &names);
     void dumpStairs(const Data &stairs, const QStringList &names);
     void initStairs(Data &stairs, QStringList &names);

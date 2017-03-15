@@ -613,7 +613,7 @@ void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
             fflush(stdout);
         }
 
-        for (int j = names.size() - 1; j >= i; j--)
+        for (int j = names.size() - 2; j >= i; j--)
             if (less(names[j + 1], names[j])) {
                 swap(stairs, j, j + 1);
                 swap(names[j], names[j + 1]);

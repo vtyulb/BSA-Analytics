@@ -665,14 +665,16 @@ void FileSummator::checkStairs(Data &stairs, QStringList &names) {
                         }
                     }
 
-        qDebug() << "file" << names[i] << "excluded from file for reason:" << reason;
-        for (int module = 0; module < stairs.modules; module++)
-            for (int channel = 0; channel < stairs.channels; channel++)
-                for (int ray = 0; ray < stairs.rays; ray++)
-                    std::swap(stairs.data[module][channel][ray][i], stairs.data[module][channel][ray][stairs.npoints - 1]);
+        if (!good) {
+            qDebug() << "file" << names[i] << "excluded from file for reason:" << reason;
+            for (int module = 0; module < stairs.modules; module++)
+                for (int channel = 0; channel < stairs.channels; channel++)
+                    for (int ray = 0; ray < stairs.rays; ray++)
+                        std::swap(stairs.data[module][channel][ray][i], stairs.data[module][channel][ray][stairs.npoints - 1]);
 
-        std::swap(names[i], names[stairs.npoints - 1]);
-        stairs.npoints--;
-        i--;
+            std::swap(names[i], names[stairs.npoints - 1]);
+            stairs.npoints--;
+            i--;
+        }
     }
 }

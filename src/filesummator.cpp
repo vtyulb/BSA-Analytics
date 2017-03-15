@@ -613,7 +613,7 @@ void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
             fflush(stdout);
         }
 
-        for (int j = i; j < names.size() - 1; j++)
+        for (int j = names.size() - 1; j >= i; j--)
             if (less(names[j + 1], names[j])) {
                 swap(stairs, j, j + 1);
                 swap(names[j], names[j + 1]);
@@ -666,13 +666,13 @@ void FileSummator::checkStairs(Data &stairs, QStringList &names) {
                     }
 
         if (!good) {
-            qDebug() << "file" << names[i] << "excluded from file for reason:" << reason;
+            qDebug() << "file" << names[i] << "excluded from stairs for reason:" << reason;
             for (int module = 0; module < stairs.modules; module++)
                 for (int channel = 0; channel < stairs.channels; channel++)
                     for (int ray = 0; ray < stairs.rays; ray++)
-                        std::swap(stairs.data[module][channel][ray][i], stairs.data[module][channel][ray][stairs.npoints - 1]);
+                        stairs.data[module][channel][ray][i] = stairs.data[module][channel][ray][stairs.npoints - 1];
 
-            std::swap(names[i], names[stairs.npoints - 1]);
+            names[i] = names[stairs.npoints - 1];
             stairs.npoints--;
             i--;
         }

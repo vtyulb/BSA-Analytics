@@ -673,6 +673,7 @@ void FileSummator::checkStairs(Data &stairs, QStringList &names) {
                         stairs.data[module][channel][ray][i] = stairs.data[module][channel][ray][stairs.npoints - 1];
 
             names[i] = names[stairs.npoints - 1];
+            names.removeLast();
             stairs.npoints--;
             i--;
         }

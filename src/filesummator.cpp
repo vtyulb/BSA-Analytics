@@ -540,6 +540,9 @@ void FileSummator::initStairs(Data &stairs, QStringList &names) {
     if (tmp.isValid()) {
         stairs = tmp;
         names = Settings::settings()->getLastHeader()["stairs_names"].split(",");
+        while (names.size() > stairs.npoints)
+            names.removeLast();
+
         qDebug() << "found previous stairs file at" << stairsResName;
         qDebug() << names.size() << "stairs extracted";
     } else

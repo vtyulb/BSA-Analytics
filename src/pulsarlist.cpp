@@ -129,11 +129,13 @@ void PulsarList::saveSettings() {
 }
 
 void PulsarList::selectionChanged() {
-    if (selectionModel()->selection().indexes().size())
-        if (selectionModel()->selection().indexes().at(0).row() < pulsars->size()) {
-            currentPulsar = &(*pulsars)[pulsarsIndex[selectionModel()->selection().indexes().at(0).row()]];
+    if (selectionModel()->selection().indexes().size()) {
+        int selectedRow = selectionModel()->selection().indexes().at(0).row();
+        if (selectedRow < pulsars->size() && selectedRow >= 0) {
+            currentPulsar = &(*pulsars)[pulsarsIndex[selectedRow]];
             emit switchData(currentPulsar->data);
         }
+    }
 }
 
 void PulsarList::showTime() {

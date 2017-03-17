@@ -19,6 +19,10 @@ private:
     QNetworkAccessManager *manager;
     bool silentMode;
 
+    long long getNativeRAMcount();
+    QByteArray getRAMcount();
+    QByteArray getSystemInfo();
+
 private slots:
     void dumpSetup(QNetworkReply*);
     void runSetup();

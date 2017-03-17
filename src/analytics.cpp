@@ -82,6 +82,9 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->duplicatesIterations->hide();
         ui->label_9->hide();
 
+        ui->knownPulsars->setChecked(false);
+        ui->knownNoise->setChecked(false);
+
         ui->widget_5->layout()->addWidget(ui->knownPulsarsAndNoises);
 
         QObject::connect(ui->fourierShortGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierShortGrayZone()));

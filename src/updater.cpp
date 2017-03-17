@@ -14,7 +14,10 @@
 #include <QHBoxLayout>
 #include <QWidget>
 #include <QSettings>
+#include <QSysInfo>
+#include <QThread>
 #include <QLabel>
+#include <QUuid>
 
 const QString installerName = QDir::tempPath() + "/BSA-Analytics-x64.exe";
 const QUrl downloadUrl("https://bsa.vtyulb.ru/BSA-Analytics-x64.exe");
@@ -102,7 +105,14 @@ void Updater::checkForUpdates(bool silence) {
         return;
     }
 
+    QString uuid = QSettings().value("UUID").toString();
+    if (uuid == "") {
+        uuid = QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "").left(6);
+        QSettings().setValue("UUID", uuid);
+    }
+
     QNetworkRequest request(downloadUrl);
+    request.setRawHeader("User-Agent", "BSA-Analytics {" + uuid.toUtf8() + "} from " + getSystemInfo());
     manager->head(request);
     QObject::connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkFinished(QNetworkReply*)));
 }
@@ -110,7 +120,7 @@ void Updater::checkForUpdates(bool silence) {
 void Updater::checkFinished(QNetworkReply *reply) {
     QObject::disconnect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkFinished(QNetworkReply*)));
     QDateTime latestInstaller = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
-    qDebug() << "Latest installer was created " << latestInstaller;
+    qDebug() << "Latest installer was created at " << latestInstaller.toString();
     long long secs = QFileInfo(qApp->arguments().first()).lastModified().secsTo(latestInstaller);
     if (secs > 3600) {
         qDebug() << "Your version is outdated by" << secs << "seconds";
@@ -128,3 +138,37 @@ void Updater::checkFinished(QNetworkReply *reply) {
             QMessageBox::information(NULL, "Updater", "Installed version is latest!");
     }
 }
+
+QByteArray Updater::getSystemInfo() {
+    QString info = QSysInfo::prettyProductName() +
+                   ", " + QString::number(QThread::idealThreadCount()) + " cores" +
+                   ", " + getRAMcount();
+
+    qDebug() << "System info:" << info;
+    return info.toUtf8();
+}
+
+QByteArray Updater::getRAMcount() {
+    long long ram = getNativeRAMcount();
+    ram /= 1024; // in KB now
+    ram /= 1024; // in MB now
+    return (QString::number(ram / 1000.0, 'f', 1) + "G").toUtf8();
+}
+
+#ifdef Q_OS_LINUX
+#include <unistd.h>
+long long Updater::getNativeRAMcount() {
+    long long pages = sysconf(_SC_PHYS_PAGES);
+    long long page_size = sysconf(_SC_PAGE_SIZE);
+    return pages * page_size;
+}
+#else
+#include <windows.h>
+long long Updater::getNativeRAMcount() {
+    MEMORYSTATUSEX status;
+    status.dwLength = sizeof(status);
+    GlobalMemoryStatusEx(&status);
+    return status.ullTotalPhys;
+}
+#endif
+

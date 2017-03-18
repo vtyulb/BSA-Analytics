@@ -57,7 +57,7 @@ void Controller::setCoords(QPointF p) {
         nativeXCoord->setText(Settings::settings()->getLastHeader()["stairs_names"].split(",").value(int(p.x() + 0.5)));
 
     if (Settings::settings()->sourceMode()) {
-        stairFileName->setText("Stair from " + Settings::settings()->stairFileName());
+        stairFileName->setText("Stair: " + Settings::settings()->stairFileName());
         stairFileName->show();
     } else
         stairFileName->hide();

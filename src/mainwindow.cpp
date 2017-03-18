@@ -305,7 +305,8 @@ void MainWindow::setRotationMeasureMode() {
         Settings::settings()->loadStair();
         Settings::settings()->setSourceMode(RotationMeasure);
         normalizeData();
-    }
+    } else
+        Settings::settings()->setSourceMode(NoSourceMode);
 }
 
 void MainWindow::setFluxDensityMode() {
@@ -314,7 +315,8 @@ void MainWindow::setFluxDensityMode() {
         Settings::settings()->loadStair();
         Settings::settings()->setSourceMode(FluxDensity);
         normalizeData();
-    }
+    } else
+        Settings::settings()->setSourceMode(NoSourceMode);
 }
 
 void MainWindow::normalizeData() {
@@ -330,6 +332,14 @@ void MainWindow::normalizeData() {
                     for (int ray = 0; ray < last.rays; ray++)
                         for (int i = 0; i < last.npoints; i++)
                             last.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
+
+            for (int module = 0; module < last.modules; module++)
+                for (int ray = 0; ray < last.rays; ray++)
+                    for (int i = 0; i < last.npoints; i++) {
+                        last.data[module][last.channels - 1][ray][i] = 0;
+                        for (int channel = 0; channel < last.channels - 1; channel++)
+                            last.data[module][last.channels - 1][ray][i] += last.data[module][channel][ray][i] / (last.channels - 1);
+                    }
 
             if (drawer)
                 drawer->drawer->resetVisibleRectangle();

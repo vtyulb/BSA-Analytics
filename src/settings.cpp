@@ -321,6 +321,7 @@ bool Settings::loadStair() {
                 return false;
             }
             setLastData(backup);
+            _lastHeader.clear();
         }
 
         Data *actual;
@@ -354,21 +355,9 @@ bool Settings::loadStair() {
                                     actual->data[module][channel][ray][ current ] * (1 - ( after ) / double(after-before)));
         }
 
+        _stairFileName = names->at(current-1).left(9) + "/" + names->at(current).left(12);
+
         return after < 3600*12 && before > -3600*12;
-    }
-
-
-
-
-    QList<QVariant> stairList;
-    if (getLastData().isLong()) {
-        qDebug() << "loading long stair";
-        stairList = QSettings().value("LongStair").toList();
-        _stairFileName = QSettings().value("LongStairName").toString();
-    } else {
-        qDebug() << "loading short stair";
-        stairList = QSettings().value("ShortStair").toList();
-        _stairFileName = QSettings().value("ShortStairName").toString();
     }
 
     return true;

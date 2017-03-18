@@ -310,12 +310,12 @@ bool Settings::loadStair() {
             shortStairsNames = getLastHeader()["stairs_names"].split(",");
             if (!longStairs.isValid() || !shortStairs.isValid()) {
                 QMessageBox::warning(NULL, "Error: No stairs files found",
-                                     "There are no stairs files found!\n"
+                                     "There are no stair files found!\n"
                                      "Program will NOT normalize data correctly,\n"
                                      "some functions may misbehave.\n\n"
                                      "You should install BSA-Analytics-stairs-pack\n"
                                      "from bsa.vtyulb.ru. If you have already done it,\n"
-                                     "contact <vtyulb@vtyulb.ru> for further instructions\n\n"
+                                     "contact <vtyulb@vtyulb.ru> for further instructions.\n\n"
                                      "No further warnings may be issued at this session\n"
                                      "and it does not mean that problem is resolved.");
                 return false;

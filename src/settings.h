@@ -12,12 +12,6 @@
 
 class MainWindow;
 
-enum Stair {
-    NoStair = 0,
-    SettingStair = 1,
-    DetectedStair = 2
-};
-
 enum SourceMode {
     NoSourceMode = 0,
     RotationMeasure = 1,
@@ -25,9 +19,13 @@ enum SourceMode {
 };
 
 #ifdef Q_OS_LINUX
-    const QString DOCPATH = "/usr/share/doc/bsa-analytics";
+    const QString DOC_PATH = "/usr/share/doc/bsa-analytics";
+    const QString SHORT_STAIRS = "/usr/share/bsa-analytics/ShortStairs.pnt";
+    const QString LONG_STAIRS = "/usr/share/bsa-analytics/LongStairs.pnthr";
 #else
-    const QString DOCPATH = ".";
+    const QString DOC_PATH = ".";
+    const QString SHORT_STAIRS = "data/ShortStairs.pnt";
+    const QString LONG_STAIRS = "data/LongStairs.pnthr";
 #endif
 
 class Settings: public QObject
@@ -53,7 +51,6 @@ public:
     QVector<double> profileData(int dispersion);
     Data getLastData();
     QMap<QString, QString> getLastHeader();
-    int stairStatus();
 
     int module();
     int ray();
@@ -99,10 +96,8 @@ public:
 
     void setMainWindow(MainWindow*);
 
-    void setStairStatus(Stair);
     void setSourceMode(SourceMode);
     QString stairFileName();
-    void saveStair();
     bool loadStair();
 
 private:
@@ -129,7 +124,6 @@ private:
     double _fourierStepConstant;
     int _fourierSpectreSize;
     bool _fourierHighGround;
-    Stair _stairStatus;
     QString _stairFileName;
     SourceMode _sourceMode;
     QVector<double> dispersionPlotData;

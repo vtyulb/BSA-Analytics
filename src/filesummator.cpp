@@ -140,30 +140,6 @@ void FileSummator::run() {
         if (path != "" && !cutter)
             continue;
 
-        if (fileNames.size())
-            printf("\nRunning stage 1 of 2\n");
-        stage = 1;
-        if (!longData && !stairsSearch)
-            for (int i = 0; i < fileNames.size(); i++) {
-                clearLine();
-                printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
-                fflush(stdout);
-
-                Data data = reader.readBinaryFile(fileNames[i]);
-                if (!data.isValid())
-                    continue;
-
-                reader.repairWrongChannels(data);
-                processData(data, multifile, coefficients);
-                data.releaseData();
-            }
-
-        if (fileNames.size())
-            printf("\nRunning stage 2 of 2\n");
-        stage = 2;
-        for (int i = 0; i < noises.size(); i++)
-            std::sort(noises[i].begin(), noises[i].end());
-
         for (int i = 0; i < fileNames.size(); i++) {
             clearLine();
             printf("\rReading file %d of %d [%s]", i + 1, fileNames.size(), fileNames[i].toUtf8().constData());
@@ -313,21 +289,13 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                     noise /= PC;
                     noise = pow(noise, 0.5);
 
+                    if (module == data.modules - 1 && ray == data.rays - 1 && channel == data.channels - 1)
+                        dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
 
-                    int point = (startPoint) / PC;
-
-                    if (stage == 1)
-                        noises[point].push_back(noise);
-                    else if (noises[point][noises[point].size() * 0.8] > noise)
-                    // stage == 2
-                        if (module == data.modules - 1 && ray == data.rays - 1 && channel == data.channels - 1)
-                            dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
-
-                        qDebug() << "Behaviour is strange. Please show this message to <vtyulb@vtyulb.ru>";
-                        for (int k = 0; k < PC; k++) {
-                            multifile.data[module][channel][ray][startPoint + k + offset] += data.data[module][channel][ray][j * PC + k + offset];
-                            coefficients.data[module][channel][ray][startPoint + k + offset] += 1;
-                        }
+                    for (int k = 0; k < PC; k++) {
+                        multifile.data[module][channel][ray][startPoint + k + offset] += data.data[module][channel][ray][j * PC + k + offset];
+                        coefficients.data[module][channel][ray][startPoint + k + offset] += 1;
+                    }
                 }
 
             }

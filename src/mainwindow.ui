@@ -104,24 +104,19 @@
    </widget>
    <widget class="QMenu" name="menuPulsars_investigation">
     <property name="title">
-     <string>&amp;Investigation of pulsars</string>
+     <string>Analy&amp;ze</string>
     </property>
     <addaction name="actionPrecise_search"/>
     <addaction name="actionPrecise_timing"/>
-   </widget>
-   <widget class="QMenu" name="menuNon_pulsar_flux">
-    <property name="title">
-     <string>&amp;Non pulsar flux</string>
-    </property>
+    <addaction name="separator"/>
     <addaction name="actionRotation_Measure"/>
     <addaction name="actionFlux_Density"/>
     <addaction name="separator"/>
-    <addaction name="actionSet_stair"/>
+    <addaction name="actionNormalize_data"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuPulsars"/>
    <addaction name="menuPulsars_investigation"/>
-   <addaction name="menuNon_pulsar_flux"/>
    <addaction name="menuEdit"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -324,7 +319,15 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Check for updates</string>
+    <string>&amp;Check for updates</string>
+   </property>
+  </action>
+  <action name="actionNormalize_data">
+   <property name="text">
+    <string>Normalize data</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
  </widget>

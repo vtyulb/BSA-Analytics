@@ -310,15 +310,6 @@ void NativeDrawer::mouseReleaseEvent(QMouseEvent *event) {
         mouseRect.setTop(height() - bot);
         mouseRect.setBottom(height() - top);
 
-        if (Settings::settings()->stairStatus() == SettingStair) {
-            Settings::settings()->detectStair(data,
-                                              backwardCoord(mouseRect.bottomLeft()).x(),
-                                              backwardCoord(mouseRect.topRight()).x());
-            Settings::settings()->setStairStatus(DetectedStair);
-            QMessageBox::information(this, "Stair status", "Stair detected. Sample height: " +
-                                     QString::number(Settings::settings()->getStairHeight(0,0,0)));
-        }
-
         c.setTopLeft(backwardCoord(mouseRect.bottomLeft()));
         c.setBottomRight(backwardCoord(mouseRect.topRight()));
 
@@ -470,7 +461,7 @@ void NativeDrawer::sourceDetect(int a, int b) {
 
 
         std::sort(res.data(), res.data() + res.size());
-        double current = (res[res.size() - 5] - res[5])/ Settings::settings()->getStairHeight(module, ray, k) * 2100;
+        double current = (res[res.size() - 5] - res[5]);
         average += current / (data.channels - 1);
         resStr = resStr + " " + QString::number(current, 'f', 2);
     }

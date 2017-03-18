@@ -31,7 +31,6 @@ private:
     void saveCuttingState();
     void loadCuttingState();
 
-    int stage;
     bool longData = false;
     int PC;
     QString cutterPath;

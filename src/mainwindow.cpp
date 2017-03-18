@@ -52,7 +52,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionSound_mode, SIGNAL(triggered()), this, SLOT(soundModeTriggered()));
     QObject::connect(ui->actionRotation_Measure, SIGNAL(triggered()), this, SLOT(setRotationMeasureMode()));
     QObject::connect(ui->actionFlux_Density, SIGNAL(triggered()), this, SLOT(setFluxDensityMode()));
-    QObject::connect(ui->actionSet_stair, SIGNAL(triggered()), this, SLOT(setStair()));
+    QObject::connect(ui->actionNormalize_data, SIGNAL(triggered()), this, SLOT(normalizeData()));
     QObject::connect(ui->actionHandBook, SIGNAL(triggered()), this, SLOT(showHelp()));
     QObject::connect(ui->actionCheck_for_updates, SIGNAL(triggered()), this, SLOT(checkForUpdatesStatusChanged()));
 
@@ -169,6 +169,9 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QD
 
 void MainWindow::regenerate(Data &data) {
     show();
+    if (ui->actionFlux_Density->isChecked() || ui->actionRotation_Measure->isChecked())
+        normalizeData();
+
     delete ui->label; ui->label = NULL;
     if (drawer) {
         Data *old = &drawer->drawer->data;
@@ -297,37 +300,45 @@ void MainWindow::soundModeTriggered() {
 }
 
 void MainWindow::setRotationMeasureMode() {
-    Settings::settings()->setStairStatus(NoStair);
     ui->actionFlux_Density->setChecked(false);
     if (ui->actionRotation_Measure->isChecked()) {
-        if (!Settings::settings()->loadStair())
-            setStair();
-
+        Settings::settings()->loadStair();
         Settings::settings()->setSourceMode(RotationMeasure);
+        normalizeData();
     }
 }
 
 void MainWindow::setFluxDensityMode() {
-    Settings::settings()->setStairStatus(NoStair);
     ui->actionRotation_Measure->setChecked(false);
     if (ui->actionFlux_Density->isChecked()) {
-        if (!Settings::settings()->loadStair())
-            setStair();
-
+        Settings::settings()->loadStair();
         Settings::settings()->setSourceMode(FluxDensity);
+        normalizeData();
     }
 }
 
-void MainWindow::setStair() {
-    Settings::settings()->setStairStatus(NoStair);
-    Settings::settings()->setStairStatus(SettingStair);
-    QMessageBox::information(this, "Setting stair",
-                                   "Open file with the stair, make a rectangular around it.\n"
-                                   "Rectangular height does not matter, only width and position");
+void MainWindow::normalizeData() {
+    static Data last;
+    if (Settings::settings()->getLastData().isValid() && last.name != Settings::settings()->getLastData().name) {
+        last = Settings::settings()->getLastData();
+        if (!Settings::settings()->loadStair())
+            QMessageBox::warning(this, "Error", "Stairs are too far from this data. Normalization is not completed!");
+        else {
+            qDebug() << "normalizing data";
+            for (int module = 0; module < last.modules; module++)
+                for (int channel = 0; channel < last.channels; channel++)
+                    for (int ray = 0; ray < last.rays; ray++)
+                        for (int i = 0; i < last.npoints; i++)
+                            last.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
+
+            if (drawer)
+                drawer->drawer->resetVisibleRectangle();
+        }
+    }
 }
 
 void MainWindow::showHelp() {
-    const QUrl help = QUrl::fromLocalFile(DOCPATH + "/HandBook.pdf");
+    const QUrl help = QUrl::fromLocalFile(DOC_PATH + "/HandBook.pdf");
     qDebug() << "opening help" << help;
     QDesktopServices::openUrl(help);
 }

@@ -68,7 +68,7 @@ private slots:
 
     void setRotationMeasureMode();
     void setFluxDensityMode();
-    void setStair();
+    void normalizeData();
 
     void setStyle(QAction*);
     void checkForUpdatesStatusChanged();

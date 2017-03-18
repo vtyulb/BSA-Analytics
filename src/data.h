@@ -143,6 +143,18 @@ struct Data {
     }
 };
 
+static inline QDateTime stringDateToDate(QString name) {
+    int day = name.left(2).toInt();
+    int month = name.left(4).right(2).toInt();
+    int year = name.left(6).right(2).toInt();
+    int hour = name.left(9).right(2).toInt();
+    int ground = name.left(13).right(1).toInt();
+
+    year += ground * 100;
+
+    return QDateTime(QDate(year, month, day), QTime(hour, 0));
+}
+
 
 
 #endif // DATA_H

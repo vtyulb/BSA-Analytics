@@ -4,6 +4,7 @@
 
 #include <QVariant>
 #include <QSettings>
+#include <QMessageBox>
 
 Settings::Settings() {
     filter = true;
@@ -22,7 +23,6 @@ Settings::Settings() {
     _fourierSpectreSize = 1024;
     _fourierHighGround = true;
     _sourceMode = NoSourceMode,
-    _stairStatus = NoStair;
     bar = NULL;
     _mainWindow = NULL;
     _currentProgress = -1;
@@ -146,11 +146,13 @@ void Settings::detectStair(const Data &data, int pointStart, int pointEnd) {
 
     _stairFileName = data.name;
     _lastData = data;
-    saveStair();
 }
 
 double Settings::getStairHeight(int module, int ray, int channel) {
-    return stairs[module][ray][channel];
+    if (stairs.size())
+        return stairs[module][channel][ray];
+    else
+        return 1;
 }
 
 void Settings::setPreciseSearch(bool p) {
@@ -290,33 +292,76 @@ bool Settings::getFourierHighGround() {
     return _fourierHighGround;
 }
 
-void Settings::setStairStatus(Stair status) {
-    _stairStatus = status;
-    if (status == NoStair)
-        stairs.clear();
-}
-
-int Settings::stairStatus() {
-    return _stairStatus;
-}
-
-void Settings::saveStair() {
-    QList<QVariant> stairList;
-    for (int i = 0; i < stairs.size(); i++)
-        for (int j = 0; j < stairs[0].size(); j++)
-            for (int k = 0; k < stairs[0][0].size(); k++)
-                stairList.push_back(stairs[i][j][k]);
-
-    if (getLastData().isLong()) {
-        QSettings().setValue("LongStair", stairList);
-        QSettings().setValue("LongStairName", getLastData().name);
-    } else {
-        QSettings().setValue("ShortStair", stairList);
-        QSettings().setValue("ShortStairName", getLastData().name);
-    }
-}
-
 bool Settings::loadStair() {
+    static QString lastStairFor = "void";
+    static Data shortStairs; static QStringList shortStairsNames;
+    static Data longStairs; static QStringList longStairsNames;
+    if (!getLastData().isValid())
+        return false;
+
+    if (lastStairFor != getLastData().name) {
+        if (!longStairs.isValid()) {
+            Data backup = getLastData();
+            Reader r;
+            QObject::connect(&r, SIGNAL(progress(int)), this, SLOT(setProgress(int)));
+            longStairs = r.readBinaryFile(LONG_STAIRS);
+            longStairsNames = getLastHeader()["stairs_names"].split(",");
+            shortStairs = r.readBinaryFile(SHORT_STAIRS);
+            shortStairsNames = getLastHeader()["stairs_names"].split(",");
+            if (!longStairs.isValid() || !shortStairs.isValid()) {
+                QMessageBox::warning(NULL, "Error: No stairs files found",
+                                     "There are no stairs files found!\n"
+                                     "Program will NOT normalize data correctly,\n"
+                                     "some functions may misbehave.\n\n"
+                                     "You should install BSA-Analytics-stairs-pack\n"
+                                     "from bsa.vtyulb.ru. If you have already done it,\n"
+                                     "contact <vtyulb@vtyulb.ru> for further instructions\n\n"
+                                     "No further warnings may be issued at this session\n"
+                                     "and it does not mean that problem is resolved.");
+                return false;
+            }
+            setLastData(backup);
+        }
+
+        Data *actual;
+        QStringList *names;
+        if (getLastData().isLong()) {
+            actual = &longStairs;
+            names = &longStairsNames;
+        } else {
+            actual = &shortStairs;
+            names = &shortStairsNames;
+        }
+
+        QDateTime me(stringDateToDate(getLastData().name));
+        lastStairFor = getLastData().name;
+        int current;
+        for (current = 1; current < actual->npoints - 1; current++)
+            if (me.secsTo(stringDateToDate(names->at(current))) >= 0)
+                break;
+
+        long long before = me.secsTo(stringDateToDate(names->at(current-1)));
+        long long after = me.secsTo(stringDateToDate(names->at(current)));
+        if (after < 3600*12 && before > -3600*12) {
+            stairs.clear();
+            stairs.resize(getLastData().modules);
+            for (int module = 0; module < getLastData().modules; module++) {
+                stairs[module].resize(getLastData().channels);
+                for (int channel = 0; channel < getLastData().channels; channel++)
+                    for (int ray = 0; ray < getLastData().rays; ray++)
+                        stairs[module][channel].push_back(
+                                    actual->data[module][channel][ray][current-1] * (1 - (-before) / double(after-before))+
+                                    actual->data[module][channel][ray][ current ] * (1 - ( after ) / double(after-before)));
+            }
+
+            return true;
+        } else
+            return false;
+    }
+
+
+
+
     QList<QVariant> stairList;
     if (getLastData().isLong()) {
         qDebug() << "loading long stair";
@@ -326,22 +371,6 @@ bool Settings::loadStair() {
         qDebug() << "loading short stair";
         stairList = QSettings().value("ShortStair").toList();
         _stairFileName = QSettings().value("ShortStairName").toString();
-    }
-
-    if (stairList.isEmpty()) {
-        _stairStatus = NoStair;
-        return false;
-    } else
-        _stairStatus = DetectedStair;
-
-    QList<QVariant>::Iterator current = stairList.begin();
-    stairs.clear();
-    stairs.resize(getLastData().modules);
-    for (int i = 0; i < stairs.size(); i++) {
-        stairs[i].resize(getLastData().rays);
-        for (int j = 0; j < getLastData().rays; j++)
-            for (int k = 0; k < getLastData().channels; k++)
-            stairs[i][j].push_back((current++)->toDouble());
     }
 
     return true;

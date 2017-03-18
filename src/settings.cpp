@@ -342,21 +342,19 @@ bool Settings::loadStair() {
 
         long long before = me.secsTo(stringDateToDate(names->at(current-1)));
         long long after = me.secsTo(stringDateToDate(names->at(current)));
-        if (after < 3600*12 && before > -3600*12) {
-            stairs.clear();
-            stairs.resize(getLastData().modules);
-            for (int module = 0; module < getLastData().modules; module++) {
-                stairs[module].resize(getLastData().channels);
-                for (int channel = 0; channel < getLastData().channels; channel++)
-                    for (int ray = 0; ray < getLastData().rays; ray++)
-                        stairs[module][channel].push_back(
+
+        stairs.clear();
+        stairs.resize(getLastData().modules);
+        for (int module = 0; module < getLastData().modules; module++) {
+            stairs[module].resize(getLastData().channels);
+            for (int channel = 0; channel < getLastData().channels; channel++)
+                for (int ray = 0; ray < getLastData().rays; ray++)
+                    stairs[module][channel].push_back(
                                     actual->data[module][channel][ray][current-1] * (1 - (-before) / double(after-before))+
                                     actual->data[module][channel][ray][ current ] * (1 - ( after ) / double(after-before)));
-            }
+        }
 
-            return true;
-        } else
-            return false;
+        return after < 3600*12 && before > -3600*12;
     }
 
 

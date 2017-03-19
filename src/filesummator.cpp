@@ -166,8 +166,10 @@ void FileSummator::run() {
             reader.repairWrongChannels(data);
             if (longData)
                 processLongData(data);
-            else if (processData(data))
+            else if (processData(data)) {
+                stairsNames.push_back(QFileInfo(fileNames[i]).fileName());
                 addStair(stairs);
+            }
 
             dumpStairs(stairs, stairsNames);
             data.releaseData();

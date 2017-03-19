@@ -35,6 +35,8 @@ private:
     int PC;
     QString cutterPath;
 
+    Data stairs;
+    QStringList stairsNames;
     QString stairsNameOverride;
     QVector<QVector<QVector<float> > > noises;
 

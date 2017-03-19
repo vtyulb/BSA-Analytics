@@ -77,8 +77,6 @@ void FileSummator::run() {
 
     Reader reader;
     Data multifile;
-    Data stairs;
-    QStringList stairsNames;
     bool multifileInited = false;
     QString path = "non-blank";
     while (path != "" || fileNames.count() || cutter) {
@@ -256,20 +254,6 @@ bool FileSummator::processData(Data &data) {
                         res[i] = -noise * maximumNoise;
 
                 //-------------------------------------------------
-                for (int i = 0; i < data.npoints; i++)
-                    buf[i] = data.data[module][channel][ray][i];
-
-                std::sort(buf.begin(), buf.end());
-
-                noise = 0;
-                for (int i = data.npoints * 0.2; i < data.npoints * 0.8; i++)
-                    noise += pow(buf[i], 2);
-
-                noise /= data.npoints * 0.8 - data.npoints * 0.2;
-                noise = pow(noise, 0.5);
-
-                noises[module][channel].push_back(noise);
-                //-------------------------------------------------
 
                 for (int j = 0; j < data.npoints / PC - 2; j++) {
                     double realPart;
@@ -386,9 +370,19 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
 
         for (int module = 0; module < res.modules; module++)
             for (int channel = 0; channel < res.channels; channel++)
-                for (int ray = 0; ray < res.rays; ray++)
-                    for (int i = 0; i < CuttingPC; i++)
+                for (int ray = 0; ray < res.rays; ray++) {
+                    double noise = 0;
+                    for (int i = 0; i < CuttingPC; i++) {
                         res.data[module][channel][ray][i] = data.data[module][channel][ray][startPoint + i];
+                        noise = pow(res.data[module][channel][ray][i], 2);
+                    }
+
+                    noise /= CuttingPC;
+                    noise = sqrt(noise);
+                    noises[module][channel].push_back(noise);
+                }
+        stairsNames.push_back(data.name + "/" + QString::number(pieceNumber));
+        addStair(stairs);
     } else {
         res.npoints = PC / 2;
         res.channels = 1;

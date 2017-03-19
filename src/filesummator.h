@@ -35,7 +35,9 @@ private:
     int PC;
     QString cutterPath;
 
-    QVector<QVector<float> > noises;
+    QString stairsNameOverride;
+    QVector<QVector<QVector<float> > > noises;
+
     QVector<int> numberOfPieces;
     QSet<QString> filesProcessed;
 };

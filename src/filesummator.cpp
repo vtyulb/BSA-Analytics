@@ -62,6 +62,7 @@ void FileSummator::run() {
         }
 
         printf("Path [%s] accepted\n\n", cutterPath.toUtf8().constData());
+        stairsNameOverride = "./noises.pnt";
     } else {
         printf("Do you want to start stairs search? [y/N] ");
         if (input.readLine().toUpper() == "Y")
@@ -98,8 +99,7 @@ void FileSummator::run() {
             stairs = multifile;
             stairs.npoints = 0;
 
-            if (stairsSearch)
-                initStairs(stairs, stairsNames);
+            initStairs(stairs, stairsNames);
 
             printf("... readed.\n");
             printf("Memory allocation for multifile... ");
@@ -120,7 +120,6 @@ void FileSummator::run() {
                             multifile.data[i][j][k][u] = 0;
 
 
-            noises.resize(multifile.npoints / PC * 2);
             numberOfPieces.resize(multifile.npoints / PC * 2);
             numberOfPieces.fill(0);
 
@@ -186,6 +185,8 @@ void FileSummator::run() {
                 processLongData(data);
             else
                 processData(data, multifile, coefficients);
+            addStair(stairs);
+            dumpStairs(stairs, stairsNames);
             data.releaseData();
 
             filesProcessed.insert(fileNames[i]);
@@ -206,6 +207,10 @@ void FileSummator::run() {
         dumpStairs(stairs, stairsNames);
         printf("Stairs sorted and dumped to %s\n", getStairsName(stairs).toUtf8().constData());
         exit(0);
+    } else {
+        sortStairs(stairs, stairsNames);
+        dumpStairs(stairs, stairsNames);
+        printf("Noises dumped to %s", getStairsName(stairs).toUtf8().constData());
     }
 
     if (!multifileInited) {
@@ -245,11 +250,23 @@ void FileSummator::run() {
 void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) {
     // Hello pulsarworker::clearAveraNge(), i know you are here
 
-    QVector<float> buf(data.npoints);
+    if (!Settings::settings()->loadStair())
+        return;
 
     for (int module = 0; module < data.modules; module++)
-        for (int ray = 0; ray < data.rays; ray++)
-          {
+        for (int channel = 0; channel < data.channels; channel++)
+            for (int ray = 0; ray < data.rays; ray++)
+                for (int i = 0; i < data.npoints; i++)
+                    data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
+
+    QVector<float> buf(data.npoints);
+    noises.clear();
+    noises.resize(data.modules);
+    for (int module = 0; module < data.modules; module++)
+        noises[module].resize(data.channels);
+
+    for (int module = 0; module < data.modules; module++)
+        for (int ray = 0; ray < data.rays; ray++) {
             const int step =  INTERVAL / data.oneStep;
             for (int channel = 0; channel < data.channels; channel++) {
                 for (int i = 0; i < data.npoints; i += step)
@@ -266,6 +283,8 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
 
                 noise /= data.npoints * 0.8 - data.npoints * 0.2;
                 noise = pow(noise, 0.5);
+
+                noises[module][channel].push_back(noise);
 
                 const double maximumNoise = 1.9;
 
@@ -297,9 +316,8 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
                         coefficients.data[module][channel][ray][startPoint + k + offset] += 1;
                     }
                 }
-
             }
-          }
+        }
 }
 
 void FileSummator::processLongData(Data &data) {
@@ -472,6 +490,8 @@ void FileSummator::addStair(Data &stairs) {
                 if (stairs.npoints)
                     memcpy(res.data[module][channel][ray], stairs.data[module][channel][ray], stairs.npoints * sizeof(float));
                 res.data[module][channel][ray][v] = Settings::settings()->getStairHeight(module, ray, channel);
+                if (stairsNameOverride != "")
+                    res.data[module][channel][ray][v] = noises[module][channel][ray];
             }
 
     if (stairs.npoints)
@@ -480,6 +500,9 @@ void FileSummator::addStair(Data &stairs) {
 }
 
 QString FileSummator::getStairsName(const Data &stairs) {
+    if (stairsNameOverride != "")
+        return stairsNameOverride;
+
     if (stairs.isLong())
         return "./LongStairs.pnthr";
     else
@@ -525,55 +548,6 @@ namespace {
                     std::swap(data.data[module][channel][ray][a],
                               data.data[module][channel][ray][b]);
     }
-
-    QString year(QString s) {
-        return s.left(6).right(2);
-    }
-
-    QString month(QString s) {
-        return s.left(4).right(2);
-    }
-
-    QString day(QString s) {
-        return s.left(2);
-    }
-
-    QString hour(QString s) {
-        return s.left(9).right(2);
-    }
-
-    QString area(QString s) {
-        return s.left(12).right(2);
-    }
-
-    bool less(QString a, QString b) {
-        if (area(a) < area(b))
-            return true;
-        else if (area(a) > area(b))
-            return false;
-
-        if (year(a) < year(b))
-            return true;
-        else if (year(a) > year(b))
-            return false;
-
-        if (month(a) < month(b))
-            return true;
-        else if (month(a) > month(b))
-            return false;
-
-        if (day(a) < day(b))
-            return true;
-        else if (day(a) > day(b))
-            return false;
-
-        if (hour(a) < hour(b))
-            return true;
-        else if (hour(a) > hour(b))
-            return false;
-
-        return a < b;
-    }
 }
 
 void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
@@ -585,7 +559,7 @@ void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
         }
 
         for (int j = names.size() - 2; j >= i; j--)
-            if (less(names[j + 1], names[j])) {
+            if (stringDateToDate(names[j + 1]) < stringDateToDate(names[j])) {
                 swap(stairs, j, j + 1);
                 swap(names[j], names[j + 1]);
             }

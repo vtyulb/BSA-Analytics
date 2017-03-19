@@ -239,14 +239,14 @@ bool FileSummator::processData(Data &data) {
 
                 double noise = 0;
                 for (int i = data.npoints * 0.2; i < data.npoints * 0.8; i++)
-                    noise += pow(data.data[module][channel][ray][i], 2);
+                    noise += pow(buf[i], 2);
 
                 noise /= data.npoints * 0.8 - data.npoints * 0.2;
                 noise = pow(noise, 0.5);
 
                 noises[module][channel].push_back(noise);
 
-                const double maximumNoise = 1.9;
+                const double maximumNoise = 3;
 
                 float *res = data.data[module][channel][ray];
                 for (int i = 0; i < data.npoints; i++)
@@ -279,6 +279,7 @@ bool FileSummator::processData(Data &data) {
 
 void FileSummator::processLongData(Data &data) {
     // Hello FileSummator::processLongData(), i know you are here
+    qDebug()  << "It won't work!!! contact <vtyulb@vtyulb.ru>";
 
     QVector<float> buf(data.npoints);
 

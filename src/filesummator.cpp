@@ -367,7 +367,8 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
         res.fork();
 
         for (int module = 0; module < res.modules; module++)
-            for (int channel = 0; channel < res.channels; channel++)
+            for (int channel = 0; channel < res.channels; channel++) {
+                noises[module][channel].clear();
                 for (int ray = 0; ray < res.rays; ray++) {
                     double noise = 0;
                     for (int i = 0; i < CuttingPC; i++) {
@@ -379,6 +380,7 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
                     noise = sqrt(noise);
                     noises[module][channel].push_back(noise);
                 }
+            }
         stairsNames.push_back(data.name + "/" + QString::number(pieceNumber));
         addStair(stairs);
     } else {

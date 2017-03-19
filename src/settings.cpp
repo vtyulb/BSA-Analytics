@@ -304,7 +304,7 @@ bool Settings::loadStair() {
             Data backup = getLastData();
             Reader r;
             QObject::connect(&r, SIGNAL(progress(int)), this, SLOT(setProgress(int)));
-            printf("Loading long stairs ");
+            printf("\nLoading long stairs ");
             longStairs = r.readBinaryFile(LONG_STAIRS);
             longStairsNames = getLastHeader()["stairs_names"].split(",");
             printf("Loading short stairs ");

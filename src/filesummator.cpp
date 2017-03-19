@@ -70,7 +70,7 @@ void FileSummator::run() {
     }
 
     PC = cutter ? CuttingPC : PC_;
-    if (cutter || extensions.contains("pnthr")) {
+    if (cutter && extensions.contains("pnthr")) {
         PC = CuttingPCLong;
         longData = true;
     }
@@ -79,7 +79,6 @@ void FileSummator::run() {
     Data multifile;
     Data stairs;
     QStringList stairsNames;
-    Data coefficients;
     bool multifileInited = false;
     QString path = "non-blank";
     while (path != "" || fileNames.count() || cutter) {
@@ -107,26 +106,10 @@ void FileSummator::run() {
 
             multifile.npoints *= 25;
             multifile.releaseData();
-            if (!longData )
-                multifile.init();
-
             multifileInited = true;
-
-            if (!longData)
-            for (int i = 0; i < multifile.modules; i++)
-                for (int j = 0; j < multifile.channels; j++)
-                    for (int k = 0; k < multifile.rays; k++)
-                        for (int u = 0; u < multifile.npoints; u++)
-                            multifile.data[i][j][k][u] = 0;
-
 
             numberOfPieces.resize(multifile.npoints / PC * 2);
             numberOfPieces.fill(0);
-
-            if (!longData) {
-                coefficients = multifile;
-                coefficients.fork(); // linux style
-            }
 
             printf("memory allocated.\n");
             printf("Process seems to be all right, can work now\n");
@@ -183,9 +166,9 @@ void FileSummator::run() {
             reader.repairWrongChannels(data);
             if (longData)
                 processLongData(data);
-            else
-                processData(data, multifile, coefficients);
-            addStair(stairs);
+            else if (processData(data))
+                addStair(stairs);
+
             dumpStairs(stairs, stairsNames);
             data.releaseData();
 
@@ -219,39 +202,14 @@ void FileSummator::run() {
         exit(0);
     }
 
-    for (int module = 0; module < multifile.modules; module++)
-        for (int channel = 0; channel < multifile.channels; channel++)
-            for (int ray = 0; ray < multifile.rays; ray++)
-                for (int i = 0; i < multifile.npoints; i++) {
-                    float c = coefficients.data[module][channel][ray][i];
-                    if (c > 0.1)
-                        multifile.data[module][channel][ray][i] /= c;
-                }
-
     printf("All files were processed\n");
-
-    QFile f;
-    QString name;
-    while (1) {
-        printf("Please enter path to save multifile: ");
-        fflush(stdout);
-        name = input.readLine();
-        f.setFileName(name);
-        if (f.open(QIODevice::WriteOnly))
-            break;
-        else
-            printf("Can't open file '%s' for write\n", name.toUtf8().constData());
-    }
-
-    printf("Dumping multifile to %s\n", name.toUtf8().constData());
-    DataDumper::dump(multifile, f);
 }
 
-void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) {
+bool FileSummator::processData(Data &data) {
     // Hello pulsarworker::clearAveraNge(), i know you are here
 
     if (!Settings::settings()->loadStair())
-        return;
+        return false;
 
     for (int module = 0; module < data.modules; module++)
         for (int channel = 0; channel < data.channels; channel++)
@@ -310,14 +268,11 @@ void FileSummator::processData(Data &data, Data &multifile, Data &coefficients) 
 
                     if (module == data.modules - 1 && ray == data.rays - 1 && channel == data.channels - 1)
                         dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
-
-                    for (int k = 0; k < PC; k++) {
-                        multifile.data[module][channel][ray][startPoint + k + offset] += data.data[module][channel][ray][j * PC + k + offset];
-                        coefficients.data[module][channel][ray][startPoint + k + offset] += 1;
-                    }
                 }
             }
         }
+
+    return true;
 }
 
 void FileSummator::processLongData(Data &data) {

@@ -231,7 +231,7 @@ bool FileSummator::processData(Data &data) {
             for (int channel = 0; channel < data.channels; channel++) {
                 for (int i = 0; i < data.npoints; i += step)
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
-
+                //-------------------------------------------------
                 for (int i = 0; i < data.npoints; i++)
                     buf[i] = data.data[module][channel][ray][i];
 
@@ -244,7 +244,7 @@ bool FileSummator::processData(Data &data) {
                 noise /= data.npoints * 0.8 - data.npoints * 0.2;
                 noise = pow(noise, 0.5);
 
-                noises[module][channel].push_back(noise);
+                //-------------------------------------------------
 
                 const double maximumNoise = 3;
 
@@ -254,6 +254,22 @@ bool FileSummator::processData(Data &data) {
                         res[i] = noise * maximumNoise;
                     else if (res[i] < -noise * maximumNoise)
                         res[i] = -noise * maximumNoise;
+
+                //-------------------------------------------------
+                for (int i = 0; i < data.npoints; i++)
+                    buf[i] = data.data[module][channel][ray][i];
+
+                std::sort(buf.begin(), buf.end());
+
+                noise = 0;
+                for (int i = data.npoints * 0.2; i < data.npoints * 0.8; i++)
+                    noise += pow(buf[i], 2);
+
+                noise /= data.npoints * 0.8 - data.npoints * 0.2;
+                noise = pow(noise, 0.5);
+
+                noises[module][channel].push_back(noise);
+                //-------------------------------------------------
 
                 for (int j = 0; j < data.npoints / PC - 2; j++) {
                     double realPart;

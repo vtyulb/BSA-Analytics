@@ -373,7 +373,7 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
                     double noise = 0;
                     for (int i = 0; i < CuttingPC; i++) {
                         res.data[module][channel][ray][i] = data.data[module][channel][ray][startPoint + i];
-                        noise = res.data[module][channel][ray][i] * (double)res.data[module][channel][ray][i];
+                        noise += res.data[module][channel][ray][i] * (double)res.data[module][channel][ray][i];
                     }
 
                     noise /= CuttingPC;

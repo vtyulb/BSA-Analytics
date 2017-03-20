@@ -20,5 +20,6 @@ AUR package: https://aur.archlinux.org/packages/bsa-analytics-git
 ### Windows builds & sample data
 https://bsa.vtyulb.ru
 
-### Windows InnoSetup script
+### Windows InnoSetup script & icons
 other/*.iss
+x86 version is deprecated, because of high memory usage

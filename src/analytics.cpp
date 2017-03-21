@@ -976,6 +976,9 @@ void Analytics::applyFourierFilters() {
             data.releaseProtected = true;
             memcpy(data.data[0][0][0], fourierSumm[module][ray].constData(), sizeof(float) * fourierSpectreSize);
 
+            if (ui->noGPS->isChecked())
+                destroyGPS(data);
+
             Pulsar pl;
             pl.module = module + 1;
             pl.ray = ray + 1;
@@ -1182,6 +1185,41 @@ void Analytics::compressLayout() {
     ui->knownPulsarsAndNoises->layout()->setSpacing(1);
     layout()->setSpacing(1);
 #endif
+}
+
+void Analytics::destroyPeak(Data &spectre, int point) {
+    while (point < Settings::settings()->getFourierSpectreSize() - 1 &&
+           spectre.data[0][0][0][point+1] > spectre.data[0][0][0][point])
+        point++;
+
+    while (point > 0 &&
+           spectre.data[0][0][0][point-1] > spectre.data[0][0][0][point])
+        point--;
+
+    int start = point - 1;
+    int end = point + 1;
+    while (start > 0 &&
+           spectre.data[0][0][0][start-1] < spectre.data[0][0][0][start])
+        start--;
+
+    while (end < Settings::settings()->getFourierSpectreSize() - 1 &&
+           spectre.data[0][0][0][end+1] < spectre.data[0][0][0][end])
+        end++;
+
+    for (int i = start; i < end; i++)
+        spectre.data[0][0][0][i] = spectre.data[0][0][0][start];
+}
+
+void Analytics::destroyGPS(Data &spectre) {
+    if (Settings::settings()->getFourierSpectreSize() == 1024) {
+        int point = 204;
+        int add = point;
+        while (point < Settings::settings()->getFourierSpectreSize()) {
+            destroyPeak(spectre, point);
+            point += add;
+        }
+    }
+
 }
 
 Analytics::~Analytics() {

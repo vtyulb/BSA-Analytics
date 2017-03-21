@@ -74,6 +74,9 @@ private:
     void applyFileNameFilter();
     void applyDifferentMaximumsFilter();
 
+    void destroyGPS(Data &spectre);
+    void destroyPeak(Data &spectre, int point);
+
     void preciseDataMode();
     void compressLayout();
 

@@ -42,6 +42,7 @@ struct Pulsar {
 
     double fourierRealNoise = -1;
     float fourierAverage;
+    float fourierCurrentMin;
     bool fourierDuplicate = false;
 
     QString name; // file, not a pulsar :-)
@@ -137,6 +138,7 @@ struct Pulsar {
 
             fourierRealNoise = noise;
             fourierAverage = avr;
+            fourierCurrentMin = 1e+10;
 
             noiseLevel = 0;
             for (int i = 0; i < data.npoints; i++)
@@ -150,13 +152,12 @@ struct Pulsar {
             noise = fourierRealNoise;
         }
 
-        float currentMin = 1e+10;
         for (int i = startPoint; i < ls; i++) {
             float mx = data.data[0][0][0][i];
             if (i > 20)
-                currentMin = std::min(currentMin, mx);
+                fourierCurrentMin = std::min(fourierCurrentMin, mx);
 
-            snr = (mx-std::max(avr, currentMin+float(noise)))/noise;
+            snr = (mx-std::max(avr, fourierCurrentMin+float(noise)))/noise;
             if (snr > FOURIER_PULSAR_LEVEL_SNR) {
                 firstPoint = i + 1;
                 period = Settings::settings()->getFourierSpectreSize() * 2 / double(i + 1) * Settings::settings()->getFourierStepConstant();

@@ -1235,8 +1235,10 @@ void Analytics::fourierShowNoises() {
             noisesFile = SHORT_NOISES;
 
         Reader reader;
+        progressBar->show();
         QObject::connect(&reader, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
         noises = reader.readBinaryFile(noisesFile);
+        progressBar->hide();
         header = Settings::settings()->getLastHeader();
         if (!noises.isValid()) {
             QMessageBox::warning(NULL, "Error: No noises files found",
@@ -1251,11 +1253,17 @@ void Analytics::fourierShowNoises() {
 
     QStringList originalNames = header["stairs_names"].split(",");
 
-    QString block = QString::number(ui->fourierBlockNo->value());
+    QString block = "/" + QString::number(ui->fourierBlockNo->value());
     QStringList names;
     for (int i = 0; i < originalNames.size(); i++)
         if (originalNames[i].endsWith(block))
             names.push_back(originalNames[i]);
+
+    if (!names.size()) {
+        QMessageBox::information(NULL, "Invalid block", "No data found for this block. Showing everything.");
+        block = "";
+        names = originalNames;
+    }
 
     Data blockNoise = noises;
     blockNoise.npoints = names.size();

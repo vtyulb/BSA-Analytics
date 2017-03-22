@@ -24,6 +24,7 @@ Controller::Controller(QWidget *parent) :
     stairFileName = new QLabel(this);
 
     fileName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+    stairFileName->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
 
     layout->addWidget(rays);
     layout->addWidget(channels);
@@ -53,8 +54,13 @@ void Controller::setCoords(QPointF p) {
         nativeXCoord->setText(QString("X: %1; p=%2s").arg(QString::number(p.x(), 'f', 1),
                               QString::number(Settings::settings()->getFourierSpectreSize() * 2 / (p.x() + 1) * Settings::settings()->getFourierStepConstant(), 'f', 5)));
 
-    if (Settings::settings()->getLastHeader().contains("stairs_names"))
-        nativeXCoord->setText(Settings::settings()->getLastHeader()["stairs_names"].split(",").value(int(p.x() + 0.5)));
+    if (Settings::settings()->getLastHeader().contains("stairs_names")) {
+        static QStringList stairsNames;
+        if (!stairsNames.size() || stairsNames[0] != Settings::settings()->getLastHeader()["stairs_names"].left(stairsNames[0].size()))
+            stairsNames = Settings::settings()->getLastHeader()["stairs_names"].split(",");
+
+        nativeXCoord->setText(stairsNames.value(int(p.x() + 0.5)));
+    }
 
     if (Settings::settings()->sourceMode()) {
         stairFileName->setText("Stair: " + Settings::settings()->stairFileName());

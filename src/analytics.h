@@ -94,6 +94,7 @@ private slots:
     void applyFourierFilters();
 
     void actualFourierDataChanged();
+    void fourierShowNoises();
 
     void fourierFullGrayZone();
     void fourierShortGrayZone();

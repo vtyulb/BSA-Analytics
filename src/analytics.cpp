@@ -56,6 +56,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->fourierCalculateCaches, SIGNAL(clicked()), this, SLOT(calculateCaches()));
     QObject::connect(ui->fourierLoadCache, SIGNAL(clicked()), this, SLOT(loadFourierCache()));
 
+    QObject::connect(ui->fourierShowNoises, SIGNAL(clicked()), this, SLOT(fourierShowNoises()));
+
     QObject::connect(ui->oneWindow, SIGNAL(clicked()), this, SLOT(oneWindow()));
 
     maxModule = 6;
@@ -1220,6 +1222,59 @@ void Analytics::destroyGPS(Data &spectre) {
         }
     }
 
+}
+
+void Analytics::fourierShowNoises() {
+    static Data noises;
+    static QMap<QString, QString> header;
+    if (!noises.isValid()) {
+        QString noisesFile;
+        if (longData)
+            noisesFile = LONG_NOISES;
+        else
+            noisesFile = SHORT_NOISES;
+
+        Reader reader;
+        QObject::connect(&reader, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
+        noises = reader.readBinaryFile(noisesFile);
+        header = Settings::settings()->getLastHeader();
+        if (!noises.isValid()) {
+            QMessageBox::warning(NULL, "Error: No noises files found",
+                                 "There are no noises files found!\n"
+                                 "You should install BSA-Analytics-stairs-pack\n"
+                                 "from bsa.vtyulb.ru. If you have already done it,\n"
+                                 "contact <vtyulb@vtyulb.ru> for further instructions");
+
+            return;
+        }
+    }
+
+    QStringList originalNames = header["stairs_names"].split(",");
+
+    QString block = QString::number(ui->fourierBlockNo->value());
+    QStringList names;
+    for (int i = 0; i < originalNames.size(); i++)
+        if (originalNames[i].endsWith(block))
+            names.push_back(originalNames[i]);
+
+    Data blockNoise = noises;
+    blockNoise.npoints = names.size();
+    blockNoise.fork();
+    int current = 0;
+    for (int i = 0; i < originalNames.size(); i++)
+        if (originalNames[i].endsWith(block)) {
+            for (int module = 0; module < noises.modules; module++)
+                for (int ray = 0; ray < noises.rays; ray++)
+                    for (int channel = 0; channel < noises.channels; channel++)
+                        blockNoise.data[module][channel][ray][current] = noises.data[module][channel][ray][i];
+
+            current++;
+        }
+
+    QMap<QString, QString> newNames;
+    newNames["stairs_names"] = names.join(",");
+    Settings::settings()->setLastHeader(newNames);
+    window->regenerate(blockNoise);
 }
 
 Analytics::~Analytics() {

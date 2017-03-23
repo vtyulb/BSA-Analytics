@@ -1245,7 +1245,7 @@ void Analytics::fourierShowNoises() {
                                  "There are no noises files found!\n"
                                  "You should install BSA-Analytics-stairs-pack\n"
                                  "from bsa.vtyulb.ru. If you have already done it,\n"
-                                 "contact <vtyulb@vtyulb.ru> for further instructions");
+                                 "contact <vtyulb@vtyulb.ru> for further instructions.");
 
             return;
         }

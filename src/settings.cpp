@@ -360,7 +360,11 @@ bool Settings::loadStair() {
 
         _stairFileName = names->at(current-1).left(9) + "/" + names->at(current).left(12);
 
-        return after < 3600*12 && before > -3600*12;
+        double k = actual->data[0][0][0][current - 1] / actual->data[0][0][0][current];
+        if (k < 1)
+            k = 1 / k;
+
+        return after < 3600*12 && before > -3600*12 && k < 1.25;
     }
 
     return true;

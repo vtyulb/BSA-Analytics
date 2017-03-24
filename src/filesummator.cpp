@@ -79,7 +79,7 @@ void FileSummator::run() {
     Data multifile;
     bool multifileInited = false;
     QString path = "non-blank";
-    while (path != "" || fileNames.count() || cutter) {
+    while (path != "" || fileNames.count()) {
         printf("Please enter path to data (blank line to stop): ");
         path = input.readLine();
         if (path != "")
@@ -381,8 +381,12 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
                     noises[module][channel].push_back(noise);
                 }
             }
-        stairsNames.push_back(data.name + "/" + QString::number(pieceNumber));
-        addStair(stairs);
+
+        QString newNoise = data.name + "/" + QString::number(pieceNumber);
+        if (!stairsNames.contains(newNoise)) {
+            stairsNames.push_back(newNoise);
+            addStair(stairs);
+        }
     } else {
         res.npoints = PC / 2;
         res.channels = 1;

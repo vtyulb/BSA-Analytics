@@ -117,7 +117,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --analytics [path-to-data] [--fourier] [--low-memory]\n");
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
-               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads]\n"
+               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads] [--normalize]\n"
                "[--period-tester] [--flux-density] [--run-analytics-after]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double>\n"
@@ -223,6 +223,8 @@ void pulsarEngine(int argc, char **argv) {
             debug = true;
         else if (strcmp(argv[i], "--flux-density") == 0)
             flowDetecter = true;
+        else if (strcmp(argv[i], "--normalize") == 0)
+            Settings::settings()->setNormalize(true);
     }
 
     if (flowDetecter) {

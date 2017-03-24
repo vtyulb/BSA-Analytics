@@ -18,6 +18,21 @@ PulsarProcess::PulsarProcess(QString file, QString savePath, QObject *parent):
     Reader reader;
     data = reader.readBinaryFile(file);
 
+    if (Settings::settings()->getNormalize()) {
+        if (!Settings::settings()->loadStair())
+            qDebug() << "CAN'T NORMALIZE DATA, BECAUSE THERE ARE NO CLOSE STAIRS FOUND";
+        else {
+            int module = Settings::settings()->module();
+            int ray = Settings::settings()->ray();
+
+            for (int channel = 0; channel < data.channels; channel++)
+                for (int i = 0; i < data.npoints; i++)
+                    data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
+
+            qDebug() << "data normalized";
+        }
+    }
+
     if (Settings::settings()->preciseSearch())
         data.halfRelease(Settings::settings()->module(), Settings::settings()->ray());
 }

@@ -86,6 +86,9 @@ void PreciseSearchGui::runSearcher() {
     if (ui->skipMultiplePeriods->isChecked())
         l << "--no-multiple-periods";
 
+    if (ui->normalize->isChecked())
+        l << "--normalize";
+
     if (ui->runAnalytics->isEnabled() && ui->runAnalytics->isChecked())
         l << "--run-analytics-after";
 
@@ -128,6 +131,8 @@ void PreciseSearchGui::determineSearchMode() {
     ui->threadCountLabel->setEnabled(true);
     ui->fluxDensityWidget->setEnabled(false);
     ui->dispersion->setDecimals(0);
+    ui->normalize->setEnabled(true);
+    ui->normalizeLabel->setEnabled(true);
 
     if (ui->singlePeriod->isChecked()) {
         ui->skipMultiplePeriods->setEnabled(false);
@@ -142,6 +147,8 @@ void PreciseSearchGui::determineSearchMode() {
         ui->skipMultiplePeriodsLabel->setEnabled(false);
         ui->threadCount->setEnabled(false);
         ui->threadCountLabel->setEnabled(false);
+        ui->normalize->setEnabled(false);
+        ui->normalizeLabel->setEnabled(false);
     }
 
     if (ui->fluxDensity->isChecked()) {
@@ -160,6 +167,8 @@ void PreciseSearchGui::determineSearchMode() {
         ui->runAnalyticsAfterLabel->setEnabled(false);
         ui->threadCount->setEnabled(false);
         ui->threadCountLabel->setEnabled(false);
+        ui->normalize->setEnabled(false);
+        ui->normalizeLabel->setEnabled(false);
     }
 
     ui->points->setEnabled(false);

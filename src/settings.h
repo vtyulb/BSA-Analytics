@@ -66,6 +66,7 @@ public:
     int getFourierSpectreSize();
     bool getFourierHighGround();
     MainWindow *getMainWindow();
+    bool getNormalize();
 
     double getStairHeight(int module, int ray, int channel);
     SourceMode sourceMode();
@@ -99,6 +100,7 @@ public:
     void setFourierStepConstant(double);
     void setFourierSpectreSize(int);
     void setFourierHighGround(bool);
+    void setNormalize(bool);
 
     void setMainWindow(MainWindow*);
 
@@ -130,6 +132,7 @@ private:
     double _fourierStepConstant;
     int _fourierSpectreSize;
     bool _fourierHighGround;
+    bool _normalize;
     QString _stairFileName;
     SourceMode _sourceMode;
     QVector<double> dispersionPlotData;

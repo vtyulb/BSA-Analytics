@@ -25,6 +25,7 @@ Settings::Settings() {
     _sourceMode = NoSourceMode,
     bar = NULL;
     _mainWindow = NULL;
+    _normalize = false;
     _currentProgress = -1;
 }
 
@@ -397,4 +398,12 @@ void Settings::setProgress(int progress) {
             bar->setValue(progress);
         }
     }
+}
+
+void Settings::setNormalize(bool n) {
+    _normalize = n;
+}
+
+bool Settings::getNormalize() {
+    return _normalize;
 }

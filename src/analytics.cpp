@@ -33,6 +33,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     oneWindowMode(false),
     pulsars(new QVector<Pulsar>),
     fourier(fourier),
+    longData(false),
     totalFilesLoaded(0)
 {
     ui->setupUi(this);
@@ -1228,24 +1229,25 @@ void Analytics::fourierShowNoises() {
     static Data noises;
     static QMap<QString, QString> header;
     if (!noises.isValid()) {
-        QString noisesFile;
+        QString noisesFile = QDir(folder).absolutePath();
         if (longData)
-            noisesFile = LONG_NOISES;
+            noisesFile += LONG_NOISES;
         else
-            noisesFile = SHORT_NOISES;
+            noisesFile += SHORT_NOISES;
 
         Reader reader;
         progressBar->show();
         QObject::connect(&reader, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
         noises = reader.readBinaryFile(noisesFile);
+        noises.releaseProtected = true;
         progressBar->hide();
         header = Settings::settings()->getLastHeader();
         if (!noises.isValid()) {
             QMessageBox::warning(NULL, "Error: No noises files found",
                                  "There are no noises files found!\n"
-                                 "You should install BSA-Analytics-stairs-pack\n"
-                                 "from bsa.vtyulb.ru. If you have already done it,\n"
-                                 "contact <vtyulb@vtyulb.ru> for further instructions.");
+                                 "You should use latest slicing. If you are using it,\n"
+                                 "contact <vtyulb@vtyulb.ru> for further instructions.\n"
+                                 "Noises file must me located at " + noisesFile);
 
             return;
         }
@@ -1267,17 +1269,19 @@ void Analytics::fourierShowNoises() {
 
     Data blockNoise = noises;
     blockNoise.npoints = names.size();
-    blockNoise.fork();
-    int current = 0;
-    for (int i = 0; i < originalNames.size(); i++)
-        if (originalNames[i].endsWith(block)) {
-            for (int module = 0; module < noises.modules; module++)
-                for (int ray = 0; ray < noises.rays; ray++)
-                    for (int channel = 0; channel < noises.channels; channel++)
-                        blockNoise.data[module][channel][ray][current] = noises.data[module][channel][ray][i];
+    if (block != "") {
+        blockNoise.fork();
+        int current = 0;
+        for (int i = 0; i < originalNames.size(); i++)
+            if (originalNames[i].endsWith(block)) {
+                for (int module = 0; module < noises.modules; module++)
+                    for (int ray = 0; ray < noises.rays; ray++)
+                        for (int channel = 0; channel < noises.channels; channel++)
+                            blockNoise.data[module][channel][ray][current] = noises.data[module][channel][ray][i];
 
-            current++;
-        }
+                current++;
+            }
+    }
 
     QMap<QString, QString> newNames;
     newNames["stairs_names"] = names.join(",");

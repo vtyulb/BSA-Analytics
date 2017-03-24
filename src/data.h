@@ -55,7 +55,7 @@ struct Data {
         return oneStep < 0.02;
     }
 
-    double stairHeight(int module, int ray, int channel) {
+    double stairHeight(int module, int ray, int channel) const {
         int f1 = 3030;
         int t1 = 3050;
 
@@ -138,7 +138,7 @@ struct Data {
         return res.toInt();
     }
 
-    bool isValid() {
+    bool isValid() const {
         return modules != -1;
     }
 };

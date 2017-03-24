@@ -24,18 +24,15 @@ enum SourceMode {
 
     const QString SHORT_STAIRS = DATA_PATH + "/ShortStairs.pnt";
     const QString LONG_STAIRS = DATA_PATH + "/LongStairs.pnthr";
-
-    const QString SHORT_NOISES = DATA_PATH + "/noises.pnt";
-    const QString LONG_NOISES = DATA_PATH + "/noises.pnthr";
 #else
     const QString DOC_PATH = ".";
 
     const QString SHORT_STAIRS = "data/ShortStairs.pnt";
     const QString LONG_STAIRS = "data/LongStairs.pnthr";
-
-    const QString SHORT_NOISES = "data/noises.pnt";
-    const QString LONG_NOISES = "data/noises.pnthr";
 #endif
+
+const QString SHORT_NOISES = "/noises.pnt";
+const QString LONG_NOISES = "/noises.pnthr";
 
 class Settings: public QObject
 {

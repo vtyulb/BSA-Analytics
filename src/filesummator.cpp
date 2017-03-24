@@ -452,21 +452,30 @@ void FileSummator::saveCuttingState() {
 }
 
 void FileSummator::addStair(Data &stairs) {
+    static int realSize = 0;
     Data res = stairs;
     res.npoints++;
-    res.init();
+    if (realSize < res.npoints) {
+        res.npoints *= 2;
+        res.init();
+
+        realSize = res.npoints;
+        res.npoints = stairs.npoints + 1;
+    }
+
     int v = res.npoints - 1;
     for (int module = 0; module < res.modules; module++)
         for (int channel = 0; channel < res.channels; channel++)
             for (int ray = 0; ray < res.rays; ray++) {
-                if (stairs.npoints)
+                if (stairs.npoints && res.data[module][channel][ray] != stairs.data[module][channel][ray])
                     memcpy(res.data[module][channel][ray], stairs.data[module][channel][ray], stairs.npoints * sizeof(float));
+
                 res.data[module][channel][ray][v] = Settings::settings()->getStairHeight(module, ray, channel);
                 if (stairsNameOverride != "")
                     res.data[module][channel][ray][v] = noises[module][channel][ray];
             }
 
-    if (stairs.npoints)
+    if (stairs.npoints && res.data[0][0][0] != stairs.data[0][0][0])
         stairs.releaseData();
     stairs = res;
 }

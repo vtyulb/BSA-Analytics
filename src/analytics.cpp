@@ -273,15 +273,15 @@ void Analytics::apply(bool fullFilters) {
     if (ui->fileNames->currentIndex() != 0)
         applyFileNameFilter();
 
-    if (ui->duplicates->value() > 1)
-        for (int i = 0; i < ui->duplicatesIterations->value(); i++)
-            applyDuplicatesFilter();
-
     if (ui->SNRCheckBox->isChecked())
         applySNRFilter();
 
     if (ui->differentMaximums->isChecked())
         applyDifferentMaximumsFilter();
+
+    if (ui->duplicates->value() > 1)
+        for (int i = 0; i < ui->duplicatesIterations->value(); i++)
+            applyDuplicatesFilter();
 
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)
@@ -469,29 +469,32 @@ void Analytics::applyDuplicatesFilter() {
         if (pulsarsEnabled[i])
             pl[pulsars->at(i).module - 1][pulsars->at(i).ray - 1].push_back(i);
 
-    for (int module = 0; module < 6; module++) {
-        progressBar->setValue(100 * module / 6);
-        update();
-        qApp->processEvents();
+    ui->currentStatus->setText("Duplicates filter");
+    progressBar->show();
+    for (int module = 0; module < 6; module++)
+        for (int ray = 0; ray < 8; ray++) {
+            progressBar->setValue(100 * (module * 8 + ray) / 48);
+            qApp->processEvents();
 
-        for (int ray = 0; ray < 8; ray++)
             for (int k = 0; k < pl[module][ray].size(); k++)
                 for (int l = k + 1; l < pl[module][ray].size(); l++) {
                     int i = pl[module][ray][k];
                     int j = pl[module][ray][l];
 
-                    if (abs(pulsars->at(i).nativeTime.secsTo(pulsars->at(j).nativeTime)) < 120 &&
+                    if ((!fourier && abs(pulsars->at(i).nativeTime.secsTo(pulsars->at(j).nativeTime)) < 120 &&
                             globalGoodDoubles(pulsars->at(i).period, pulsars->at(j).period, ui->doublePeriods->isChecked()) &&
-                            ((pulsars->at(i).data.name != pulsars->at(j).data.name &&
+                            (pulsars->at(i).data.name != pulsars->at(j).data.name &&
                             !set[i].contains(pulsars->at(j).data.name) &&
-                            !set[j].contains(pulsars->at(i).data.name)) || fourier)) {
+                            !set[j].contains(pulsars->at(i).data.name))) ||
+                            (fourier && pulsars->at(i).period == pulsars->at(j).period)) {
                         set[i].insert(pulsars->at(j).data.name);
                         set[j].insert(pulsars->at(i).data.name);
                         (*pulsars)[i].firstPoint++;
                         (*pulsars)[j].firstPoint++;
                     }
                 }
-    }
+        }
+    progressBar->hide();
 
     for (int i = 0; i < pulsars->size(); i++)
         pulsarsEnabled[i] &= (pulsars->at(i).firstPoint >= duplicates);

@@ -369,8 +369,8 @@ void NativeDrawer::drawAxes() {
             p.setPen(backup);
         }
 
-        p.drawLine(QPoint(i, art->height()), QPoint(i, art->height() - 6 - (4 + art->height() * drawNet) * (i%250 == 0)));
-        p.drawLine(QPoint(i, 0), QPoint(i, 6 + 4 * (i%250 == 0)));
+        p.drawLine(QPoint(i, art->height()), QPoint(i, art->height() - 6 - (5 + art->height() * drawNet) * (i%250 == 0)));
+        p.drawLine(QPoint(i, 0), QPoint(i, 6 + 5 * (i%250 == 0)));
         if (i%250==0) {
             drawText(&p, QPoint(i + 1, art->height() - 12), QString::number(backwardCoord(QPoint(i, 0)).x()));
             drawText(&p, QPoint(i + 1, art->height() - 24), StarTime::StarTime(data, backwardCoord(QPointF(i, 0)).x()));
@@ -379,7 +379,17 @@ void NativeDrawer::drawAxes() {
 
     p.drawLine(QPoint(0, 0), QPoint(0, art->height()));
     p.drawLine(QPoint(art->width() - 1, 0), QPoint(art->width() - 1, art->height()));
-    for (int i = 50; i < art->height() - 20; i+=50) {
+
+    int startPoint = mirr(newCoord(0,0)).y();
+    int bigDash = 0;
+    if (startPoint < 20 || startPoint > art->height() - 20)
+        startPoint = 50;
+    else {
+        bigDash = (-(startPoint / 50) % 5 + 5) % 5;
+        startPoint %= 50;
+    }
+
+    for (int i = startPoint; i < art->height() - 20; i += 50, bigDash = (bigDash + 1) % 5) {
         if (drawNet) {
             QPen backup = p.pen();
             p.setPen(Qt::DotLine);
@@ -387,10 +397,16 @@ void NativeDrawer::drawAxes() {
             p.setPen(backup);
         }
 
-        p.drawLine(QPoint(0, i), QPoint(6 + (4 + art->width() * drawNet) * (i%250==0), i));
-        p.drawLine(QPoint(art->width() - 6 - 4 * (i%250==0), i), QPoint(art->width(), i));
-        if (i%250==0)
-            drawText(&p, QPoint(5, i + 12), QString::number(backwardCoord(mirr(QPoint(0,i))).y()));
+        p.drawLine(QPoint(0, i), QPoint(6 + (5 + art->width() * drawNet) * (bigDash == 0), i));
+        p.drawLine(QPoint(art->width() - 6 - 5 * (bigDash == 0), i), QPoint(art->width(), i));
+        if (bigDash == 0) {
+            QString text = QString::number(backwardCoord(mirr(QPoint(0, i))).y());
+            if (mirr(newCoord(0,0)).y() == i)
+                text = "0.000";
+
+            drawText(&p, QPoint(5, i + 12), text);
+            bigDash = 0;
+        }
     }
 
     p.end();

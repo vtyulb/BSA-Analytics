@@ -534,7 +534,7 @@ namespace {
 }
 
 void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
-    printf("sorting stairs");
+    qDebug() << "sorting stairs";
     QVector<QPair<QString, int>> hlp;
     for (int i = 0; i < names.size(); i++)
         hlp.push_back(QPair<QString, int>(names[i], i));

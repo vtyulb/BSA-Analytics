@@ -525,25 +525,22 @@ void FileSummator::initStairs(Data &stairs, QStringList &names) {
 
 void FileSummator::sortStairs(Data &stairs, QStringList &names) {
     qDebug() << "sorting stairs";
-    QVector<QPair<QString, int>> hlp;
+    QVector<QPair<QDateTime, int>> hlp;
     for (int i = 0; i < names.size(); i++)
-        hlp.push_back(QPair<QString, int>(names[i], i));
+        hlp.push_back(QPair<QDateTime, int>(stringDateToDate(names[i]), i));
 
     std::sort(hlp.begin(), hlp.end());
-    QVector<int> res(names.size());
-    for (int i = 0; i < names.size(); i++)
-        res[hlp[i].second] = i;
 
     Data newStairs = stairs;
     newStairs.fork();
     QStringList newNames = names;
 
     for (int i = 0; i < names.size(); i++) {
-        newNames[i] = names[res[i]];
+        newNames[i] = names[hlp[i].second];
         for (int module = 0; module < stairs.modules; module++)
             for (int ray = 0; ray < stairs.rays; ray++)
                 for (int channel = 0; channel < stairs.channels; channel++)
-                    newStairs.data[module][channel][ray][i] = stairs.data[module][channel][ray][res[i]];
+                    newStairs.data[module][channel][ray][i] = stairs.data[module][channel][ray][hlp[i].second];
     }
 
     stairs.releaseData();

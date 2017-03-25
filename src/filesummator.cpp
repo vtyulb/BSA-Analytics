@@ -160,8 +160,6 @@ void FileSummator::run() {
             if (!data.isValid())
                 continue;
 
-
-            reader.repairWrongChannels(data);
             if (longData)
                 processLongData(data);
             else
@@ -216,6 +214,8 @@ bool FileSummator::processData(Data &data) {
             for (int ray = 0; ray < data.rays; ray++)
                 for (int i = 0; i < data.npoints; i++)
                     data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
+
+    Reader().repairWrongChannels(data);
 
     QVector<float> buf(data.npoints);
     noises.clear();
@@ -280,6 +280,8 @@ bool FileSummator::processData(Data &data) {
 void FileSummator::processLongData(Data &data) {
     // Hello FileSummator::processLongData(), i know you are here
     qDebug()  << "It won't work!!! contact <vtyulb@vtyulb.ru>";
+
+    Reader().repairWrongChannels(data);
 
     QVector<float> buf(data.npoints);
 

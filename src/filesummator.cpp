@@ -167,7 +167,9 @@ void FileSummator::run() {
             else
                 processData(data);
 
-            dumpStairs(stairs, stairsNames);
+            if (i % 100 == 0)
+                dumpStairs(stairs, stairsNames);
+
             data.releaseData();
 
             filesProcessed.insert(fileNames[i]);

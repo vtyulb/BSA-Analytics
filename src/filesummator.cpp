@@ -545,6 +545,10 @@ void FileSummator::sortStairs(Data &stairs, QStringList &names) {
                 for (int channel = 0; channel < stairs.channels; channel++)
                     newStairs.data[module][channel][ray][i] = stairs.data[module][channel][ray][res[i]];
     }
+
+    stairs.releaseData();
+    stairs = newStairs;
+    names = newNames;
 }
 
 bool FileSummator::findStair(Data &data, int &start, int &end) {

@@ -539,11 +539,16 @@ void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
             fflush(stdout);
         }
 
+        bool stop = true;
         for (int j = names.size() - 2; j >= i; j--)
             if (stringDateToDate(names[j + 1]) < stringDateToDate(names[j])) {
                 swap(stairs, j, j + 1);
                 swap(names[j], names[j + 1]);
+                stop = false;
             }
+
+        if (stop)
+            break;
     }
 }
 

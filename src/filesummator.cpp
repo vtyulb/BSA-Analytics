@@ -542,7 +542,7 @@ void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
     std::sort(hlp.begin(), hlp.end());
     QVector<int> res(names.size());
     for (int i = 0; i < names.size(); i++)
-        res[hlp[i]] = i;
+        res[hlp[i].second] = i;
 
     for (int i = 0; i < names.size(); i++) {
         swap(names[i], names[res[i]]);

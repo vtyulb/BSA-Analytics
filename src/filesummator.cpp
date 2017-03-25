@@ -533,22 +533,14 @@ namespace {
 
 void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
     printf("sorting stairs");
+    QVector<QPair<QString, int>> hlp;
+    for (int i = 0; i < names.size(); i++)
+        hlp.push_back(QPair<QString, int>(names[i], i));
+
+    std::sort(hlp.begin(), hlp.end());
     for (int i = 0; i < names.size(); i++) {
-        if (i % 10 == 0) {
-            printf(".");
-            fflush(stdout);
-        }
-
-        bool stop = true;
-        for (int j = names.size() - 2; j >= i; j--)
-            if (stringDateToDate(names[j + 1]) < stringDateToDate(names[j])) {
-                swap(stairs, j, j + 1);
-                swap(names[j], names[j + 1]);
-                stop = false;
-            }
-
-        if (stop)
-            break;
+        swap(names[i], names[hlp[i].second]);
+        swap(stairs, i, hlp[i].second);
     }
 }
 

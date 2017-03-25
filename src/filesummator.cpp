@@ -202,7 +202,7 @@ void FileSummator::run() {
         exit(0);
     }
 
-    printf("All files were processed\n");
+    printf("\nAll files were processed\n");
 }
 
 bool FileSummator::processData(Data &data) {
@@ -523,17 +523,7 @@ void FileSummator::initStairs(Data &stairs, QStringList &names) {
         qDebug() << "previous stairs search not found. Starting from scratch";
 }
 
-namespace {
-    void swap(const Data &data, int a, int b) {
-        for (int module = 0; module < data.modules; module++)
-            for (int ray = 0; ray < data.rays; ray++)
-                for (int channel = 0; channel < data.channels; channel++)
-                    std::swap(data.data[module][channel][ray][a],
-                              data.data[module][channel][ray][b]);
-    }
-}
-
-void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
+void FileSummator::sortStairs(Data &stairs, QStringList &names) {
     qDebug() << "sorting stairs";
     QVector<QPair<QString, int>> hlp;
     for (int i = 0; i < names.size(); i++)
@@ -544,9 +534,16 @@ void FileSummator::sortStairs(const Data &stairs, QStringList &names) {
     for (int i = 0; i < names.size(); i++)
         res[hlp[i].second] = i;
 
+    Data newStairs = stairs;
+    newStairs.fork();
+    QStringList newNames = names;
+
     for (int i = 0; i < names.size(); i++) {
-        swap(names[i], names[res[i]]);
-        swap(stairs, i, res[i]);
+        newNames[i] = names[res[i]];
+        for (int module = 0; module < stairs.modules; module++)
+            for (int ray = 0; ray < stairs.rays; ray++)
+                for (int channel = 0; channel < stairs.channels; channel++)
+                    newStairs.data[module][channel][ray][i] = stairs.data[module][channel][ray][res[i]];
     }
 }
 

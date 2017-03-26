@@ -1240,10 +1240,10 @@ bool Analytics::fourierLoadNoises() {
         noisesHeader = Settings::settings()->getLastHeader();
         if (!noises.isValid()) {
             QMessageBox::warning(NULL, "Error: No noises files found",
-                                 "There are no noises files found!\n"
-                                 "You should use latest slicing. If you are using it,\n"
-                                 "contact <vtyulb@vtyulb.ru> for further instructions.\n"
-                                 "Noises file must me located at " + noisesFile);
+                                       "There are no noises files found!\n"
+                                       "You should use latest slicing. If you are using it,\n"
+                                       "contact <vtyulb@vtyulb.ru> for further instructions.\n"
+                                       "Noises file must me located at " + noisesFile);
 
             return false;
         }

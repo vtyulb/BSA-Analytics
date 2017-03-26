@@ -14,6 +14,7 @@
 #include <QApplication>
 
 #include <customopendialog.h>
+#include <datagenerator.h>
 #include <pulsarlist.h>
 #include <precisesearchgui.h>
 #include <precisetiming.h>
@@ -78,6 +79,8 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionUpdate, SIGNAL(triggered(bool)), &updater, SLOT(checkForUpdates(bool)));
     if (ui->actionCheck_for_updates->isChecked())
         updater.checkForUpdates(true);
+
+    regenerate(DataGenerator::generateRandomPhrase());
 }
 
 MainWindow::~MainWindow() {
@@ -167,7 +170,7 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QD
         regenerate(data);
 }
 
-void MainWindow::regenerate(Data &data) {
+void MainWindow::regenerate(const Data &data) {
     show();
     if (ui->actionFlux_Density->isChecked() || ui->actionRotation_Measure->isChecked())
         normalizeData();

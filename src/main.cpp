@@ -367,6 +367,7 @@ void pulsarEngine(int argc, char **argv) {
 
 int main(int argc, char *argv[])
 {
+    srand(time(NULL));
     if (argc > 1)
         pulsarEngine(argc, argv);
 

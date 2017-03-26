@@ -19,7 +19,9 @@ Data DataGenerator::generateRandomPhrase() {
 }
 
 Data DataGenerator::generate(QString phrase) {
-    QFont font("", 14);
+    QFont font("Liberation Mono", 14);
+    font.setStyleStrategy(QFont::NoAntialias);
+
     const int width = QFontMetrics(font).width(phrase) + 5;
     const int height = 100;
 
@@ -83,7 +85,6 @@ Data DataGenerator::generate(QString phrase) {
             }
 
         // setting other rays
-        int currentDomain = 0;
         for (int j = 0; j < RC; j++)
             if (!raySet[j]) {
                 for (int k = 0; k < domains.size() - 1; k++)

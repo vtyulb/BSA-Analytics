@@ -24,6 +24,7 @@
 
 #include <sys/unistd.h>
 #include <sys/types.h>
+#include <time.h>
 #include <stdlib.h>
 #include <signal.h>
 

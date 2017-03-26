@@ -80,7 +80,8 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     if (ui->actionCheck_for_updates->isChecked())
         updater.checkForUpdates(true);
 
-    regenerate(DataGenerator::generateRandomPhrase());
+    if (ui->actionStartup_message->isChecked())
+        regenerate(DataGenerator::generateRandomPhrase());
 }
 
 MainWindow::~MainWindow() {
@@ -257,6 +258,7 @@ void MainWindow::saveSettings() {
     s.setValue("fast", QVariant(ui->actionFast->isChecked()));
     s.setValue("live", QVariant(ui->actionLive->isChecked()));
     s.setValue("CheckForUpdates", QVariant(ui->actionCheck_for_updates->isChecked()));
+    s.setValue("StartupMessage", QVariant(ui->actionStartup_message->isChecked()));
 }
 
 void MainWindow::loadSettings() {
@@ -265,6 +267,7 @@ void MainWindow::loadSettings() {
     ui->actionAutoDraw->setChecked(s.value("autoDraw", true).toBool());
     ui->actionFast->setChecked(s.value("fast", false).toBool());
     ui->actionLive->setChecked(s.value("live", true).toBool());
+    ui->actionStartup_message->setChecked(s.value("StartupMessage", true).toBool());
     lastOpenPath = s.value("openPath").toString();
     ui->actionCheck_for_updates->setChecked(s.value("CheckForUpdates", true).toBool());
 }

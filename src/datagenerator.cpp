@@ -24,6 +24,7 @@ Data DataGenerator::generate(QString phrase) {
 
     const int width = QFontMetrics(font).width(phrase) + 5;
     const int height = 100;
+    const bool longPhrase = phrase.size() > 25;
 
     QImage image(width, height, QImage::Format_RGB32);
     image.fill(QColor("white"));
@@ -88,7 +89,7 @@ Data DataGenerator::generate(QString phrase) {
         for (int j = 0; j < RC; j++)
             if (!raySet[j]) {
                 for (int k = 0; k < domains.size() - 1; k++)
-                    if (rays[j].first <= domains[k].second + 1 && rays[j].second + 1 >= domains[k].first) {
+                    if (rays[j].first <= domains[k].second + longPhrase && longPhrase + rays[j].second >= domains[k].first) {
                         rays[j] = domains[k];
                         raySet[j] = true;
                         break;
@@ -96,11 +97,6 @@ Data DataGenerator::generate(QString phrase) {
 
                 if (!raySet[j])
                     rays[j] = domains[rand() % domains.size()];
-                /*if (!raySet[j]) {
-                    rays[j] = domains[currentDomain];
-                    currentDomain = (currentDomain + 1) % domains.size();
-                    raySet[j] = true;
-                }*/
             }
 
         // setting raw data ----------------------------------

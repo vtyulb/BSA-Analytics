@@ -26,10 +26,13 @@ private:
     Ui::Analytics *ui;
     PulsarList *list;
     MainWindow *window;
-    KnownNoise *noises;
+    KnownNoise *knownNoises;
     QString folder;
     QStringList catalogs;
     bool oneWindowMode;
+
+    Data noises;
+    QMap<QString, QString> noisesHeader;
 
     QProgressBar *progressBar;
 
@@ -95,6 +98,8 @@ private slots:
 
     void actualFourierDataChanged();
     void fourierShowNoises();
+    bool fourierLoadNoises();
+    void fourierSelectBestAuto();
 
     void fourierFullGrayZone();
     void fourierShortGrayZone();

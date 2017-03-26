@@ -607,19 +607,31 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>999</number>
+            <number>9999</number>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_20">
+          <widget class="QPushButton" name="fourierSelectBestAuto">
+           <property name="maximumSize">
+            <size>
+             <width>50</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="text">
-            <string>files</string>
+            <string>Auto</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="fourierShowNoises">
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="text">
             <string>Noises</string>
            </property>

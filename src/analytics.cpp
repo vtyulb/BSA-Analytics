@@ -28,7 +28,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Analytics),
     list(NULL),
-    noises(new KnownNoise(this)),
+    knownNoises(new KnownNoise(this)),
     folder(QDir().absoluteFilePath(analyticsPath)),
     oneWindowMode(false),
     pulsars(new QVector<Pulsar>),
@@ -43,7 +43,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->addPulsarCatalog, SIGNAL(clicked()), this, SLOT(addPulsarCatalog()));
     QObject::connect(ui->infoButton, SIGNAL(clicked()),this, SLOT(showInfo()));
     QObject::connect(ui->knownPulsarsButton, SIGNAL(clicked()), this, SLOT(knownPulsarsGUI()));
-    QObject::connect(ui->knownNoiseButton, SIGNAL(clicked()), noises, SLOT(show()));
+    QObject::connect(ui->knownNoiseButton, SIGNAL(clicked()), knownNoises, SLOT(show()));
 
     QObject::connect(ui->dispersionPlotButton, SIGNAL(clicked()), this, SLOT(dispersionPlot()));
     QObject::connect(ui->dispersionM, SIGNAL(clicked()), this, SLOT(dispersionMplus()));
@@ -58,6 +58,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->fourierLoadCache, SIGNAL(clicked()), this, SLOT(loadFourierCache()));
 
     QObject::connect(ui->fourierShowNoises, SIGNAL(clicked()), this, SLOT(fourierShowNoises()));
+    QObject::connect(ui->fourierSelectBestAuto, SIGNAL(clicked(bool)), this, SLOT(fourierSelectBestAuto()));
 
     QObject::connect(ui->oneWindow, SIGNAL(clicked()), this, SLOT(oneWindow()));
 
@@ -138,7 +139,6 @@ void Analytics::init() {
 
 void Analytics::loadKnownPulsars() {
     knownPulsars.clear();
-    static bool firstLoad = true;
     QString fileName = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/known-pulsars.txt";
     QFile f(fileName);
     if (f.open(QIODevice::ReadOnly)) {
@@ -151,15 +151,10 @@ void Analytics::loadKnownPulsars() {
             KnownPulsar pulsar;
             QString time;
             stream >> pulsar.module >> pulsar.ray >> pulsar.period >> time;
-            if (time.size() < 6) {
-                if (firstLoad)
-                    qDebug() << "known-pulsars.txt line" << line << "damaged";
+            if (time.size() < 6)
                 continue;
-            }
 
             pulsar.time = QTime::fromString(time, "hh:mm:ss");
-            if (firstLoad)
-                qDebug() << "known pulsar" << pulsar.module << pulsar.ray << pulsar.period << pulsar.time << "loaded";
 
             knownPulsars.push_back(pulsar);
         }
@@ -173,8 +168,6 @@ void Analytics::loadKnownPulsars() {
             f.write("6\t7\t1.336\t19:20:18\n");
         }
     }
-
-    firstLoad = false;
 }
 
 void Analytics::loadPulsars(QString dir) {
@@ -656,7 +649,7 @@ void Analytics::knownPulsarsGUI() {
 
 void Analytics::applyKnownNoiseFilter() {
     for (int i = 0; i < pulsars->size(); i++)
-        pulsarsEnabled[i] &= !noises->contains(pulsars->at(i).period);
+        pulsarsEnabled[i] &= !knownNoises->contains(pulsars->at(i).period);
 }
 
 void Analytics::loadFourierCache() {
@@ -1230,9 +1223,7 @@ void Analytics::destroyGPS(Data &spectre) {
 
 }
 
-void Analytics::fourierShowNoises() {
-    static Data noises;
-    static QMap<QString, QString> header;
+bool Analytics::fourierLoadNoises() {
     if (!noises.isValid()) {
         QString noisesFile = QDir(folder).absolutePath();
         if (longData)
@@ -1246,7 +1237,7 @@ void Analytics::fourierShowNoises() {
         noises = reader.readBinaryFile(noisesFile);
         noises.releaseProtected = true;
         progressBar->hide();
-        header = Settings::settings()->getLastHeader();
+        noisesHeader = Settings::settings()->getLastHeader();
         if (!noises.isValid()) {
             QMessageBox::warning(NULL, "Error: No noises files found",
                                  "There are no noises files found!\n"
@@ -1254,11 +1245,74 @@ void Analytics::fourierShowNoises() {
                                  "contact <vtyulb@vtyulb.ru> for further instructions.\n"
                                  "Noises file must me located at " + noisesFile);
 
-            return;
+            return false;
         }
     }
 
-    QStringList originalNames = header["stairs_names"].split(",");
+    return true;
+}
+
+void Analytics::fourierSelectBestAuto() {
+    if (!fourierLoadNoises())
+        return;
+
+    QStringList names = noisesHeader["stairs_names"].split(",");
+    int module = ui->module->value() - 1;
+    int ray = ui->ray->value() - 1;
+    if (module < 0 || module >= 6 || ray < 0 || ray >= 8) {
+        qDebug() << "invalid module / ray";
+        module = 0;
+        ray = 0;
+    }
+
+    qDebug() << "select best auto on module" << module + 1 << "ray" << ray + 1;
+
+    QString block = "/" + QString::number(ui->fourierBlockNo->value());
+    QVector<double> sigmas;
+    for (int i = 0; i < names.size(); i++)
+        if (names[i].endsWith(block)) {
+            double sigma = 0;
+            for (int j = 0; j < noises.channels; j++)
+                sigma += noises.data[module][j][ray][i];
+
+            sigmas.push_back(sigma);
+        }
+
+    std::sort(sigmas.begin(), sigmas.end());
+    for (int i = sigmas.size() - 1; i >= 0; i--) {
+        sigmas[i] /= sigmas[0];
+        sigmas[i] *= sigmas[i];
+    }
+
+    Data res;
+    res.modules = 1;
+    res.rays = 1;
+    res.channels = 1;
+    res.npoints = sigmas.size();
+    res.init();
+
+    double max = 1;
+    res.data[0][0][0][0] = sigmas[0];
+    for (int i = 1; i < sigmas.size(); i++) {
+        sigmas[i] += sigmas[i - 1];
+        res.data[0][0][0][i] = i / sqrt(sigmas[i]);
+        if (res.data[0][0][0][i] > max) {
+            max = res.data[0][0][0][i];
+            res.sigma = i;
+            ui->fourierBestNumber->setValue(i);
+        }
+    }
+
+    Settings::settings()->setLastHeader(QMap<QString, QString>());
+    window->regenerate(res);
+}
+
+
+void Analytics::fourierShowNoises() {
+    if (!fourierLoadNoises())
+        return;
+
+    QStringList originalNames = noisesHeader["stairs_names"].split(",");
 
     QString block = "/" + QString::number(ui->fourierBlockNo->value());
     QStringList names;

@@ -131,7 +131,7 @@ void PulsarList::saveSettings() {
 void PulsarList::selectionChanged() {
     if (selectionModel()->selection().indexes().size()) {
         int selectedRow = selectionModel()->selection().indexes().at(0).row();
-        if (selectedRow < pulsars->size() && selectedRow >= 0) {
+        if (selectedRow < pulsarsIndex.size() && selectedRow >= 0 && pulsarsIndex[selectedRow] < pulsars->size()) {
             currentPulsar = &(*pulsars)[pulsarsIndex[selectedRow]];
             emit switchData(currentPulsar->data);
         }

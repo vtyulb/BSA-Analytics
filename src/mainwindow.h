@@ -74,7 +74,7 @@ private slots:
     void checkForUpdatesStatusChanged();
 
 public slots:
-    void regenerate(const Data &data);
+    void regenerate(Data &data);
 };
 
 #endif // MAINWINDOW_H

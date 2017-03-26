@@ -71,17 +71,19 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     if (!parent) {
         if (file != "")
             QTimer::singleShot(400, this, SLOT(openStartFile()));
-        else
+        else {
             QTimer::singleShot(400, this, SLOT(customOpen()));
+            if (ui->actionStartup_message->isChecked()) {
+                Data startupMessage = DataGenerator::generateRandomPhrase();
+                regenerate(startupMessage);
+            }
+        }
     }
 
     static Updater updater;
     QObject::connect(ui->actionUpdate, SIGNAL(triggered(bool)), &updater, SLOT(checkForUpdates(bool)));
     if (ui->actionCheck_for_updates->isChecked())
         updater.checkForUpdates(true);
-
-    if (ui->actionStartup_message->isChecked())
-        regenerate(DataGenerator::generateRandomPhrase());
 }
 
 MainWindow::~MainWindow() {
@@ -171,7 +173,7 @@ void MainWindow::nativeOpenFile(QString fileName, int skip, int skipFirstRay, QD
         regenerate(data);
 }
 
-void MainWindow::regenerate(const Data &data) {
+void MainWindow::regenerate(Data &data) {
     show();
     if (ui->actionFlux_Density->isChecked() || ui->actionRotation_Measure->isChecked())
         normalizeData();

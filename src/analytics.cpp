@@ -29,7 +29,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     ui(new Ui::Analytics),
     list(NULL),
     noises(new KnownNoise(this)),
-    folder(analyticsPath),
+    folder(QDir().absoluteFilePath(analyticsPath)),
     oneWindowMode(false),
     pulsars(new QVector<Pulsar>),
     fourier(fourier),

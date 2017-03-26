@@ -22,6 +22,10 @@ Data DataGenerator::generate(QString phrase) {
     QFont font("Liberation Mono", 14);
     font.setStyleStrategy(QFont::NoAntialias);
 
+#ifdef Q_OS_LINUX
+    font = QFont("", 14);
+#endif
+
     const int width = QFontMetrics(font).width(phrase) + 5;
     const int height = 100;
     const bool longPhrase = phrase.size() > 25;

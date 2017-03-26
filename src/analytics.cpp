@@ -109,6 +109,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     resize(minimumWidth(), height());
     if (!QSettings().value("GimpMode", true).toBool())
         QTimer::singleShot(100, this, SLOT(oneWindow()));
+
+    QDir::setCurrent(qApp->applicationDirPath());
 }
 
 void Analytics::init() {

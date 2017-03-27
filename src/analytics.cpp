@@ -1040,6 +1040,8 @@ void Analytics::calculateCaches() {
             break;
 
         ui->fourierBlockNo->setValue(i);
+        ui->fourierSelectBest->setChecked(true);
+        fourierSelectBestAuto();
         loadFourierData(true);
     }
 

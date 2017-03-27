@@ -164,9 +164,9 @@ void Analytics::loadKnownPulsars() {
         if (!f.open(QIODevice::WriteOnly))
             qDebug() << "can't create file" << fileName;
         else {
-            f.write("module\tray\tperiod\ttime\n");
+            f.write("module\tray\tperiod\ttime\tcomment\n");
             f.write("#This is commented line\n");
-            f.write("6\t7\t1.336\t19:20:18\n");
+            f.write("6\t7\t1.336\t19:20:18\tThis is most powerfull pulsar: J1921+2153\n");
         }
     }
 }

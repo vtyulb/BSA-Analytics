@@ -1283,6 +1283,10 @@ void Analytics::fourierSelectBestAuto() {
         }
 
     std::sort(sigmas.begin(), sigmas.end());
+    sigmas[0] = sigmas.last();
+    sigmas[1] = sigmas.last();
+    std::sort(sigmas.begin(), sigmas.end());
+
     for (int i = sigmas.size() - 1; i >= 0; i--) {
         sigmas[i] /= sigmas[0];
         sigmas[i] *= sigmas[i];

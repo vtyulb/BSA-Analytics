@@ -69,6 +69,7 @@
     </property>
     <addaction name="actionHandBook"/>
     <addaction name="separator"/>
+    <addaction name="actionStartup_message"/>
     <addaction name="actionCheck_for_updates"/>
     <addaction name="actionUpdate"/>
     <addaction name="separator"/>
@@ -90,7 +91,6 @@
     <addaction name="separator"/>
     <addaction name="actionSound_mode"/>
     <addaction name="separator"/>
-    <addaction name="actionStartup_message"/>
    </widget>
    <widget class="QMenu" name="menuPulsars">
     <property name="title">
@@ -336,7 +336,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Startup message</string>
+    <string>Startup &amp;message</string>
    </property>
   </action>
  </widget>

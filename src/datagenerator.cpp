@@ -12,7 +12,7 @@ Data DataGenerator::generateRandomPhrase() {
     phrases << "BSA-Analytics by vtyulb";
     phrases << "serg@prao.ru";
     phrases << "vtyulb@vtyulb.ru";
-    phrases << "Help me, I am locked at BSA-Analytics engine!";
+    phrases << "Help me, I am locked in BSA-Analytics engine!";
     phrases << "Bugtracker is located at https://github.com/vtyulb/BSA-Analytics/issues";
 
     return generate(phrases[rand() % phrases.size()]);

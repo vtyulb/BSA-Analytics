@@ -37,6 +37,8 @@ struct Pulsar {
 
     bool badNoiseKnown = false;
     bool badNoiseRes;
+    bool isKnownPulsar = false;
+    QString knownPulsarComment;
 
     double noiseLevel;
 

@@ -37,6 +37,7 @@ private:
 private slots:
     void selectionChanged();
     void showTime();
+    void showComment();
 
 signals:
     void switchData(Data &data);

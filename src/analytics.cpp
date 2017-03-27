@@ -86,7 +86,6 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->duplicatesIterations->hide();
         ui->label_9->hide();
 
-        ui->knownPulsars->setChecked(false);
         ui->knownNoise->setChecked(false);
 
         ui->widget_5->layout()->addWidget(ui->knownPulsarsAndNoises);
@@ -153,6 +152,8 @@ void Analytics::loadKnownPulsars() {
             stream >> pulsar.module >> pulsar.ray >> pulsar.period >> time;
             if (time.size() < 6)
                 continue;
+
+            pulsar.comment = stream.readAll();
 
             pulsar.time = QTime::fromString(time, "hh:mm:ss");
 
@@ -253,7 +254,7 @@ void Analytics::apply(bool fullFilters) {
     if (ui->multiplePicks->isChecked())
         applyMultiplePicksFilter();
 
-    if (ui->knownPulsars->isChecked() && !fourier)
+    if (ui->knownPulsars->isChecked())
         applyKnownPulsarsFilter();
 
     if (ui->knownNoise->isChecked() && !fourier)
@@ -415,7 +416,8 @@ void Analytics::applyKnownPulsarsFilter() {
         if (pulsarsEnabled[i])
             for (int j = 0; j < knownPulsars.size(); j++)
                 if (knownPulsars[j] == pulsars->at(i)) {
-                    pulsarsEnabled[i] = false;
+                    (*pulsars)[i].isKnownPulsar = true;
+                    (*pulsars)[i].knownPulsarComment = knownPulsars[j].comment;
                     break;
                 }
 }

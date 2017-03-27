@@ -23,8 +23,13 @@ PulsarList::PulsarList(QWidget *parent) :
     QObject::connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));
 
     QAction *showUTCtime = new QAction("Show UTC time", this);
-    QObject::connect(showUTCtime, SIGNAL(triggered(bool)), this, SLOT(showTime()));
+    QObject::connect(showUTCtime, SIGNAL(triggered()), this, SLOT(showTime()));
     addAction(showUTCtime);
+
+    QAction *showComment = new QAction("Show comment", this);
+    QObject::connect(showComment, SIGNAL(triggered()), this, SLOT(showComment()));
+    addAction(showComment);
+
     setContextMenuPolicy(Qt::ActionsContextMenu);
     setColumnCount(6);
 
@@ -40,7 +45,6 @@ PulsarList::PulsarList(QWidget *parent) :
     header << "period" << "snr";
     setHorizontalHeaderLabels(header);
 
-    setStyleSheet("QMenu::item:selected{border:1px solid red;}");
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Ignored);
 
     setSelectionBehavior(QAbstractItemView::SelectRows);
@@ -79,6 +83,10 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
 
         if (pulsars->at(i).fourierDuplicate)
             item(i, 0)->setBackgroundColor(QColor(255, 255, 150));
+
+        if (pulsars->at(i).isKnownPulsar)
+            for (int j = 1; j < 6; j++)
+                item(i, j)->setBackgroundColor(QColor(0, 255, 0));
 
         pulsarsIndex.push_back(i);
     }
@@ -133,6 +141,16 @@ void PulsarList::selectionChanged() {
         int selectedRow = selectionModel()->selection().indexes().at(0).row();
         if (selectedRow < pulsarsIndex.size() && selectedRow >= 0 && pulsarsIndex[selectedRow] < pulsars->size()) {
             currentPulsar = &(*pulsars)[pulsarsIndex[selectedRow]];
+
+            static bool normalColors = true;
+            if (currentPulsar->isKnownPulsar && normalColors) {
+                setStyleSheet("QTableView::item:selected{background-color: rgb(0,200,0); color: rgb(0,0,0)};");
+                normalColors = false;
+            } else if (!currentPulsar->isKnownPulsar && !normalColors) {
+                setStyleSheet("");
+                normalColors = true;
+            }
+
             emit switchData(currentPulsar->data);
         }
     }
@@ -140,6 +158,13 @@ void PulsarList::selectionChanged() {
 
 void PulsarList::showTime() {
     QMessageBox::information(this, "Peak UTC time", currentPulsar->UTCtime());
+}
+
+void PulsarList::showComment() {
+    if (!currentPulsar->isKnownPulsar)
+        QMessageBox::information(this, "Object info", "This is unknown object!");
+    else
+        QMessageBox::information(this, "Known pulsar info", "This is well-known pulsar\n" + currentPulsar->knownPulsarComment);
 }
 
 QSize PulsarList::sizeHint() const {

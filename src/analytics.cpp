@@ -43,7 +43,6 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->addPulsarCatalog, SIGNAL(clicked()), this, SLOT(addPulsarCatalog()));
     QObject::connect(ui->infoButton, SIGNAL(clicked()),this, SLOT(showInfo()));
     QObject::connect(ui->knownPulsarsButton, SIGNAL(clicked()), this, SLOT(knownPulsarsGUI()));
-    QObject::connect(ui->knownNoiseButton, SIGNAL(clicked()), knownNoises, SLOT(show()));
 
     QObject::connect(ui->dispersionPlotButton, SIGNAL(clicked()), this, SLOT(dispersionPlot()));
     QObject::connect(ui->dispersionM, SIGNAL(clicked()), this, SLOT(dispersionMplus()));
@@ -86,18 +85,18 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->duplicatesIterations->hide();
         ui->label_9->hide();
 
-        ui->knownNoise->setChecked(false);
-
         ui->widget_5->layout()->addWidget(ui->knownPulsarsAndNoises);
 
         QObject::connect(ui->fourierShortGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierShortGrayZone()));
         QObject::connect(ui->fourierFullGrayZone, SIGNAL(clicked(bool)), this, SLOT(fourierFullGrayZone()));
+        QObject::connect(ui->knownNoiseButton, SIGNAL(clicked()), this, SLOT(knownPulsarsGUI()));
 
         setWindowTitle("Fourier Analytics");
         fourierData.resize(500);
     } else {
         ui->groupBox_5->hide();
         ui->groupBox_6->hide();
+        QObject::connect(ui->knownNoiseButton, SIGNAL(clicked()), knownNoises, SLOT(show()));
     }
 
     this->restoreGeometry(QSettings().value("AnalyticsGeometry").toByteArray());
@@ -141,21 +140,58 @@ void Analytics::loadKnownPulsars() {
     QString fileName = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation) + "/known-pulsars.txt";
     QFile f(fileName);
     if (f.open(QIODevice::ReadOnly)) {
-        f.readLine();
-        while (f.canReadLine()) {
+        QString lastComment;
+        int lineNumber = 0;
+        while (!f.atEnd()) {
+            lineNumber++;
             QByteArray line = f.readLine();
-            if (line[0] == '#')
+            line.replace("\t", " ");
+            line.replace("\n", " ");
+            if (line[0] == '#') {
+                line.replace("#", "");
+                lastComment = QString::fromLocal8Bit(line);
                 continue;
+            }
             QTextStream stream(&line, QIODevice::ReadOnly);
             KnownPulsar pulsar;
-            QString time;
-            stream >> pulsar.module >> pulsar.ray >> pulsar.period >> time;
-            if (time.size() < 6)
+            QString time, module, ray, period;
+            stream >> module >> ray >> period >> time;
+            if (module == "*")
+                pulsar.module = -1;
+            else
+                pulsar.module = module.toInt();
+
+            if (ray == "*")
+                pulsar.ray = -1;
+            else
+                pulsar.ray = ray.toInt();
+
+            pulsar.period = period.toDouble();
+
+            if (time.size() < 4) {
+                if (line.replace(" ", "") != "")
+                    QMessageBox::warning(NULL, "Warning", "Error loading file " + fileName + "\n"
+                                                          "Line " + QString::number(lineNumber) + " is corrupted\n"
+                                                          "Line content: \"" + line + "\"");
                 continue;
+            }
 
             pulsar.comment = stream.readAll();
+            pulsar.comment = lastComment + "\n" + pulsar.comment;
 
-            pulsar.time = QTime::fromString(time, "hh:mm:ss");
+            time = time.toUpper();
+            if (time.contains("LONG"))
+                pulsar.longNoise = true;
+
+            if (time.contains("SHORT"))
+                pulsar.shortNoise = true;
+
+            if (!pulsar.shortNoise && !pulsar.longNoise) {
+                if (time.size() < 6)
+                    pulsar.time = QTime::fromString(time, "hh:mm");
+                else
+                    pulsar.time = QTime::fromString(time, "hh:mm:ss");
+            }
 
             knownPulsars.push_back(pulsar);
         }
@@ -164,9 +200,10 @@ void Analytics::loadKnownPulsars() {
         if (!f.open(QIODevice::WriteOnly))
             qDebug() << "can't create file" << fileName;
         else {
-            f.write("module\tray\tperiod\ttime\tcomment\n");
-            f.write("#This is commented line\n");
-            f.write("6\t7\t1.336\t19:20:18\tThis is most powerfull pulsar: J1921+2153\n");
+            QFile tmp(":/other/known-pulsars.txt");
+            tmp.open(QIODevice::ReadOnly);
+            f.write(tmp.readAll());
+            f.close();
         }
     }
 }
@@ -257,8 +294,12 @@ void Analytics::apply(bool fullFilters) {
     if (ui->knownPulsars->isChecked())
         applyKnownPulsarsFilter();
 
-    if (ui->knownNoise->isChecked() && !fourier)
-        applyKnownNoiseFilter();
+    if (ui->knownNoise->isChecked()) {
+        if (fourier)
+            applyFourierKnownNoiseFilter();
+        else
+            applyKnownNoiseFilter();
+    }
 
     if (ui->differentNoise->isChecked())
         applyDifferentNoise();
@@ -415,11 +456,23 @@ void Analytics::applyKnownPulsarsFilter() {
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsarsEnabled[i])
             for (int j = 0; j < knownPulsars.size(); j++)
-                if (knownPulsars[j] == pulsars->at(i)) {
+                if (!knownPulsars[j].shortNoise && !knownPulsars[j].longNoise && knownPulsars[j] == pulsars->at(i)) {
                     (*pulsars)[i].isKnownPulsar = true;
                     (*pulsars)[i].knownPulsarComment = knownPulsars[j].comment;
                     break;
                 }
+}
+
+void Analytics::applyFourierKnownNoiseFilter() {
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i])
+            for (int j = 0; j < knownPulsars.size(); j++)
+                if ((knownPulsars[j].shortNoise && !longData) ||
+                    (knownPulsars[j].longNoise && longData))
+                    if (knownPulsars[j] == pulsars->at(i)) {
+                        (*pulsars)[i].showInTable = false;
+                        (*pulsars)[i].knownPulsarComment = knownPulsars[j].comment;
+                    }
 }
 
 void Analytics::applyDifferentMaximumsFilter() {

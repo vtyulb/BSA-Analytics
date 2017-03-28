@@ -73,6 +73,7 @@ private:
     void applyStrangeDataFilter();
     void applyDifferentNoise();
     void applyKnownPulsarsFilter();
+    void applyFourierKnownNoiseFilter();
     void applyKnownNoiseFilter();
     void applyFileNameFilter();
     void applyDifferentMaximumsFilter();

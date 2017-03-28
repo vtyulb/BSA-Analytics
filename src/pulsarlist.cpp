@@ -78,7 +78,7 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
                 item(i, j)->setBackgroundColor(QColor("lightgray"));
 
         if (!pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics())
-            for (int j = 0; j < columnCount(); j++)
+            for (int j = 1; j < columnCount(); j++)
                 item(i, j)->setBackgroundColor(QColor(200, 100, 100));
 
         if (pulsars->at(i).fourierDuplicate)
@@ -161,10 +161,12 @@ void PulsarList::showTime() {
 }
 
 void PulsarList::showComment() {
-    if (!currentPulsar->isKnownPulsar)
-        QMessageBox::information(this, "Object info", "This is unknown object!");
-    else
+    if (currentPulsar->isKnownPulsar)
         QMessageBox::information(this, "Known pulsar info", "This is well-known pulsar\n" + currentPulsar->knownPulsarComment);
+    else if (currentPulsar->knownPulsarComment != "")
+        QMessageBox::information(this, "Known noise info", "This is well-known noise\n" + currentPulsar->knownPulsarComment);
+    else
+        QMessageBox::information(this, "Object info", "This is unknown object!");
 }
 
 QSize PulsarList::sizeHint() const {

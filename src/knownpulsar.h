@@ -6,6 +6,7 @@
 #include <QVariant>
 
 #include <pulsar.h>
+#include <settings.h>
 
 const QString KNOWN_PULSARS_FILENAME = "/known-pulsars.pls";
 
@@ -18,6 +19,8 @@ struct KnownPulsar {
         period = res[2].toDouble();
         time = res[3].toTime();
         comment = res[4].toString();
+        shortNoise = res[5].toBool();
+        longNoise = res[6].toBool();
     }
 
     KnownPulsar(int _module, int _ray, double _period, QTime _time, QString _comment):
@@ -34,11 +37,22 @@ struct KnownPulsar {
     QTime time;
     QString comment;
 
+    bool shortNoise = false;
+    bool longNoise = false;
+
     bool operator == (const Pulsar &p) const {
-        return (module == p.module) &&
-                (ray == p.ray) &&
-                (globalGoodDoubles(period, p.period)) &&
-                abs(p.nativeTime.secsTo(time)) <= 180;
+        return (module == p.module || module == -1) &&
+                (ray == p.ray || ray == -1) &&
+                (goodPeriods(period, p.period)) &&
+                (abs(p.nativeTime.secsTo(time)) <= 180  || time.isNull());
+    }
+
+    bool goodPeriods(double a, double b) const {
+        double prec = 0.005;
+        if (Settings::settings()->getFourierSpectreSize() != 1024)
+            prec /= 8;
+
+        return fabs(a - b) < prec;
     }
 
     QVariant toVariant() {
@@ -47,7 +61,9 @@ struct KnownPulsar {
         res.push_back(ray);
         res.push_back(period);
         res.push_back(time);
-        res.push_back(comment);;
+        res.push_back(comment);
+        res.push_back(shortNoise);
+        res.push_back(longNoise);
         return res;
     }
 };

@@ -94,3 +94,5 @@ FORMS    += mainwindow.ui \
     precisetiming.ui
 
 win32:RC_FILE = icon.rc
+
+RESOURCES = resources.qrc

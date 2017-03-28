@@ -1,0 +1,23 @@
+#Module	Ray	Period	Time	Comment
+#Comments are optional: if no comment specified then last commented line would be chosen
+
+#Pulsars section
+
+# Most powerfull pulsar: J1921+2153 and it's harmonics
+6	7	1.33730	19:20:00   main harmonic
+*	*	1.33730	19:20:00   all other modules/rays
+	
+
+#--------------------------------------------------------
+#--------------------------------------------------------
+#Module Ray	Period	long/short	Comment
+#Noises section
+
+#GPS harmonics
+*	*	0.99845	short+long	main gps harmonic
+*	*	0.50045	short		1/2 gps
+*	*	0.33336 short
+
+#Some other noises
+*	*	0.05013	long
+	

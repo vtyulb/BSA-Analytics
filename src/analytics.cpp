@@ -790,9 +790,22 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     continue;
                 }
 
+
+                if (longData) {
+                    qDebug() << "I REALLY NEED NORMAL LONG DATA";
+                    qDebug() << "SHOW THIS TO <vtyulb@vtyulb.ru>";
+                    /*fourierLoadNoises();
+                    QStringList names = Settings::settings()->getLastHeader()["stairs_names"].split(",");
+                    for (int k = 0; k < names.size(); k++)
+                        if (names[k] == data.previousLifeName)
+                            for (int module = 0; module < data.modules; module++)
+                                for (int ray = 0; ray < data.rays; ray++)
+                                    fourierRawNoises[module][ray].push_back(noises.data[module][32][ray][k]);*/z
+                }
+
                 for (int module = 0; module < 6; module++)
                     for (int ray = 0; ray < 8; ray++) {
-                        double noise = 0;                        
+                        double noise = 0;
                         for (int channel = 0; channel < data.channels - 1; channel++)
                             for (int point = 0; point < data.npoints; point++)
                                 noise += double(data.data[module][channel][ray][point])*data.data[module][channel][ray][point];
@@ -800,10 +813,6 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                         fourierRawNoises[module][ray].push_back(noise);
                     }
             }
-
-        for (int module = 0; module < 6; module++)
-            for (int ray = 0; ray < 8; ray++)
-                std::sort(fourierRawNoises[module][ray].begin(), fourierRawNoises[module][ray].end());
 
         ui->currentStatus->setText("Running fourier");
         QVector<double> fourierNoises[6][8];
@@ -857,6 +866,10 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     fourierNoises[module][ray].push_back(pl.noiseLevel);
                 }
         }
+
+        for (int module = 0; module < 6; module++)
+            for (int ray = 0; ray < 8; ray++)
+                std::sort(fourierRawNoises[module][ray].begin(), fourierRawNoises[module][ray].end());
 
         for (int module = 0; module < 6; module++)
             for (int ray = 0; ray < 8; ray++)

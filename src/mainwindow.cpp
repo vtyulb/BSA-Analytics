@@ -56,6 +56,8 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionNormalize_data, SIGNAL(triggered()), this, SLOT(normalizeData()));
     QObject::connect(ui->actionHandBook, SIGNAL(triggered()), this, SLOT(showHelp()));
     QObject::connect(ui->actionCheck_for_updates, SIGNAL(triggered()), this, SLOT(checkForUpdatesStatusChanged()));
+    QObject::connect(ui->actionStable, SIGNAL(triggered()), this, SLOT(switchToStableChannel()));
+    QObject::connect(ui->actionNightly, SIGNAL(triggered()), this, SLOT(switchToNightlyChannel()));
 
     progress = new QProgressBar(this);
     progress->setRange(0, 100);
@@ -245,7 +247,7 @@ void MainWindow::showAbout() {
     QMessageBox::about(this, "About", "Program was written specially\n"
                                       "for S.A.Tyulbashev <serg@prao.ru>\n"
                                       "by V.S.Tyulbashev <vtyulb@vtyulb.ru>\n\n"
-                                      "This version compiled\n" +
+                                      "This version compiled at\n" +
                                       QFileInfo(qApp->arguments().first()).lastModified().toString());
 }
 
@@ -272,6 +274,10 @@ void MainWindow::loadSettings() {
     ui->actionStartup_message->setChecked(s.value("StartupMessage", true).toBool());
     lastOpenPath = s.value("openPath").toString();
     ui->actionCheck_for_updates->setChecked(s.value("CheckForUpdates", true).toBool());
+    if (s.value("Stable", STABLE_VERSION).toBool())
+        ui->actionStable->setChecked(true);
+    else
+        ui->actionNightly->setChecked(true);
 }
 
 void MainWindow::customOpen() {
@@ -414,4 +420,16 @@ void MainWindow::setStyle(QAction *action) {
 
 void MainWindow::checkForUpdatesStatusChanged() {
     QSettings().setValue("CheckForUpdates", ui->actionCheck_for_updates->isChecked());
+}
+
+void MainWindow::switchToNightlyChannel() {
+    ui->actionStable->setChecked(false);
+    ui->actionNightly->setChecked(true);
+    QSettings().setValue("Stable", QVariant(false));
+}
+
+void MainWindow::switchToStableChannel() {
+    ui->actionNightly->setChecked(false);
+    ui->actionStable->setChecked(true);
+    QSettings().setValue("Stable", QVariant(true));
 }

@@ -20,7 +20,7 @@
 #include <QUuid>
 
 const QString installerName = QDir::tempPath() + "/BSA-Analytics-x64.exe";
-const QUrl downloadUrl("https://bsa.vtyulb.ru/BSA-Analytics-x64.exe");
+const QString downloadUrl("https://bsa.vtyulb.ru/BSA-Analytics-x64.exe");
 
 Updater::Updater(QObject *parent) : QObject(parent)
 {
@@ -28,7 +28,7 @@ Updater::Updater(QObject *parent) : QObject(parent)
 }
 
 void Updater::download() {
-    QNetworkRequest request(downloadUrl);
+    QNetworkRequest request(getInstallerUrl());
 
     QObject::connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(dumpSetup(QNetworkReply*)));
 
@@ -47,7 +47,7 @@ void Updater::download() {
     layout->addWidget(downWidget);
     downloaderWidget->show();
 
-    qDebug() << "downloading" << downloadUrl;
+    qDebug() << "downloading" << getInstallerUrl();
     networkReply = manager->get(request);
     QObject::connect(networkReply, SIGNAL(downloadProgress(qint64,qint64)), this, SLOT(downloadProgressChanged(qint64,qint64)));
     QObject::connect(cancel, SIGNAL(clicked(bool)), this, SLOT(cancelUpdate()));
@@ -100,10 +100,14 @@ void Updater::runSetup() {
 
 void Updater::checkForUpdates(bool silence) {
     silentMode = silence;
-    if (QSettings().value("LastTimeCheckedForUpdates").toDate() == QDate::currentDate() && silentMode) {
+    bool stable = QSettings().value("Stable", QVariant(true)).toBool();
+    if (QSettings().value("LastTimeCheckedForUpdates").toDate().daysTo(QDate::currentDate()) < 1 + stable * 3 && silentMode) {
         qDebug() << "already checked for updates today";
         return;
     }
+
+    if (stable)
+        QSettings().setValue("LastTimeCheckedForUpdates", QDate::currentDate());
 
     QString uuid = QSettings().value("UUID").toString();
     if (uuid == "") {
@@ -111,7 +115,7 @@ void Updater::checkForUpdates(bool silence) {
         QSettings().setValue("UUID", uuid);
     }
 
-    QNetworkRequest request(downloadUrl);
+    QNetworkRequest request(getInstallerUrl());
     request.setRawHeader("User-Agent", "BSA-Analytics {" + uuid.toUtf8() + "} from " + getSystemInfo());
     manager->head(request);
     QObject::connect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkFinished(QNetworkReply*)));
@@ -153,6 +157,13 @@ QByteArray Updater::getRAMcount() {
     ram /= 1024; // in KB now
     ram /= 1024; // in MB now
     return (QString::number(ram / 1000.0, 'f', 1) + "G").toUtf8();
+}
+
+QUrl Updater::getInstallerUrl() {
+    if (QSettings().value("Stable", QVariant()).toBool())
+        return QUrl(QString(downloadUrl).replace("-x64", "-stable-x64"));
+    else
+        return QUrl(downloadUrl);
 }
 
 #ifdef Q_OS_LINUX

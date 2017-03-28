@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QNetworkReply>
 #include <QProgressBar>
+#include <QUrl>
 
 class Updater : public QObject
 {
@@ -22,6 +23,7 @@ private:
     long long getNativeRAMcount();
     QByteArray getRAMcount();
     QByteArray getSystemInfo();
+    QUrl getInstallerUrl();
 
 private slots:
     void dumpSetup(QNetworkReply*);

@@ -56,6 +56,9 @@ private slots:
     void drawFast(bool);
     void drawLive(bool);
 
+    void switchToStableChannel();
+    void switchToNightlyChannel();
+
     void showHelp();
     void showAbout();
     void showAboutQt();

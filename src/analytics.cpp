@@ -800,7 +800,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                         if (names[k] == data.previousLifeName)
                             for (int module = 0; module < data.modules; module++)
                                 for (int ray = 0; ray < data.rays; ray++)
-                                    fourierRawNoises[module][ray].push_back(noises.data[module][32][ray][k]);*/z
+                                    fourierRawNoises[module][ray].push_back(noises.data[module][32][ray][k]);*/
                 }
 
                 for (int module = 0; module < 6; module++)

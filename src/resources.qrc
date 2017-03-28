@@ -1,0 +1,5 @@
+<RCC>
+<qresource>
+	<file>../other/known-pulsars.txt</file>
+</qresource>
+</RCC>

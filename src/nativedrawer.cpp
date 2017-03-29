@@ -440,16 +440,16 @@ void NativeDrawer::print() {
 
 void NativeDrawer::nativePrint(QPrinter *printer) {
     printer->setOrientation(QPrinter::Landscape);
-//    print 5er->setColorMode(QPrinter::Color);
+    printer->setColorMode(QPrinter::Color);
     bool tmp = live;
     live = false;
     QImage *tmpArt = art;
-    art = new QImage(printer->width(), printer->height(), QImage::Format_ARGB32);
+    art = new QImage(printer->width() - 5, printer->height(), QImage::Format_ARGB32);
     nativePaint(true);
     live = tmp;
 
     QPainter painter(printer);
-    painter.drawImage(QRect(0, 0, art->width(), art->height()), *art);
+    painter.drawImage(0, 0, *art);
     painter.end();
 
     delete art;

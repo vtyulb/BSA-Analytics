@@ -449,7 +449,7 @@ void NativeDrawer::nativePrint(QPrinter *printer) {
     live = tmp;
 
     QPainter painter(printer);
-    painter.drawImage(QRect(0, 0, art->width() - 1, art->height() - 1), *art);
+    painter.drawImage(QRect(0, 0, art->width(), art->height()), *art);
     painter.end();
 
     delete art;

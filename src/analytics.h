@@ -48,6 +48,7 @@ private:
     int fourierSpectreSize;
     bool longData;
     int totalFilesLoaded;
+    bool cacheLoaded;
 
     QVector<KnownPulsar> knownPulsars;
     QVector<QString> fileNames;

@@ -34,7 +34,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     pulsars(new QVector<Pulsar>),
     fourier(fourier),
     longData(false),
-    totalFilesLoaded(0)
+    totalFilesLoaded(0),
+    cacheLoaded(false)
 {
     ui->setupUi(this);
     progressBar = ui->progressBar;
@@ -750,6 +751,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     if (loadCache && QFile::exists(cacheFile)) {
         QFile cache(cacheFile);
         cache.open(QIODevice::ReadOnly);
+        cacheLoaded = true;
         QDataStream stream(&cache);
         while (!stream.atEnd()) {
             Pulsar p;
@@ -929,7 +931,7 @@ void Analytics::actualFourierDataChanged() {
 }
 
 void Analytics::applyFourierFilters() {
-    if (!fourier)
+    if (!fourier || (fourierData.size() == 0 && cacheLoaded))
         return;
 
     QVector<Pulsar>::Iterator end, start = pulsars->begin();

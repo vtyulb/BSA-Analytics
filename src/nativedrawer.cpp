@@ -371,7 +371,7 @@ void NativeDrawer::drawAxes() {
 
         p.drawLine(QPoint(i, art->height()), QPoint(i, art->height() - 6 - (5 + art->height() * drawNet) * (i%250 == 0)));
         p.drawLine(QPoint(i, 0), QPoint(i, 6 + 5 * (i%250 == 0)));
-        if (i%250==0) {
+        if (i%250==0 && i < art->width() - 80) {
             drawText(&p, QPoint(i + 1, art->height() - 12), QString::number(backwardCoord(QPoint(i, 0)).x()));
             drawText(&p, QPoint(i + 1, art->height() - 24), StarTime::StarTime(data, backwardCoord(QPointF(i, 0)).x()));
         }

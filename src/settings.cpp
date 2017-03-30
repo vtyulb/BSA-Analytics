@@ -2,6 +2,8 @@
 #include <reader.h>
 #include <mainwindow.h>
 
+#include <QApplication>
+#include <QFileInfo>
 #include <QVariant>
 #include <QSettings>
 #include <QMessageBox>
@@ -410,4 +412,9 @@ void Settings::setNormalize(bool n) {
 
 bool Settings::getNormalize() {
     return _normalize;
+}
+
+QString Settings::version() {
+    return "Compiled at " + QFileInfo(qApp->arguments().first()).lastModified().toString("MM.dd.yyyy hh:mm") +
+           "\nGit revision: " + QString(GIT_VERSION) + "\n";
 }

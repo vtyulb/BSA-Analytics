@@ -246,9 +246,8 @@ void MainWindow::showAboutQt() {
 void MainWindow::showAbout() {
     QMessageBox::about(this, "About", "Program was written specially\n"
                                       "for S.A.Tyulbashev <serg@prao.ru>\n"
-                                      "by V.S.Tyulbashev <vtyulb@vtyulb.ru>\n\n"
-                                      "This version compiled at\n" +
-                                      QFileInfo(qApp->arguments().first()).lastModified().toString());
+                                      "by V.S.Tyulbashev <vtyulb@vtyulb.ru>\n\n" +
+                                      Settings::settings()->version());
 }
 
 void MainWindow::saveSettings() {

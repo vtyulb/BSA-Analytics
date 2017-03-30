@@ -110,6 +110,11 @@ void makeApp(int &argc, char **argv) {
     a->setApplicationName("BSA-Analytics");
 }
 
+void showVersion() {
+    printf("%s", Settings::settings()->version().toLocal8Bit().constData());
+    exit(0);
+}
+
 void pulsarEngine(int argc, char **argv) {
     if (strcmp(argv[1], "--help") == 0 || strcmp(argv[1], "-h") == 0) {
         printf("BSA-Analytics usage:\n");
@@ -127,6 +132,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --flowing-window input-file output-file number-of-points\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
+        printf("\t-v --version for printing version information\n");
         printf("\t--pulsar-search /path/to/daily/data\n");
         printf("\t--save-path /path/to/save\n");
         printf("\t--threads <int> number of effective threads\n");
@@ -141,6 +147,11 @@ void pulsarEngine(int argc, char **argv) {
         printf("Please report about any errors to <vtyulb@vtyulb.ru>\n");
         printf("or directly to bugtracker: https://github.com/vtyulb/BSA-Analytics/issues\n");
         exit(0);
+    }
+
+    if (strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0) {
+        makeConsoleApp(argc, argv);
+        showVersion();
     }
 
     QString savePath;

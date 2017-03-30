@@ -109,6 +109,8 @@ public:
     QString stairFileName();
     bool loadStair();
 
+    QString version();
+
 private:
     Settings();
 

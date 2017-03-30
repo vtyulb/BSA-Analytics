@@ -1383,7 +1383,6 @@ void Analytics::fourierSelectBestAuto() {
     window->regenerate(res);
 }
 
-
 void Analytics::fourierShowNoises() {
     if (!fourierLoadNoises())
         return;

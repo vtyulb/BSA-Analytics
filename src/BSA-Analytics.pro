@@ -13,7 +13,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = BSA-Analytics
 TEMPLATE = app
 
-
 SOURCES += main.cpp\
         mainwindow.cpp\
     drawer.cpp \
@@ -96,3 +95,7 @@ FORMS    += mainwindow.ui \
 win32:RC_FILE = icon.rc
 
 RESOURCES = resources.qrc
+
+GIT_VERSION = $$system(git describe --always --tags)
+
+DEFINES += GIT_VERSION=\\\"$$GIT_VERSION\\\"

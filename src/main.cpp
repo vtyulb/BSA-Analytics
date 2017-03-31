@@ -123,11 +123,10 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --analytics [path-to-data] [--fourier] [--low-memory]\n");
         printf("BSA-Analytics [--low-memory] --compress <dir>\n");
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
-               "\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads] [--normalize]\n"
-               "[--period-tester] [--flux-density] [--run-analytics-after]\n");
+               "\t\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads]\n"
+               "\t\t[--normalize] [--period-tester] [--single-period] [--flux-density] [--run-analytics-after]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
-        printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double>\n"
-                "\t--time <09:01:00>\n");
+        printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double> --time <09:01:00>\n");
         printf("BSA-Analytics --file-summator\n");
         printf("BSA-Analytics --flowing-window input-file output-file number-of-points\n");
         printf("\nOptions:\n");

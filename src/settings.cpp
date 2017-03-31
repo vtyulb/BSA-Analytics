@@ -15,6 +15,7 @@ Settings::Settings() {
     _preciseSearch = false;
     _soundMode = false;
     _noMultiplePeriods = false;
+    _nullOnOYaxis = true;
     _dispersion = -1;
     _doNotClearNoise = false;
     _singlePeriod = false;
@@ -24,7 +25,7 @@ Settings::Settings() {
     _fourierStepConstant = 0.0999424;
     _fourierSpectreSize = 1024;
     _fourierHighGround = true;
-    _sourceMode = NoSourceMode,
+    _sourceMode = NoSourceMode;
     bar = NULL;
     _mainWindow = NULL;
     _normalize = false;
@@ -417,4 +418,12 @@ bool Settings::getNormalize() {
 QString Settings::version() {
     return "Compiled at " + QFileInfo(qApp->applicationFilePath()).lastModified().toString("MM.dd.yyyy hh:mm") +
            "\nGit revision: " + QString(GIT_VERSION) + "\n";
+}
+
+void Settings::setNullOnOYaxis(bool b) {
+    _nullOnOYaxis = b;
+}
+
+bool Settings::nullOnOYaxis() {
+    return _nullOnOYaxis;
 }

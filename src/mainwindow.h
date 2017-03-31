@@ -52,6 +52,7 @@ private slots:
     void saveFile();
     void autoDraw(bool);
     void drawAxes(bool);
+    void drawNullOnOYaxis(bool);
     void drawNet(bool);
     void drawFast(bool);
     void drawLive(bool);

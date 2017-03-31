@@ -51,6 +51,7 @@ public:
     bool doNotClearNoise();
     bool singlePeriod();
     bool longRoads();
+    bool nullOnOYaxis();
     bool periodTester();
     QProgressBar *getProgressBar();
     double dispersion();
@@ -72,6 +73,7 @@ public:
     double getStairHeight(int module, int ray, int channel);
     SourceMode sourceMode();
 
+    void setNullOnOYaxis(bool);
     void setSkipCount(int);
     void setSubZero(bool);
     void setIntellectualFilter(bool);
@@ -124,6 +126,7 @@ private:
     bool _periodTester;
     int _ray;
     int _module;
+    bool _nullOnOYaxis;
     bool _singlePeriod;
     bool _noMultiplePeriods;
     bool _doNotClearNoise;

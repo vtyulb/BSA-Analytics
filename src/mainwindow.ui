@@ -69,7 +69,7 @@
     </property>
     <widget class="QMenu" name="menuUpdate_channel">
      <property name="title">
-      <string>Update channel</string>
+      <string>U&amp;pdate channel</string>
      </property>
      <addaction name="actionStable"/>
      <addaction name="actionNightly"/>
@@ -91,6 +91,7 @@
     </property>
     <addaction name="actionAutoDraw"/>
     <addaction name="actionAxes"/>
+    <addaction name="actionNull_on_OY_axe"/>
     <addaction name="actionNet"/>
     <addaction name="actionLive"/>
     <addaction name="actionFast"/>
@@ -161,7 +162,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>A&amp;xes</string>
+    <string>A&amp;xises</string>
    </property>
   </action>
   <action name="actionNet">
@@ -352,7 +353,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Stable</string>
+    <string>&amp;Stable</string>
    </property>
   </action>
   <action name="actionNightly">
@@ -360,7 +361,15 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Nightly</string>
+    <string>&amp;Nightly</string>
+   </property>
+  </action>
+  <action name="actionNull_on_OY_axe">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Null on OY axis</string>
    </property>
   </action>
  </widget>

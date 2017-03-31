@@ -382,7 +382,7 @@ void NativeDrawer::drawAxes() {
 
     int startPoint = mirr(newCoord(0,0)).y();
     int bigDash = 0;
-    if (startPoint < 20 || startPoint > art->height() - 20)
+    if (startPoint < 20 || startPoint > art->height() - 20 || !Settings::settings()->nullOnOYaxis())
         startPoint = 50;
     else {
         bigDash = (-(startPoint / 50) % 5 + 5) % 5;

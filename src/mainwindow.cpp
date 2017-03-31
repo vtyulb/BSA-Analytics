@@ -42,6 +42,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
     QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
     QObject::connect(ui->actionAxes, SIGNAL(triggered(bool)), this, SLOT(drawAxes(bool)));
+    QObject::connect(ui->actionNull_on_OY_axe, SIGNAL(triggered(bool)), this, SLOT(drawNullOnOYaxis(bool)));
     QObject::connect(ui->actionNet, SIGNAL(triggered(bool)), this, SLOT(drawNet(bool)));
     QObject::connect(ui->actionFast, SIGNAL(triggered(bool)), this, SLOT(drawFast(bool)));
     QObject::connect(ui->actionAbout, SIGNAL(triggered()), this, SLOT(showAbout()));
@@ -224,6 +225,10 @@ void MainWindow::drawAxes(bool b) {
         drawer->drawer->drawAxesFlag = b;
 }
 
+void MainWindow::drawNullOnOYaxis(bool b) {
+    Settings::settings()->setNullOnOYaxis(b);
+}
+
 void MainWindow::drawNet(bool b) {
     if (drawer)
         drawer->drawer->drawNet = b;
@@ -260,6 +265,7 @@ void MainWindow::saveSettings() {
     s.setValue("openPath", QVariant(lastOpenPath));
     s.setValue("fast", QVariant(ui->actionFast->isChecked()));
     s.setValue("live", QVariant(ui->actionLive->isChecked()));
+    s.setValue("DrawNullOnOYaxis", QVariant(ui->actionNull_on_OY_axe->isChecked()));
     s.setValue("CheckForUpdates", QVariant(ui->actionCheck_for_updates->isChecked()));
     s.setValue("StartupMessage", QVariant(ui->actionStartup_message->isChecked()));
 }
@@ -270,6 +276,7 @@ void MainWindow::loadSettings() {
     ui->actionAutoDraw->setChecked(s.value("autoDraw", true).toBool());
     ui->actionFast->setChecked(s.value("fast", false).toBool());
     ui->actionLive->setChecked(s.value("live", true).toBool());
+    ui->actionNull_on_OY_axe->setChecked(s.value("DrawNullOnOYaxis", true).toBool());
     ui->actionStartup_message->setChecked(s.value("StartupMessage", true).toBool());
     lastOpenPath = s.value("openPath").toString();
     ui->actionCheck_for_updates->setChecked(s.value("CheckForUpdates", true).toBool());

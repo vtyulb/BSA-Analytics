@@ -21,7 +21,7 @@ Settings::Settings() {
     _longRoads = false;
     _periodTester = false;
     _fourierAnalytics = false;
-    _fourierStepConstant = 0.1;
+    _fourierStepConstant = 0.0999424;
     _fourierSpectreSize = 1024;
     _fourierHighGround = true;
     _sourceMode = NoSourceMode,

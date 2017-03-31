@@ -166,7 +166,7 @@ void NativeDrawer::nativePaint(bool forPrinter) {
 void NativeDrawer::fourierDraw(QPainter &p) {
     int original = data.sigma - 0.5;
     if (original > 5)
-        for (int harmonic = 1; harmonic <= 4; harmonic++) {
+        for (int harmonic = 1; harmonic <= 5; harmonic++) {
             int point = original * harmonic;
             if (point > data.npoints - 2)
                 break;

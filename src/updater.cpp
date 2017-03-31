@@ -125,7 +125,7 @@ void Updater::checkFinished(QNetworkReply *reply) {
     QObject::disconnect(manager, SIGNAL(finished(QNetworkReply*)), this, SLOT(checkFinished(QNetworkReply*)));
     QDateTime latestInstaller = reply->header(QNetworkRequest::LastModifiedHeader).toDateTime();
     qDebug() << "Latest installer was created at " << latestInstaller.toString();
-    long long secs = QFileInfo(qApp->arguments().first()).lastModified().secsTo(latestInstaller);
+    long long secs = QFileInfo(qApp->applicationFilePath()).lastModified().secsTo(latestInstaller);
     if (secs > 3600) {
         qDebug() << "Your version is outdated by" << secs << "seconds";
         if (QMessageBox::question(NULL, "Updater",

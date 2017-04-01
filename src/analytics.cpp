@@ -761,7 +761,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
         }
     } else {
         QString currentPath = path + QString::number(blockNumber) + "/";
-        QStringList names = QDir(currentPath).entryList();
+        QStringList names = QDir(currentPath).entryList(QDir::Files);
         for (int module = 0; module < 6; module++)
             for (int ray = 0; ray < 8; ray++)
                 fourierRawNoises[module][ray].clear();

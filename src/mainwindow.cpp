@@ -277,6 +277,7 @@ void MainWindow::loadSettings() {
     ui->actionFast->setChecked(s.value("fast", false).toBool());
     ui->actionLive->setChecked(s.value("live", true).toBool());
     ui->actionNull_on_OY_axe->setChecked(s.value("DrawNullOnOYaxis", true).toBool());
+    Settings::settings()->setNullOnOYaxis(ui->actionNull_on_OY_axe->isChecked());
     ui->actionStartup_message->setChecked(s.value("StartupMessage", true).toBool());
     lastOpenPath = s.value("openPath").toString();
     ui->actionCheck_for_updates->setChecked(s.value("CheckForUpdates", true).toBool());

@@ -217,7 +217,7 @@ bool FileSummator::processData(Data &data) {
 
     Reader().repairWrongChannels(data);
 
-    QVector<float> buf(data.npoints);
+    QVector<float> buf(data.npoints - 1);
     noises.clear();
     noises.resize(data.modules);
     for (int module = 0; module < data.modules; module++)
@@ -231,20 +231,20 @@ bool FileSummator::processData(Data &data) {
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
                 //-------------------------------------------------
                 for (int i = 0; i < data.npoints; i++)
-                    buf[i] = data.data[module][channel][ray][i];
+                    buf[i] = data.data[module][channel][ray][i] - data.data[module][channel][ray][i + 1];
 
                 std::sort(buf.begin(), buf.end());
 
                 double noise = 0;
-                for (int i = data.npoints * 0.2; i < data.npoints * 0.8; i++)
+                for (int i = data.npoints * 0.05; i < data.npoints * 0.95; i++)
                     noise += pow(buf[i], 2);
 
-                noise /= data.npoints * 0.8 - data.npoints * 0.2;
+                noise /= data.npoints * 0.9;
                 noise = pow(noise, 0.5);
 
                 //-------------------------------------------------
 
-                const double maximumNoise = 3;
+                const double maximumNoise = 3.5;
 
                 float *res = data.data[module][channel][ray];
                 for (int i = 0; i < data.npoints; i++)
@@ -257,17 +257,9 @@ bool FileSummator::processData(Data &data) {
 
                 for (int j = 0; j < data.npoints / PC - 2; j++) {
                     double realPart;
-                    QString time = StarTime::StarTime(data, j * PC, &realPart);
+                    StarTime::StarTime(data, j * PC, &realPart);
                     int startPoint = realPart / data.oneStep;
                     int offset = PC - startPoint % PC;
-
-                    double noise = 0;
-                    for (int k = 0; k < PC; k++)
-                        noise += pow(data.data[module][channel][ray][j * PC + k + offset], 2);
-
-                    noise /= PC;
-                    noise = pow(noise, 0.5);
-
                     if (module == data.modules - 1 && ray == data.rays - 1 && channel == data.channels - 1)
                         dumpCuttedPiece(data, j * PC + offset, (startPoint + offset) / PC);
                 }

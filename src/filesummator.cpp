@@ -230,7 +230,7 @@ bool FileSummator::processData(Data &data) {
                 for (int i = 0; i < data.npoints; i += step)
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
                 //-------------------------------------------------
-                for (int i = 0; i < data.npoints; i++)
+                for (int i = 0; i < data.npoints - 1; i++)
                     buf[i] = data.data[module][channel][ray][i] - data.data[module][channel][ray][i + 1];
 
                 std::sort(buf.begin(), buf.end());

@@ -48,7 +48,7 @@ struct KnownPulsar {
     }
 
     bool goodPeriods(double a, double b) const {
-        double prec = 0.005;
+        double prec = 0.001;
         if (Settings::settings()->getFourierSpectreSize() != 1024)
             prec /= 8;
 

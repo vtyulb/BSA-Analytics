@@ -402,7 +402,7 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     }
 
     numberOfPieces[pieceNumber]++;
-    QDir().mkpath(cutterPath + "/" + QString::number(pieceNumber));
+    QDir().mkpath(cutterPath + "/" + QString::asprintf("%04d", pieceNumber));
     QFile f(cutterPath + "/" + QString::number(pieceNumber) + "/" + QString::number(numberOfPieces[pieceNumber]) + ".pnt");
     f.open(QIODevice::WriteOnly);
     DataDumper::dump(res, f, headerAddition);

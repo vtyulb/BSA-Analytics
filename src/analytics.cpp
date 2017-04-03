@@ -808,9 +808,20 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                 for (int module = 0; module < 6; module++)
                     for (int ray = 0; ray < 8; ray++) {
                         double noise = 0;
-                        for (int channel = 0; channel < data.channels - 1; channel++)
+                        for (int channel = 0; channel < data.channels - 1; channel++) {
+                            double chNoise = 0;
                             for (int point = 0; point < data.npoints; point++)
-                                noise += double(data.data[module][channel][ray][point])*data.data[module][channel][ray][point];
+                                chNoise += double(data.data[module][channel][ray][point])*data.data[module][channel][ray][point];
+
+                            chNoise /= data.npoints;
+                            chNoise = pow(chNoise, 0.5);
+
+                            if (data.channels > 1)
+                                for (int point = 0; point < data.npoints; point++)
+                                    data.data[module][channel][ray][point] /= chNoise;
+
+                            noise += chNoise;
+                        }
 
                         fourierRawNoises[module][ray].push_back(noise);
                     }

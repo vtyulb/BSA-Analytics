@@ -70,6 +70,9 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     setAttribute(Qt::WA_DeleteOnClose);
 
+    if (QDir(folder).entryList().contains("noises.pnt") || QDir(folder).entryList().contains("noises.pnthr"))
+        fourier = true, this->fourier = true;
+
     if (fourier) {
         Settings::settings()->setFourierAnalytics(true);
         ui->groupBox->hide();

@@ -357,9 +357,6 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     Data res = data;
     if (!longData) {
         res.npoints = PC;
-    //    res.modules = 1;
-    //    res.channels = 1;
-    //    res.rays = 1;
         res.fork();
 
         for (int module = 0; module < res.modules; module++)

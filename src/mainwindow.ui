@@ -58,6 +58,8 @@
     <addaction name="actionOpen"/>
     <addaction name="actionCustom_open"/>
     <addaction name="separator"/>
+    <addaction name="actionSlideshow"/>
+    <addaction name="separator"/>
     <addaction name="actionSave"/>
     <addaction name="actionPrint"/>
     <addaction name="separator"/>
@@ -369,7 +371,12 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Null on OY axis</string>
+    <string>Null &amp;on OY axis</string>
+   </property>
+  </action>
+  <action name="actionSlideshow">
+   <property name="text">
+    <string>Slideshow</string>
    </property>
   </action>
  </widget>

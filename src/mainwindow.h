@@ -46,6 +46,7 @@ private slots:
     void openBinaryFile();
     void openStartFile();
     void customOpen();
+    void runSlideshow();
 
     void nativeOpenFile(QString fileName, int skip = 0, int skipFirstRay = 2, QDateTime = QDateTime(), bool binary = false);
     void readProgressChanged(double);

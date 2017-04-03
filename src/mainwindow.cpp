@@ -12,6 +12,7 @@
 #include <QDesktopServices>
 #include <QStyleFactory>
 #include <QApplication>
+#include <QThread>
 
 #include <customopendialog.h>
 #include <datagenerator.h>
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionOpen, SIGNAL(triggered()), this, SLOT(openFile()));
     QObject::connect(ui->actionOpen_Binary, SIGNAL(triggered()), this, SLOT(openBinaryFile()));
     QObject::connect(ui->actionCustom_open, SIGNAL(triggered()), this, SLOT(customOpen()));
+    QObject::connect(ui->actionSlideshow, SIGNAL(triggered()), this, SLOT(runSlideshow()));
     QObject::connect(ui->actionPulsar_searcher, SIGNAL(triggered()), this, SLOT(openPulsarFile()));
     QObject::connect(ui->actionPulsar_analytics, SIGNAL(triggered()), this, SLOT(openAnalytics()));
     QObject::connect(ui->actionPulsar_analytics_low_memory, SIGNAL(triggered(bool)), this, SLOT(openAnalytics(bool)));
@@ -151,6 +153,25 @@ void MainWindow::openPulsarFile() {
     l << "--analytics" << path;
     QProcess::startDetached(qApp->arguments()[0], l);
     qApp->exit(0);
+}
+
+void MainWindow::runSlideshow() {
+    QString path = QFileDialog::getExistingDirectory(this, "Directory with binary data", lastOpenPath);
+    if (path == "")
+        return;
+
+    decodeLastPath(path);
+    QDir dir(path);
+    QFileInfoList l = dir.entryInfoList(QDir::Files);
+    for (int i = 0; i < l.size(); i++) {
+        qApp->processEvents();
+        QString name = l[i].absoluteFilePath();
+        Reader reader;
+        QObject::connect(&reader, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
+        Data res = reader.readBinaryFile(name);
+        regenerate(res);
+        QThread::sleep(1);
+    }
 }
 
 QString MainWindow::nativeDecodeLastPath(QString path) {

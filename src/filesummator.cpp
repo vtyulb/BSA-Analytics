@@ -244,7 +244,7 @@ bool FileSummator::processData(Data &data) {
 
                 //-------------------------------------------------
 
-                const double maximumNoise = 3.5;
+                const double maximumNoise = 4.5;
 
                 float *res = data.data[module][channel][ray];
                 for (int i = 0; i < data.npoints; i++)

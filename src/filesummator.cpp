@@ -217,7 +217,7 @@ bool FileSummator::processData(Data &data) {
 
     Reader().repairWrongChannels(data);
 
-    QVector<float> buf(data.npoints - 1);
+    QVector<float> buf(data.npoints);
     noises.clear();
     noises.resize(data.modules);
     for (int module = 0; module < data.modules; module++)
@@ -230,28 +230,20 @@ bool FileSummator::processData(Data &data) {
                 for (int i = 0; i < data.npoints; i += step)
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
                 //-------------------------------------------------
-                for (int i = 0; i < data.npoints - 1; i++)
-                    buf[i] = data.data[module][channel][ray][i] - data.data[module][channel][ray][i + 1];
+                for (int i = 0; i < data.npoints; i++)
+                    buf[i] = data.data[module][channel][ray][i];
 
                 std::sort(buf.begin(), buf.end());
 
-                double noise = 0;
-                for (int i = data.npoints * 0.05; i < data.npoints * 0.95; i++)
-                    noise += pow(buf[i], 2);
-
-                noise /= data.npoints * 0.9;
-                noise = pow(noise, 0.5);
-
-                //-------------------------------------------------
-
-                const double maximumNoise = 4.5;
+                double mn = buf[data.npoints * 0.01];
+                double mx = buf[data.npoints * 0.99];
 
                 float *res = data.data[module][channel][ray];
                 for (int i = 0; i < data.npoints; i++)
-                    if (res[i] >  noise * maximumNoise)
-                        res[i] = noise * maximumNoise;
-                    else if (res[i] < -noise * maximumNoise)
-                        res[i] = -noise * maximumNoise;
+                    if (res[i] > mx)
+                        res[i] = mx;
+                    else if (res[i] < mn)
+                        res[i] = mn;
 
                 //-------------------------------------------------
 

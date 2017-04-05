@@ -1375,7 +1375,7 @@ void Analytics::fourierSelectBestAuto() {
 
     Data res;
     res.modules = 1;
-    res.rays = 1;
+    res.rays = 2;
     res.channels = 1;
     res.npoints = sigmas.size();
     res.init();
@@ -1391,6 +1391,9 @@ void Analytics::fourierSelectBestAuto() {
             ui->fourierBestNumber->setValue(i);
         }
     }
+
+    for (int i = 0; i < sigmas.size(); i++)
+        res.data[0][0][1][i] = sqrt(i + 1);
 
     Settings::settings()->setLastHeader(QMap<QString, QString>());
     window->regenerate(res);

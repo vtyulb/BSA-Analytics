@@ -1364,7 +1364,7 @@ void Analytics::fourierSelectBestAuto() {
         }
 
     std::sort(sigmas.begin(), sigmas.end());
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < 4; i++)
         sigmas[i] = sigmas.last();
     std::sort(sigmas.begin(), sigmas.end());
 
@@ -1384,7 +1384,7 @@ void Analytics::fourierSelectBestAuto() {
     res.data[0][0][0][0] = sigmas[0];
     for (int i = 1; i < sigmas.size(); i++) {
         sigmas[i] += sigmas[i - 1];
-        res.data[0][0][0][i] = i / sqrt(sigmas[i]);
+        res.data[0][0][0][i] = (i + 1) / sqrt(sigmas[i]);
         if (res.data[0][0][0][i] > max) {
             max = res.data[0][0][0][i];
             res.sigma = i;

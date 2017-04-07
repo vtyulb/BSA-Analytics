@@ -1071,6 +1071,7 @@ void Analytics::applyFourierFilters() {
             pl.data = data;
             pl.valid = true;
             pl.showInTable = true;
+            pl.period = 0;
             if (pulsars->size())
                 pl.nativeTime = pulsars->last().nativeTime;
 

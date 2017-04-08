@@ -102,6 +102,7 @@ private slots:
     void fourierShowNoises();
     bool fourierLoadNoises();
     void fourierSelectBestAuto();
+    void fourierSelectBestEnabled(bool);
 
     void fourierFullGrayZone();
     void fourierShortGrayZone();

@@ -59,6 +59,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     QObject::connect(ui->fourierShowNoises, SIGNAL(clicked()), this, SLOT(fourierShowNoises()));
     QObject::connect(ui->fourierSelectBestAuto, SIGNAL(clicked(bool)), this, SLOT(fourierSelectBestAuto()));
+    QObject::connect(ui->fourierSelectBest, SIGNAL(toggled(bool)), this, SLOT(fourierSelectBestEnabled(bool)));
 
     QObject::connect(ui->oneWindow, SIGNAL(clicked()), this, SLOT(oneWindow()));
 
@@ -1017,7 +1018,7 @@ void Analytics::applyFourierFilters() {
         }
     }
 
-    if (ui->fourierGoodLookingSpectresOnly->isChecked()) {
+    if (ui->fourierGoodLookingSpectresOnly->isChecked() && !ui->fourierSelectBest->isChecked()) {
         for (int i = 0; i < pulsars->size(); i++) {
             fourierGood[i] &= pulsars->at(i).snr > 0;
             if ((!fourierGood[i] && pulsars->at(i).dispersion >= 0) || pulsars->at(i).snr == -666 || pulsars->at(i).snr == -42)
@@ -1398,6 +1399,10 @@ void Analytics::fourierSelectBestAuto() {
 
     Settings::settings()->setLastHeader(QMap<QString, QString>());
     window->regenerate(res);
+}
+
+void Analytics::fourierSelectBestEnabled(bool enabled) {
+    ui->fourierGoodLookingSpectresOnly->setEnabled(!enabled);
 }
 
 void Analytics::fourierShowNoises() {

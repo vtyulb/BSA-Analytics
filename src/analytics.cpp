@@ -820,7 +820,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                             chNoise /= data.npoints;
                             chNoise = pow(chNoise, 0.5);
 
-                            if (data.channels > 1)
+                            if (data.channels > 1 && ui->fourierNormalizeData->isChecked())
                                 for (int point = 0; point < data.npoints; point++)
                                     data.data[module][channel][ray][point] /= chNoise;
 
@@ -903,7 +903,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
 
         applyFourierFilters();
 
-        if (cacheOnly || ui->fourierGenerateCache->isChecked()) {
+        if (cacheOnly) {
             QDir().mkpath(cachePath);
             QFile f(cacheFile);
             if (f.open(QIODevice::WriteOnly)) {

@@ -270,12 +270,12 @@
        </widget>
       </item>
       <item row="3" column="4">
-       <widget class="QCheckBox" name="fourierGenerateCache">
+       <widget class="QCheckBox" name="fourierNormalizeData">
         <property name="text">
-         <string>Generate cache</string>
+         <string>Normalize data</string>
         </property>
         <property name="checked">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
        </widget>
       </item>

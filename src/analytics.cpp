@@ -57,6 +57,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->fourierCalculateCaches, SIGNAL(clicked()), this, SLOT(calculateCaches()));
     QObject::connect(ui->fourierLoadCache, SIGNAL(clicked()), this, SLOT(loadFourierCache()));
 
+    QObject::connect(ui->fourierShowSpectresNoise, SIGNAL(clicked()), this, SLOT(fourierShowSpectresNoise()));
     QObject::connect(ui->fourierShowNoises, SIGNAL(clicked()), this, SLOT(fourierShowNoises()));
     QObject::connect(ui->fourierSelectBestAuto, SIGNAL(clicked(bool)), this, SLOT(fourierSelectBestAuto()));
     QObject::connect(ui->fourierSelectBest, SIGNAL(toggled(bool)), this, SLOT(fourierSelectBestEnabled(bool)));
@@ -832,8 +833,6 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
             }
 
         ui->currentStatus->setText("Running fourier");
-        QVector<double> fourierNoises[6][8];
-
         for (int j = 0; j < fourierData.size(); j++) {
             progressBar->setValue(100 * j / fourierData.size());
             qApp->processEvents();
@@ -1443,6 +1442,30 @@ void Analytics::fourierShowNoises() {
     newNames["stairs_names"] = names.join(",");
     Settings::settings()->setLastHeader(newNames);
     window->regenerate(blockNoise);
+}
+
+void Analytics::fourierShowSpectresNoise() {
+    int module = std::min(max(ui->module->value() - 1, 0), 5);
+    int ray = std::min(max(ui->ray->value() - 1, 0), 7);
+
+    Data res;
+    res.modules = 1;
+    res.rays = 1;
+    res.channels = 1;
+    res.npoints = fourierNoises[module][ray].size();
+    res.init();
+
+    for (int i = 0; i < res.npoints; i++)
+        res.data[0][0][0][i] = fourierNoises[module][ray][i];
+
+    double value = fourierNoises[module][ray][res.npoints / 2] * 1.3;
+    for (int i = 0; i < res.npoints; i++)
+        if (res.data[0][0][0][i] > value) {
+            res.sigma = i;
+            break;
+        }
+
+    window->regenerate(res);
 }
 
 Analytics::~Analytics() {

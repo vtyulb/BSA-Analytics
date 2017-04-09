@@ -56,6 +56,7 @@ private:
     QVector<Data> fourierData;
     QVector<float> fourierSumm[6][8];
     QVector<double> fourierRawNoises[6][8];
+    QVector<double> fourierNoises[6][8];
     QVector<bool> fourierGood;
 
     void parseFourierAllowedDates();
@@ -99,6 +100,7 @@ private slots:
     void applyFourierFilters();
 
     void actualFourierDataChanged();
+    void fourierShowSpectresNoise();
     void fourierShowNoises();
     bool fourierLoadNoises();
     void fourierSelectBestAuto();

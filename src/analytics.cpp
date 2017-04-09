@@ -1122,8 +1122,9 @@ void Analytics::calculateCaches() {
             break;
 
         ui->fourierBlockNo->setValue(i);
-        ui->fourierSelectBest->setChecked(true);
-        fourierSelectBestAuto();
+        if (ui->fourierSelectBest->isChecked())
+            fourierSelectBestAuto();
+
         loadFourierData(true);
     }
 

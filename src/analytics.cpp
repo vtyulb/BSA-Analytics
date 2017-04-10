@@ -1121,14 +1121,17 @@ void Analytics::calculateCaches() {
 
     ui->fourierCalculateCaches->setText("Stop calculating");
     for (int i = std::max(ui->fourierBlockNo->value(), 1); i < 425; i++) {
+        qApp->processEvents();
         if (!calculating)
             break;
 
         ui->fourierBlockNo->setValue(i);
+        loadFourierData(true);
+
         if (ui->fourierSelectBest->isChecked())
             fourierSelectBestAuto();
 
-        loadFourierData(true);
+        window->update();
     }
 
     ui->fourierCalculateCaches->setText("Calculate caches");

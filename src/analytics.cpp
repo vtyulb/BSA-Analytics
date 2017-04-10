@@ -1120,7 +1120,7 @@ void Analytics::calculateCaches() {
         calculating = true;
 
     ui->fourierCalculateCaches->setText("Stop calculating");
-    for (int i = 1; i < 425; i++) {
+    for (int i = ui->fourierBlockNo->value(); i < 425; i++) {
         if (!calculating)
             break;
 

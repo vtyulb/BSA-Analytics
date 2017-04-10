@@ -754,7 +754,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     if (!QDir(path + blockStr).exists())
         blockStr = QString::asprintf("%03d", blockNumber);
     QString cachePath = path + "cache/";
-    QString cacheFile = cachePath + blockNumber;
+    QString cacheFile = cachePath + blockStr;
 
     if (loadCache && QFile::exists(cacheFile)) {
         QFile cache(cacheFile);

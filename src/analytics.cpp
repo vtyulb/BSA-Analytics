@@ -730,7 +730,6 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     progressBar->show();
     ui->currentStatus->setText("Releasing previous data");
 
-    QString path = QDir(folder).absolutePath() + "/";
     for (int j = 0; j < fourierData.size(); j++) {
         progressBar->setValue(100 * j / fourierData.size());
         fourierData[j].releaseData();
@@ -750,8 +749,12 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     ui->currentStatus->setText("Reading files");
 
     int blockNumber = ui->fourierBlockNo->value();
+    QString path = QDir(folder).absolutePath() + "/";
+    QString blockStr = QString::number(blockNumber);
+    if (!QDir(path + blockStr).exists())
+        blockStr = QString::asprintf("%03d", blockNumber);
     QString cachePath = path + "cache/";
-    QString cacheFile = cachePath + QString::number(blockNumber);
+    QString cacheFile = cachePath + blockNumber;
 
     if (loadCache && QFile::exists(cacheFile)) {
         QFile cache(cacheFile);
@@ -765,7 +768,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
             pulsars->push_back(p);
         }
     } else {
-        QString currentPath = path + QString::number(blockNumber) + "/";
+        QString currentPath = path + blockStr + "/";
         QStringList names = QDir(currentPath).entryList(QDir::Files);
         for (int module = 0; module < 6; module++)
             for (int ray = 0; ray < 8; ray++)

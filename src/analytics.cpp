@@ -1120,7 +1120,7 @@ void Analytics::calculateCaches() {
         calculating = true;
 
     ui->fourierCalculateCaches->setText("Stop calculating");
-    for (int i = std::max(ui->fourierBlockNo->value(), 1); i < 425; i++) {
+    for (int i = std::max(ui->fourierBlockNo->value(), 1); i < 424; i++) {
         qApp->processEvents();
         if (!calculating)
             break;
@@ -1134,6 +1134,7 @@ void Analytics::calculateCaches() {
         window->update();
     }
 
+    calculating = false;
     ui->fourierCalculateCaches->setText("Calculate caches");
     ui->fourierCalculateCaches->setEnabled(true);
 }

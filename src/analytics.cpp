@@ -1396,8 +1396,8 @@ void Analytics::fourierSelectBestAuto() {
         res.data[0][0][0][i] = (i + 1) / sqrt(sigmas[i]);
         if (res.data[0][0][0][i] > max) {
             max = res.data[0][0][0][i];
-            res.sigma = i;
-            ui->fourierBestNumber->setValue(i);
+            res.sigma = i * 0.9;
+            ui->fourierBestNumber->setValue(i * 0.9);
         }
     }
 

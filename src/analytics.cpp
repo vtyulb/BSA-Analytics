@@ -890,18 +890,14 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                 std::sort(fourierRawNoises[module][ray].begin(), fourierRawNoises[module][ray].end());
 
         for (int module = 0; module < 6; module++)
-            for (int ray = 0; ray < 8; ray++) {
+            for (int ray = 0; ray < 8; ray++)
                 std::sort(fourierNoises[module][ray].begin(), fourierNoises[module][ray].end());
-                if (fourierNoises[module][ray].size() > 10)
-                    fourierNoises[module][ray].last() = fourierOptimalValue(fourierNoises[module][ray]).last();
-            }
 
         for (int i = 0; i < pulsars->size(); i++) {
             int module = pulsars->at(i).module - 1;
             int ray = pulsars->at(i).ray - 1;
-//            double avNoise = fourierNoises[module][ray].at(fourierNoises[module][ray].size() / 2);
-            double avNoise = fourierNoises[module][ray].last();
-            if (pulsars->at(i).noiseLevel > avNoise /* 1.3*/)
+            double avNoise = fourierNoises[module][ray].at(fourierNoises[module][ray].size() / 2);
+            if (pulsars->at(i).noiseLevel > avNoise * 1.3)
                 (*pulsars)[i].snr = -42;
         }
 
@@ -1466,11 +1462,10 @@ void Analytics::fourierShowSpectresNoise() {
     res.npoints = fourierNoises[module][ray].size();
     res.init();
 
-    QVector<double> tmp = fourierOptimalValue(fourierNoises[module][ray]);
     for (int i = 0; i < res.npoints; i++)
-        res.data[0][0][0][i] = tmp[i];
+        res.data[0][0][0][i] = fourierNoises[module][ray][i];
 
-    double value = fourierNoises[module][ray].last();
+    double value = fourierNoises[module][ray][res.npoints / 2] * 1.3;
     for (int i = 0; i < res.npoints; i++)
         if (res.data[0][0][0][i] > value) {
             res.sigma = i;
@@ -1478,32 +1473,6 @@ void Analytics::fourierShowSpectresNoise() {
         }
 
     window->regenerate(res);
-}
-
-QVector<double> Analytics::fourierOptimalValue(QVector<double> v) {
-    std::sort(v.begin(), v.end());
-    for (int i = 0; i < 10; i++)
-        v[i] = v.last();
-    std::sort(v.begin(), v.end());
-
-    for (int i = v.size() - 1; i >= 0; i--) {
-        v[i] /= v[0];
-        v[i] *= v[i];
-    }
-
-    for (int i = 1; i < v.size(); i++)
-        v[i] += v[i - 1];
-
-    int mx = 0;
-    for (int i = 1; i < v.size(); i++) {
-        v[i] = (i + 1) / sqrt(v[i]);
-        if (v[i] > v[mx])
-            mx = i;
-    }
-
-    v.push_back(v[mx * 0.9]);
-
-    return v;
 }
 
 Analytics::~Analytics() {

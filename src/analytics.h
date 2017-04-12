@@ -86,6 +86,7 @@ private:
     void preciseDataMode();
     void compressLayout();
 
+    QVector<double> fourierOptimalValue(QVector<double>);
     void preCalc();
     void loadKnownPulsars();
 

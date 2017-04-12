@@ -1463,11 +1463,11 @@ void Analytics::fourierShowSpectresNoise() {
     res.init();
 
     for (int i = 0; i < res.npoints; i++)
-        res.data[0][0][0][i] = fourierNoises[module][ray][i];
+        res.data[0][0][0][i] = log(fourierNoises[module][ray][i]);
 
     double value = fourierNoises[module][ray][res.npoints / 2] * 1.3;
     for (int i = 0; i < res.npoints; i++)
-        if (res.data[0][0][0][i] > value) {
+        if (fourierNoises[module][ray][i] > value) {
             res.sigma = i;
             break;
         }

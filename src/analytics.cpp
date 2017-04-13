@@ -1376,6 +1376,13 @@ void Analytics::fourierSelectBestAuto() {
         sigmas[i] = sigmas.last();
     std::sort(sigmas.begin(), sigmas.end());
 
+    int medRes = sigmas.size();
+    for (int i = 0; i < sigmas.size(); i++)
+        if (sigmas[i] > sigmas[sigmas.size() / 2] * 1.1) {
+            medRes = i;
+            break;
+        }
+
     for (int i = sigmas.size() - 1; i >= 0; i--) {
         sigmas[i] /= sigmas[0];
         sigmas[i] *= sigmas[i];
@@ -1395,13 +1402,15 @@ void Analytics::fourierSelectBestAuto() {
         res.data[0][0][0][i] = (i + 1) / sqrt(sigmas[i]);
         if (res.data[0][0][0][i] > max) {
             max = res.data[0][0][0][i];
-            res.sigma = i * 0.9;
-            ui->fourierBestNumber->setValue(i * 0.9);
+            res.sigma = i * 0.8;
         }
     }
 
     for (int i = 0; i < sigmas.size(); i++)
         res.data[0][0][1][i] = sqrt(i + 1);
+
+    res.sigma = std::min(medRes, int(res.sigma + 0.5));
+    ui->fourierBestNumber->setValue(int(res.sigma + 0.5));
 
     Settings::settings()->setLastHeader(QMap<QString, QString>());
     window->regenerate(res);

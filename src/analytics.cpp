@@ -726,6 +726,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
     ui->fourierLoadCache->setDisabled(true);
     ui->fourierLoad->setText("Loading data");
     ui->fourierLoadCache->setText("Loading data");
+    ui->fourierShowNoises->setText("Noises");
 
     progressBar->show();
     ui->currentStatus->setText("Releasing previous data");
@@ -1448,7 +1449,7 @@ void Analytics::fourierShowNoises() {
                 for (int module = 0; module < noises.modules; module++)
                     for (int ray = 0; ray < noises.rays; ray++)
                         for (int channel = 0; channel < noises.channels; channel++)
-                            blockNoise.data[module][channel][ray][current] = noises.data[module][channel][ray][i];
+                            blockNoise.data[module][channel][ray][current] = std::min(noises.data[module][channel][ray][i], 50.0f);
 
                 current++;
             }
@@ -1456,7 +1457,18 @@ void Analytics::fourierShowNoises() {
 
     QMap<QString, QString> newNames;
     newNames["stairs_names"] = names.join(",");
-    Settings::settings()->setLastHeader(newNames);
+    if (ui->fourierShowNoises->text() == "Sort") {
+        for (int module = 0; module < blockNoise.modules; module++)
+            for (int ray = 0; ray < blockNoise.rays; ray++)
+                for (int channel = 0; channel < blockNoise.channels; channel++)
+                    std::sort(blockNoise.data[module][channel][ray], blockNoise.data[module][channel][ray] + blockNoise.npoints);
+
+        ui->fourierShowNoises->setText("Noises");
+    } else {
+        Settings::settings()->setLastHeader(newNames);
+        ui->fourierShowNoises->setText("Sort");
+    }
+
     window->regenerate(blockNoise);
 }
 
@@ -1472,7 +1484,7 @@ void Analytics::fourierShowSpectresNoise() {
     res.init();
 
     for (int i = 0; i < res.npoints; i++)
-        res.data[0][0][0][i] = log(fourierNoises[module][ray][i]);
+        res.data[0][0][0][i] = std::min(fourierNoises[module][ray][i], 20.0);
 
     double value = fourierNoises[module][ray][res.npoints / 2] * 1.3;
     for (int i = 0; i < res.npoints; i++)

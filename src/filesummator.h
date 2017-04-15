@@ -16,9 +16,11 @@ public:
 
 private:
     void findFiles(QString path, QStringList &names, const QStringList &extensions);
+    void transientProcess(Data &data);
     bool processData(Data &data);
     void processLongData(Data &data);
     void dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber);
+    void dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion);
 
     void addStair(Data &stairs);
     bool findStair(Data &data, int &start, int &end);
@@ -30,6 +32,8 @@ private:
 
     void saveCuttingState();
     void loadCuttingState();
+
+    QVector<double> applyDispersion(Data &data, int D, int module, int ray);
 
     bool longData = false;
     int PC;

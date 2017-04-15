@@ -47,6 +47,7 @@ void FileSummator::run() {
 
     bool stairsSearch = false;
     bool cutter = false;
+    bool transientSearch = false;
     printf("Do you want to dump cutted files? [y/N] ");
     if (input.readLine().toUpper() == "Y") {
         cutter = true;
@@ -67,10 +68,29 @@ void FileSummator::run() {
         printf("Do you want to start stairs search? [y/N] ");
         if (input.readLine().toUpper() == "Y")
             stairsSearch = true;
+        else {
+            printf("Do you want to start transient search [y/N] ");
+            if (input.readLine().toUpper() == "Y") {
+                transientSearch = true;
+                while (true) {
+                    printf("Please enter path to save database: ");
+                    cutterPath = input.readLine();
+                    QDir dir(cutterPath);
+                    cutterPath = dir.absolutePath() + "/result/";
+                    if (dir.mkdir("result"))
+                        break;
+                }
+
+                printf("Path [%s] accepted\n\n", cutterPath.toLocal8Bit().constData());
+            } else {
+                printf("So, I can't help you then\n");
+                return;
+            }
+        }
     }
 
     PC = cutter ? CuttingPC : PC_;
-    if (cutter && extensions.contains("pnthr")) {
+    if ((cutter || transientSearch) && extensions.contains("pnthr")) {
         PC = CuttingPCLong;
         longData = true;
     }
@@ -159,6 +179,14 @@ void FileSummator::run() {
             data = reader.readBinaryFile(fileNames[i]);
             if (!data.isValid())
                 continue;
+
+            if (transientSearch) {
+                int hour = data.hourFromPreviousLifeName();
+                if (hour != 1 && hour != 5 && hour != 9 && hour != 13 && hour != 17 && hour != 21)
+                    transientProcess(data);
+
+                continue;
+            }
 
             if (longData)
                 processLongData(data);
@@ -401,6 +429,35 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     res.releaseData();
 }
 
+void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion) {
+    double realSeconds;
+    StarTime::StarTime(rawData, startPoint, &realSeconds);
+
+    QMap<QString, QString> headerAddition;
+    headerAddition["native_datetime"] = rawData.name;
+    headerAddition["star_time"] = QString::number(realSeconds, 'g', 10);
+    headerAddition["module"] = QString::number(module);
+    headerAddition["ray"] = QString::number(ray);
+    headerAddition["dispersion"] = QString::number(dispersion);
+
+    Data res;
+    res.modules = 1;
+    res.channels = 1;
+    res.rays = 1;
+    res.npoints = 40;
+    res.init();
+
+    for (int i = startPoint - 20; i < startPoint + 20; i++)
+        res.data[0][0][0][i] = data[i];
+
+    numberOfPieces[pieceNumber]++;
+    QDir().mkpath(cutterPath + "/" + QString::asprintf("%03d", pieceNumber));
+    QFile f(cutterPath + "/" + QString::asprintf("%03d", pieceNumber) + "/" + QString::asprintf("%04d", numberOfPieces[pieceNumber]) + ".pnt");
+    f.open(QIODevice::WriteOnly);
+    DataDumper::dump(res, f, headerAddition);
+    res.releaseData();
+}
+
 void FileSummator::loadCuttingState() {
     QFile f(cutterPath + "state.txt");
     if (f.open(QIODevice::ReadOnly)) {
@@ -588,4 +645,59 @@ void FileSummator::checkStairs(Data &stairs, QStringList &names) {
             i--;
         }
     }
+}
+
+QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int ray) {
+    double v1 = data.fbands[0];
+    double v2 = data.fbands[1];
+    double mxd = (4.1488) * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D;
+    mxd *= -data.channels;
+    mxd /= data.oneStep;
+
+    QVector<double> res(data.npoints, 0);
+
+    for (int i = 0; i < data.npoints - mxd; i++)
+        for (int j = 0; j < data.channels - 1; j++) {
+            int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D * j / data.oneStep + 0.5);
+            res[i] += data.data[module][j][ray][std::max(i + dt, 0)];
+        }
+
+    for (int i = data.npoints - mxd; i < data.npoints; i++)
+        for (int j = 0; j < data.channels - 1; j++)
+            res[i] += data.data[module][j][ray][i];
+
+    for (int i = 0; i < res.size(); i++)
+        res[i] /= (data.channels - 1);
+
+    return res;
+}
+
+void FileSummator::transientProcess(Data &data) {
+    for (int module = 0; module < data.modules; module++)
+        for (int ray = 0; ray < data.rays; ray++) {
+            const int step =  INTERVAL / data.oneStep;
+            for (int channel = 0; channel < data.channels; channel++) {
+                for (int i = 0; i < data.npoints; i += step)
+                    PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
+            }
+
+            for (int disp = 0; disp <= 200; disp++) {
+                QVector<double> res = applyDispersion(data, disp, module, ray);
+                double noise = 0;
+                for (int i = 0; i < res.size(); i++)
+                    noise += res[i] * res[i];
+                noise /= res.size();
+                noise = pow(noise, 0.5);
+
+                for (int i = 100; i < res.size() - 100; i++)
+                    if (res[i] / noise > TRANSIENT_THRESH)
+                        if (res[i] / data.data[module][32][ray][i] > TRANSIENT_AMPLIFICATION_TRESH) {
+                            double realPart;
+                            StarTime::StarTime(data, i, &realPart);
+                            int startPoint = realPart / data.oneStep;
+                            int offset = PC - startPoint % PC;
+                            dumpTransient(res, data, i, (startPoint + offset) / PC, module, ray, disp);
+                        }
+            }
+        }
 }

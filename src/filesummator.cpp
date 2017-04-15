@@ -438,6 +438,7 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     headerAddition["star_time"] = QString::number(realSeconds, 'g', 10);
     headerAddition["module"] = QString::number(module);
     headerAddition["ray"] = QString::number(ray);
+    headerAddition["rays"] = "1";
     headerAddition["dispersion"] = QString::number(dispersion);
 
     Data res;

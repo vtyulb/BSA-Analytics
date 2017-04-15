@@ -128,6 +128,9 @@ Data Reader::readBinaryFile(QString file) {
     t.removeAll("");
     int modulus = t.size();
 
+    if (header.contains("rays"))
+        rays = header["rays"].toInt();
+
     Data data;
     data.time.setDate(QDate::fromString(header["date_begin"].right(10), QString("dd.MM.yyyy")));
     data.time.setTime(QTime::fromString(header["time_begin"].right(8).replace(' ', ""), QString("h:mm:ss")));
@@ -148,7 +151,7 @@ Data Reader::readBinaryFile(QString file) {
         data.previousLifeName = data.name;
 
     QStringList fbands = header["fbands"].split(" ");
-    for (int i = 0; i < channels - 1; i++)
+    for (int i = 0; i < fbands.size(); i++)
         data.fbands[i] = fbands[i].toDouble();
 
     QByteArray input;

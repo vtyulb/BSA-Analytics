@@ -37,7 +37,7 @@ int SpectreDrawer::findFirstPoint(int startPoint) {
     int start = startPoint + 1;
 
     if (startPoint == -1) {
-        while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 1.5)
+        while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > interval / 1.5 * (period < 1000))
             if (start > data.npoints) {
                 QMessageBox::warning(this, "Error", "Time is invalid!\n"
                                                     "There is no points inside data with these time.");
@@ -62,7 +62,7 @@ QVector<double> SpectreDrawer::getAnswer(const Data &data, int channel, int star
 
 
         res.push_back(sum / n);
-        if (res.size() > 40 && period > 1000)
+        if (res.size() > 200 && period > 1000)
             break;
     }
 

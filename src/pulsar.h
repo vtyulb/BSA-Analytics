@@ -19,8 +19,8 @@ const double MAXIMUM_PERIOD = 10;
 const double PERIOD_STEP = 0.01;
 const double FOURIER_PULSAR_LEVEL_SNR = 1.5;
 
-const double TRANSIENT_THRESH = 7.0;
-const double TRANSIENT_AMPLIFICATION_TRESH = 1.0;
+const double TRANSIENT_THRESH = 10.0;
+const double TRANSIENT_AMPLIFICATION_TRESH = 2.0;
 
 const int interval = 180;
 const int CATEGORIES = 4;

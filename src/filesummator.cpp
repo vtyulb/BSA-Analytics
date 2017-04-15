@@ -439,6 +439,7 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     headerAddition["module"] = QString::number(module);
     headerAddition["ray"] = QString::number(ray);
     headerAddition["rays"] = "1";
+    headerAddition["point"] = QString::number(startPoint);
     headerAddition["dispersion"] = QString::number(dispersion);
 
     Data res;
@@ -448,8 +449,10 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     res.npoints = 40;
     res.init();
 
-    for (int i = startPoint - 20; i < startPoint + 20; i++)
-        res.data[0][0][0][i] = data[i];
+    int start = startPoint - 20;
+    int end = start + res.npoints;
+    for (int i = start; i < end; i++)
+        res.data[0][0][0][i - start] = data[i];
 
     numberOfPieces[pieceNumber]++;
     QDir().mkpath(cutterPath + "/" + QString::asprintf("%03d", pieceNumber));
@@ -676,13 +679,16 @@ QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int
 void FileSummator::transientProcess(Data &data) {
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++) {
+            printf(".");
+            fflush(stdout);
+
             const int step =  INTERVAL / data.oneStep;
             for (int channel = 0; channel < data.channels; channel++) {
                 for (int i = 0; i < data.npoints; i += step)
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
             }
 
-            for (int disp = 0; disp <= 200; disp++) {
+            for (int disp = 20; disp <= 200; disp++) {
                 QVector<double> res = applyDispersion(data, disp, module, ray);
                 double noise = 0;
                 for (int i = 0; i < res.size(); i++)
@@ -690,7 +696,7 @@ void FileSummator::transientProcess(Data &data) {
                 noise /= res.size();
                 noise = pow(noise, 0.5);
 
-                for (int i = 100; i < res.size() - 100; i++)
+                for (int i = 1000; i < res.size() - 1000; i++)
                     if (res[i] / noise > TRANSIENT_THRESH)
                         if (res[i] / data.data[module][32][ray][i] > TRANSIENT_AMPLIFICATION_TRESH) {
                             double realPart;
@@ -698,6 +704,8 @@ void FileSummator::transientProcess(Data &data) {
                             int startPoint = realPart / data.oneStep;
                             int offset = PC - startPoint % PC;
                             dumpTransient(res, data, i, (startPoint + offset) / PC, module, ray, disp);
+
+                            i += 200;
                         }
             }
         }

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>294</width>
-    <height>536</height>
+    <height>562</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -50,6 +50,9 @@
      </property>
      <property name="decimals">
       <number>5</number>
+     </property>
+     <property name="maximum">
+      <double>9999.989999999999782</double>
      </property>
     </widget>
    </item>
@@ -206,7 +209,7 @@
          <item>
           <widget class="QRadioButton" name="singlePeriod">
            <property name="text">
-            <string>Sin&amp;gle period</string>
+            <string>Sing&amp;le period</string>
            </property>
           </widget>
          </item>

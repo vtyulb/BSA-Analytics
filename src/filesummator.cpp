@@ -676,6 +676,21 @@ QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int
     return res;
 }
 
+bool FileSummator::transientCheckAmplification(const Data &data, int point, int module, int ray, int dispersion) {
+    double v1 = data.fbands[0];
+    double v2 = data.fbands[1];
+
+    double sum = 0;
+    float mx = 0;
+    for (int i = 0; i < data.channels - 1; i++) {
+        int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dispersion * i / data.oneStep + 0.5);
+        sum += data.data[module][i][ray][point + dt];
+        mx = std::max(data.data[module][i][ray][point + dt], mx);
+    }
+
+    return mx * TRANSIENT_AMPLIFICATION_TRESH < sum;
+}
+
 void FileSummator::transientProcess(Data &data) {
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++) {

@@ -185,6 +185,7 @@ void FileSummator::run() {
                 if (hour != 1 && hour != 5 && hour != 9 && hour != 13 && hour != 17 && hour != 21)
                     transientProcess(data);
 
+                data.releaseData();
                 continue;
             }
 
@@ -439,6 +440,7 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     headerAddition["module"] = QString::number(module);
     headerAddition["ray"] = QString::number(ray);
     headerAddition["rays"] = "1";
+    headerAddition["point"] = QString::number(startPoint);
     headerAddition["dispersion"] = QString::number(dispersion);
 
     Data res;
@@ -448,8 +450,10 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     res.npoints = 40;
     res.init();
 
-    for (int i = startPoint - 20; i < startPoint + 20; i++)
-        res.data[0][0][0][i] = data[i];
+    int start = startPoint - 20;
+    int end = start + res.npoints;
+    for (int i = start; i < end; i++)
+        res.data[0][0][0][i - start] = data[i];
 
     numberOfPieces[pieceNumber]++;
     QDir().mkpath(cutterPath + "/" + QString::asprintf("%03d", pieceNumber));
@@ -673,16 +677,34 @@ QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int
     return res;
 }
 
+bool FileSummator::transientCheckAmplification(const Data &data, int point, int module, int ray, int dispersion) {
+    double v1 = data.fbands[0];
+    double v2 = data.fbands[1];
+
+    double sum = 0;
+    float mx = 0;
+    for (int i = 0; i < data.channels - 1; i++) {
+        int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dispersion * i / data.oneStep + 0.5);
+        sum += data.data[module][i][ray][point + dt];
+        mx = std::max(data.data[module][i][ray][point + dt], mx);
+    }
+
+    return mx * TRANSIENT_AMPLIFICATION_TRESH < sum;
+}
+
 void FileSummator::transientProcess(Data &data) {
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++) {
+            printf(".");
+            fflush(stdout);
+
             const int step =  INTERVAL / data.oneStep;
             for (int channel = 0; channel < data.channels; channel++) {
                 for (int i = 0; i < data.npoints; i += step)
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
             }
 
-            for (int disp = 0; disp <= 200; disp++) {
+            for (int disp = 0; disp <= 80; disp++) {
                 QVector<double> res = applyDispersion(data, disp, module, ray);
                 double noise = 0;
                 for (int i = 0; i < res.size(); i++)
@@ -690,7 +712,7 @@ void FileSummator::transientProcess(Data &data) {
                 noise /= res.size();
                 noise = pow(noise, 0.5);
 
-                for (int i = 100; i < res.size() - 100; i++)
+                for (int i = 1000; i < res.size() - 1000; i++)
                     if (res[i] / noise > TRANSIENT_THRESH)
                         if (res[i] / data.data[module][32][ray][i] > TRANSIENT_AMPLIFICATION_TRESH) {
                             double realPart;
@@ -698,6 +720,8 @@ void FileSummator::transientProcess(Data &data) {
                             int startPoint = realPart / data.oneStep;
                             int offset = PC - startPoint % PC;
                             dumpTransient(res, data, i, (startPoint + offset) / PC, module, ray, disp);
+
+                            i += 200;
                         }
             }
         }

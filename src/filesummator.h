@@ -21,6 +21,7 @@ private:
     void processLongData(Data &data);
     void dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber);
     void dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion);
+    bool transientCheckAmplification(const Data &data, int point, int module, int ray, int dispersion);
 
     void addStair(Data &stairs);
     bool findStair(Data &data, int &start, int &end);

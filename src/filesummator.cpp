@@ -185,6 +185,7 @@ void FileSummator::run() {
                 if (hour != 1 && hour != 5 && hour != 9 && hour != 13 && hour != 17 && hour != 21)
                     transientProcess(data);
 
+                data.releaseData();
                 continue;
             }
 

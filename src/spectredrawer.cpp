@@ -131,7 +131,6 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
 
     this->reDraw();
     this->show();
-    this->resize(420, 100);
 }
 
 void SpectreDrawer::reDraw() {
@@ -174,7 +173,9 @@ void SpectreDrawer::reDraw() {
         rawRes.push_back(res);
     }
 
-    rotateMatrix();
+    if (ui->dispersion->value() != 0)
+        rotateMatrix();
+
     if (addFromMem) {
         addFromMem = false;
         QList<QVariant> lastSpectre = QSettings().value("LastSpectre").toList();

@@ -34,6 +34,8 @@ private:
 
     void saveSettings();
 
+    void drawSpectre(const Pulsar &pl);
+
 private slots:
     void selectionChanged();
     void showTime();

@@ -78,7 +78,8 @@ void FileSummator::run() {
                     QDir dir(cutterPath);
                     cutterPath = dir.absolutePath() + "/result/";
                     if (dir.mkdir("result"))
-                        break;
+                        if (QFile(cutterPath + "transients").open(QIODevice::WriteOnly))
+                            break;
                 }
 
                 printf("Path [%s] accepted\n\n", cutterPath.toLocal8Bit().constData());
@@ -437,23 +438,31 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     QMap<QString, QString> headerAddition;
     headerAddition["native_datetime"] = rawData.name;
     headerAddition["star_time"] = QString::number(realSeconds, 'g', 10);
-    headerAddition["module"] = QString::number(module);
-    headerAddition["ray"] = QString::number(ray);
+    headerAddition["module"] = QString::number(module + 1);
+    headerAddition["ray"] = QString::number(ray + 1);
     headerAddition["rays"] = "1";
     headerAddition["point"] = QString::number(startPoint);
     headerAddition["dispersion"] = QString::number(dispersion);
 
+    double v1 = rawData.fbands[0];
+    double v2 = rawData.fbands[1];
+
+    int start = startPoint - dispersion * 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) / rawData.oneStep - 5;
+    int end = startPoint + 3;
+
     Data res;
     res.modules = 1;
-    res.channels = 1;
+    res.channels = 33;
     res.rays = 1;
-    res.npoints = 40;
+    res.npoints = end - start;
     res.init();
 
-    int start = startPoint - 20;
-    int end = start + res.npoints;
     for (int i = start; i < end; i++)
-        res.data[0][0][0][i - start] = data[i];
+        res.data[0][32][0][i - start] = data[i];
+
+    for (int i = start; i < end; i++)
+        for (int channel = 0; channel < 32; channel++)
+            res.data[0][channel][0][i - start] = rawData.data[module][channel][ray][i];
 
     numberOfPieces[pieceNumber]++;
     QDir().mkpath(cutterPath + "/" + QString::asprintf("%03d", pieceNumber));

@@ -19,7 +19,7 @@ class Analytics : public QWidget
     Q_OBJECT
 
 public:
-    explicit Analytics(QString analyticsPath = "", bool fourier = false, QWidget *parent = 0);
+    explicit Analytics(QString analyticsPath, bool fourier = false, QWidget *parent = 0);
     ~Analytics();
 
 private:
@@ -45,6 +45,7 @@ private:
     int maxModule;
     int maxRay;
     bool fourier;
+    bool transient;
     int fourierSpectreSize;
     bool longData;
     int totalFilesLoaded;
@@ -54,6 +55,7 @@ private:
     QVector<QString> fileNames;
     QVector<QDate> fourierAllowedDates;
     QVector<Data> fourierData;
+    QVector<QMap<QString, QString> > headers;
     QVector<float> fourierSumm[6][8];
     QVector<double> fourierRawNoises[6][8];
     QVector<double> fourierNoises[6][8];

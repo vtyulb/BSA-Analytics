@@ -75,6 +75,9 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     if (QDir(folder).entryList().contains("noises.pnt") || QDir(folder).entryList().contains("noises.pnthr"))
         fourier = true, this->fourier = true;
 
+    if (QDir(folder).entryList().contains("transients"))
+        fourier = true, this->fourier = true, transient = true;
+
     if (fourier) {
         Settings::settings()->setFourierAnalytics(true);
         ui->groupBox->hide();
@@ -105,6 +108,13 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         QObject::connect(ui->knownNoiseButton, SIGNAL(clicked()), knownNoises, SLOT(show()));
     }
 
+    if (transient) {
+        ui->fourierCalculateCaches->hide();
+        ui->fourierNormalizeData->hide();
+        ui->fourierLoadCache->hide();
+        ui->groupBox_6->hide();
+    }
+
     this->restoreGeometry(QSettings().value("AnalyticsGeometry").toByteArray());
 
     compressLayout();
@@ -120,9 +130,6 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
 void Analytics::init() {
     QSettings s;
-    if (folder == "")
-        folder = QFileDialog::getExistingDirectory(this, "Path to *.pulsar files", s.value("openPath").toString());
-
     s.setValue("openPath", folder);
 
     window = new MainWindow("", this);
@@ -332,7 +339,7 @@ void Analytics::apply(bool fullFilters) {
             pl->push_back(pulsars->at(i));
 
     if (!pl->size()) {
-        QMessageBox::warning(this, "Houston... We've Got a Problem", "There are no such pulsars");
+//        QMessageBox::warning(this, "Houston... We've Got a Problem", "There are no such pulsars");
         Pulsar p;
         p.data.npoints = 1;
         p.data.modules = 1;
@@ -795,12 +802,13 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                 }
 
                 Data &data = fourierData.last();
-                if (data.modules != 6 || data.rays != 8) {
+                if ((data.modules != 6 || data.rays != 8) && !transient) {
                     qDebug() << "bad data detected" << data.modules << data.rays << data.name << data.previousLifeName;
                     fourierData.removeLast();
                     continue;
                 }
 
+                headers.push_back(Settings::settings()->getLastHeader());
 
                 if (longData) {
                     qDebug() << "I REALLY NEED NORMAL LONG DATA";
@@ -814,8 +822,8 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                                     fourierRawNoises[module][ray].push_back(noises.data[module][32][ray][k]);*/
                 }
 
-                for (int module = 0; module < 6; module++)
-                    for (int ray = 0; ray < 8; ray++) {
+                for (int module = 0; module < data.modules; module++)
+                    for (int ray = 0; ray < data.rays; ray++) {
                         double noise = 0;
                         for (int channel = 0; channel < data.channels - 1; channel++) {
                             double chNoise = 0;
@@ -841,19 +849,20 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
             progressBar->setValue(100 * j / fourierData.size());
             qApp->processEvents();
 
-            for (int module = 0; module < 6; module++)
-                for (int ray = 0; ray < 8; ray++) {
+            for (int module = 0; module < fourierData[j].modules; module++)
+                for (int ray = 0; ray < fourierData[j].rays; ray++) {
                     Data data;
-                    data.npoints = fourierSpectreSize;
+                    data.npoints = fourierSpectreSize * (!transient) + transient * fourierData[j].npoints;
                     data.modules = 1;
                     data.rays = 1;
-                    data.channels = 1;
+                    data.channels = fourierData[j].channels;
                     data.init();
                     data.releaseProtected = true;
                     data.previousLifeName = "file " + fourierData[j].name + " from " + fourierData[j].previousLifeName;
 
                     if (longData) {
-                        memcpy(data.data[0][0][0], fourierData[j].data[module][0][ray], sizeof(float) * fourierSpectreSize);
+                        for (int k = 0; k < fourierData[j].channels; k++)
+                            memcpy(data.data[0][k][0], fourierData[j].data[module][k][ray], sizeof(float) * fourierData[j].npoints);
                     } else {
                         QVector<float> dt(fourierSpectreSize, 0);
                         for (int channel = 0; channel < 6; channel++) {
@@ -874,8 +883,14 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     pl.data = data;
                     pl.valid = true;
                     pl.sigma = fourierRawNoises[module][ray][j];
-                    pl.findFourierData(ui->fourierPointsToSkip->value());
-                    pl.data.sigma = pl.firstPoint;
+                    if (!transient) {
+                        pl.findFourierData(ui->fourierPointsToSkip->value());
+                        pl.data.sigma = pl.firstPoint;
+                    } else {
+                        pl.module = headers[j]["module"].toInt();
+                        pl.ray = headers[j]["ray"].toInt();
+                    }
+
                     pl.nativeTime = QTime(0, 0).addSecs(int(fourierSpectreSize * 2 * (blockNumber + 0.5) * Settings::settings()->getFourierStepConstant()));
                     pulsars->push_back(pl);
 
@@ -886,20 +901,22 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                 }
         }
 
-        for (int module = 0; module < 6; module++)
-            for (int ray = 0; ray < 8; ray++)
-                std::sort(fourierRawNoises[module][ray].begin(), fourierRawNoises[module][ray].end());
+        if (!transient) {
+            for (int module = 0; module < 6; module++)
+                for (int ray = 0; ray < 8; ray++)
+                    std::sort(fourierRawNoises[module][ray].begin(), fourierRawNoises[module][ray].end());
 
-        for (int module = 0; module < 6; module++)
-            for (int ray = 0; ray < 8; ray++)
-                std::sort(fourierNoises[module][ray].begin(), fourierNoises[module][ray].end());
+            for (int module = 0; module < 6; module++)
+                for (int ray = 0; ray < 8; ray++)
+                    std::sort(fourierNoises[module][ray].begin(), fourierNoises[module][ray].end());
 
-        for (int i = 0; i < pulsars->size(); i++) {
-            int module = pulsars->at(i).module - 1;
-            int ray = pulsars->at(i).ray - 1;
-            double avNoise = fourierNoises[module][ray].at(fourierNoises[module][ray].size() / 2);
-            if (pulsars->at(i).noiseLevel > avNoise * 1.3)
-                (*pulsars)[i].snr = -42;
+            for (int i = 0; i < pulsars->size(); i++) {
+                int module = pulsars->at(i).module - 1;
+                int ray = pulsars->at(i).ray - 1;
+                double avNoise = fourierNoises[module][ray].at(fourierNoises[module][ray].size() / 2);
+                if (pulsars->at(i).noiseLevel > avNoise * 1.3)
+                    (*pulsars)[i].snr = -42;
+            }
         }
 
         std::sort(pulsars->begin(), pulsars->end());
@@ -948,7 +965,7 @@ void Analytics::actualFourierDataChanged() {
 }
 
 void Analytics::applyFourierFilters() {
-    if (!fourier || (fourierData.size() == 0 && cacheLoaded))
+    if (!fourier || (fourierData.size() == 0 && cacheLoaded) || transient)
         return;
 
     QVector<Pulsar>::Iterator end, start = pulsars->begin();

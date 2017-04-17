@@ -1,6 +1,7 @@
 #include "pulsarlist.h"
 
 #include <pulsarreader.h>
+#include <spectredrawer.h>
 
 #include <QDebug>
 #include <QKeyEvent>
@@ -151,6 +152,9 @@ void PulsarList::selectionChanged() {
                 normalColors = true;
             }
 
+            if (currentPulsar->data.channels == 33)
+                drawSpectre(*currentPulsar);
+
             emit switchData(currentPulsar->data);
         }
     }
@@ -215,6 +219,11 @@ bool PulsarList::sameFile(int f1, int f2) {
     return p1.module == p2.module &&
             p1.ray == p2.ray &&
             p1.data.previousLifeName == p2.data.previousLifeName;
+}
+
+void PulsarList::drawSpectre(const Pulsar &pl) {
+    SpectreDrawer *sp = new SpectreDrawer;
+    sp->drawSpectre(0, 0, pl.data, QTime(), 9999, 0);
 }
 
 QSize PulsarList::minimumSizeHint() const {

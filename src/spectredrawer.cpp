@@ -107,10 +107,17 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
     QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
 
     int start = findFirstPoint(startPoint);
-    for (int i = 0; i < data.channels; i++) {
-        r.push_back(getAnswer(data, i, start));
-        if (r[i].size() == 0)
-            return;
+    if (startPoint == 0) {
+        r.resize(data.channels);
+        for (int i = 0; i < data.channels; i++)
+            for (int j = 0; j < data.npoints; j++)
+                r[i].push_back(data.data[0][i][0][j]);
+    } else {
+        for (int i = 0; i < data.channels; i++) {
+            r.push_back(getAnswer(data, i, start));
+            if (r[i].size() == 0)
+                return;
+        }
     }
 
     this->reDraw();
@@ -220,6 +227,10 @@ QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data)
 void SpectreDrawer::rotateMatrix() {
     double v1 = data.fbands[0];
     double v2 = data.fbands[1];
+    if (v1 < 1e-6 || v2 < 1e-6) {
+        v1 = 1;
+        v2 = 1;
+    }
 
     int dsp = ui->dispersion->value();
     int maxAt = 0;

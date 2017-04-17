@@ -210,6 +210,8 @@ void MainWindow::regenerate(Data &data) {
             return;
         }
     }
+
+    qDebug() << "resetting drawer";
     delete drawer;
     drawer = new Drawer(data, this);
     ui->centralWidget->layout()->addWidget(drawer);
@@ -395,15 +397,30 @@ void MainWindow::showHelp() {
     QDesktopServices::openUrl(help);
 }
 
-void MainWindow::addWidgetToMainLayout(QWidget *w1, QWidget *w2) {
+void MainWindow::addWidgetToMainLayout(QWidget *w1, QWidget *w2, bool addSpectre) {
     if (w1 == NULL)
         return;
 
     ui->centralWidget->layout()->removeWidget(drawer);
+
     ui->centralWidget->layout()->addWidget(w1);
     ui->centralWidget->layout()->addWidget(w2);
-    if (drawer)
-        ui->centralWidget->layout()->addWidget(drawer);
+    if (drawer) {
+        QWidget *mb = new QWidget;
+        QHBoxLayout *layout = new QHBoxLayout(mb);
+        mb->setLayout(layout);
+        layout->setContentsMargins(0, 0, 0, 0);
+        if (addSpectre) {
+            qDebug() << "spectre drawer created";
+            SpectreDrawer *spectreDrawer = new SpectreDrawer;
+            spectreDrawer->setMinimumHeight(640);
+            Settings::settings()->setSpectreDrawer(spectreDrawer);
+            layout->addWidget(spectreDrawer);
+        }
+
+        layout->addWidget(drawer);
+        ui->centralWidget->layout()->addWidget(mb);
+    }
 }
 
 void MainWindow::generateStyles() {

@@ -12,6 +12,9 @@ NativeSpectreDrawer::NativeSpectreDrawer(QWidget *parent):
 void NativeSpectreDrawer::paintEvent(QPaintEvent*) {
     QPainter p(this);
 
+    if (spectre.isNull())
+        return;
+
     if (width() * spectre.height() / spectre.width() <= height())
         p.drawImage(QRect(0, 0, width(), width() * spectre.height() / spectre.width()), spectre);
     else

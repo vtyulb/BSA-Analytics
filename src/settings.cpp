@@ -22,6 +22,7 @@ Settings::Settings() {
     _longRoads = false;
     _periodTester = false;
     _fourierAnalytics = false;
+    _transientAnalytics = false;
     _fourierStepConstant = 0.0999424;
     _fourierSpectreSize = 1024;
     _fourierHighGround = true;
@@ -272,6 +273,14 @@ bool Settings::fourierAnalytics() {
     return _fourierAnalytics;
 }
 
+void Settings::setTransientAnalytics(bool b) {
+    _transientAnalytics = b;
+}
+
+bool Settings::transientAnalytics() {
+    return _transientAnalytics;
+}
+
 void Settings::setFourierStepConstant(double d) {
     _fourierStepConstant = d;
 }
@@ -426,4 +435,12 @@ void Settings::setNullOnOYaxis(bool b) {
 
 bool Settings::nullOnOYaxis() {
     return _nullOnOYaxis;
+}
+
+void Settings::setSpectreDrawer(SpectreDrawer *s) {
+    _spectreDrawer = s;
+}
+
+SpectreDrawer *Settings::getSpectreDrawer() {
+    return _spectreDrawer;
 }

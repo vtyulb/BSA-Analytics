@@ -133,6 +133,8 @@ void PreciseSearchGui::determineSearchMode() {
     ui->dispersion->setDecimals(0);
     ui->normalize->setEnabled(true);
     ui->normalizeLabel->setEnabled(true);
+    ui->clearNoise->setEnabled(true);
+    ui->clearNoiseLabel->setEnabled(true);
 
     if (ui->singlePeriod->isChecked()) {
         ui->skipMultiplePeriods->setEnabled(false);
@@ -145,6 +147,8 @@ void PreciseSearchGui::determineSearchMode() {
         ui->runAnalyticsAfterLabel->setEnabled(false);
         ui->skipMultiplePeriods->setEnabled(false);
         ui->skipMultiplePeriodsLabel->setEnabled(false);
+        ui->clearNoise->setEnabled(false);
+        ui->clearNoiseLabel->setEnabled(false);
         ui->threadCount->setEnabled(false);
         ui->threadCountLabel->setEnabled(false);
         ui->normalize->setEnabled(false);

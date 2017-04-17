@@ -9,6 +9,7 @@
 #include <QObject>
 
 #include <data.h>
+#include <spectredrawer.h>
 
 class MainWindow;
 
@@ -64,10 +65,12 @@ public:
     int ray();
     double period();
     bool fourierAnalytics();
+    bool transientAnalytics();
     double getFourierStepConstant();
     int getFourierSpectreSize();
     bool getFourierHighGround();
     MainWindow *getMainWindow();
+    SpectreDrawer *getSpectreDrawer();
     bool getNormalize();
 
     double getStairHeight(int module, int ray, int channel);
@@ -100,12 +103,14 @@ public:
     void setLastHeader(const QMap<QString, QString>&);
     void setLongRoads(bool);
     void setFourierAnalytics(bool);
+    void setTransientAnalytics(bool);
     void setFourierStepConstant(double);
     void setFourierSpectreSize(int);
     void setFourierHighGround(bool);
     void setNormalize(bool);
 
     void setMainWindow(MainWindow*);
+    void setSpectreDrawer(SpectreDrawer*);
 
     void setSourceMode(SourceMode);
     QString stairFileName();
@@ -135,6 +140,7 @@ private:
     double _period;
     double _dispersion;
     bool _fourierAnalytics;
+    bool _transientAnalytics;
     double _fourierStepConstant;
     int _fourierSpectreSize;
     bool _fourierHighGround;
@@ -147,6 +153,7 @@ private:
     Data _lastData;
     QMap<QString, QString> _lastHeader;
     MainWindow *_mainWindow;
+    SpectreDrawer *_spectreDrawer;
     QProgressBar *bar;
     int _currentProgress;
 

@@ -2,6 +2,7 @@
 
 #include <pulsarreader.h>
 #include <spectredrawer.h>
+#include <mainwindow.h>
 
 #include <QDebug>
 #include <QKeyEvent>
@@ -39,7 +40,7 @@ PulsarList::PulsarList(QWidget *parent) :
 
     QStringList header;
     header << "time" << "module" << "ray";
-    if (Settings::settings()->fourierAnalytics())
+    if (Settings::settings()->fourierAnalytics() && !Settings::settings()->transientAnalytics())
         header << "sigma";
     else
         header << "dispersion";
@@ -156,6 +157,7 @@ void PulsarList::selectionChanged() {
                 drawSpectre(*currentPulsar);
 
             emit switchData(currentPulsar->data);
+            Settings::settings()->getMainWindow()->update();
         }
     }
 }
@@ -222,8 +224,7 @@ bool PulsarList::sameFile(int f1, int f2) {
 }
 
 void PulsarList::drawSpectre(const Pulsar &pl) {
-    SpectreDrawer *sp = new SpectreDrawer;
-    sp->drawSpectre(0, 0, pl.data, QTime(), 9999, 0);
+   Settings::settings()->getSpectreDrawer()->drawSpectre(0, 0, pl.data, QTime(), 9999, 0);
 }
 
 QSize PulsarList::minimumSizeHint() const {

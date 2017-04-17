@@ -21,11 +21,13 @@
 using std::min;
 
 SpectreDrawer::SpectreDrawer():
-    QWidget(NULL)
+    QWidget(NULL),
+    ui(NULL)
 {
     addFromMem = false;
     restoreGeometry(QSettings().value("SpectreGeometry").toByteArray());
     setAttribute(Qt::WA_DeleteOnClose);
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
 
 SpectreDrawer::~SpectreDrawer() {
@@ -78,6 +80,9 @@ void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime tim
 }
 
 void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime time, double period, int startPoint) {
+    if (data.isValid())
+        data.releaseData();
+
     data = _data;
     data.fork();
 
@@ -93,8 +98,11 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
                 PulsarWorker::subtract(data.data[module][channel][ray] + i, min(step, data.npoints - i));
     }
 
-    ui = new Ui::SpectreUI;
-    ui->setupUi(this);
+    if (!ui) {
+        ui = new Ui::SpectreUI;
+        ui->setupUi(this);
+    }
+
     ui->dispersion->setValue(std::max(Settings::settings()->dispersion(), 0.0));
 
     ui->channels->setMaximum(data.channels - 1);
@@ -106,6 +114,7 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
     QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
     QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
 
+    r.clear();
     int start = findFirstPoint(startPoint);
     if (startPoint == 0) {
         r.resize(data.channels);
@@ -128,6 +137,10 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
 void SpectreDrawer::reDraw() {
     double v1 = data.fbands[0];
     double v2 = data.fbands[1];
+    if (v1 < 1e-6 || v2 < 1e-6) {
+        v1 = 1;
+        v2 = 1;
+    }
 
     QVector<QVector<int> > matrix;
 

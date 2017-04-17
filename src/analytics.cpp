@@ -113,6 +113,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->fourierNormalizeData->hide();
         ui->fourierLoadCache->hide();
         ui->groupBox_6->hide();
+
+        Settings::settings()->setTransientAnalytics(true);
     }
 
     this->restoreGeometry(QSettings().value("AnalyticsGeometry").toByteArray());
@@ -122,7 +124,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     init();
 
     resize(minimumWidth(), height());
-    if (!QSettings().value("GimpMode", true).toBool())
+    if (!QSettings().value("GimpMode", false).toBool())
         QTimer::singleShot(100, this, SLOT(oneWindow()));
 
     QDir::setCurrent(qApp->applicationDirPath());
@@ -811,8 +813,6 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                 headers.push_back(Settings::settings()->getLastHeader());
 
                 if (longData) {
-                    qDebug() << "I REALLY NEED NORMAL LONG DATA";
-                    qDebug() << "SHOW THIS TO <vtyulb@vtyulb.ru>";
                     /*fourierLoadNoises();
                     QStringList names = Settings::settings()->getLastHeader()["stairs_names"].split(",");
                     for (int k = 0; k < names.size(); k++)
@@ -889,6 +889,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     } else {
                         pl.module = headers[j]["module"].toInt();
                         pl.ray = headers[j]["ray"].toInt();
+                        pl.dispersion = headers[j]["dispersion"].toInt();
                     }
 
                     pl.nativeTime = QTime(0, 0).addSecs(int(fourierSpectreSize * 2 * (blockNumber + 0.5) * Settings::settings()->getFourierStepConstant()));
@@ -1260,7 +1261,7 @@ void Analytics::oneWindow() {
     if (oneWindowMode) {
         ui->oneWindow->setText("One window");
         oneWindowMode = false;
-        window->addWidgetToMainLayout(NULL, NULL);
+        window->addWidgetToMainLayout(NULL, NULL, transient);
         list->show();
         show();
         QObject::connect(list, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
@@ -1276,7 +1277,7 @@ void Analytics::oneWindow() {
     QObject::connect(list, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
 
     window->showMaximized();
-    window->addWidgetToMainLayout(this, list);
+    window->addWidgetToMainLayout(this, list, transient);
     window->show();
 }
 

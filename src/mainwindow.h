@@ -21,7 +21,7 @@ public:
     ~MainWindow();
 
     static QString nativeDecodeLastPath(QString path);
-    void addWidgetToMainLayout(QWidget *w1, QWidget *w2);
+    void addWidgetToMainLayout(QWidget *w1, QWidget *w2, bool addSpectre);
 
 private:
     Ui::MainWindow *ui;

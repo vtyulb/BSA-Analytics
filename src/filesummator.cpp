@@ -218,7 +218,7 @@ void FileSummator::run() {
         dumpStairs(stairs, stairsNames);
         printf("Stairs sorted and dumped to %s\n", getStairsName(stairs).toUtf8().constData());
         exit(0);
-    } else {
+    } else if (cutter) {
         sortStairs(stairs, stairsNames);
         dumpStairs(stairs, stairsNames);
         printf("Noises dumped to %s", getStairsName(stairs).toUtf8().constData());

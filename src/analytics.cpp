@@ -856,7 +856,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     data.npoints = fourierSpectreSize * (!transient) + transient * fourierData[j].npoints;
                     data.modules = 1;
                     data.rays = 1;
-                    data.channels = fourierData[j].channels;
+                    data.channels = (fourierData[j].channels) * (transient) + !transient;
                     data.init();
                     data.releaseProtected = true;
                     data.previousLifeName = "file " + fourierData[j].name + " from " + fourierData[j].previousLifeName;

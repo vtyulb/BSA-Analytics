@@ -93,6 +93,11 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
         pulsarsIndex.push_back(i);
     }
 
+    if (Settings::settings()->transientAnalytics()) {
+        hideColumn(5);
+        hideColumn(4);
+    }
+
     if (removeBadData) {
         int v = 0;
         for (int i = 0; i < pulsars->size(); i++) {

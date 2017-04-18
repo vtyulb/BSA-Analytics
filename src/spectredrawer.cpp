@@ -212,11 +212,12 @@ void SpectreDrawer::reDraw() {
 }
 
 QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data) {
-    int nrm = 10;
+    const int nrm = 10;
     const int offset = 50;
+    const int maxMinWidth = Settings::settings()->transientAnalytics() ? 480 : 1024;
 
     QImage image(matrix[0].size() * nrm + offset, matrix.size() * nrm, QImage::Format_ARGB32);
-    ui->drawer->setMinimumSize(std::min(image.width(), 1024), std::min(image.height(), 1024 * image.height() / image.width()));
+    ui->drawer->setMinimumSize(std::min(image.width(), maxMinWidth), std::min(image.height(), maxMinWidth * image.height() / image.width()));
     QPainter p(&image);
     p.fillRect(0, 0, image.width(), image.height(), Qt::white);
 

@@ -457,6 +457,17 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     res.npoints = end - start;
     res.init();
 
+    QVector<double> chk(end - start, 0);
+    double chkMx = 0;
+    for (int i = start; i < end; i++)
+        for (int j = 0; j < rawData.channels - 1; j++) {
+            chk[i - start] += rawData.data[module][j][ray][i];
+            chkMx = std::max(chkMx, chk[i - start] / (rawData.channels - 1));
+        }
+
+    if (data[startPoint] < chkMx)
+        return;
+
     for (int i = start; i < end; i++)
         res.data[0][32][0][i - start] = data[i];
 
@@ -713,7 +724,7 @@ void FileSummator::transientProcess(Data &data) {
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
             }
 
-            for (int disp = 0; disp <= 80; disp++) {
+            for (int disp = 0; disp <= 200; disp++) {
                 QVector<double> res = applyDispersion(data, disp, module, ray);
                 double noise = 0;
                 for (int i = 0; i < res.size(); i++)

@@ -785,6 +785,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
             for (int ray = 0; ray < 8; ray++)
                 fourierRawNoises[module][ray].clear();
 
+        headers.clear();
         for (int j = 0; j < names.size(); j++)
             {
                 progressBar->setValue(100 * j / names.size());

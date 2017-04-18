@@ -33,6 +33,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     oneWindowMode(false),
     pulsars(new QVector<Pulsar>),
     fourier(fourier),
+    transient(false),
     longData(false),
     totalFilesLoaded(0),
     cacheLoaded(false)

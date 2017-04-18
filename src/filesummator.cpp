@@ -465,8 +465,10 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
             chkMx = std::max(chkMx, chk[i - start] / (rawData.channels - 1));
         }
 
-    if (data[startPoint] < chkMx)
+    if (data[startPoint] < chkMx) {
+        res.releaseData();
         return;
+    }
 
     for (int i = start; i < end; i++)
         res.data[0][32][0][i - start] = data[i];

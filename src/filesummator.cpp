@@ -450,7 +450,7 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     int start = startPoint + dispersion * 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * 32 / rawData.oneStep - 10;
     int end = startPoint + 10;
 
-    Data res;
+    Data res = rawData;
     res.modules = 1;
     res.channels = 33;
     res.rays = 1;

@@ -43,7 +43,7 @@ struct KnownPulsar {
     bool operator == (const Pulsar &p) const {
         return (module == p.module || module == -1) &&
                 (ray == p.ray || ray == -1) &&
-                (goodPeriods(period, p.period)) &&
+                (goodPeriods(period, p.period) || period < 0) &&
                 (abs(p.nativeTime.secsTo(time)) <= 180  || time.isNull());
     }
 

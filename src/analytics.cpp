@@ -182,7 +182,10 @@ void Analytics::loadKnownPulsars() {
             else
                 pulsar.ray = ray.toInt();
 
-            pulsar.period = period.toDouble();
+            if (period == "*")
+                pulsar.period = -1;
+            else
+                pulsar.period = period.toDouble();
 
             if (time.size() < 4) {
                 if (line.replace(" ", "") != "")

@@ -54,6 +54,9 @@ void Controller::setCoords(QPointF p) {
         nativeXCoord->setText(QString("X: %1; p=%2s").arg(QString::number(p.x(), 'f', 1),
                               QString::number(Settings::settings()->getFourierSpectreSize() * 2 / (p.x() + 1) * Settings::settings()->getFourierStepConstant(), 'f', 5)));
 
+    if (Settings::settings()->transientAnalytics())
+        nativeXCoord->setText(QString("X: %1; point=%2").arg(QString::number(p.x(), 'f', 1)).arg(QString::number(-data.sigma, 'f', 0)));
+
     if (Settings::settings()->getLastHeader().contains("stairs_names")) {
         static QStringList stairsNames;
         if (!stairsNames.size() || stairsNames[0] != Settings::settings()->getLastHeader()["stairs_names"].left(stairsNames[0].size()))
@@ -108,6 +111,8 @@ void Controller::resetSky(Data newData, int module, QVector<bool> rays) {
         QString res = getPulsarJName(module + 1, (first + last) / 2 + 1, QTime(0,0)).right(5);
         sky->setText(res.left(3) + "°" + res.right(2) + "'");
     }
+
+    setCoords(QPointF(0, 0));
 }
 
 void Controller::setFileName(QString s) {

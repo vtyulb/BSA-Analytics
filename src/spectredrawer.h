@@ -18,11 +18,12 @@ public:
     void drawSpectre(int module, int ray, QString fileName, QTime time, double period);
     void drawSpectre(int module, int ray, const Data &_data, QTime time, double period, int startPoint = -1);
 
+    Ui::SpectreUI *ui;
+
 private:
     QVector<double> getAnswer(const Data &data, int channel, int startPoint = -1);
     QImage drawImage(QVector<QVector<int> > matrix, const Data &data);
 
-    Ui::SpectreUI *ui;
     Data data;
     int module, ray;
     double period;

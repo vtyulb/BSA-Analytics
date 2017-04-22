@@ -22,6 +22,7 @@ public:
 
     static QString nativeDecodeLastPath(QString path);
     void addWidgetToMainLayout(QWidget *w1, QWidget *w2, bool addSpectre);
+    void generateImage(QString path);
 
 private:
     Ui::MainWindow *ui;

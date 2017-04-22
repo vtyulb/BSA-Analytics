@@ -122,6 +122,9 @@ private slots:
     void showInfo();
     void knownPulsarsGUI();
     void oneWindow();
+
+    void transientSaveImage(bool forPublication = false);
+    void transientSaveImageForPublication();
 };
 
 #endif // ANALYTICS_H

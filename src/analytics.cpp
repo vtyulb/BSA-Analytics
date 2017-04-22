@@ -114,6 +114,19 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->fourierNormalizeData->hide();
         ui->fourierLoadCache->hide();
         ui->groupBox_6->hide();
+        ui->oneWindow->hide();
+
+        QPushButton *saveImage = new QPushButton(this);
+        ui->widget_10->layout()->addWidget(saveImage);
+        saveImage->setText("Save");
+        saveImage->show();
+        QObject::connect(saveImage, SIGNAL(clicked()), this, SLOT(transientSaveImage()));
+
+        QPushButton *saveForPublication = new QPushButton(this);
+        ui->widget_10->layout()->addWidget(saveForPublication);
+        saveForPublication->setText("Save for publication");
+        saveForPublication->show();
+        QObject::connect(saveForPublication, SIGNAL(clicked()), this, SLOT(transientSaveImageForPublication()));
 
         Settings::settings()->setTransientAnalytics(true);
     }
@@ -125,7 +138,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     init();
 
     resize(minimumWidth(), height());
-    if (!QSettings().value("GimpMode", false).toBool())
+    if (!QSettings().value("GimpMode", false).toBool() || transient)
         QTimer::singleShot(100, this, SLOT(oneWindow()));
 
     QDir::setCurrent(qApp->applicationDirPath());
@@ -1519,6 +1532,70 @@ void Analytics::fourierShowSpectresNoise() {
         }
 
     window->regenerate(res);
+}
+
+void Analytics::transientSaveImageForPublication() {
+    transientSaveImage(true);
+}
+
+void Analytics::transientSaveImage(bool forPublication) {
+    QString savePath = QFileDialog::getSaveFileName(this, "Spectre & profile filename");
+    if (savePath == "")
+        return;
+
+    if (!savePath.endsWith(".png"))
+        savePath += ".png";
+
+    QImage im1 = Settings::settings()->getSpectreDrawer()->ui->drawer->spectre;
+    QString tmpFile = QDir::tempPath() + "/bsa-analytics-screen.png";
+    window->generateImage(tmpFile);
+    QImage im2(tmpFile);
+
+    int mn = im2.width();
+    int mx = 0;
+    for (int i = 0; i < im2.height(); i++)
+        for (int j = 0; j < im2.width(); j++)
+            if (im2.pixel(j, i) != QColor(255, 255, 255).rgb()) {
+                mn = std::min(mn, j);
+                mx = std::max(mx, j);
+            }
+
+    im2 = im2.copy(mn, 0, mx - mn, im2.height());
+    im2 = im2.scaled(im1.width() - 50, im1.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+    QImage res(im1.width(), im1.height() * 2, QImage::Format_ARGB32);
+    std::swap(im1, im2);
+
+    for (int i = 0; i < im1.height(); i++)
+        for (int j = 0; j < im1.width(); j++)
+            res.setPixel(j + 50, i, im1.pixel(j, i));
+
+    for (int i = 0; i < im2.height(); i++)
+        for (int j = 0; j < im2.width(); j++)
+            res.setPixel(j, i + im1.height(), im2.pixel(j, i));
+
+    for (int i = 0; i < im1.height(); i++)
+        for (int j = 0; j < 50; j++)
+            res.setPixel(j, i, QColor(255, 255, 255).rgb());
+
+    Pulsar *p = list->currentPulsar;
+    QString data = "Block: " + QString::number(ui->fourierBlockNo->value()) + "\n" +
+                   "Module: " + QString::number(p->module) + "\n" +
+                   "Ray: " + QString::number(p->ray) + "\n" +
+                   "Dispersion: " + QString::number(p->dispersion) + "\n" +
+                   "Original file name: " + p->data.previousLifeName.split(" ").at(3) + "\n" +
+                   "File name in block: " + p->data.previousLifeName.split(" ").at(1);
+
+    if (forPublication)
+        res = res.copy(50, 0, res.width() - 50, res.height());
+    else {
+        QPainter painter(&res);
+        painter.drawText(QRectF(5, 20, im1.width(), im1.height()), Qt::AlignLeft, data);
+        painter.end();
+    }
+
+    res.save(savePath);
+    QDesktopServices::openUrl(QUrl::fromLocalFile(savePath));
 }
 
 Analytics::~Analytics() {

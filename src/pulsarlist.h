@@ -17,11 +17,11 @@ public:
     explicit PulsarList(QWidget *parent);
     ~PulsarList();
 
+    Pulsar *currentPulsar;
     void init(Pulsars pl, bool removeBadData);
 
 private:
     Pulsars pulsars;
-    Pulsar *currentPulsar;
 
     QVector<int> pulsarsIndex;
 

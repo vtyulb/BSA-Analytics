@@ -209,12 +209,16 @@ void MainWindow::regenerate(Data &data) {
             drawer->pushNewData(data);
             return;
         }
-    }
 
-    qDebug() << "resetting drawer";
-    delete drawer;
-    drawer = new Drawer(data, this);
-    ui->centralWidget->layout()->addWidget(drawer);
+        qDebug() << "resetting drawer";
+        QLayout *layout = drawer->parentWidget()->layout();
+        delete drawer;
+        drawer = new Drawer(data, this);
+        layout->addWidget(drawer);
+    } else {
+        drawer = new Drawer(data, this);
+        ui->centralWidget->layout()->addWidget(drawer);
+    }
 
     QObject::connect(drawer->drawer, SIGNAL(progress(int)), progress, SLOT(setValue(int)));
     QObject::connect(ui->actionPrint, SIGNAL(triggered()), drawer->drawer, SLOT(print()));
@@ -401,25 +405,22 @@ void MainWindow::addWidgetToMainLayout(QWidget *w1, QWidget *w2, bool addSpectre
     if (w1 == NULL)
         return;
 
+    qDebug() << "messing up with mainwindow layout";
+
     ui->centralWidget->layout()->removeWidget(drawer);
 
     ui->centralWidget->layout()->addWidget(w1);
     ui->centralWidget->layout()->addWidget(w2);
     if (drawer) {
-        QWidget *mb = new QWidget;
-        QHBoxLayout *layout = new QHBoxLayout(mb);
-        mb->setLayout(layout);
-        layout->setContentsMargins(0, 0, 0, 0);
         if (addSpectre) {
             qDebug() << "spectre drawer created";
             SpectreDrawer *spectreDrawer = new SpectreDrawer;
             spectreDrawer->setMinimumHeight(640);
             Settings::settings()->setSpectreDrawer(spectreDrawer);
-            layout->addWidget(spectreDrawer);
+            ui->centralWidget->layout()->addWidget(spectreDrawer);
         }
 
-        layout->addWidget(drawer);
-        ui->centralWidget->layout()->addWidget(mb);
+        ui->centralWidget->layout()->addWidget(drawer);
     }
 }
 
@@ -477,4 +478,12 @@ void MainWindow::switchToStableChannel() {
     ui->actionNightly->setChecked(false);
     ui->actionStable->setChecked(true);
     QSettings().setValue("Stable", QVariant(true));
+}
+
+void MainWindow::generateImage(QString path) {
+    drawer->drawer->drawAxesFlag = false;
+    drawer->drawer->resetVisibleRectangle();
+    drawer->saveFile(path);
+    drawer->drawer->drawAxesFlag = ui->actionAxes->isChecked();
+    drawer->drawer->resetVisibleRectangle();
 }

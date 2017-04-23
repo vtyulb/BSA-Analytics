@@ -337,13 +337,11 @@ void NativeDrawer::resizeEvent(QResizeEvent *event) {
 }
 
 void NativeDrawer::saveFile(QString file) {
-    QByteArray ext = file.right(file.size() - file.indexOf('.') - 1).toUtf8();
-    if (ext.size() > 6) {
+    QByteArray ext = file.right(file.size() - file.lastIndexOf('.') - 1).toUtf8();
+    if (ext.size() > 6)
         file += ".png";
-        ext = "png";
-    }
 
-    art->save(file, ext.constData());
+    art->save(file);
 }
 
 void NativeDrawer::setColors(QVector<QString> c) {

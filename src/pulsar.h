@@ -193,11 +193,6 @@ struct Pulsar {
         else if (nativeTime.secsTo(p.nativeTime) < 0)
             return false;
 
-        if (dispersion < p.dispersion)
-            return true;
-        else if (dispersion > p.dispersion)
-            return false;
-
         if (module < p.module)
             return true;
         else if (module > p.module)
@@ -205,6 +200,13 @@ struct Pulsar {
 
         if (ray < p.ray)
             return true;
+        if (ray > p.ray)
+            return false;
+
+        if (dispersion < p.dispersion)
+            return true;
+        else if (dispersion > p.dispersion)
+            return false;
 
         return false;
     }

@@ -191,7 +191,7 @@ void PulsarList::keyPressEvent(QKeyEvent *event) {
         return;
 
     int current = selectionModel()->selection().indexes().at(0).row();
-    if ((!pulsars->at(pulsarsIndex[current]).filtered || pulsars->at(pulsarsIndex[current]).fourierDuplicate) &&
+    if ((!pulsars->at(pulsarsIndex[current]).filtered || pulsars->at(pulsarsIndex[current]).fourierDuplicate || Settings::settings()->transientAnalytics()) &&
            (rowCount() > 10))
     {
         if (event->key() == Qt::Key_PageDown) {
@@ -225,7 +225,7 @@ bool PulsarList::sameFile(int f1, int f2) {
     const Pulsar &p2 = pulsars->at(pulsarsIndex[f2]);
     return p1.module == p2.module &&
             p1.ray == p2.ray &&
-            p1.data.previousLifeName == p2.data.previousLifeName;
+            (p1.data.previousLifeName == p2.data.previousLifeName || Settings::settings()->transientAnalytics());
 }
 
 void PulsarList::drawSpectre(const Pulsar &pl) {

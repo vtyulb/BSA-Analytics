@@ -181,6 +181,8 @@ void FileSummator::run() {
             if (!data.isValid())
                 continue;
 
+            Reader().repairWrongChannels(data);
+
             if (transientSearch) {
                 int hour = data.hourFromPreviousLifeName();
                 if (hour != 1 && hour != 5 && hour != 9 && hour != 13 && hour != 17 && hour != 21)
@@ -245,8 +247,6 @@ bool FileSummator::processData(Data &data) {
                 for (int i = 0; i < data.npoints; i++)
                     data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
 
-    Reader().repairWrongChannels(data);
-
     QVector<float> buf(data.npoints);
     noises.clear();
     noises.resize(data.modules);
@@ -294,8 +294,6 @@ bool FileSummator::processData(Data &data) {
 void FileSummator::processLongData(Data &data) {
     // Hello FileSummator::processLongData(), i know you are here
     qDebug()  << "It won't work!!! contact <vtyulb@vtyulb.ru>";
-
-    Reader().repairWrongChannels(data);
 
     QVector<float> buf(data.npoints);
 

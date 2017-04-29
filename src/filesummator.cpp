@@ -184,10 +184,7 @@ void FileSummator::run() {
             Reader().repairWrongChannels(data);
 
             if (transientSearch) {
-                int hour = data.hourFromPreviousLifeName();
-                if (hour != 1 && hour != 5 && hour != 9 && hour != 13 && hour != 17 && hour != 21)
-                    transientProcess(data);
-
+                transientProcess(data);
                 data.releaseData();
                 continue;
             }
@@ -429,7 +426,7 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     res.releaseData();
 }
 
-void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion) {
+bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion) {
     double realSeconds;
     StarTime::StarTime(rawData, startPoint, &realSeconds);
 
@@ -441,6 +438,7 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     headerAddition["rays"] = "1";
     headerAddition["point"] = QString::number(startPoint);
     headerAddition["dispersion"] = QString::number(dispersion);
+    headerAddition["star_time"] = StarTime::StarTime(rawData, startPoint);
 
     double v1 = rawData.fbands[0];
     double v2 = rawData.fbands[1];
@@ -463,9 +461,9 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
             chkMx = std::max(chkMx, chk[i - start] / (rawData.channels - 1));
         }
 
-    if (data[startPoint] < chkMx) {
+    if (data[startPoint] < chkMx * TRANSIENT_FILTER_AMPLIFICATION_TRESH) {
         res.releaseData();
-        return;
+        return false;
     }
 
     for (int i = start; i < end; i++)
@@ -481,6 +479,8 @@ void FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     f.open(QIODevice::WriteOnly);
     DataDumper::dump(res, f, headerAddition);
     res.releaseData();
+
+    return true;
 }
 
 void FileSummator::loadCuttingState() {
@@ -713,6 +713,8 @@ bool FileSummator::transientCheckAmplification(const Data &data, int point, int 
 }
 
 void FileSummator::transientProcess(Data &data) {
+    QVector<int> transientsCount(500, 0);
+    int total = 0;
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++) {
             printf(".");
@@ -724,7 +726,7 @@ void FileSummator::transientProcess(Data &data) {
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
             }
 
-            for (int disp = 0; disp <= 200; disp++) {
+            for (int disp = 3; disp <= 100; disp++) {
                 QVector<double> res = applyDispersion(data, disp, module, ray);
                 double noise = 0;
                 for (int i = 0; i < res.size(); i++)
@@ -739,10 +741,34 @@ void FileSummator::transientProcess(Data &data) {
                             StarTime::StarTime(data, i, &realPart);
                             int startPoint = realPart / data.oneStep;
                             int offset = PC - startPoint % PC;
-                            dumpTransient(res, data, i, (startPoint + offset) / PC, module, ray, disp);
+                            int block = (startPoint + offset) / PC;
+
+                            bool dumped = dumpTransient(res, data, i, block, module, ray, disp);
+                            if (dumped) {
+                                transientsCount[block]++;
+                                total++;
+                            }
+
+                            if (total > TRANSIENT_COUNT_TRESH) {
+                                printf("bad file\n");
+                                for (int i = 0; i < 500; i++)
+                                    if (transientsCount[i] > 2) {
+                                        int last = numberOfPieces[i];
+                                        numberOfPieces[i] -= transientsCount[i];
+                                        for (int j = numberOfPieces[i] + 1; j <= last; j++) {
+                                            QString trash = cutterPath + "/" + QString::asprintf("%03d", i) + "/" + QString::asprintf("%04d", j) + ".pnt";
+                                            /*qDebug() << "removing trash from file" << data.name << trash << "status:" << */
+                                            QFile(trash).remove();
+                                        }
+                                    }
+
+                                return;
+                            }
 
                             i += 200;
                         }
             }
         }
+
+    printf("%d objects found\n", total);
 }

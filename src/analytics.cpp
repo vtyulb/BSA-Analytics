@@ -875,6 +875,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     data.rays = 1;
                     data.channels = (fourierData[j].channels) * (transient) + !transient;
                     data.fbands = fourierData[j].fbands;
+                    data.time = fourierData[j].time;
                     data.init();
                     data.releaseProtected = true;
                     data.previousLifeName = "file " + fourierData[j].name + " from " + fourierData[j].previousLifeName;
@@ -1580,7 +1581,7 @@ void Analytics::transientSaveImage(bool forPublication) {
 
     Pulsar *p = list->currentPulsar;
     QString data = "Block: " + QString::number(ui->fourierBlockNo->value()) + "\n" +
-                   "Impulse time: " + p->data.time.time().toString() +
+                   "Impulse time: " + p->data.time.time().toString() + "\n" +
                    "Module: " + QString::number(p->module) + "\n" +
                    "Ray: " + QString::number(p->ray) + "\n" +
                    "Dispersion: " + QString::number(p->dispersion) + "\n" +

@@ -439,6 +439,7 @@ bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     headerAddition["point"] = QString::number(startPoint);
     headerAddition["dispersion"] = QString::number(dispersion);
     headerAddition["star_time"] = StarTime::StarTime(rawData, startPoint);
+    headerAddition["snr"] = data[startPoint];
 
     double v1 = rawData.fbands[0];
     double v2 = rawData.fbands[1];

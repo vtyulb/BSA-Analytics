@@ -22,7 +22,7 @@ const double FOURIER_PULSAR_LEVEL_SNR = 1.5;
 const double TRANSIENT_THRESH = 6.0;
 const double TRANSIENT_AMPLIFICATION_TRESH = 4.0;
 const double TRANSIENT_FILTER_AMPLIFICATION_TRESH = 1.7;
-const    int TRANSIENT_COUNT_TRESH = 250;
+const    int TRANSIENT_COUNT_TRESH = 200;
 
 const int interval = 180;
 const int CATEGORIES = 4;

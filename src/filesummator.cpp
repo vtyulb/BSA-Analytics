@@ -715,6 +715,7 @@ bool FileSummator::transientCheckAmplification(const Data &data, int point, int 
 
 void FileSummator::transientProcess(Data &data) {
     QVector<int> transientsCount(500, 0);
+    int total = 0;
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++) {
             printf(".");
@@ -746,14 +747,17 @@ void FileSummator::transientProcess(Data &data) {
                                 continue;
 
                             bool dumped = dumpTransient(res, data, i, block, module, ray, disp);
-                            if (dumped)
+                            if (dumped) {
                                 transientsCount[block]++;
+                                total++;
+                            }
 
 
                             if (transientsCount[block] > TRANSIENT_COUNT_TRESH) {
                                 printf("X");
                                 int last = numberOfPieces[block];
                                 numberOfPieces[block] -= transientsCount[block];
+                                total -= transientsCount[block];
                                 transientsCount[block] = -1;
                                 for (int j = numberOfPieces[block] + 1; j <= last; j++) {
                                     QString trash = cutterPath + "/" + QString::asprintf("%03d", block) + "/" + QString::asprintf("%04d", j) + ".pnt";

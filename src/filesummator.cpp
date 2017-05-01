@@ -715,7 +715,6 @@ bool FileSummator::transientCheckAmplification(const Data &data, int point, int 
 
 void FileSummator::transientProcess(Data &data) {
     QVector<int> transientsCount(500, 0);
-    int total = 0;
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++) {
             printf(".");
@@ -743,27 +742,25 @@ void FileSummator::transientProcess(Data &data) {
                             int startPoint = realPart / data.oneStep;
                             int offset = PC - startPoint % PC;
                             int block = (startPoint + offset) / PC;
+                            if (transientsCount[block] == -1)
+                                continue;
 
                             bool dumped = dumpTransient(res, data, i, block, module, ray, disp);
-                            if (dumped) {
+                            if (dumped)
                                 transientsCount[block]++;
-                                total++;
-                            }
 
-                            if (total > TRANSIENT_COUNT_TRESH) {
-                                printf("bad file\n");
-                                for (int i = 0; i < 500; i++)
-                                    if (transientsCount[i] > 2) {
-                                        int last = numberOfPieces[i];
-                                        numberOfPieces[i] -= transientsCount[i];
-                                        for (int j = numberOfPieces[i] + 1; j <= last; j++) {
-                                            QString trash = cutterPath + "/" + QString::asprintf("%03d", i) + "/" + QString::asprintf("%04d", j) + ".pnt";
-                                            /*qDebug() << "removing trash from file" << data.name << trash << "status:" << */
-                                            QFile(trash).remove();
-                                        }
-                                    }
 
-                                return;
+                            if (transientsCount[block] > TRANSIENT_COUNT_TRESH) {
+                                printf("X");
+                                int last = numberOfPieces[block];
+                                numberOfPieces[block] -= transientsCount[block];
+                                transientsCount[block] = -1;
+                                for (int j = numberOfPieces[block] + 1; j <= last; j++) {
+                                    QString trash = cutterPath + "/" + QString::asprintf("%03d", block) + "/" + QString::asprintf("%04d", j) + ".pnt";
+                                    QFile(trash).remove();
+                                }
+
+                                break;
                             }
 
                             i += 200;

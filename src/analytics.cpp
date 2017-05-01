@@ -913,7 +913,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                         pl.data.sigma = -headers[j]["point"].toInt();
                     }
 
-                    pl.nativeTime = QTime(0, 0).addSecs(int(fourierSpectreSize * 2 * (blockNumber + 0.5) * Settings::settings()->getFourierStepConstant()));
+                    pl.nativeTime = QTime(0, 0).addSecs(int(fourierSpectreSize * 2 * (blockNumber - 0.5) * Settings::settings()->getFourierStepConstant()));
                     pulsars->push_back(pl);
 
                     if (pl.snr < -660)
@@ -982,7 +982,7 @@ void Analytics::actualFourierDataChanged() {
     ui->fourierLoad->setText("Load data");
     ui->fourierLoadCache->setText("Load cache");
 
-    int secs = (ui->fourierBlockNo->value() + 0.5) * fourierSpectreSize * 2 * Settings::settings()->getFourierStepConstant();
+    int secs = (ui->fourierBlockNo->value() - 0.5) * fourierSpectreSize * 2 * Settings::settings()->getFourierStepConstant();
     ui->fourierTime->setText(QTime(0, 0).addSecs(secs).toString("HH:mm:ss"));
 }
 

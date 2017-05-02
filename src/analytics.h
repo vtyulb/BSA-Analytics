@@ -46,6 +46,7 @@ private:
     int maxRay;
     bool fourier;
     bool transient;
+    bool transientWhitezoneEnabled = false;
     int fourierSpectreSize;
     bool longData;
     int totalFilesLoaded;
@@ -85,6 +86,8 @@ private:
     void destroyGPS(Data &spectre);
     void destroyPeak(Data &spectre, int point);
 
+    void buildTransientWhitezone(Pulsars &res);
+
     void preciseDataMode();
     void compressLayout();
 
@@ -110,6 +113,8 @@ private slots:
 
     void fourierFullGrayZone();
     void fourierShortGrayZone();
+
+    void enableTransientWhitezone(bool);
 
     void dispersionPlot();
     void dispersionRemember();

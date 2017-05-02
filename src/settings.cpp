@@ -31,6 +31,7 @@ Settings::Settings() {
     _mainWindow = NULL;
     _normalize = false;
     _currentProgress = -1;
+    _spectreDrawer = NULL;
 }
 
 Settings *Settings::settings() {

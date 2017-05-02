@@ -79,7 +79,7 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
             for (int j = 0; j < columnCount(); j++)
                 item(i, j)->setBackgroundColor(QColor("lightgray"));
 
-        if (!pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics())
+        if (!pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics() && !Settings::settings()->transientAnalytics())
             for (int j = 1; j < columnCount(); j++)
                 item(i, j)->setBackgroundColor(QColor(200, 100, 100));
 
@@ -158,8 +158,16 @@ void PulsarList::selectionChanged() {
                 normalColors = true;
             }
 
-            if (currentPulsar->data.channels == 33)
-                drawSpectre(*currentPulsar);
+            if (Settings::settings()->transientAnalytics()) {
+                if (currentPulsar->filtered && currentPulsar->data.channels == 33) {
+                    Settings::settings()->getSpectreDrawer()->show();
+                    drawSpectre(*currentPulsar);
+                } else {
+                    SpectreDrawer *global = Settings::settings()->getSpectreDrawer();
+                    if (global)
+                        global->hide();
+                }
+            }
 
             emit switchData(currentPulsar->data);
             Settings::settings()->getMainWindow()->update();

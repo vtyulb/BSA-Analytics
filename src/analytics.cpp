@@ -111,7 +111,6 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     if (transient) {
         ui->fourierCalculateCaches->hide();
-        ui->fourierNormalizeData->hide();
         ui->fourierLoadCache->hide();
         ui->groupBox_6->hide();
         ui->oneWindow->hide();
@@ -127,6 +126,9 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         saveForPublication->setText("Save for publication");
         saveForPublication->show();
         QObject::connect(saveForPublication, SIGNAL(clicked()), this, SLOT(transientSaveImageForPublication()));
+
+        ui->fourierNormalizeData->setText("Build whitezone");
+        QObject::connect(ui->fourierNormalizeData, SIGNAL(toggled(bool)), this, SLOT(enableTransientWhitezone(bool)));
 
         Settings::settings()->setTransientAnalytics(true);
     }
@@ -960,6 +962,9 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
         }
     }
 
+    if (transient && transientWhitezoneEnabled)
+        buildTransientWhitezone(pulsars);
+
     pulsarsEnabled.resize(pulsars->size());
 
     ui->fourierLoad->setText("Data loaded");
@@ -1598,6 +1603,46 @@ void Analytics::transientSaveImage(bool forPublication) {
 
     res.save(savePath);
     QDesktopServices::openUrl(QUrl::fromLocalFile(savePath));
+}
+
+void Analytics::buildTransientWhitezone(Pulsars &res) {
+    int maxdisp = 50;
+    for (int i = 0; i < res->size(); i++)
+        for (int j = 0; j < res->at(i).data.npoints; j++)
+            maxdisp = std::max(maxdisp, res->at(i).dispersion);
+
+    maxdisp += 1;
+
+    Data whitezone[6][8];
+    for (int i = 0; i < 6; i++)
+        for (int j = 0; j < 8; j++) {
+            whitezone[i][j].modules = 1;
+            whitezone[i][j].rays = 1;
+            whitezone[i][j].channels = 1;
+            whitezone[i][j].npoints = maxdisp;
+            whitezone[i][j].init();
+            whitezone[i][j].releaseProtected = true;
+            for (int k = 0; k < maxdisp; k++)
+                whitezone[i][j].data[0][0][0][k] = 0;
+        }
+
+    for (int i = 0; i < res->size(); i++)
+        whitezone[res->at(i).module - 1][res->at(i).ray - 1].data[0][0][0][res->at(i).dispersion] += 1;
+
+    for (int i = 5; i >= 0; i--)
+        for (int j = 7; j >= 0; j--) {
+            Pulsar p;
+            p.module = i + 1;
+            p.ray = j + 1;
+            p.dispersion = 0;
+            p.filtered = false;
+            p.data = whitezone[i][j];
+            res->push_front(p);
+        }
+}
+
+void Analytics::enableTransientWhitezone(bool b) {
+    transientWhitezoneEnabled = b;
 }
 
 Analytics::~Analytics() {

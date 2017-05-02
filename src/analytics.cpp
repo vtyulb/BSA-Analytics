@@ -128,6 +128,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         QObject::connect(saveForPublication, SIGNAL(clicked()), this, SLOT(transientSaveImageForPublication()));
 
         ui->fourierNormalizeData->setText("Build whitezone");
+        ui->fourierNormalizeData->setChecked(true);
         QObject::connect(ui->fourierNormalizeData, SIGNAL(toggled(bool)), this, SLOT(enableTransientWhitezone(bool)));
 
         Settings::settings()->setTransientAnalytics(true);
@@ -1637,7 +1638,17 @@ void Analytics::buildTransientWhitezone(Pulsars &res) {
             p.dispersion = 0;
             p.filtered = false;
             p.data = whitezone[i][j];
-            res->push_front(p);
+            bool good = false;
+            for (int k = 0; k < maxdisp; k++)
+                if (whitezone[i][j].data[0][0][0][k] > 1.5)
+                    good = true;
+
+            if (good)
+                res->push_front(p);
+            else {
+                whitezone[i][j].releaseProtected = false;
+                whitezone[i][j].releaseData();
+            }
         }
 }
 

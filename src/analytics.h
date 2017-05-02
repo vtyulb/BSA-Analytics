@@ -46,7 +46,7 @@ private:
     int maxRay;
     bool fourier;
     bool transient;
-    bool transientWhitezoneEnabled = false;
+    bool transientWhitezoneEnabled = true;
     int fourierSpectreSize;
     bool longData;
     int totalFilesLoaded;

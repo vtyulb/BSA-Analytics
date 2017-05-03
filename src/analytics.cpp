@@ -19,6 +19,7 @@
 #include <QTextBrowser>
 #include <QStandardPaths>
 #include <QDesktopServices>
+#include <QUuid>
 
 #include <algorithm>
 
@@ -1545,8 +1546,12 @@ void Analytics::transientSaveImageForPublication() {
     transientSaveImage(true);
 }
 
-void Analytics::transientSaveImage(bool forPublication) {
-    QString savePath = QFileDialog::getSaveFileName(this, "Spectre & profile filename");
+void Analytics::transientSaveImage(bool forPublication) {    
+    Pulsar *p = list->currentPulsar;
+
+    QString lastPath = QSettings().value("TransientsDirectory").toString();
+    lastPath += "/" + getPulsarJName(p->module, p->ray, p->nativeTime) + "___" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "").left(6) + ".png";
+    QString savePath = QFileDialog::getSaveFileName(this, "Spectre & profile filename", lastPath);
     if (savePath == "")
         return;
 
@@ -1585,7 +1590,6 @@ void Analytics::transientSaveImage(bool forPublication) {
         for (int j = 0; j < 50; j++)
             res.setPixel(j, i, QColor(255, 255, 255).rgb());
 
-    Pulsar *p = list->currentPulsar;
     QString data = "Block: " + QString::number(ui->fourierBlockNo->value()) + "\n" +
                    "Impulse time: " + p->data.time.time().toString() + "\n" +
                    "Module: " + QString::number(p->module) + "\n" +
@@ -1603,6 +1607,7 @@ void Analytics::transientSaveImage(bool forPublication) {
     }
 
     res.save(savePath);
+    QSettings().setValue("TransientsDirectory", QFileInfo(savePath).absoluteDir().absolutePath());
     QDesktopServices::openUrl(QUrl::fromLocalFile(savePath));
 }
 

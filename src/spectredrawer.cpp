@@ -103,6 +103,9 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         ui->setupUi(this);
     }
 
+    if (Settings::settings()->transientAnalytics())
+        hideDispersion();
+
     ui->dispersion->setValue(std::max(Settings::settings()->dispersion(), 0.0));
 
     ui->channels->setMaximum(data.channels - 1);
@@ -287,4 +290,11 @@ void SpectreDrawer::mem() {
 void SpectreDrawer::memPlus() {
     addFromMem = true;
     reDraw();
+}
+
+void SpectreDrawer::hideDispersion() {
+    if (ui) {
+        ui->dispersion->hide();
+        ui->label_3->hide();
+    }
 }

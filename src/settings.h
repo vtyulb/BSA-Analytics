@@ -32,7 +32,7 @@ enum SourceMode {
     const QString LONG_STAIRS = "data/LongStairs.pnthr";
 #endif
 
-const bool STABLE_VERSION = false;
+const bool STABLE_VERSION = true;
 const QString SHORT_NOISES = "/noises.pnt";
 const QString LONG_NOISES = "/noises.pnthr";
 

@@ -426,7 +426,7 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     res.releaseData();
 }
 
-bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion) {
+bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion, double snr) {
     double realSeconds;
     StarTime::StarTime(rawData, startPoint, &realSeconds);
 
@@ -439,7 +439,7 @@ bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     headerAddition["point"] = QString::number(startPoint);
     headerAddition["dispersion"] = QString::number(dispersion);
     headerAddition["star_time"] = StarTime::StarTime(rawData, startPoint);
-    headerAddition["snr"] = QString::number(data[startPoint]);
+    headerAddition["snr"] = QString::number(snr);
 
     double v1 = rawData.fbands[0];
     double v2 = rawData.fbands[1];
@@ -746,7 +746,7 @@ void FileSummator::transientProcess(Data &data) {
                             if (transientsCount[block] == -1)
                                 continue;
 
-                            bool dumped = dumpTransient(res, data, i, block, module, ray, disp);
+                            bool dumped = dumpTransient(res, data, i, block, module, ray, disp, res[i] / noise);
                             if (dumped) {
                                 transientsCount[block]++;
                                 total++;

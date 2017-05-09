@@ -915,6 +915,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                         pl.ray = headers[j]["ray"].toInt();
                         pl.dispersion = headers[j]["dispersion"].toInt();
                         pl.data.sigma = -headers[j]["point"].toInt();
+                        pl.snr = headers[j]["snr"].toDouble();
                     }
 
                     pl.nativeTime = QTime(0, 0).addSecs(int(fourierSpectreSize * 2 * (blockNumber - 0.5) * Settings::settings()->getFourierStepConstant()));

@@ -1,5 +1,6 @@
 #include "spectredrawer.h"
 
+#include <QButtonGroup>
 #include <QVector>
 #include <QImage>
 #include <QDir>
@@ -9,6 +10,7 @@
 #include <QProcess>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QRadioButton>
 #include <QSettings>
 
 #include <reader.h>
@@ -101,6 +103,13 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
     if (!ui) {
         ui = new Ui::SpectreUI;
         ui->setupUi(this);
+        QButtonGroup *group = new QButtonGroup;
+        group->addButton(ui->local);
+        group->addButton(ui->global);
+
+        ui->local->setChecked(true);
+
+        QObject::connect(group, SIGNAL(buttonClicked(int)), this, SLOT(reDraw()));
     }
 
     if (Settings::settings()->transientAnalytics())
@@ -192,9 +201,20 @@ void SpectreDrawer::reDraw() {
         }
     }
 
+    double glMax = 0;
+    double glMin = 1e+50;
+    for (int channel = 0; channel < data.channels / chs - 1; channel++)
+        for (int i = 0; i < rawRes[channel].size(); i++) {
+            if (glMin > rawRes[channel][i])
+                glMin = rawRes[channel][i];
+
+            if (glMax < rawRes[channel][i])
+                glMax = rawRes[channel][i];
+        }
+
     for (int channel = 0; channel < data.channels / chs - 1; channel++) {
-        double max = rawRes[channel][0];
-        double min = rawRes[channel][0];
+        double max = ui->local->isChecked() ? rawRes[channel][0] : glMax;
+        double min = ui->local->isChecked() ? rawRes[channel][0] : glMin;
         for (int i = 0; i < rawRes[channel].size(); i++) {
             if (max < rawRes[channel][i])
                 max = rawRes[channel][i];

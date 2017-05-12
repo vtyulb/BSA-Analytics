@@ -1642,12 +1642,19 @@ void Analytics::buildTransientWhitezone(Pulsars &res) {
             p.module = i + 1;
             p.ray = j + 1;
             p.dispersion = 0;
+            p.snr = 0;
             p.filtered = false;
             p.data = whitezone[i][j];
             bool good = false;
             for (int k = 0; k < maxdisp; k++)
-                if (whitezone[i][j].data[0][0][0][k] > 1.5)
+                if (whitezone[i][j].data[0][0][0][k] > 1.5) {
+                    if (p.snr < whitezone[i][j].data[0][0][0][k]) {
+                        p.snr = whitezone[i][j].data[0][0][0][k];
+                        p.dispersion = k;
+                    }
+
                     good = true;
+                }
 
             if (good)
                 res->push_front(p);

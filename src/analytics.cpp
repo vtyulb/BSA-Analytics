@@ -1596,8 +1596,9 @@ void Analytics::transientSaveImage(bool forPublication) {
                    "Module: " + QString::number(p->module) + "\n" +
                    "Ray: " + QString::number(p->ray) + "\n" +
                    "Dispersion: " + QString::number(p->dispersion) + "\n" +
-                   "Original file name: " + p->data.previousLifeName.split(" ").at(3) + "\n" +
-                   "File name in block: " + p->data.previousLifeName.split(" ").at(1);
+                   "Original file name: " + p->data.previousLifeName.split(" ").last() + "\n" +
+                   "Point: " + QString::number(-p->data.sigma, 'f', 0) + "\n" +
+                   "File name in block: " + QString(p->data.previousLifeName.split(" ").at(1) + p->data.previousLifeName.split(" ").at(2)).replace("from", "");
 
     if (forPublication)
         res = res.copy(50, 0, res.width() - 50, res.height());

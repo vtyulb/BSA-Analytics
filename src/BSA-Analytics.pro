@@ -45,7 +45,8 @@ SOURCES += main.cpp\
     fourier.cpp \
     fouriersearch.cpp \
     updater.cpp \
-    datagenerator.cpp
+    datagenerator.cpp \
+    datachecker.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -81,7 +82,8 @@ HEADERS  += mainwindow.h \
     fourier.h \
     fouriersearch.h \
     updater.h \
-    datagenerator.h
+    datagenerator.h \
+    datachecker.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

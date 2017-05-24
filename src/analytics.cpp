@@ -133,7 +133,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         QObject::connect(ui->fourierNormalizeData, SIGNAL(toggled(bool)), this, SLOT(enableTransientWhitezone(bool)));
 
         Settings::settings()->setTransientAnalytics(true);
-    }
+    } else
+        ui->transientGroupBox->hide();
 
     this->restoreGeometry(QSettings().value("AnalyticsGeometry").toByteArray());
 
@@ -355,6 +356,9 @@ void Analytics::apply(bool fullFilters) {
     if (ui->duplicates->value() > 1)
         for (int i = 0; i < ui->duplicatesIterations->value(); i++)
             applyDuplicatesFilter();
+
+    if (transient)
+        applyTransientFilters();
 
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)
@@ -992,6 +996,18 @@ void Analytics::actualFourierDataChanged() {
 
     int secs = (ui->fourierBlockNo->value() - 0.5) * fourierSpectreSize * 2 * Settings::settings()->getFourierStepConstant();
     ui->fourierTime->setText(QTime(0, 0).addSecs(secs).toString("HH:mm:ss"));
+}
+
+void Analytics::applyTransientFilters() {
+    if (ui->transientForbidFilters->isChecked())
+        if (pulsars->size() < ui->transientObjectsThresh->value())
+            return;
+
+    if (ui->loneObjects->isChecked())
+        applyTransientLoneObjects();
+
+    if (ui->multipleRaysFilter->isChecked())
+        applyTransientMultipleRaysFilter();
 }
 
 void Analytics::applyFourierFilters() {
@@ -1668,6 +1684,43 @@ void Analytics::buildTransientWhitezone(Pulsars &res) {
 
 void Analytics::enableTransientWhitezone(bool b) {
     transientWhitezoneEnabled = b;
+}
+
+void Analytics::applyTransientLoneObjects() {
+    QVector<int> disp(200, 0);
+    for (int i = 0; i < pulsars->size(); i++)
+        disp[pulsars->at(i).dispersion]++;
+
+    for (int i = 0; i < pulsars->size(); i++)
+        pulsarsEnabled[i] = pulsarsEnabled[i] && disp[pulsars->at(i).dispersion] > 1;
+}
+
+void Analytics::applyTransientMultipleRaysFilter() {
+    QMap<QString, QVector<Pulsar*> > m;
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i])
+            m[pulsars->at(i).data.previousLifeName.split(" ").last()].push_back(&(*pulsars)[i]);
+
+    for (auto i = m.begin(); i != m.end(); i++) {
+        QVector<Pulsar*> objects = *i;
+        for (int j = 0; j < objects.size(); j++) {
+            int copyCount = 0;
+            QVector<bool> w(48, false);
+            for (int k = 0; k < objects.size(); k++) {
+                int id = (objects[k]->module - 1) * 8 + objects[k]->ray - 1;
+                if (abs(objects[j]->dispersion - objects[k]->dispersion) < 4 && !w[id]) {
+                    w[id] = true;
+                    copyCount++;
+                }
+            }
+
+            if (copyCount > 3) {
+                for (int k = 0; k < pulsars->size(); k++)
+                    if (&(*pulsars)[k] == objects[j])
+                        pulsarsEnabled[k] = false;
+            }
+        }
+    }
 }
 
 Analytics::~Analytics() {

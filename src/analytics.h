@@ -102,7 +102,9 @@ private slots:
     void loadFourierData(bool cacheOnly = false, bool loadCache = false);
     void loadFourierCache();
     void calculateCaches();
+
     void applyFourierFilters();
+    void applyTransientFilters();
 
     void actualFourierDataChanged();
     void fourierShowSpectresNoise();
@@ -113,6 +115,9 @@ private slots:
 
     void fourierFullGrayZone();
     void fourierShortGrayZone();
+
+    void applyTransientLoneObjects();
+    void applyTransientMultipleRaysFilter();
 
     void enableTransientWhitezone(bool);
 

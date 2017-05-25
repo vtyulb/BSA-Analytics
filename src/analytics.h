@@ -106,6 +106,8 @@ private slots:
     void applyFourierFilters();
     void applyTransientFilters();
 
+    void findTransientPeriod();
+
     void actualFourierDataChanged();
     void fourierShowSpectresNoise();
     void fourierShowNoises();

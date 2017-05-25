@@ -46,7 +46,8 @@ SOURCES += main.cpp\
     fouriersearch.cpp \
     updater.cpp \
     datagenerator.cpp \
-    datachecker.cpp
+    datachecker.cpp \
+    transientperiod.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -83,7 +84,8 @@ HEADERS  += mainwindow.h \
     fouriersearch.h \
     updater.h \
     datagenerator.h \
-    datachecker.h
+    datachecker.h \
+    transientperiod.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \
@@ -92,7 +94,8 @@ FORMS    += mainwindow.ui \
     precisepacket.ui \
     knownnoise.ui \
     spectre.ui \
-    precisetiming.ui
+    precisetiming.ui \
+    transientperiod.ui
 
 win32:RC_FILE = icon.rc
 

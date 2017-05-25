@@ -6,6 +6,7 @@
 #include <pulsarlist.h>
 #include <settings.h>
 #include <fourier.h>
+#include <transientperiod.h>
 
 #include <QGroupBox>
 #include <QFileDialog>
@@ -131,6 +132,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->fourierNormalizeData->setText("Build whitezone");
         ui->fourierNormalizeData->setChecked(true);
         QObject::connect(ui->fourierNormalizeData, SIGNAL(toggled(bool)), this, SLOT(enableTransientWhitezone(bool)));
+        QObject::connect(ui->findTransientPeriod, SIGNAL(clicked()), this, SLOT(findTransientPeriod()));
 
         Settings::settings()->setTransientAnalytics(true);
     } else
@@ -1721,6 +1723,13 @@ void Analytics::applyTransientMultipleRaysFilter() {
             }
         }
     }
+}
+
+void Analytics::findTransientPeriod() {
+    static TransientPeriod *finder = new TransientPeriod;
+    QObject::connect(finder, SIGNAL(dataGenerated(Data&)), Settings::settings()->getSpectreDrawer(), SLOT(hide()));
+    QObject::connect(finder, SIGNAL(dataGenerated(Data&)), window, SLOT(regenerate(Data&)));
+    finder->show();
 }
 
 Analytics::~Analytics() {

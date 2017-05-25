@@ -16,7 +16,7 @@ TransientPeriod::TransientPeriod(QWidget *parent) :
 }
 
 void TransientPeriod::generateData() {
-    QVector<int> diffs;
+    QVector<double> diffs;
     QStringList lst = ui->textEdit->toPlainText().split("\n");
     for (int i = 0; i < lst.size(); i++) {
         QVector<int> cur;
@@ -30,7 +30,7 @@ void TransientPeriod::generateData() {
 
         for (int j = 0; j < cur.size(); j++)
             for (int k = j + 1; k < cur.size(); k++)
-                diffs.push_back(abs(cur[j] - cur[k]) /*  0.0124928 */);
+                diffs.push_back(abs(cur[j] - cur[k]) * 0.0124928);
     }
 
     printf("Found %d diffs:", diffs.size());
@@ -40,24 +40,29 @@ void TransientPeriod::generateData() {
     printf("\n");
     fflush(stdout);
 
-    int total = 5000;
+    int total = 10000;
     Data res;
     res.modules = 1;
     res.rays = 1;
     res.channels = 1;
-    res.npoints = 5000;
+    res.npoints = total;
     res.init();
 
     res.data[0][0][0][0] = 0;
 
+    double glMx = 0;
     for (int i = 1; i < total; i++) {
-        double period = i;
+        double period = i / 1000.0;
         double mx = 0;
         for (int j = 0; j < diffs.size(); j++)
             mx = std::max(mx, fabs(diffs[j] - int(diffs[j] / period + 0.5) * period));
 
+        glMx = std::max(glMx, mx);
         res.data[0][0][0][i] = mx;
     }
+
+    for (int i = 0; i < total; i++)
+        res.data[0][0][0][i] = glMx - res.data[0][0][0][i];
 
     emit dataGenerated(res);
 }

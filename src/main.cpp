@@ -8,6 +8,7 @@
 #include <QTime>
 
 #include <datachecker.h>
+#include <datarenamer.h>
 #include <settings.h>
 #include <mainwindow.h>
 #include <pulsarsearcher.h>
@@ -128,6 +129,7 @@ void pulsarEngine(int argc, char **argv) {
                "\t\t[--normalize] [--period-tester] [--single-period] [--flux-density] [--run-analytics-after]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("BSA-Analytics --data-checker <path to data>\n");
+        printf("BSA-Analytics --data-renamer <path to data>\n");
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double> --time <09:01:00>\n");
         printf("BSA-Analytics --file-summator\n");
         printf("BSA-Analytics --flowing-window input-file output-file number-of-points\n");
@@ -245,6 +247,14 @@ void pulsarEngine(int argc, char **argv) {
 
             DataChecker checker;
             checker.run(path);
+            exit(0);
+        } else if (strcmp(argv[i], "--data-renamer") == 0) {
+            QString path = argv[i + 1];
+            for (int j = i + 2; j < argc; j++)
+                path += " " + QString(argv[j]);
+
+            DataRenamer renamer;
+            renamer.run(path);
             exit(0);
         }
     }

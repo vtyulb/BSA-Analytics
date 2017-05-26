@@ -35,7 +35,7 @@ void TransientPeriod::generateData() {
 
     printf("Found %d diffs:", diffs.size());
     for (int i = 0; i < diffs.size(); i++)
-        printf(" %d", diffs[i]);
+        printf(" %lf", diffs[i]);
 
     printf("\n");
     fflush(stdout);

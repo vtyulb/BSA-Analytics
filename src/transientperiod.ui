@@ -41,7 +41,7 @@
       </size>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enter points numbers &lt;br/&gt;through spaces, for example:&lt;br/&gt;83990 86834 91890&lt;br/&gt;278638 280692&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Please enter points numbers &lt;br/&gt;through spaces, for example:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;83990 86834 91890&lt;br/&gt;278638 280692&lt;br/&gt;&lt;/span&gt;One day - one line.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
    </item>

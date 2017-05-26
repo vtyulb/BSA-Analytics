@@ -40,7 +40,7 @@ void TransientPeriod::generateData() {
     printf("\n");
     fflush(stdout);
 
-    int total = 10000;
+    int total = 20000;
     Data res;
     res.modules = 1;
     res.rays = 1;

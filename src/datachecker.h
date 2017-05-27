@@ -15,8 +15,10 @@ public:
 
 private:
     QStringList files;
+    QStringList fullNames;
     QString globalFilter;
 
+    void checkSizes();
     void processWithFilter(QString filter);
     QDateTime stringToDate(QString);
     QString dateToString(QDateTime, QString localFilter);

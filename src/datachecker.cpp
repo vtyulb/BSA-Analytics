@@ -19,8 +19,17 @@ void DataChecker::run(QString path) {
             i--;
         }
 
-    processWithFilter("N1");
-    processWithFilter("N2");
+    processWithFilter("_N1_");
+    processWithFilter("_N2_");
+    checkSizes();
+}
+
+void DataChecker::checkSizes() {
+    for (int i = 0; i < fullNames.size(); i++) {
+        long long size = QFileInfo(fullNames[i]).size();
+        if (size < 1700 * 1000 * 1000 && globalFilter == "pnthr")
+            printf("File %s has invalid size %dM\n", fullNames[i].toLocal8Bit().constData(), (int)size / 1000000);
+    }
 }
 
 void DataChecker::processWithFilter(QString filter) {
@@ -45,6 +54,8 @@ void DataChecker::processWithFilter(QString filter) {
             printf("Missing interval: %s - %s\n", dateToString(mBegin, filter).toLocal8Bit().constData(),
                                                   dateToString(mEnd, filter).toLocal8Bit().constData());
         }
+
+    printf("------------\n");
 }
 
 void DataChecker::search(QString path) {
@@ -53,7 +64,11 @@ void DataChecker::search(QString path) {
     for (int i = 0; i < dirs.size(); i++)
         search(path + "/" + dirs.at(i));
 
-    files += dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+    QStringList fls = dir.entryList(QDir::Files | QDir::NoDotAndDotDot);
+    for (int i = 0; i < fls.size(); i++)
+        fullNames += path + "/" + fls[i];
+
+    files += fls;
 }
 
 QDateTime DataChecker::stringToDate(QString date) {
@@ -64,7 +79,7 @@ QDateTime DataChecker::stringToDate(QString date) {
 }
 
 QString DataChecker::dateToString(QDateTime date, QString localFilter) {
-    return QString::asprintf("%02d%02d%s_%02d_%s_00.%s",
+    return QString::asprintf("%02d%02d%s_%02d%s00.%s",
                              date.date().day(),
                              date.date().month(),
                              QString::number(date.date().year() % 100).toLocal8Bit().constData(),

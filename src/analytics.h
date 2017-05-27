@@ -120,6 +120,7 @@ private slots:
 
     void applyTransientLoneObjects();
     void applyTransientMultipleRaysFilter();
+    void applyTransientTrashDays();
 
     void enableTransientWhitezone(bool);
 

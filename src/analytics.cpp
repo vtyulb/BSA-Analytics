@@ -912,6 +912,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     pl.filtered = true;
                     pl.data = data;
                     pl.valid = true;
+                    pl.showInTable = true;
                     pl.sigma = fourierRawNoises[module][ray][j];
                     if (!transient) {
                         pl.findFourierData(ui->fourierPointsToSkip->value());
@@ -1010,6 +1011,9 @@ void Analytics::applyTransientFilters() {
 
     if (ui->multipleRaysFilter->isChecked())
         applyTransientMultipleRaysFilter();
+
+    if (ui->trashDays->isChecked())
+        applyTransientTrashDays();
 }
 
 void Analytics::applyFourierFilters() {
@@ -1663,6 +1667,7 @@ void Analytics::buildTransientWhitezone(Pulsars &res) {
             p.dispersion = 0;
             p.snr = 0;
             p.filtered = false;
+            p.showInTable = true;
             p.data = whitezone[i][j];
             bool good = false;
             for (int k = 0; k < maxdisp; k++)
@@ -1723,6 +1728,37 @@ void Analytics::applyTransientMultipleRaysFilter() {
             }
         }
     }
+}
+
+void Analytics::applyTransientTrashDays() {
+    QMap<QString, QVector<Pulsar*> > m;
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i] && pulsars->at(i).filtered)
+            m[pulsars->at(i).data.previousLifeName.split(" ").last()].push_back(&(*pulsars)[i]);
+
+    for (auto i = m.begin(); i != m.end(); i++) {
+        QVector<Pulsar*> objects = *i;
+        for (int j = 0; j < objects.size(); j++) {
+            QVector<int> w(48, 0);
+            for (int k = 0; k < objects.size(); k++) {
+                int id = (objects[k]->module - 1) * 8 + objects[k]->ray - 1;
+                w[id]++;
+            }
+
+            for (int k = 0; k < objects.size(); k++) {
+                int id = (objects[k]->module - 1) * 8 + objects[k]->ray - 1;
+                if (w[id] > 6)
+                    /*for (int j = 0; j < pulsars->size(); j++)
+                        if (&(*pulsars)[j] == objects[k])
+                            pulsarsEnabled[j] = false;*/
+                    objects[k]->showInTable = false;
+            }
+        }
+    }
+
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsars->at(i).showInTable == false)
+            pulsarsEnabled[i] = false;
 }
 
 void Analytics::findTransientPeriod() {

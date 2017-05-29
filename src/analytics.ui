@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>320</width>
-    <height>1760</height>
+    <height>1788</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -921,6 +921,9 @@
          </item>
         </layout>
        </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="transientsAdditionalWidget" native="true"/>
       </item>
       <item>
        <widget class="QWidget" name="widget_14" native="true">

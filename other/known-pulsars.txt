@@ -21,10 +21,11 @@
 #Some other noises
 *	*	0.05013	long
 
-#--------------------------------------------------------
-#--------------------------------------------------------
-#Module Ray Period  Time    Comment
 
-#Transients section
-6   7   *   19:20:00  some transient
-	
+#--------------------------------------------------------
+#--------------------------------------------------------
+#Module Ray Dispersion Time    Comment
+#Transient section
+
+#The most popular transient
+6	7	12	19:20:00	Not a transient, but it's everywhere 

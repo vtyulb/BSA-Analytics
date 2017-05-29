@@ -21,6 +21,7 @@ struct KnownPulsar {
         comment = res[4].toString();
         shortNoise = res[5].toBool();
         longNoise = res[6].toBool();
+        dispersion = res[7].toInt();
     }
 
     KnownPulsar(int _module, int _ray, double _period, QTime _time, QString _comment):
@@ -33,6 +34,7 @@ struct KnownPulsar {
 
     int module;
     int ray;
+    int dispersion;
     double period;
     QTime time;
     QString comment;
@@ -44,7 +46,8 @@ struct KnownPulsar {
         return (module == p.module || module == -1) &&
                 (ray == p.ray || ray == -1) &&
                 (goodPeriods(period, p.period) || period < 0) &&
-                (abs(p.nativeTime.secsTo(time)) <= 180  || time.isNull());
+                (abs(p.nativeTime.secsTo(time)) <= 180  || time.isNull()) &&
+                (abs(p.dispersion - dispersion) < 4 || dispersion == -1);
     }
 
     bool goodPeriods(double a, double b) const {
@@ -64,6 +67,7 @@ struct KnownPulsar {
         res.push_back(comment);
         res.push_back(shortNoise);
         res.push_back(longNoise);
+        res.push_back(dispersion);
         return res;
     }
 };

@@ -112,6 +112,16 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     }
 
     if (transient) {
+        QVBoxLayout *additional = new QVBoxLayout(ui->transientsAdditionalWidget);
+        additional->addWidget(ui->widget_8);
+        additional->addWidget(ui->knownPulsarsAndNoises);
+        additional->setContentsMargins(0, 0, 0, 0);
+        ui->transientsAdditionalWidget->show();
+
+//        delete ui->horizontalSpacer_3;
+        ui->knownNoiseButton->hide();
+        ui->knownNoise->hide();
+
         ui->fourierCalculateCaches->hide();
         ui->fourierLoadCache->hide();
         ui->groupBox_6->hide();
@@ -190,6 +200,7 @@ void Analytics::loadKnownPulsars() {
             }
             QTextStream stream(&line, QIODevice::ReadOnly);
             KnownPulsar pulsar;
+            pulsar.dispersion = -1;
             QString time, module, ray, period;
             stream >> module >> ray >> period >> time;
             if (module == "*")
@@ -204,7 +215,10 @@ void Analytics::loadKnownPulsars() {
 
             if (period == "*")
                 pulsar.period = -1;
-            else
+            else if (!period.contains(",") && !period.contains(".")) {
+                pulsar.period = -1;
+                pulsar.dispersion = period.toInt();
+            } else
                 pulsar.period = period.toDouble();
 
             if (time.size() < 4) {
@@ -406,6 +420,9 @@ void Analytics::apply(bool fullFilters) {
 
         filesUsed.remove("whitezone");
         ui->currentStatus->setText(QString("Used %1 of %2 files").arg(filesUsed.size()).arg(fourierData.size()));
+
+        if (transient)
+            ui->currentStatus->setText(QString("Showing %1 of %2 objects").arg(pl->size()).arg(pulsars->size()));
     } else
         ui->currentStatus->setText(QString("Loaded %1 files").arg(totalFilesLoaded));
 
@@ -1014,6 +1031,9 @@ void Analytics::applyTransientFilters() {
 
     if (ui->trashDays->isChecked())
         applyTransientTrashDays();
+
+    if (ui->fourierAllowedDatesCheckbox->isChecked())
+        applyTransientAllowedDays();
 }
 
 void Analytics::applyFourierFilters() {
@@ -1061,7 +1081,7 @@ void Analytics::applyFourierFilters() {
             bool gd = false;
             QDate date = pulsars->at(i).data.dateFromPreviousLifeName();
             for (int j = 0; j < fourierAllowedDates.size(); j += 2)
-                gd = gd || (fourierAllowedDates[j] < date && date < fourierAllowedDates[j + 1]);
+                gd = gd || (fourierAllowedDates[j] <= date && date <= fourierAllowedDates[j + 1]);
 
             fourierGood[i] = fourierGood[i] && gd;
         }
@@ -1668,6 +1688,7 @@ void Analytics::buildTransientWhitezone(Pulsars &res) {
             p.snr = 0;
             p.filtered = false;
             p.showInTable = true;
+            p.data.previousLifeName = "whitezone";
             p.data = whitezone[i][j];
             bool good = false;
             for (int k = 0; k < maxdisp; k++)
@@ -1766,6 +1787,18 @@ void Analytics::findTransientPeriod() {
     QObject::connect(finder, SIGNAL(dataGenerated(Data&)), Settings::settings()->getSpectreDrawer(), SLOT(hide()));
     QObject::connect(finder, SIGNAL(dataGenerated(Data&)), window, SLOT(regenerate(Data&)));
     finder->show();
+}
+
+void Analytics::applyTransientAllowedDays() {
+    parseFourierAllowedDates();
+    for (int i = 0; i < pulsars->size(); i++) {
+        bool gd = false;
+        QDate date = pulsars->at(i).data.dateFromPreviousLifeName();
+        for (int j = 0; j < fourierAllowedDates.size(); j += 2)
+            gd = gd || (fourierAllowedDates[j] <= date && date <= fourierAllowedDates[j + 1]);
+
+        pulsarsEnabled[i] = pulsarsEnabled[i] && gd;
+    }
 }
 
 Analytics::~Analytics() {

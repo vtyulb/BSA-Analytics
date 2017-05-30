@@ -193,12 +193,15 @@ void SpectreDrawer::reDraw() {
     if (addFromMem) {
         addFromMem = false;
         QList<QVariant> lastSpectre = QSettings().value("LastSpectre").toList();
-        if (lastSpectre.size() < rawRes.size() * rawRes[0].size()) {
+        if (lastSpectre.size() < rawRes.size() * (rawRes[0].size() - 5)) {
             QMessageBox::warning(this, "Error", "Memory is not filled!");
         } else {
-            for (int i = 0; i < rawRes.size(); i++)
-                for (int j = 0; j < rawRes[i].size(); j++)
-                    rawRes[i][j] += lastSpectre[i * rawRes[0].size() + j].toDouble();
+            for (int j = 0; j < rawRes[0].size(); j++)
+                for (int i = 0; i < rawRes.size(); i++) {
+                    if (j * rawRes.size() + i >= lastSpectre.size())
+                        break;
+                    rawRes[i][j] += lastSpectre[j * rawRes.size() + i].toDouble();
+                }
             mem();
         }
     }
@@ -310,8 +313,8 @@ void SpectreDrawer::saveAs() {
 
 void SpectreDrawer::mem() {
     QList<QVariant> lastSpectre;
-    for (int i = 0; i < rawRes.size(); i++)
-        for (int j = 0; j < rawRes[i].size(); j++)
+    for (int j = 0; j < rawRes[0].size(); j++)
+        for (int i = 0; i < rawRes.size(); i++)
             lastSpectre.push_back(rawRes[i][j]);
 
     QSettings().setValue("LastSpectre", lastSpectre);

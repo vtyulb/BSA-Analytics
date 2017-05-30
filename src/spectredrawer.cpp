@@ -110,21 +110,23 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         ui->local->setChecked(true);
 
         QObject::connect(group, SIGNAL(buttonClicked(int)), this, SLOT(reDraw()));
+        QObject::connect(ui->channels, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
+        QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
+        QObject::connect(ui->showDispersion, SIGNAL(clicked()), this, SLOT(reDraw()));
+        QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
+        QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
+        QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
     }
 
-    if (Settings::settings()->transientAnalytics())
-        hideDispersion();
+    if (!Settings::settings()->transientAnalytics())
+        if (ui)
+            ui->showDispersion->hide();
 
+    QObject::disconnect(ui->dispersion, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
     ui->dispersion->setValue(std::max(Settings::settings()->dispersion(), 0.0));
+    QObject::connect(ui->dispersion, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
 
     ui->channels->setMaximum(data.channels - 1);
-
-    QObject::connect(ui->channels, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
-    QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
-    QObject::connect(ui->dispersion, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
-    QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
-    QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
-    QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
 
     r.clear();
     int start = findFirstPoint(startPoint);
@@ -185,7 +187,7 @@ void SpectreDrawer::reDraw() {
         rawRes.push_back(res);
     }
 
-    if (ui->dispersion->value() != 0)
+    if (ui->dispersion->value() != 0 && !Settings::settings()->transientAnalytics())
         rotateMatrix();
 
     if (addFromMem) {
@@ -256,6 +258,14 @@ QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data)
     for (int i = 0; i < matrix.size(); i++)
         p.drawText(1, i * nrm + nrm - 1, QString::number(data.fbands[i * ui->channels->value()]));
 
+    if (ui->showDispersion->isChecked()) {
+        p.setPen(QPen(QBrush("red"), 3, Qt::SolidLine));
+        double v1 = data.fbands[0];
+        double v2 = data.fbands[1];
+        double dsp = 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * 32 * ui->dispersion->value() / 0.0124928;
+
+        p.drawLine(offset + (matrix[0].size() - 10) * nrm, nrm / 2, offset + (matrix[0].size() - 10 + dsp) * nrm, image.height() - nrm / 2 - 1);
+    }
 
     p.end();
 
@@ -310,11 +320,4 @@ void SpectreDrawer::mem() {
 void SpectreDrawer::memPlus() {
     addFromMem = true;
     reDraw();
-}
-
-void SpectreDrawer::hideDispersion() {
-    if (ui) {
-        ui->dispersion->hide();
-        ui->label_3->hide();
-    }
 }

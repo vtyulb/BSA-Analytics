@@ -133,7 +133,14 @@
          <item row="2" column="2">
           <widget class="QRadioButton" name="global">
            <property name="text">
-            <string>global</string>
+            <string>&amp;global</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="2">
+          <widget class="QCheckBox" name="showDispersion">
+           <property name="text">
+            <string>show</string>
            </property>
           </widget>
          </item>

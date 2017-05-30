@@ -235,7 +235,8 @@ bool PulsarList::sameFile(int f1, int f2) {
 }
 
 void PulsarList::drawSpectre(const Pulsar &pl) {
-   Settings::settings()->getSpectreDrawer()->drawSpectre(0, 0, pl.data, QTime(), 9999, 0);
+    Settings::settings()->setDispersion(pl.dispersion);
+    Settings::settings()->getSpectreDrawer()->drawSpectre(0, 0, pl.data, QTime(), 9999, 0);
 }
 
 QSize PulsarList::minimumSizeHint() const {

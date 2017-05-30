@@ -35,8 +35,6 @@ private:
     void rotateMatrix();
     int findFirstPoint(int startPoint = -1);
 
-    void hideDispersion();
-
 private slots:
     void reDraw();
     void memPlus();

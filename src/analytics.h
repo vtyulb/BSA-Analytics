@@ -137,6 +137,7 @@ private slots:
     void knownPulsarsGUI();
     void oneWindow();
 
+    void transientShowDetalization();
     void transientSaveImage(bool forPublication = false);
     void transientSaveImageForPublication();
 };

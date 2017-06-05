@@ -6,6 +6,7 @@
 #include <pulsarlist.h>
 #include <settings.h>
 #include <fourier.h>
+#include <transientdetalizator.h>
 #include <transientperiod.h>
 
 #include <QGroupBox>
@@ -143,6 +144,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->fourierNormalizeData->setChecked(true);
         QObject::connect(ui->fourierNormalizeData, SIGNAL(toggled(bool)), this, SLOT(enableTransientWhitezone(bool)));
         QObject::connect(ui->findTransientPeriod, SIGNAL(clicked()), this, SLOT(findTransientPeriod()));
+        QObject::connect(ui->transientDetalization, SIGNAL(clicked()), this, SLOT(transientShowDetalization()));
 
         Settings::settings()->setTransientAnalytics(true);
     } else
@@ -1799,6 +1801,13 @@ void Analytics::applyTransientAllowedDays() {
 
         pulsarsEnabled[i] = pulsarsEnabled[i] && gd;
     }
+}
+
+void Analytics::transientShowDetalization() {
+    if (list->currentPulsar->filtered)
+        TransientDetalizator::run(1, 1, QTime(), "", list->currentPulsar->data);
+    else
+        QMessageBox::information(this, "There is a problem", "There is no detalization for whitezone available");
 }
 
 Analytics::~Analytics() {

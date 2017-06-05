@@ -120,7 +120,7 @@ void PreciseSearchGui::runSearcher() {
     }
 
     if (ui->transientDetalization->isChecked()) {
-        TransientDetalizator::run(ui->module->value(), ui->ray->value(), ui->time->time(), ui->fileName->text());
+        TransientDetalizator::run(ui->module->value(), ui->ray->value(), ui->time->time(), ui->fileName->text(), Data());
         return;
     }
 

@@ -10,16 +10,23 @@
 #include <QMessageBox>
 #include <QString>
 
-void TransientDetalizator::run(int module, int ray, QTime time, QString file) {
+void TransientDetalizator::run(int module, int ray, QTime time, QString file, Data data) {
     module--;
     ray--;
     Reader reader;
     QObject::connect(&reader, SIGNAL(progress(int)), Settings::settings(), SLOT(setProgress(int)));
-    Data source = reader.readBinaryFile(file);
+
+    Data source = data;
+    if (!source.isValid())
+        source = reader.readBinaryFile(file);
+
     if (!source.isValid()) {
         QMessageBox::warning(NULL, "Problem with source", "Can't read file!");
         return;
     }
+
+    if (source.npoints <= 500)
+        source.channels -= 1;
 
     Data res = source;
     res.modules = 1;
@@ -30,10 +37,17 @@ void TransientDetalizator::run(int module, int ray, QTime time, QString file) {
 
     int point = 500;
 
-    while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(source, point)))) > 1)
-        point++;
+    if (source.npoints > 500) {
+        while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(source, point)))) > 1)
+            point++;
 
-    point -= res.npoints / 2;
+        point -= res.npoints / 2;
+    } else {
+        point = 0;
+        res.npoints = source.npoints;
+        res.releaseData();
+        res.init();
+    }
 
     res.time = res.time.addMSecs(12.4928 * point);
 
@@ -45,7 +59,7 @@ void TransientDetalizator::run(int module, int ray, QTime time, QString file) {
     source.releaseData();
 
     double level = 1.0;
-    for (int i = 0; i < source.channels; i++) {
+    for (int i = source.channels - 1; i >= 0; i--) {
         QVector<float> cur;
         for (int j = 0; j < res.npoints; j++)
             cur.push_back(res.data[0][0][i][j]);

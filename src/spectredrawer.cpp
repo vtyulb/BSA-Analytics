@@ -267,7 +267,7 @@ QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data)
         double v2 = data.fbands[1];
         double dsp = 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * 32 * ui->dispersion->value() / 0.0124928;
 
-        p.drawLine(offset + (matrix[0].size() - 10) * nrm, nrm / 2, offset + (matrix[0].size() - 10 + dsp) * nrm, image.height() - nrm / 2 - 1);
+        p.drawLine(offset + (matrix[0].size() - 10 + 0.5) * nrm, nrm / 2, offset + (matrix[0].size() - 10 + dsp + 0.5) * nrm, image.height() - nrm / 2 - 1);
     }
 
     p.end();

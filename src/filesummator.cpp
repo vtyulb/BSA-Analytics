@@ -727,7 +727,7 @@ void FileSummator::transientProcess(Data &data) {
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
             }
 
-            for (int disp = 3; disp <= 100; disp++) {
+            for (int disp = 2; disp <= 100; disp++) {
                 QVector<double> res = applyDispersion(data, disp, module, ray);
                 double noise = 0;
                 for (int i = 0; i < res.size(); i++)

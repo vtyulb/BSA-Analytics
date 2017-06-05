@@ -22,6 +22,7 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     autoDrawing(true),
     drawAxesFlag(true),
     drawNet(false),
+    drawFast(false),
     channel(0),
     module(0),
     art(NULL),

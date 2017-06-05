@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>294</width>
-    <height>562</height>
+    <width>330</width>
+    <height>590</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@
     <widget class="QLineEdit" name="fileName"/>
    </item>
    <item row="1" column="0">
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="periodLabel">
      <property name="text">
       <string>Period</string>
      </property>
@@ -57,7 +57,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="moduleLabel">
      <property name="text">
       <string>Module</string>
      </property>
@@ -74,7 +74,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QLabel" name="label_3">
+    <widget class="QLabel" name="rayLabel">
      <property name="text">
       <string>Ray</string>
      </property>
@@ -91,14 +91,14 @@
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QLabel" name="label_5">
+    <widget class="QLabel" name="dispersionLabel">
      <property name="text">
       <string>Dispersion</string>
      </property>
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QLabel" name="label_6">
+    <widget class="QLabel" name="timeLabel">
      <property name="text">
       <string>Time</string>
      </property>
@@ -224,6 +224,13 @@
           <widget class="QRadioButton" name="spectre">
            <property name="text">
             <string>Spectre</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="transientDetalization">
+           <property name="text">
+            <string>Transient detali&amp;zation</string>
            </property>
           </widget>
          </item>

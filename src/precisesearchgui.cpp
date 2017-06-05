@@ -4,6 +4,7 @@
 #include <flowdetecter.h>
 #include <spectredrawer.h>
 #include <settings.h>
+#include <transientdetalizator.h>
 
 #include <QApplication>
 #include <QFileDialog>
@@ -32,6 +33,7 @@ PreciseSearchGui::PreciseSearchGui(QWidget *parent) :
     QObject::connect(ui->fluxDensity, SIGNAL(clicked(bool)), this, SLOT(determineSearchMode()));
     QObject::connect(ui->spectre, SIGNAL(clicked(bool)), this, SLOT(determineSearchMode()));
     QObject::connect(ui->singlePeriod, SIGNAL(clicked(bool)), this, SLOT(determineSearchMode()));
+    QObject::connect(ui->transientDetalization, SIGNAL(clicked(bool)), this, SLOT(determineSearchMode()));
 
     ui->threadCount->setMaximum(QThread::idealThreadCount());
 
@@ -40,6 +42,7 @@ PreciseSearchGui::PreciseSearchGui(QWidget *parent) :
     group->addButton(ui->spectre);
     group->addButton(ui->singlePeriod);
     group->addButton(ui->fluxDensity);
+    group->addButton(ui->transientDetalization);
 
     resize(minimumSize());
 }
@@ -116,6 +119,11 @@ void PreciseSearchGui::runSearcher() {
         return;
     }
 
+    if (ui->transientDetalization->isChecked()) {
+        TransientDetalizator::run(ui->module->value(), ui->ray->value(), ui->time->time(), ui->fileName->text());
+        return;
+    }
+
     l << "--threads" << QString::number(ui->threadCount->value());
 
     qDebug() << "running with" << l;
@@ -135,6 +143,10 @@ void PreciseSearchGui::determineSearchMode() {
     ui->normalizeLabel->setEnabled(true);
     ui->clearNoise->setEnabled(true);
     ui->clearNoiseLabel->setEnabled(true);
+    ui->dispersion->setEnabled(true);
+    ui->dispersionLabel->setEnabled(true);
+    ui->period->setEnabled(true);
+    ui->periodLabel->setEnabled(true);
 
     if (ui->singlePeriod->isChecked()) {
         ui->skipMultiplePeriods->setEnabled(false);
@@ -173,6 +185,23 @@ void PreciseSearchGui::determineSearchMode() {
         ui->threadCountLabel->setEnabled(false);
         ui->normalize->setEnabled(false);
         ui->normalizeLabel->setEnabled(false);
+    }
+
+    if (ui->transientDetalization->isChecked()) {
+        ui->skipMultiplePeriods->setEnabled(false);
+        ui->skipMultiplePeriodsLabel->setEnabled(false);
+        ui->clearNoise->setEnabled(false);
+        ui->clearNoiseLabel->setEnabled(false);
+        ui->runAnalytics->setEnabled(false);
+        ui->runAnalyticsAfterLabel->setEnabled(false);
+        ui->threadCount->setEnabled(false);
+        ui->threadCountLabel->setEnabled(false);
+        ui->normalize->setEnabled(false);
+        ui->normalizeLabel->setEnabled(false);
+        ui->dispersion->setEnabled(false);
+        ui->dispersionLabel->setEnabled(false);
+        ui->period->setEnabled(false);
+        ui->periodLabel->setEnabled(false);
     }
 
     ui->points->setEnabled(false);

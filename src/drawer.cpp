@@ -49,7 +49,7 @@ Drawer::Drawer(const Data &data, QWidget *parent) :
 
 
     QVBoxLayout *l = new QVBoxLayout(controlFrame);
-    for (int i = 0; i < data.rays; i++) {
+    for (int i = 0; i < std::min(data.rays, 16); i++) {
         checkBoxes.push_back(new QCheckBox(QString("Ray %1%2").arg(QString::number((i + 1)/10), QString::number((i + 1)%10)), this));
         checkBoxes[i]->setChecked(true);
         QObject::connect(checkBoxes[i], SIGNAL(clicked()), this, SLOT(checkBoxStateChanged()));
@@ -225,7 +225,10 @@ void Drawer::saveFile(QString file) {
 void Drawer::draw() {
     QVector<QString> v;
     for (int i = 0; i < rays; i++)
-        v.push_back(colors[i]->text());
+        if (i < colors.size())
+            v.push_back(colors[i]->text());
+        else
+            v.push_back("000000");
 
     drawer->setColors(v);
     drawer->allowDrawing = true;

@@ -48,7 +48,8 @@ SOURCES += main.cpp\
     datagenerator.cpp \
     datachecker.cpp \
     transientperiod.cpp \
-    datarenamer.cpp
+    datarenamer.cpp \
+    transientdetalizator.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -87,7 +88,8 @@ HEADERS  += mainwindow.h \
     datagenerator.h \
     datachecker.h \
     transientperiod.h \
-    datarenamer.h
+    datarenamer.h \
+    transientdetalizator.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

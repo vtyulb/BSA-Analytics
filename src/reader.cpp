@@ -158,7 +158,7 @@ Data Reader::readBinaryFile(QString file) {
     for (int i = 0; i < fbands.size(); i++)
         data.fbands[i] = fbands[i].toDouble();
 
-    QTime startTime = QTime::currentTime();
+    QDateTime startTime = QDateTime::currentDateTime();
 
     QByteArray input;
     input.resize(4 * 1024 * 1024);
@@ -187,7 +187,7 @@ Data Reader::readBinaryFile(QString file) {
                                 return Data();
                             }
                         }
-                        if (startTime.secsTo(QTime::currentTime()) > 600) {
+                        if (startTime.secsTo(QDateTime::currentDateTime()) > 600) {
                             if (qApp->topLevelWidgets().size()) {
                                 QMessageBox::information(NULL, "Very slow reading",
                                                          "You just can't live like that.\n"

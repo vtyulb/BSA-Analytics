@@ -137,7 +137,7 @@ void Settings::detectStair(const Data &data, int pointStart, int pointEnd) {
     stairs.clear();
     stairs.resize(data.modules);
     for (int i = 0; i < data.modules; i++) {
-        stairs[i].resize(data.rays);
+        stairs[i].resize(data.channels);
         for (int j = 0; j < data.rays; j++)
             for (int k = 0; k < data.channels; k++) {
                 QVector<double> tmp;
@@ -146,7 +146,7 @@ void Settings::detectStair(const Data &data, int pointStart, int pointEnd) {
 
                 std::sort(tmp.begin(), tmp.end());
 
-                stairs[i][j].push_back(tmp[tmp.size() - 5] - tmp[5]);
+                stairs[i][k].push_back(tmp[tmp.size() - 5] - tmp[5]);
             }
     }
 

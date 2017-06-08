@@ -225,10 +225,7 @@ void Drawer::saveFile(QString file) {
 void Drawer::draw() {
     QVector<QString> v;
     for (int i = 0; i < rays; i++)
-        if (i < colors.size())
-            v.push_back(colors[i]->text());
-        else
-            v.push_back("000000");
+        v.push_back(colors[i % 16]->text());
 
     drawer->setColors(v);
     drawer->allowDrawing = true;

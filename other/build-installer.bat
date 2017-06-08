@@ -1,6 +1,10 @@
-cd C:\BSA-Analytics\build
+rd /s /q C:\BSA-Analytics
+cd C:\
+git clone https://github.com/vtyulb/BSA-Analytics.git
+cd C:\BSA-Analytics
+mkdir build
+cd build
 
-git pull
 C:\Qt\qt-5.5.0-x64-mingw510r0-seh-rev0\qt-5.5.0-x64-mingw510r0-seh-rev0\bin\qmake.exe ..\src
 C:\Qt\qt-5.5.0-x64-mingw510r0-seh-rev0\mingw64\bin\mingw32-make.exe -f Makefile.release
 

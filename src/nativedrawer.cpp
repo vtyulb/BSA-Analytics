@@ -36,6 +36,7 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     setMinimumSize(100, 100);
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored));
     setData(data);
+    channel = data.channels - 1;
     resetVisibleRectangle(false);
 }
 

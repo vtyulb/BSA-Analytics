@@ -518,6 +518,9 @@ void Analytics::applyKnownPulsarsFilter() {
         if (pulsarsEnabled[i])
             for (int j = 0; j < knownPulsars.size(); j++)
                 if (!knownPulsars[j].shortNoise && !knownPulsars[j].longNoise && knownPulsars[j] == pulsars->at(i)) {
+                    if (!pulsars->at(i).filtered && transient)
+                        continue;
+
                     (*pulsars)[i].isKnownPulsar = true;
                     (*pulsars)[i].knownPulsarComment = knownPulsars[j].comment;
                     break;
@@ -1703,6 +1706,9 @@ void Analytics::buildTransientWhitezone(Pulsars &res) {
 
                     good = true;
                 }
+
+            if (pulsars->size())
+                p.nativeTime = pulsars->last().nativeTime;
 
             if (good)
                 res->push_front(p);

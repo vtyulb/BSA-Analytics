@@ -229,7 +229,15 @@ void PulsarList::keyPressEvent(QKeyEvent *event) {
         return;
 
     int current = selectionModel()->selection().indexes().at(0).row();
-    if ((!pulsars->at(pulsarsIndex[current]).filtered || pulsars->at(pulsarsIndex[current]).fourierDuplicate || Settings::settings()->transientAnalytics()) &&
+    if (event->key() == Qt::Key_Insert) {
+        markObject();
+        current++;
+        if (current >= rowCount())
+            return;
+
+        selectRow(current);
+        event->accept();
+    } else if ((!pulsars->at(pulsarsIndex[current]).filtered || pulsars->at(pulsarsIndex[current]).fourierDuplicate || Settings::settings()->transientAnalytics()) &&
            (rowCount() > 10))
     {
         if (event->key() == Qt::Key_PageDown) {

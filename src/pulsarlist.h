@@ -19,6 +19,7 @@ public:
 
     Pulsar *currentPulsar;
     void init(Pulsars pl, bool removeBadData);
+    QString exportObjectsForPeriodDetalization();
 
 private:
     Pulsars pulsars;
@@ -40,6 +41,7 @@ private slots:
     void selectionChanged();
     void showTime();
     void showComment();
+    void markObject();
 
 signals:
     void switchData(Data &data);

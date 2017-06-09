@@ -16,6 +16,12 @@
 #include <QScrollBar>
 #include <QApplication>
 
+const QColor knownPulsarColor(0, 255, 0);
+const QColor fourierDuplicateColor(255, 255, 150);
+const QColor notShowInTableColor(200, 100, 100);
+const QColor filteredColor("lightgray");
+const QColor markedColor(50, 50, 240);
+
 PulsarList::PulsarList(QWidget *parent) :
     QTableWidget(NULL)
 {
@@ -31,6 +37,10 @@ PulsarList::PulsarList(QWidget *parent) :
     QAction *showComment = new QAction("Show comment", this);
     QObject::connect(showComment, SIGNAL(triggered()), this, SLOT(showComment()));
     addAction(showComment);
+
+    QAction *markObject = new QAction("Mark/Unmark object", this);
+    QObject::connect(markObject, SIGNAL(triggered()), this, SLOT(markObject()));
+    addAction(markObject);
 
     setContextMenuPolicy(Qt::ActionsContextMenu);
     setColumnCount(6);
@@ -77,18 +87,18 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
 
         if (pulsars->at(i).filtered)
             for (int j = 0; j < columnCount(); j++)
-                item(i, j)->setBackgroundColor(QColor("lightgray"));
+                item(i, j)->setBackgroundColor(filteredColor);
 
         if (!pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics() && !Settings::settings()->transientAnalytics())
             for (int j = 1; j < columnCount(); j++)
-                item(i, j)->setBackgroundColor(QColor(200, 100, 100));
+                item(i, j)->setBackgroundColor(notShowInTableColor);
 
         if (pulsars->at(i).fourierDuplicate)
-            item(i, 0)->setBackgroundColor(QColor(255, 255, 150));
+            item(i, 0)->setBackgroundColor(fourierDuplicateColor);
 
         if (pulsars->at(i).isKnownPulsar)
             for (int j = 1; j < 6; j++)
-                item(i, j)->setBackgroundColor(QColor(0, 255, 0));
+                item(i, j)->setBackgroundColor(knownPulsarColor);
 
         pulsarsIndex.push_back(i);
     }
@@ -156,6 +166,15 @@ void PulsarList::selectionChanged() {
                 normalColors = true;
             }
 
+            static bool markedColors = false;
+            if (currentPulsar->marked && !markedColors) {
+                setStyleSheet("QTableView::item:selected{background-color: rgb(0,0,200); color: rgb(0,0,0)};");
+                markedColors = true;
+            } else if (!currentPulsar->marked && markedColors) {
+                setStyleSheet("");
+                markedColors = false;
+            }
+
             if (Settings::settings()->transientAnalytics()) {
                 if (currentPulsar->filtered && currentPulsar->data.channels == 33) {
                     Settings::settings()->getSpectreDrawer()->show();
@@ -184,6 +203,19 @@ void PulsarList::showComment() {
         QMessageBox::information(this, "Known noise info", "This is well-known noise\n" + currentPulsar->knownPulsarComment);
     else
         QMessageBox::information(this, "Object info", "This is unknown object!");
+}
+
+void PulsarList::markObject() {
+    if (!currentPulsar->filtered)
+        return;
+
+    currentPulsar->marked = !currentPulsar->marked;
+    int row = selectionModel()->selection().indexes().first().row();
+    for (int i = 0; i < 6; i++)
+        item(row, i)->setBackgroundColor(currentPulsar->marked ? markedColor :
+                                         currentPulsar->isKnownPulsar && i > 0 ? knownPulsarColor : filteredColor);
+
+    selectionChanged();
 }
 
 QSize PulsarList::sizeHint() const {
@@ -241,4 +273,23 @@ void PulsarList::drawSpectre(const Pulsar &pl) {
 
 QSize PulsarList::minimumSizeHint() const {
     return sizeHint();
+}
+
+QString PulsarList::exportObjectsForPeriodDetalization() {
+    QMap<QString, QVector<int> > objects;
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsars->at(i).marked)
+            objects[pulsars->at(i).data.previousLifeName.split(" ").last()].push_back(pulsars->at(i).firstPoint);
+
+    QString res;
+    for (auto i = objects.begin(); i != objects.end(); i++) {
+        QVector<int> cur = i.value();
+        res += i.key() + ": ";
+        for (int j = 0; j < cur.size(); j++)
+            res += QString::number(cur[j]) + " ";
+
+        res += "\n";
+    }
+
+    return res;
 }

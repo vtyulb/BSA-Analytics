@@ -39,6 +39,7 @@ struct Pulsar {
     double sigma;
     bool filtered;
     bool showInTable;
+    bool marked = false;
 
     bool badNoiseKnown = false;
     bool badNoiseRes;

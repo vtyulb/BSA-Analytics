@@ -941,6 +941,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                         pl.ray = headers[j]["ray"].toInt();
                         pl.dispersion = headers[j]["dispersion"].toInt();
                         pl.data.sigma = -headers[j]["point"].toInt();
+                        pl.firstPoint = headers[j]["point"].toInt();
                         pl.snr = headers[j]["snr"].toDouble();
                     }
 
@@ -1786,6 +1787,11 @@ void Analytics::applyTransientTrashDays() {
 
 void Analytics::findTransientPeriod() {
     static TransientPeriod *finder = new TransientPeriod;
+
+    QString autoObjects = list->exportObjectsForPeriodDetalization();
+    if (autoObjects != "")
+        finder->setText(autoObjects);
+
     QObject::connect(finder, SIGNAL(dataGenerated(Data&)), Settings::settings()->getSpectreDrawer(), SLOT(hide()));
     QObject::connect(finder, SIGNAL(dataGenerated(Data&)), window, SLOT(regenerate(Data&)));
     finder->show();

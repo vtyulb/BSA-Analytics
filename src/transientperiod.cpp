@@ -67,6 +67,10 @@ void TransientPeriod::generateData() {
     emit dataGenerated(res);
 }
 
+void TransientPeriod::setText(QString text) {
+    ui->textEdit->setText(text);
+}
+
 TransientPeriod::~TransientPeriod()
 {
     delete ui;

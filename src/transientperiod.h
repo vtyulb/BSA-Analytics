@@ -17,6 +17,8 @@ public:
     explicit TransientPeriod(QWidget *parent = 0);
     ~TransientPeriod();
 
+    void setText(QString);
+
 private:
     Ui::TransientPeriod *ui;
 

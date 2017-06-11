@@ -195,6 +195,8 @@ Data Reader::readBinaryFile(QString file) {
                                 startTime = startTime.addSecs(1000*1000*1000);
                             } else {
                                 printf("File %s is dead. More than 10mins to read. Aborting\n", file.toLocal8Bit().constData());
+                                data.releaseData();
+                                return Data();
                             }
                         }
                         remaining = 1024 * 1024;

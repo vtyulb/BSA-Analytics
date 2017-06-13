@@ -144,6 +144,13 @@
            </property>
           </widget>
          </item>
+         <item row="3" column="4">
+          <widget class="QPushButton" name="hideButton">
+           <property name="text">
+            <string>hide</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>

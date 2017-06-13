@@ -109,6 +109,9 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
 
         ui->local->setChecked(true);
 
+        if (!Settings::settings()->transientAnalytics())
+            ui->hideButton->hide();
+
         QObject::connect(group, SIGNAL(buttonClicked(int)), this, SLOT(reDraw()));
         QObject::connect(ui->channels, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
         QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
@@ -116,6 +119,7 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
         QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
         QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
+        QObject::connect(ui->hideButton, SIGNAL(clicked()), this, SLOT(hide()));
     }
 
     if (!Settings::settings()->transientAnalytics())

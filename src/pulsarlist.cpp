@@ -42,6 +42,10 @@ PulsarList::PulsarList(QWidget *parent) :
     QObject::connect(markObject, SIGNAL(triggered()), this, SLOT(markObject()));
     addAction(markObject);
 
+    QAction *deselectAll = new QAction("Unmark all", this);
+    QObject::connect(deselectAll, SIGNAL(triggered()), this, SLOT(deselectAll()));
+    addAction(deselectAll);
+
     setContextMenuPolicy(Qt::ActionsContextMenu);
     setColumnCount(6);
 
@@ -85,21 +89,7 @@ void PulsarList::init(Pulsars pl, bool removeBadData) {
         setItem(i, 4, new QTableWidgetItem(QString::number(pulsars->at(i).period, 'f', 5)));
         setItem(i, 5, new QTableWidgetItem(QString::number(pulsars->at(i).snr, 'f', 1)));
 
-        if (pulsars->at(i).filtered)
-            for (int j = 0; j < columnCount(); j++)
-                item(i, j)->setBackgroundColor(filteredColor);
-
-        if (!pulsars->at(i).showInTable && Settings::settings()->fourierAnalytics() && !Settings::settings()->transientAnalytics())
-            for (int j = 1; j < columnCount(); j++)
-                item(i, j)->setBackgroundColor(notShowInTableColor);
-
-        if (pulsars->at(i).fourierDuplicate)
-            item(i, 0)->setBackgroundColor(fourierDuplicateColor);
-
-        if (pulsars->at(i).isKnownPulsar)
-            for (int j = 1; j < 6; j++)
-                item(i, j)->setBackgroundColor(knownPulsarColor);
-
+        resetColors(pulsars->at(i), i);
         pulsarsIndex.push_back(i);
     }
 
@@ -211,9 +201,18 @@ void PulsarList::markObject() {
 
     currentPulsar->marked = !currentPulsar->marked;
     int row = selectionModel()->selection().indexes().first().row();
-    for (int i = 0; i < 6; i++)
-        item(row, i)->setBackgroundColor(currentPulsar->marked ? markedColor :
-                                         currentPulsar->isKnownPulsar && i > 0 ? knownPulsarColor : filteredColor);
+    resetColors(*currentPulsar, row);
+
+    selectionChanged();
+}
+
+void PulsarList::deselectAll() {
+    for (int row = 0; row < pulsarsIndex.size(); row++) {
+        Pulsar *cur = &(*pulsars)[pulsarsIndex[row]];
+        cur->marked = false;
+
+        resetColors(*cur, row);
+    }
 
     selectionChanged();
 }
@@ -300,4 +299,25 @@ QString PulsarList::exportObjectsForPeriodDetalization() {
     }
 
     return res;
+}
+
+void PulsarList::resetColors(const Pulsar &pulsar, int row) {
+    if (pulsar.filtered)
+        for (int j = 0; j < columnCount(); j++)
+            item(row, j)->setBackgroundColor(filteredColor);
+
+    if (!pulsar.showInTable && Settings::settings()->fourierAnalytics() && !Settings::settings()->transientAnalytics())
+        for (int j = 1; j < columnCount(); j++)
+            item(row, j)->setBackgroundColor(notShowInTableColor);
+
+    if (pulsar.fourierDuplicate)
+        item(row, 0)->setBackgroundColor(fourierDuplicateColor);
+
+    if (pulsar.isKnownPulsar)
+        for (int j = 1; j < 6; j++)
+            item(row, j)->setBackgroundColor(knownPulsarColor);
+
+    if (pulsar.marked)
+        for (int j = 0; j < 6; j++)
+            item(row, j)->setBackgroundColor(markedColor);
 }

@@ -37,11 +37,14 @@ private:
 
     void drawSpectre(const Pulsar &pl);
 
+    void resetColors(const Pulsar &pulsar, int row);
+
 private slots:
     void selectionChanged();
     void showTime();
     void showComment();
     void markObject();
+    void deselectAll();
 
 signals:
     void switchData(Data &data);

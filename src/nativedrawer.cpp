@@ -1,11 +1,13 @@
-#include <QRgb>
 #include <QApplication>
+#include <QAction>
+#include <QClipboard>
+#include <QFileDialog>
 #include <QFontMetrics>
+#include <QMessageBox>
+#include <QTimer>
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
-#include <QMessageBox>
-#include <QClipboard>
-#include <QTimer>
+#include <QRgb>
 
 #include <cmath>
 
@@ -32,9 +34,14 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     for (int i = 0; i < data.rays; i++)
         rayVisibles.push_back(true);
 
+    QAction *saveImage = new QAction("Save as...", this);
+    addAction(saveImage);
+    QObject::connect(saveImage, SIGNAL(triggered()), this, SLOT(saveFile()));
+
     setMouseTracking(true);
     setMinimumSize(100, 100);
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored));
+    setContextMenuPolicy(Qt::ActionsContextMenu);
     setData(data);
     channel = data.channels - 1;
     resetVisibleRectangle(false);
@@ -339,6 +346,11 @@ void NativeDrawer::resizeEvent(QResizeEvent *event) {
 }
 
 void NativeDrawer::saveFile(QString file) {
+    if (file == "") {
+        file = QFileDialog::getSaveFileName(this);
+        if (file == "")
+            return;
+    }
     QByteArray ext = file.right(file.size() - file.lastIndexOf('.') - 1).toUtf8();
     if (ext.size() > 6)
         file += ".png";

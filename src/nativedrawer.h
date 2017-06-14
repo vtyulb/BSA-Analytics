@@ -25,7 +25,6 @@ public:
     void setData(const Data &newData);
     void setRayVisibles(QVector<bool>);
     void setColors(QVector<QString>);
-    void saveFile(QString);
     void nativePaint(bool forPrinter = false);
     void drawAxes();
 
@@ -80,6 +79,7 @@ signals:
 public slots:
     void resetVisibleRectangle(bool repaint = true, bool resetLeftRight = true);
     void print();
+    void saveFile(QString file = "");
 
 private slots:
     void nativePrint(QPrinter *);

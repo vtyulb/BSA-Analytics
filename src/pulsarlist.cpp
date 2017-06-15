@@ -359,6 +359,11 @@ void PulsarList::sumUpMarked() {
         }
     }
 
+    if (frst) {
+        QMessageBox::information(this, "Just can't do it", "Please select at least one object");
+        return;
+    }
+
     int av = 0;
     for (int i = 0; i < times.size(); i++)
         av += times[i];

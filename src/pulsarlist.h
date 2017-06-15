@@ -50,6 +50,7 @@ private slots:
     void showComment();
     void markObject();
     void deselectAll();
+    void findImpulseWidth();
 
 signals:
     void switchData(Data &data);

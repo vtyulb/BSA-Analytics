@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>320</width>
-    <height>1844</height>
+    <height>1862</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -927,7 +927,7 @@
       </item>
       <item>
        <widget class="QWidget" name="widget_14" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_13">
+        <layout class="QFormLayout" name="formLayout">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -940,23 +940,31 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item>
-          <spacer name="horizontalSpacer_9">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="transientDetalization">
+           <property name="text">
+            <string>Detalization</string>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
+          </widget>
          </item>
-         <item>
+         <item row="1" column="1">
           <widget class="QPushButton" name="findTransientPeriod">
            <property name="text">
             <string>Find period</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QPushButton" name="transientSumUp">
+           <property name="text">
+            <string>Sum up marked objects</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QPushButton" name="findTransientWidth">
+           <property name="text">
+            <string>Find average width</string>
            </property>
           </widget>
          </item>
@@ -978,26 +986,6 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item>
-          <spacer name="horizontalSpacer_10">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="transientDetalization">
-           <property name="text">
-            <string>Detalization</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>
@@ -1016,26 +1004,6 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item>
-          <spacer name="horizontalSpacer_11">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QPushButton" name="transientSumUp">
-           <property name="text">
-            <string>Sum up marked objects</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </item>

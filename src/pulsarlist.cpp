@@ -32,7 +32,8 @@ PulsarList::PulsarList(QWidget *parent) :
 
     QAction *showUTCtime = new QAction("Show UTC time", this);
     QObject::connect(showUTCtime, SIGNAL(triggered()), this, SLOT(showTime()));
-    addAction(showUTCtime);
+    if (!Settings::settings()->fourierAnalytics())
+        addAction(showUTCtime);
 
     QAction *showComment = new QAction("Show comment", this);
     QObject::connect(showComment, SIGNAL(triggered()), this, SLOT(showComment()));
@@ -383,6 +384,42 @@ void PulsarList::sumUpMarked() {
     resTime += QString::number(diff, 'f', 1);
 
     Settings::settings()->setTransientImpulseTime(resTime);
+}
+
+void PulsarList::findImpulseWidth() {
+    const int maxWidth = 10;
+    Data res;
+    res.modules = 1;
+    res.rays = 1;
+    res.channels = 1;
+    res.npoints = maxWidth + 1;
+    res.init();
+    res.data[0][0][0][0] = 0;
+
+    bool foundOne = false;
+
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsars->at(i).marked) {
+            Data dt = pulsars->at(i).data;
+            foundOne = true;
+            for (int j = 1; j <= maxWidth; j++) {
+                double mx = 0;
+                for (int k = 0; k < dt.npoints - j; k++) {
+                    double cr = 0;
+                    for (int m = k; m < k + j; m++)
+                        cr += dt.data[0][32][0][m];
+
+                    mx = std::max(mx, cr);
+                }
+
+                res.data[0][0][0][j] += mx / j;
+            }
+        }
+
+    if (!foundOne)
+        QMessageBox::information(this, "Just can't do it", "Please select at least one object");
+    else
+        emit switchData(res);
 }
 
 void PulsarList::nonblockingSleep(int ms) {

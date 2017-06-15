@@ -405,6 +405,7 @@ void Analytics::apply(bool fullFilters) {
         QObject::connect(window, SIGNAL(destroyed(QObject*)), list, SLOT(deleteLater()));
         QObject::connect(window, SIGNAL(destroyed(QObject*)), qApp, SLOT(quit()));
         QObject::connect(ui->transientSumUp, SIGNAL(clicked()), list, SLOT(sumUpMarked()));
+        QObject::connect(ui->findTransientWidth, SIGNAL(clicked()), list, SLOT(findImpulseWidth()));
         list->show();
     }
 

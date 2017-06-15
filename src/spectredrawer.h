@@ -35,10 +35,12 @@ private:
     void rotateMatrix();
     int findFirstPoint(int startPoint = -1);
 
-private slots:
-    void reDraw();
+public slots:
     void memPlus();
     void mem();
+
+private slots:
+    void reDraw();
     void saveAs();
 };
 

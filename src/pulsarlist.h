@@ -39,6 +39,11 @@ private:
 
     void resetColors(const Pulsar &pulsar, int row);
 
+    void nonblockingSleep(int ms);
+
+public slots:
+    void sumUpMarked();
+
 private slots:
     void selectionChanged();
     void showTime();

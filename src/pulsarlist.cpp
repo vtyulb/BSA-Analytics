@@ -321,3 +321,42 @@ void PulsarList::resetColors(const Pulsar &pulsar, int row) {
         for (int j = 0; j < 6; j++)
             item(row, j)->setBackgroundColor(markedColor);
 }
+
+void PulsarList::sumUpMarked() {
+    bool frst = true;
+    QVector<float> profile;
+    Data res;
+    res.modules = 1;
+    res.channels = 1;
+    res.rays = 1;
+
+    for (int i = 0; i < pulsarsIndex.size(); i++)
+        if (pulsars->at(pulsarsIndex[i]).marked) {
+            selectRow(i);// it's not i <-
+            nonblockingSleep(300);
+
+            if (frst) {
+                Settings::settings()->getSpectreDrawer()->mem();
+                frst = false;
+                Pulsar p = pulsars->at(pulsarsIndex[i]);
+                res.npoints = p.data.npoints;
+                res.init();
+                for (int j = 0; j < p.data.npoints; j++)
+                    res.data[0][0][0][j] = p.data.data[0][32][0][j];
+            } else {
+                Pulsar p = pulsars->at(pulsarsIndex[i]);
+                Settings::settings()->getSpectreDrawer()->memPlus();
+                for (int j = 0; j < std::min(res.npoints, p.data.npoints); j++)
+                    res.data[0][0][0][j] += p.data.data[0][32][0][j];
+            }
+
+            emit switchData(res);
+            nonblockingSleep(300);
+        }
+}
+
+void PulsarList::nonblockingSleep(int ms) {
+    QEventLoop loop;
+    QTimer::singleShot(ms, &loop, SLOT(quit()));
+    loop.exec();
+}

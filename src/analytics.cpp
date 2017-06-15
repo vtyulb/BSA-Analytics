@@ -404,6 +404,7 @@ void Analytics::apply(bool fullFilters) {
         QObject::connect(list, SIGNAL(progress(int)), progressBar, SLOT(setValue(int)));
         QObject::connect(window, SIGNAL(destroyed(QObject*)), list, SLOT(deleteLater()));
         QObject::connect(window, SIGNAL(destroyed(QObject*)), qApp, SLOT(quit()));
+        QObject::connect(ui->transientSumUp, SIGNAL(clicked()), list, SLOT(sumUpMarked()));
         list->show();
     }
 

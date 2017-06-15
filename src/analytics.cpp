@@ -936,6 +936,7 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                     pl.data = data;
                     pl.valid = true;
                     pl.showInTable = true;
+                    pl.nativeTime = QTime(0, 0).addSecs(int(fourierSpectreSize * 2 * (blockNumber - 0.5) * Settings::settings()->getFourierStepConstant()));
                     pl.sigma = fourierRawNoises[module][ray][j];
                     if (!transient) {
                         pl.findFourierData(ui->fourierPointsToSkip->value());
@@ -947,9 +948,9 @@ void Analytics::loadFourierData(bool cacheOnly, bool loadCache) {
                         pl.data.sigma = -headers[j]["point"].toInt();
                         pl.firstPoint = headers[j]["point"].toInt();
                         pl.snr = headers[j]["snr"].toDouble();
+                        pl.nativeTime = QTime::fromString(headers[j]["star_time"], "hh:mm:ss");
                     }
 
-                    pl.nativeTime = QTime(0, 0).addSecs(int(fourierSpectreSize * 2 * (blockNumber - 0.5) * Settings::settings()->getFourierStepConstant()));
                     pulsars->push_back(pl);
 
                     if (pl.snr < -660)
@@ -1647,7 +1648,9 @@ void Analytics::transientSaveImage(bool forPublication) {
                    "Dispersion: " + QString::number(p->dispersion) + "\n" +
                    "Original file name: " + p->data.previousLifeName.split(" ").last() + "\n" +
                    "Point: " + QString::number(-p->data.sigma, 'f', 0) + "\n" +
-                   "File name in block: " + QString(p->data.previousLifeName.split(" ").at(1) + p->data.previousLifeName.split(" ").at(2)).replace("from", "");
+                   "File name in block: " + QString(p->data.previousLifeName.split(" ").at(1) + p->data.previousLifeName.split(" ").at(2)).replace("from", "") + "\n";
+
+    data += Settings::settings()->getTransientImpulseTime();
 
     if (forPublication)
         res = res.copy(50, 0, res.width() - 50, res.height());

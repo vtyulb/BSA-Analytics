@@ -89,6 +89,8 @@ public:
     void setProgressBar(QProgressBar*);
     void detectStair(const Data &data, int pointStart, int pointEnd);
     QTime getTime();
+    void setTransientImpulseTime(QString);
+    QString getTransientImpulseTime();
 
     void setPreciseSearch(bool);
     void setModule(int);
@@ -146,6 +148,7 @@ private:
     bool _fourierHighGround;
     bool _normalize;
     QString _stairFileName;
+    QString _transientImpulseTime;
     SourceMode _sourceMode;
     QVector<double> dispersionPlotData;
     QVector<double> profilePlotData[200];

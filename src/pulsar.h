@@ -191,10 +191,10 @@ struct Pulsar {
     }
 
     bool operator < (const Pulsar &p) const {        
-        if (nativeTime.secsTo(p.nativeTime) > 0)
+        /*if (nativeTime.secsTo(p.nativeTime) > 0)
             return true;
         else if (nativeTime.secsTo(p.nativeTime) < 0)
-            return false;
+            return false;*/
 
         if (module < p.module)
             return true;

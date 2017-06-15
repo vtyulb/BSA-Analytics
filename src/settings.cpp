@@ -445,3 +445,11 @@ void Settings::setSpectreDrawer(SpectreDrawer *s) {
 SpectreDrawer *Settings::getSpectreDrawer() {
     return _spectreDrawer;
 }
+
+void Settings::setTransientImpulseTime(QString tm) {
+    _transientImpulseTime = tm;
+}
+
+QString Settings::getTransientImpulseTime() {
+    return _transientImpulseTime;
+}

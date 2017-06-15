@@ -142,6 +142,7 @@ void PulsarList::saveSettings() {
 }
 
 void PulsarList::selectionChanged() {
+    Settings::settings()->setTransientImpulseTime("");
     if (selectionModel()->selection().indexes().size()) {
         int selectedRow = selectionModel()->selection().indexes().at(0).row();
         if (selectedRow < pulsarsIndex.size() && selectedRow >= 0 && pulsarsIndex[selectedRow] < pulsars->size()) {
@@ -330,21 +331,24 @@ void PulsarList::sumUpMarked() {
     res.channels = 1;
     res.rays = 1;
 
-    for (int i = 0; i < pulsarsIndex.size(); i++)
-        if (pulsars->at(pulsarsIndex[i]).marked) {
-            selectRow(i);// it's not i <-
+    QVector<int> times;
+
+    for (int i = 0; i < pulsarsIndex.size(); i++) {
+        Pulsar p = pulsars->at(pulsarsIndex[i]);
+        if (p.marked) {
+            selectRow(i);
             nonblockingSleep(300);
+
+            times.push_back(p.nativeTime.hour() * 60 * 60 + p.nativeTime.minute() * 60 + p.nativeTime.second());
 
             if (frst) {
                 Settings::settings()->getSpectreDrawer()->mem();
                 frst = false;
-                Pulsar p = pulsars->at(pulsarsIndex[i]);
                 res.npoints = p.data.npoints;
                 res.init();
                 for (int j = 0; j < p.data.npoints; j++)
                     res.data[0][0][0][j] = p.data.data[0][32][0][j];
             } else {
-                Pulsar p = pulsars->at(pulsarsIndex[i]);
                 Settings::settings()->getSpectreDrawer()->memPlus();
                 for (int j = 0; j < std::min(res.npoints, p.data.npoints); j++)
                     res.data[0][0][0][j] += p.data.data[0][32][0][j];
@@ -353,6 +357,27 @@ void PulsarList::sumUpMarked() {
             emit switchData(res);
             nonblockingSleep(300);
         }
+    }
+
+    int av = 0;
+    for (int i = 0; i < times.size(); i++)
+        av += times[i];
+
+    av /= times.count();
+
+    QString resTime = "\n" + QString::number(times.size()) + " impulses summed up\n";
+    resTime += "Strong star time: ";
+    resTime += QString::number(av / 60 / 60) + ":" + QString::number(av / 60 % 60) + ":" + QString::number(av % 60);
+    resTime += QString::fromUtf8("\u00B1");
+    double diff = 0;
+    for (int i = 0; i < times.size(); i++)
+        diff += (times[i]-av)*(times[i]-av);
+
+    diff /= times.size();
+    diff = sqrt(diff);
+    resTime += QString::number(diff, 'f', 1);
+
+    Settings::settings()->setTransientImpulseTime(resTime);
 }
 
 void PulsarList::nonblockingSleep(int ms) {

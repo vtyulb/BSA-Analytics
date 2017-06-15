@@ -390,11 +390,12 @@ void PulsarList::findImpulseWidth() {
     const int maxWidth = 10;
     Data res;
     res.modules = 1;
-    res.rays = 1;
+    res.rays = 2;
     res.channels = 1;
     res.npoints = maxWidth + 1;
     res.init();
     res.data[0][0][0][0] = 0;
+    res.data[0][0][1][0] = 0;
 
     bool foundOne = false;
 
@@ -415,6 +416,9 @@ void PulsarList::findImpulseWidth() {
                 res.data[0][0][0][j] += mx / j;
             }
         }
+
+    for (int i = 1; i < res.npoints; i++)
+        res.data[0][0][1][i] = res.data[0][0][0][1] / i;
 
     if (!foundOne)
         QMessageBox::information(this, "Just can't do it", "Please select at least one object");

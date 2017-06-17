@@ -583,6 +583,25 @@ void FileSummator::initStairs(Data &stairs, QStringList &names) {
         while (names.size() > stairs.npoints)
             names.removeLast();
 
+        Data tmp1 = Reader().readBinaryFile(stairsResName + ".1");
+        if (tmp1.isValid()) {
+            qDebug() << names.size() << " stairs in first file";
+            qDebug() << "found second stairs file";
+            names += Settings::settings()->getLastHeader()["stairs_names"].split(",");
+            stairs.npoints += tmp1.npoints;
+            qDebug() << tmp1.npoints << " stairs in second file";
+            stairs.init();
+            for (int module = 0; module < stairs.modules; module++)
+                for (int ray = 0; ray < stairs.rays; ray++)
+                    for (int channel = 0; channel < stairs.channels; channel++) {
+                        for (int i = 0; i < tmp.npoints; i++)
+                            stairs.data[module][channel][ray][i] = tmp.data[module][channel][ray][i];
+
+                        for (int i = 0; i < tmp1.npoints; i++)
+                            stairs.data[module][channel][ray][i+tmp.npoints] = tmp1.data[module][channel][ray][i];
+                    }
+        }
+
         qDebug() << "found previous stairs file at" << stairsResName;
         qDebug() << names.size() << "stairs extracted";
     } else

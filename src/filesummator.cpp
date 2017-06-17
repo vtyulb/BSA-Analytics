@@ -262,8 +262,8 @@ bool FileSummator::processData(Data &data) {
 
                 std::sort(buf.begin(), buf.end());
 
-                double mn = buf[data.npoints * 0.01];
-                double mx = buf[data.npoints * 0.99];
+                double mn = buf[data.npoints * 0.1];
+                double mx = buf[data.npoints * 0.9];
 
                 float *res = data.data[module][channel][ray];
                 for (int i = 0; i < data.npoints; i++)

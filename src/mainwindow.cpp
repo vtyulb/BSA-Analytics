@@ -375,11 +375,15 @@ void MainWindow::normalizeData() {
             QMessageBox::warning(this, "Error", "Stairs are too far from this data. Normalization is not completed!");
         else {
             qDebug() << "normalizing data";
+            progress->show();
             for (int module = 0; module < last.modules; module++)
-                for (int channel = 0; channel < last.channels; channel++)
+                for (int channel = 0; channel < last.channels; channel++) {
+                    progress->setValue((module * last.channels + channel + 1) * 100 / (last.modules * last.channels));
+                    qApp->processEvents();
                     for (int ray = 0; ray < last.rays; ray++)
                         for (int i = 0; i < last.npoints; i++)
                             last.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
+                }
 
             for (int module = 0; module < last.modules; module++)
                 for (int ray = 0; ray < last.rays; ray++)
@@ -389,6 +393,7 @@ void MainWindow::normalizeData() {
                             last.data[module][last.channels - 1][ray][i] += last.data[module][channel][ray][i] / (last.channels - 1);
                     }
 
+            progress->hide();
             if (drawer)
                 drawer->drawer->resetVisibleRectangle();
         }

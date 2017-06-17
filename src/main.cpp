@@ -224,6 +224,7 @@ void pulsarEngine(int argc, char **argv) {
         else if (strcmp(argv[i], "--period-tester") == 0)
             Settings::settings()->setPeriodTester(true);
         else if (strcmp(argv[i], "--file-summator") == 0) {
+            makeConsoleApp(argc, argv);
             FileSummator summator;
             summator.run();
             exit(0);

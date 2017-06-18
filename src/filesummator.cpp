@@ -194,7 +194,7 @@ void FileSummator::run() {
             else
                 processData(data);
 
-            if (i % 100 == 0)
+            if (i % 100 == 0 && stairsSearch)
                 dumpStairs(stairs, stairsNames);
 
             data.releaseData();

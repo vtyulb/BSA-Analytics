@@ -733,6 +733,15 @@ bool FileSummator::transientCheckAmplification(const Data &data, int point, int 
 }
 
 void FileSummator::transientProcess(Data &data) {
+    if (!Settings::settings()->loadStair())
+        qDebug() << "can't normalize current data";
+
+    for (int module = 0; module < data.modules; module++)
+        for (int channel = 0; channel < data.channels; channel++)
+            for (int ray = 0; ray < data.rays; ray++)
+                for (int i = 0; i < data.npoints; i++)
+                    data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
+
     QVector<int> transientsCount(500, 0);
     int total = 0;
     for (int module = 0; module < data.modules; module++)

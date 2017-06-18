@@ -50,19 +50,17 @@ void TransientPeriod::generateData() {
 
     res.data[0][0][0][0] = 0;
 
-    double glMx = 0;
     for (int i = 1; i < total; i++) {
         double period = i / 1000.0;
         double mx = 0;
         for (int j = 0; j < diffs.size(); j++)
             mx = std::max(mx, fabs(diffs[j] - int(diffs[j] / period + 0.5) * period));
 
-        glMx = std::max(glMx, mx);
         res.data[0][0][0][i] = mx;
     }
 
     for (int i = 0; i < total; i++)
-        res.data[0][0][0][i] = glMx - res.data[0][0][0][i];
+        res.data[0][0][0][i] = -res.data[0][0][0][i];
 
     emit dataGenerated(res);
 }

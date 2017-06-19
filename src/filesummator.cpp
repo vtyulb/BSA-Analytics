@@ -91,7 +91,7 @@ void FileSummator::run() {
     }
 
     PC = cutter ? CuttingPC : PC_;
-    if ((cutter || transientSearch) && extensions.contains("pnthr")) {
+    if (extensions.contains("pnthr")) {
         PC = CuttingPCLong;
         longData = true;
     }

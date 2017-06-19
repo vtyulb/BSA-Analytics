@@ -651,7 +651,7 @@ bool FileSummator::findStair(Data &data, int &start, int &end) {
         end = std::max(end, values[i].second);
     }
 
-    if (end - start < count * 2 && data.data[0][0][0][(start+end)/2] - values[0].first > 0.2)
+    if (end - start < count * 2 && data.data[0][data.channels - 1][0][(start+end)/2] - values[0].first > 0.2)
         return true;
     else
         return false;

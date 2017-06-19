@@ -170,7 +170,8 @@ void FileSummator::run() {
                         stairsNames.push_back(QFileInfo(fileNames[i]).fileName());
                         addStair(stairs);
                         dumpStairs(stairs, stairsNames);
-                    }
+                    } else if (longData)
+                        printf("Did not found the stair\n");
 
                     data.releaseData();
                 }

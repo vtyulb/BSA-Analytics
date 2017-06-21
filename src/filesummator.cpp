@@ -196,7 +196,7 @@ void FileSummator::run() {
             else
                 processData(data);
 
-            if (i % 100 == 0 /*&& stairsSearch*/)
+            if (i % 100 == 0)
                 dumpStairs(stairs, stairsNames);
 
             data.releaseData();
@@ -562,6 +562,9 @@ QString FileSummator::getStairsName(const Data &stairs) {
 
 void FileSummator::dumpStairs(const Data &stairs, const QStringList &stairsNames) {
     QString stairsResName = getStairsName(stairs);
+
+    if (stairsNames.isEmpty())
+        return;
 
     QString names = stairsNames[0];
     for (int i = 1; i < stairsNames.size(); i++)

@@ -126,9 +126,9 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         if (ui)
             ui->showDispersion->hide();
 
-    QObject::disconnect(ui->dispersion, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
+    QObject::disconnect(ui->dispersion, SIGNAL(valueChanged(double)), this, SLOT(reDraw()));
     ui->dispersion->setValue(std::max(Settings::settings()->dispersion(), 0.0));
-    QObject::connect(ui->dispersion, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
+    QObject::connect(ui->dispersion, SIGNAL(valueChanged(double)), this, SLOT(reDraw()));
 
     ui->channels->setMaximum(data.channels - 1);
 
@@ -159,11 +159,14 @@ void SpectreDrawer::reDraw() {
         v2 = 1;
     }
 
+    if (fabs(data.oneStep) < 0.0001)
+        data.oneStep = 0.0124928;
+
     QVector<QVector<int> > matrix;
 
     int chs = ui->channels->value();
     int tms = ui->time->value();
-    int dsp = ui->dispersion->value();
+    double dsp = ui->dispersion->value();
 
     rawRes.clear();
     for (int  i = 0; i < data.channels / chs - 1; i++) {
@@ -177,14 +180,14 @@ void SpectreDrawer::reDraw() {
             double  sum = 0;
             int n = 0;
             for (int c = i * chs; c < i * chs + chs; c++) {
-                    int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dsp * (c - i * chs) / data.oneStep + 0.5);
-                    for (int k = 0; k < tms; k++)
-                        if (j + dt >= 0) {
-                            sum += r[c][j + dt + k];
-                            n++;
-                        }
+                int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dsp * (c - i * chs) / data.oneStep + 0.5);
+                for (int k = 0; k < tms; k++)
+                    if (j + dt >= 0) {
+                        sum += r[c][j + dt + k];
+                        n++;
+                    }
 
-                }
+            }
             res.push_back(sum / n);
         }
 

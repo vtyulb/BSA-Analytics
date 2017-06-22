@@ -152,16 +152,7 @@ void NativeDrawer::nativePaint(bool forPrinter) {
     if (Settings::settings()->fourierAnalytics())
         fourierDraw(p);
 
-    if (data.sigma > 0) {
-//        p.setPen(QColor("blue"));
-//        p.drawLine(mirr(newCoord(0, data.sigma)), mirr(newCoord(width(), data.sigma)));
-
-//        p.setPen(QColor("green"));
-//        p.drawLine(mirr(newCoord(0, 0)), mirr(newCoord(width(), 0)));
-        p.setPen(QColor("green"));
-//        for (double i = data.oneStep; i < data.npoints; i += )
-
-    }
+    p.drawText(20, 20, data.message);
 
     emit progress(100);
     p.end();

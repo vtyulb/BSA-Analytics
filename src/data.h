@@ -16,6 +16,7 @@ struct Data {
 
     QString previousLifeName;
     QString name;
+    QString message;
     double oneStep;
     double delta_lucha;
     QVector<double> fbands;

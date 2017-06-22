@@ -387,43 +387,47 @@ void PulsarList::sumUpMarked() {
 }
 
 void PulsarList::findImpulseWidth() {
-    const int maxWidth = 10;
+    const int maxWidth = 1000;
     Data res;
     res.modules = 1;
-    res.rays = 2;
+    res.rays = 3;
     res.channels = 1;
-    res.npoints = maxWidth + 1;
+    res.npoints = maxWidth;
     res.init();
-    res.data[0][0][0][0] = 0;
-    res.data[0][0][1][0] = 0;
+    memset(res.data[0][0][0], 0, sizeof(float) * maxWidth);
 
     bool foundOne = false;
 
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsars->at(i).marked) {
-            Data dt = pulsars->at(i).data;
             foundOne = true;
-            for (int j = 1; j <= maxWidth; j++) {
-                double mx = 0;
-                for (int k = 0; k < dt.npoints - j; k++) {
-                    double cr = 0;
-                    for (int m = k; m < k + j; m++)
-                        cr += dt.data[0][32][0][m];
+            Data dt = pulsars->at(i).data;
+            for (int j = 0; j < dt.npoints; j++)
+                res.data[0][0][0][j] += dt.data[0][32][0][j];
 
-                    mx = std::max(mx, cr);
-                }
-
-                res.data[0][0][0][j] += mx / j;
-            }
+            res.npoints = std::min(res.npoints, dt.npoints);
         }
 
-    for (int i = 1; i < res.npoints; i++)
-        res.data[0][0][1][i] = res.data[0][0][0][1] / i;
+    float mx = 0;
+    for (int i = 0; i < res.npoints; i++) {
+        res.data[0][0][1][i] = 0;
+        mx = std::max(res.data[0][0][0][i], mx);
+    }
+
+    int pt = 0;
+    for (int i = 0; i < res.npoints; i++) {
+        pt += res.data[0][0][0][i] > mx / 2;
+        res.data[0][0][2][i] = mx / 2;
+    }
+
+    res.message = QString::number(pt) + " points / " + QString::number(pt *  12.4928) + "ms";
 
     if (!foundOne)
         QMessageBox::information(this, "Just can't do it", "Please select at least one object");
-    else
+    else {
+        Settings::settings()->getSpectreDrawer()->hide();
         emit switchData(res);
+    }
 }
 
 void PulsarList::nonblockingSleep(int ms) {

@@ -131,8 +131,8 @@ void FileSummator::run() {
             numberOfPieces.fill(0);
 
             printf("memory allocated.\n");
+            Settings::settings()->loadStair();
             printf("Process seems to be all right, can work now\n");
-
         } else if (!multifileInited && !fileNames.size()) {
             printf("Did not found any valid files\n");
             continue;
@@ -290,11 +290,22 @@ bool FileSummator::processData(Data &data) {
     return true;
 }
 
-void FileSummator::processLongData(Data &data) {
-    // Hello FileSummator::processLongData(), i know you are here
-    qDebug()  << "It won't work!!! contact <vtyulb@vtyulb.ru>";
-
+bool FileSummator::processLongData(Data &data) {
     QVector<float> buf(data.npoints);
+
+    if (!Settings::settings()->loadStair())
+        return false;
+
+    for (int module = 0; module < data.modules; module++)
+        for (int channel = 0; channel < data.channels; channel++)
+            for (int ray = 0; ray < data.rays; ray++)
+                for (int i = 0; i < data.npoints; i++)
+                    data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
+
+    noises.clear();
+    noises.resize(data.modules);
+    for (int module = 0; module < data.modules; module++)
+        noises[module].resize(data.channels);
 
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++)
@@ -307,23 +318,15 @@ void FileSummator::processLongData(Data &data) {
                 for (int i = 0; i < data.npoints; i++)
                     buf[i] = data.data[module][channel][ray][i];
 
-                std::sort(buf.begin(), buf.end());
-
-                double noise = 0;
-                for (int i = data.npoints * 0.2; i < data.npoints * 0.8; i++)
-                    noise += pow(data.data[module][channel][ray][i], 2);
-
-                noise /= data.npoints * 0.8 - data.npoints * 0.2;
-                noise = pow(noise, 0.5);
-
-                const double maximumNoise = 1.9;
+                double mn = buf[data.npoints * 0.1];
+                double mx = buf[data.npoints * 0.9];
 
                 float *res = data.data[module][channel][ray];
                 for (int i = 0; i < data.npoints; i++)
-                    if (res[i] >  noise * maximumNoise)
-                        res[i] = noise * maximumNoise;
-                    else if (res[i] < -noise * maximumNoise)
-                        res[i] = -noise * maximumNoise;
+                    if (res[i] > mx)
+                        res[i] = mx;
+                    else if (res[i] < mn)
+                        res[i] = mn;
 
                 for (int j = 0; j < data.npoints / PC - 2; j++) {
                     double realPart;
@@ -344,6 +347,8 @@ void FileSummator::processLongData(Data &data) {
 
             }
           }
+
+    return true;
 }
 
 void FileSummator::findFiles(QString path, QStringList &names, const QStringList &extensions) {
@@ -418,6 +423,26 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
                 for (int i = 0; i < PC / 2; i++)
                     res.data[module][0][ray][i] = dt[i];
             }
+
+        for (int module = 0; module < data.modules; module++)
+            for (int channel = 0; channel < data.channels; channel++) {
+                noises[module][channel].clear();
+                for (int ray = 0; ray < data.rays; ray++) {
+                    double noise = 0;
+                    for (int i = 0; i < CuttingPC; i++)
+                        noise += data.data[module][channel][ray][i+startPoint] * (double)data.data[module][channel][ray][i+startPoint];
+
+                    noise /= CuttingPC;
+                    noise = sqrt(noise);
+                    noises[module][channel].push_back(noise);
+                }
+            }
+
+        QString newNoise = data.name + "/" + QString::number(pieceNumber);
+        if (!stairsNames.contains(newNoise)) {
+            stairsNames.push_back(newNoise);
+            addStair(stairs);
+        }
     }
 
     numberOfPieces[pieceNumber]++;

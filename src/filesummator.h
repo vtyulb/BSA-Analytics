@@ -18,7 +18,7 @@ private:
     void findFiles(QString path, QStringList &names, const QStringList &extensions);
     void transientProcess(Data &data);
     bool processData(Data &data);
-    void processLongData(Data &data);
+    bool processLongData(Data &data);
     void dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber);
     bool dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion, double snr);
     bool transientCheckAmplification(const Data &data, int point, int module, int ray, int dispersion);

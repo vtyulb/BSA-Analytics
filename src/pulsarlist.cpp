@@ -334,11 +334,29 @@ void PulsarList::sumUpMarked() {
 
     QVector<int> times;
 
+    QVector<QString> sources;
+    QVector<int> points;
+
     for (int i = 0; i < pulsarsIndex.size(); i++) {
         Pulsar p = pulsars->at(pulsarsIndex[i]);
         if (p.marked) {
+            sources.push_back(p.data.previousLifeName.split(" ").at(3));
+            points.push_back(p.firstPoint);
+            bool duplicateObject = false;
+            for (int i = 0; i < sources.size() - 1; i++)
+                if (sources.at(i) == sources.last())
+                    if (abs(points.at(i) - points.last()) < 5)
+                        duplicateObject = true;
+
+            if (duplicateObject) {
+                sources.removeLast();
+                points.removeLast();
+                continue;
+            }
+
             selectRow(i);
             nonblockingSleep(300);
+
 
             times.push_back(p.nativeTime.hour() * 60 * 60 + p.nativeTime.minute() * 60 + p.nativeTime.second());
 

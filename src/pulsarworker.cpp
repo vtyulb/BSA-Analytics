@@ -61,7 +61,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     double MAXIMUM_PERIOD_INC = MAXIMUM_PERIOD;
 
     if (Settings::settings()->preciseSearch()) {
-        MINIMUM_PERIOD_INC /= 10;
+        MINIMUM_PERIOD_INC /= 1000;
         MAXIMUM_PERIOD_INC *= 2;
     }
 

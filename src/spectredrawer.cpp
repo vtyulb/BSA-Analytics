@@ -22,6 +22,9 @@
 
 using std::min;
 
+const int nrm = 10;
+const int offset = 50;
+
 SpectreDrawer::SpectreDrawer():
     QWidget(NULL),
     ui(NULL)
@@ -115,7 +118,7 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         QObject::connect(group, SIGNAL(buttonClicked(int)), this, SLOT(reDraw()));
         QObject::connect(ui->channels, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
         QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
-        QObject::connect(ui->showDispersion, SIGNAL(clicked()), this, SLOT(reDraw()));
+        QObject::connect(ui->showDispersion, SIGNAL(clicked()), this, SLOT(reDrawDispersion()));
         QObject::connect(ui->saver, SIGNAL(clicked(bool)), this, SLOT(saveAs()));
         QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
         QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
@@ -126,9 +129,9 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         if (ui)
             ui->showDispersion->hide();
 
-    QObject::disconnect(ui->dispersion, SIGNAL(valueChanged(double)), this, SLOT(reDraw()));
+    QObject::disconnect(ui->dispersion, SIGNAL(valueChanged(double)), this, SLOT(reDrawDispersion()));
     ui->dispersion->setValue(std::max(Settings::settings()->dispersion(), 0.0));
-    QObject::connect(ui->dispersion, SIGNAL(valueChanged(double)), this, SLOT(reDraw()));
+    QObject::connect(ui->dispersion, SIGNAL(valueChanged(double)), this, SLOT(reDrawDispersion()));
 
     ui->channels->setMaximum(data.channels - 1);
 
@@ -247,8 +250,6 @@ void SpectreDrawer::reDraw() {
 }
 
 QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data) {
-    const int nrm = 10;
-    const int offset = 50;
     const int maxMinWidth = Settings::settings()->transientAnalytics() ? 480 : 1024;
 
     QImage image(matrix[0].size() * nrm + offset, matrix.size() * nrm, QImage::Format_ARGB32);
@@ -268,18 +269,35 @@ QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data)
     for (int i = 0; i < matrix.size(); i++)
         p.drawText(1, i * nrm + nrm - 1, QString::number(data.fbands[i * ui->channels->value()]));
 
+    p.end();
+
+    return drawDispersion(image);
+}
+
+QImage SpectreDrawer::drawDispersion(QImage src) {
+    static QImage prev = src;
+    if (src.isNull())
+        src = prev;
+    prev = src;
+
+    QPainter p(&src);
     if (ui->showDispersion->isChecked()) {
         p.setPen(QPen(QBrush("red"), 3, Qt::SolidLine));
         double v1 = data.fbands[0];
         double v2 = data.fbands[1];
         double dsp = 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * 32 * ui->dispersion->value() / 0.0124928;
 
-        p.drawLine(offset + (matrix[0].size() - 10 + 0.5) * nrm, nrm / 2, offset + (matrix[0].size() - 10 + dsp + 0.5) * nrm, image.height() - nrm / 2 - 1);
+        p.drawLine(offset + ((src.width()-offset)/nrm - 10 + 0.5) * nrm, nrm / 2, offset + ((src.width()-offset)/nrm - 10 + dsp + 0.5) * nrm, src.height() - nrm / 2 - 1);
     }
 
     p.end();
 
-    return image;
+    return src;
+}
+
+void SpectreDrawer::reDrawDispersion() {
+    ui->drawer->spectre = drawDispersion(QImage());
+    ui->drawer->repaint();
 }
 
 void SpectreDrawer::rotateMatrix() {

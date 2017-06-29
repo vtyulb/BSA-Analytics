@@ -23,6 +23,7 @@ public:
 private:
     QVector<double> getAnswer(const Data &data, int channel, int startPoint = -1);
     QImage drawImage(QVector<QVector<int> > matrix, const Data &data);
+    QImage drawDispersion(QImage);
 
     Data data;
     int module, ray;
@@ -40,6 +41,7 @@ public slots:
     void mem();
 
 private slots:
+    void reDrawDispersion();
     void reDraw();
     void saveAs();
 };

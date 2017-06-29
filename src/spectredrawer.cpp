@@ -332,8 +332,12 @@ void SpectreDrawer::rotateMatrix() {
 
 void SpectreDrawer::saveAs() {
     QString savePath = QFileDialog::getSaveFileName(this, "Spectre");
-    if (savePath != "")
+    if (savePath != "") {
+        if (!savePath.endsWith(".png"))
+            savePath += ".png";
+
         ui->drawer->spectre.save(savePath);
+    }
 }
 
 void SpectreDrawer::mem() {

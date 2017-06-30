@@ -56,16 +56,29 @@ void TransientDetalizator::run(int module, int ray, QTime time, QString file, Da
                source.data[module][i][ray] + point,
                sizeof(float) * res.npoints);
 
+    if (source.npoints > 500)
+        for (int i = 0; i < source.channels / 2; i++)
+            std::swap(res.data[0][0][i], res.data[0][0][res.rays - 1 - i]);
+
     source.releaseData();
 
     double level = 1.0;
+    double av = 0;
+    for (int i = 0; i < source.channels; i++) {
+        QVector<float> cur;
+        for (int j = 0; j < res.npoints; j++)
+            cur.push_back(res.data[0][0][i][j]);
+
+        std::sort(cur.begin(), cur.end());
+        av += cur.at(cur.size() / 2) / source.channels;
+    }
+
     for (int i = source.channels - 1; i >= 0; i--) {
         QVector<float> cur;
         for (int j = 0; j < res.npoints; j++)
             cur.push_back(res.data[0][0][i][j]);
 
         std::sort(cur.begin(), cur.end());
-        double av = cur.at(cur.size() / 2);
         level += cur.at(cur.size() * 0.8) - cur.at(cur.size() * 0.2) * 2;
         for (int j = 0; j < res.npoints; j++)
             res.data[0][0][i][j] -= av - level;

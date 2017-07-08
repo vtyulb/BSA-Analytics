@@ -72,6 +72,18 @@ void FileSummator::run() {
             printf("Do you want to start transient search [y/N] ");
             if (input.readLine().toUpper() == "Y") {
                 transientSearch = true;
+                printf("Please enter first disperion [2]: ");
+                bool ok;
+                firstDispersion = input.readLine().toInt(&ok);
+                if (!ok)
+                    firstDispersion = 2;
+
+                printf("Please enter last dispersion [100]: ");
+                lastDispersion = input.readLine().toInt(&ok);
+                if (!ok)
+                    lastDispersion = 100;
+
+                printf("\nPrepared to start search on dispersions %d-%d\n\n", firstDispersion, lastDispersion);
                 while (true) {
                     printf("Please enter path to save database: ");
                     cutterPath = input.readLine();
@@ -745,6 +757,18 @@ QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int
     for (int i = 0; i < res.size(); i++)
         res[i] /= (data.channels - 1);
 
+    int window = std::fabs((4.1488) * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D / data.oneStep) + 0.5;
+    double cur = 0;
+    for (int i = 0; i < window; i++)
+        cur += res[i];
+
+    if (window > 0)
+        for (int i = window; i < res.size(); i++) {
+            cur += res[i];
+            cur -= res[i - window];
+            res[i] = cur;
+        }
+
     return res;
 }
 
@@ -786,7 +810,7 @@ void FileSummator::transientProcess(Data &data) {
                     PulsarWorker::subtract(data.data[module][channel][ray] + i, std::min(step, data.npoints - i));
             }
 
-            for (int disp = 2; disp <= 100; disp++) {
+            for (int disp = firstDispersion; disp <= lastDispersion; disp++) {
                 QVector<double> res = applyDispersion(data, disp, module, ray);
                 double noise = 0;
                 for (int i = 0; i < res.size(); i++)

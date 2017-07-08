@@ -38,6 +38,7 @@ private:
 
     bool longData = false;
     int PC;
+    int firstDispersion, lastDispersion;
     QString cutterPath;
 
     Data stairs;

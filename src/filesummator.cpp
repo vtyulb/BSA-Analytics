@@ -837,7 +837,7 @@ void FileSummator::transientProcess(Data &data) {
                             }
 
 
-                            if (transientsCount[block] > TRANSIENT_COUNT_TRESH) {
+                            if (transientsCount[block] > TRANSIENT_COUNT_TRESH * (lastDispersion - firstDispersion) / 100) {
                                 printf("X");
                                 int last = numberOfPieces[block];
                                 numberOfPieces[block] -= transientsCount[block];

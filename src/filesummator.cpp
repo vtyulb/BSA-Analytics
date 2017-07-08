@@ -762,14 +762,15 @@ QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int
     for (int i = 0; i < window; i++)
         cur += res[i];
 
+    QVector<double> rr = res;
     if (window > 0)
         for (int i = window; i < res.size(); i++) {
             cur += res[i];
             cur -= res[i - window];
-            res[i] = cur;
+            rr[i] = cur;
         }
 
-    return res;
+    return rr;
 }
 
 bool FileSummator::transientCheckAmplification(const Data &data, int point, int module, int ray, int dispersion) {

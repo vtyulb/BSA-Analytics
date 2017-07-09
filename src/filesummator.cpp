@@ -814,13 +814,15 @@ void FileSummator::transientProcess(Data &data) {
             for (int disp = firstDispersion; disp <= lastDispersion; disp++) {
                 QVector<double> res = applyDispersion(data, disp, module, ray);
                 double noise = 0;
-                for (int i = 0; i < res.size(); i++)
-                    noise += res[i] * res[i];
-                noise /= res.size();
-                noise = pow(noise, 0.5);
+                int offset = 1000;
+                for (int i = offset / 2; i < offset * 3 / 2; i++)
+                    noise += res[i] * res[i] / offset;
 
-                for (int i = 1000; i < res.size() - 1000; i++)
-                    if (res[i] / noise > TRANSIENT_THRESH)
+                for (int i = 1000; i < res.size() - 1000; i++) {
+                    noise += res[i + offset / 2] * res[i + offset / 2] / offset;
+                    noise -= res[i - offset / 2] * res[i - offset / 2] / offset;
+                    double rnoise = pow(noise, 0.5);
+                    if (res[i] / rnoise > TRANSIENT_THRESH)
                         if (res[i] / data.data[module][32][ray][i] > TRANSIENT_AMPLIFICATION_TRESH) {
                             double realPart;
                             StarTime::StarTime(data, i, &realPart);
@@ -830,7 +832,7 @@ void FileSummator::transientProcess(Data &data) {
                             if (transientsCount[block] == -1)
                                 continue;
 
-                            bool dumped = dumpTransient(res, data, i, block, module, ray, disp, res[i] / noise);
+                            bool dumped = dumpTransient(res, data, i, block, module, ray, disp, res[i] / rnoise);
                             if (dumped) {
                                 transientsCount[block]++;
                                 total++;
@@ -853,6 +855,7 @@ void FileSummator::transientProcess(Data &data) {
 
                             i += 200;
                         }
+                }
             }
         }
 

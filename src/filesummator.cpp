@@ -814,11 +814,11 @@ void FileSummator::transientProcess(Data &data) {
             for (int disp = firstDispersion; disp <= lastDispersion; disp++) {
                 QVector<double> res = applyDispersion(data, disp, module, ray);
                 double noise = 0;
-                int offset = 1000;
+                int offset = 3000;
                 for (int i = offset / 2; i < offset * 3 / 2; i++)
                     noise += res[i] * res[i] / offset;
 
-                for (int i = 1000; i < res.size() - 1000; i++) {
+                for (int i = offset; i < res.size() - offset; i++) {
                     noise += res[i + offset / 2] * res[i + offset / 2] / offset;
                     noise -= res[i - offset / 2] * res[i - offset / 2] / offset;
                     double rnoise = pow(noise, 0.5);

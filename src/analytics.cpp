@@ -1835,7 +1835,7 @@ void Analytics::applyTransientGraphicFilter() {
         double v1 = 109.0390625;
         double v2 = 109.1171875;
         double mx = 0;
-        int startPoint;
+        int startPoint = 0;
         for (int i = 0; i < p.data.npoints; i++)
             if (p.data.data[0][32][0][i] > mx) {
                 startPoint = i;

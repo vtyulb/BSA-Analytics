@@ -20,7 +20,7 @@
 #include <QUuid>
 
 const QString installerName = QDir::tempPath() + "/BSA-Analytics-x64.exe";
-const QString downloadUrl("https://bsa.vtyulb.ru/BSA-Analytics-x64.exe");
+const QString downloadUrl("https://bsa.vtyulb.ru/downloads/BSA-Analytics-x64.exe");
 
 Updater::Updater(QObject *parent) : QObject(parent)
 {

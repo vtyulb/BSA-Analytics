@@ -122,6 +122,7 @@ private slots:
     void applyTransientMultipleRaysFilter();
     void applyTransientTrashDays();
     void applyTransientAllowedDays();
+    void applyTransientGraphicFilter();
 
     void enableTransientWhitezone(bool);
 
@@ -137,6 +138,7 @@ private slots:
     void knownPulsarsGUI();
     void oneWindow();
 
+    void transientGraphicFilterTriggered();
     void transientShowDetalization();
     void transientSaveImage(bool forPublication = false);
     void transientSaveImageForPublication();

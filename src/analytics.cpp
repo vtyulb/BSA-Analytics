@@ -66,6 +66,8 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QObject::connect(ui->fourierSelectBestAuto, SIGNAL(clicked(bool)), this, SLOT(fourierSelectBestAuto()));
     QObject::connect(ui->fourierSelectBest, SIGNAL(toggled(bool)), this, SLOT(fourierSelectBestEnabled(bool)));
 
+    QObject::connect(ui->transinetGraphicFilter, SIGNAL(clicked(bool)), this, SLOT(transientGraphicFilterTriggered()));
+
     QObject::connect(ui->oneWindow, SIGNAL(clicked()), this, SLOT(oneWindow()));
 
     maxModule = 6;
@@ -390,6 +392,7 @@ void Analytics::apply(bool fullFilters) {
         p.data.modules = 1;
         p.data.channels = 1;
         p.data.rays = 1;
+        p.snr = 0;
         p.data.init();
         pl->push_back(p);
     }
@@ -1038,11 +1041,14 @@ void Analytics::applyTransientFilters() {
     if (ui->multipleRaysFilter->isChecked())
         applyTransientMultipleRaysFilter();
 
-    if (ui->trashDays->isChecked())
+    if (ui->trashDays->isChecked() && ui->trashDays->isEnabled())
         applyTransientTrashDays();
 
     if (ui->fourierAllowedDatesCheckbox->isChecked())
         applyTransientAllowedDays();
+
+    if (ui->transinetGraphicFilter->isChecked())
+        applyTransientGraphicFilter();
 }
 
 void Analytics::applyFourierFilters() {
@@ -1820,11 +1826,54 @@ void Analytics::applyTransientAllowedDays() {
     }
 }
 
+void Analytics::applyTransientGraphicFilter() {
+    for (int i = 0; i < pulsars->size(); i++) {
+        Pulsar p = pulsars->at(i);
+        if (!p.filtered)
+            continue;
+
+        double v1 = 109.0390625;
+        double v2 = 109.1171875;
+        double mx = 0;
+        int startPoint;
+        for (int i = 0; i < p.data.npoints; i++)
+            if (p.data.data[0][32][0][i] > mx) {
+                startPoint = i;
+                mx = p.data.data[0][32][0][i];
+            }
+
+        int goodPoints = 0;
+        for (int j = 0; j < 32; j++) {
+            int dt = int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * p.dispersion * j /  0.0124928 + 0.5);
+            if (startPoint + dt > p.data.npoints - 2 || startPoint + dt < 2)
+                continue;
+
+            float pt = 0;
+            for (int k = -1; k < 2; k++)
+                pt = std::max(pt, p.data.data[0][j][0][startPoint + dt + k]);
+
+            QVector<float> all;
+            for (int k = 0; k < p.data.npoints; k++)
+                all.push_back(p.data.data[0][j][0][k]);
+
+            std::sort(all.begin(), all.end());
+            goodPoints += pt > all.at(all.size() - 7);
+        }
+
+        pulsarsEnabled[i] = pulsarsEnabled[i] && (goodPoints > 20);
+    }
+}
+
 void Analytics::transientShowDetalization() {
     if (list->currentPulsar->filtered)
         TransientDetalizator::run(1, 1, QTime(), "", list->currentPulsar->data);
     else
         QMessageBox::information(this, "There is a problem", "There is no detalization for whitezone available");
+}
+
+void Analytics::transientGraphicFilterTriggered() {
+    bool checked = ui->transinetGraphicFilter->isChecked();
+    ui->trashDays->setEnabled(!checked);
 }
 
 Analytics::~Analytics() {

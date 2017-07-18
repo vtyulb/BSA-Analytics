@@ -831,12 +831,31 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="transinetGraphicFilter">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tries to simulate human eye.&lt;br/&gt;No machine learning was used,&lt;br/&gt;and no machines were harmed.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Graphic filter</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="trashDays">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
         <property name="toolTip">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Removes all objects from current ray and module if more than 6 objects found&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>Ignore trash days</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
         </property>
         <property name="checked">
          <bool>true</bool>

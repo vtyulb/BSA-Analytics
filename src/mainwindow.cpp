@@ -213,8 +213,14 @@ void MainWindow::regenerate(Data &data) {
         qDebug() << "resetting drawer";
         QLayout *layout = drawer->parentWidget()->layout();
         delete drawer;
+        QWidget *item = NULL;
+        if (layout->count() == 1)
+            item = layout->itemAt(0)->widget();
+
         drawer = new Drawer(data, this);
         layout->addWidget(drawer);
+        if (item)
+            layout->addWidget(item);
     } else {
         drawer = new Drawer(data, this);
         ui->centralWidget->layout()->addWidget(drawer);
@@ -417,15 +423,24 @@ void MainWindow::addWidgetToMainLayout(QWidget *w1, QWidget *w2, bool addSpectre
     ui->centralWidget->layout()->addWidget(w1);
     ui->centralWidget->layout()->addWidget(w2);
     if (drawer) {
+        QWidget *rightSide = new QWidget;
+        QVBoxLayout *layout = new QVBoxLayout(rightSide);
+        layout->setContentsMargins(0, 0, 0, 0);
+
+        layout->addWidget(drawer);
         if (addSpectre) {
             qDebug() << "spectre drawer created";
             SpectreDrawer *spectreDrawer = new SpectreDrawer;
-            spectreDrawer->setMinimumHeight(640);
+            spectreDrawer->setMinimumHeight(500);
+            spectreDrawer->setMaximumHeight(500);
             Settings::settings()->setSpectreDrawer(spectreDrawer);
-            ui->centralWidget->layout()->addWidget(spectreDrawer);
+            layout->addWidget(spectreDrawer);
+            spectreDrawer->hide();
         }
 
-        ui->centralWidget->layout()->addWidget(drawer);
+
+
+        ui->centralWidget->layout()->addWidget(rightSide);
     }
 }
 

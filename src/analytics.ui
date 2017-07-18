@@ -1108,6 +1108,9 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox_7">
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Для сложения профилей на всех мерах дисперсии&lt;br/&gt;рекомендуется следующая последовательность действий:&lt;/p&gt;&lt;p&gt;1) Загрузить все *.pulsar файлы&lt;br/&gt;2) Выбрать первый файл из списка&lt;br/&gt;3) Нажать на кнопку Mem&lt;br/&gt;4) Выбрать следующий файл&lt;br/&gt;5) Нажать на кнопку M+&lt;br/&gt;6) Если еще остались файлы, то перейти на п.4&lt;/p&gt;&lt;p&gt;Профили будут сложены сразу на всех дисперсиях&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="title">
       <string>Profile</string>
      </property>

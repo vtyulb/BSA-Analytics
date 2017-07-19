@@ -757,7 +757,7 @@ QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int
     for (int i = 0; i < res.size(); i++)
         res[i] /= (data.channels - 1);
 
-    /*int window = std::fabs((4.1488) * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D / data.oneStep) + 0.5;
+    int window = std::fabs((4.1488) * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D / data.oneStep) + 0.5;
     double cur = 0;
     for (int i = 0; i < window; i++)
         cur += res[i];
@@ -768,9 +768,9 @@ QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int
             cur += res[i];
             cur -= res[i - window];
             rr[i] = cur;
-        }*/
+        }
 
-    return res;
+    return rr;
 }
 
 bool FileSummator::transientCheckAmplification(const Data &data, int point, int module, int ray, int dispersion) {
@@ -839,7 +839,7 @@ void FileSummator::transientProcess(Data &data) {
                             }
 
 
-                            if (transientsCount[block] > TRANSIENT_COUNT_TRESH * (lastDispersion - firstDispersion) / 100) {
+                            if (transientsCount[block] > TRANSIENT_COUNT_TRESH * (lastDispersion - firstDispersion) / 100 && lastDispersion < 150) {
                                 printf("X");
                                 int last = numberOfPieces[block];
                                 numberOfPieces[block] -= transientsCount[block];

@@ -7,6 +7,7 @@
 #include <QTextBrowser>
 #include <QTime>
 
+#include <crosscorrelation.h>
 #include <datachecker.h>
 #include <datarenamer.h>
 #include <settings.h>

@@ -49,7 +49,8 @@ SOURCES += main.cpp\
     datachecker.cpp \
     transientperiod.cpp \
     datarenamer.cpp \
-    transientdetalizator.cpp
+    transientdetalizator.cpp \
+    crosscorrelation.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -89,7 +90,8 @@ HEADERS  += mainwindow.h \
     datachecker.h \
     transientperiod.h \
     datarenamer.h \
-    transientdetalizator.h
+    transientdetalizator.h \
+    crosscorrelation.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

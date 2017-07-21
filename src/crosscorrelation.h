@@ -8,10 +8,13 @@
 class CrossCorrelation
 {
 public:
-    static QVector<float> process(const Data &data, int module, int ray, int offset);
+    QVector<double> process(const Data &data, int module, int ray, int offset);
 
 private:
-    static double findBaseline(const Data &data, int module, int ray, int offset);
+    QVector<float> profile[32];
+
+    double correlation(int disp);
+    void subtractNull(QVector<double> &data);
 };
 
 #endif // CROSSCORRELATION_H

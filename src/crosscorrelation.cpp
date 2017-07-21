@@ -9,8 +9,8 @@
 #include <QDebug>
 #include <QApplication>
 
-const int window = 3;
-const int size = 2048;
+const int window = CROSS_CORRELATION_WINDOW;
+const int size = CROSS_CORRELATION_SIZE;
 const int FIRST_DISPERSION = 0;
 const int LAST_DISPERSION = 350;
 const double v1 = 109.0390625;

@@ -19,6 +19,7 @@ private:
     void transientProcess(Data &data);
     bool processData(Data &data);
     bool processLongData(Data &data);
+    void processFRB(Data &data, int module, int ray, int offset, QVector<double> &autoCorrelation, int block);
     void dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber);
     bool dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion, double snr);
     bool transientCheckAmplification(const Data &data, int point, int module, int ray, int dispersion);
@@ -37,6 +38,7 @@ private:
     QVector<double> applyDispersion(Data &data, int D, int module, int ray);
 
     bool longData = false;
+    bool FRBmode = false;
     int PC;
     int firstDispersion, lastDispersion;
     QString cutterPath;

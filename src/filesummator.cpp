@@ -5,12 +5,13 @@
 #include <QTextStream>
 #include <QDir>
 
+#include <crosscorrelation.h>
+#include <data.h>
+#include <datadumper.h>
+#include <fourier.h>
+#include <pulsarworker.h>
 #include <reader.h>
 #include <startime.h>
-#include <data.h>
-#include <fourier.h>
-#include <datadumper.h>
-#include <pulsarworker.h>
 
 #include <algorithm>
 
@@ -72,16 +73,15 @@ void FileSummator::run() {
             printf("Do you want to start transient search [y/N] ");
             if (input.readLine().toUpper() == "Y") {
                 transientSearch = true;
-                printf("Please enter first disperion [2]: ");
-                bool ok;
-                firstDispersion = input.readLine().toInt(&ok);
-                if (!ok)
-                    firstDispersion = 2;
+                firstDispersion = 2;
+                lastDispersion = 100;
 
-                printf("Please enter last dispersion [100]: ");
-                lastDispersion = input.readLine().toInt(&ok);
-                if (!ok)
-                    lastDispersion = 100;
+                printf("Do you want to search for FRB instead of transients (dispersions 100-1000)? [y/N] ");
+                if (input.readLine().toUpper() == "Y") {
+                    firstDispersion = 100;
+                    lastDispersion = 1000;
+                    FRBmode = true;
+                }
 
                 printf("\nPrepared to start search on dispersions %d-%d\n\n", firstDispersion, lastDispersion);
                 while (true) {
@@ -90,8 +90,12 @@ void FileSummator::run() {
                     QDir dir(cutterPath);
                     cutterPath = dir.absolutePath() + "/result/";
                     if (dir.mkdir("result"))
-                        if (QFile(cutterPath + "transients").open(QIODevice::WriteOnly))
+                        if (QFile(cutterPath + "transients").open(QIODevice::WriteOnly)) {
+                            if (FRBmode)
+                                QFile(cutterPath + "FRB").open(QIODevice::WriteOnly);
+
                             break;
+                        }
                 }
 
                 printf("Path [%s] accepted\n\n", cutterPath.toLocal8Bit().constData());
@@ -363,6 +367,34 @@ bool FileSummator::processLongData(Data &data) {
     return true;
 }
 
+void FileSummator::processFRB(Data &data, int module, int ray, int offset, QVector<double> &autoCorrelation, int block) {
+    double sigma = 0;
+    QVector<double> r = autoCorrelation;
+    std::sort(r.begin(), r.end());
+    for (int i = 10; i < r.size() - 10; i++)
+        sigma += r[i] * r[i];
+
+    sigma /= (r.size() - 20);
+    sigma = sqrt(sigma);
+
+    int mxAt = 0;
+    for (int i = 0; i < autoCorrelation.size(); i++)
+        if (autoCorrelation[i] > autoCorrelation[mxAt])
+            mxAt = i;
+
+    double snr = autoCorrelation[mxAt] / sigma;
+    int dispersion = mxAt * CROSS_CORRELATION_WINDOW;
+    if (snr > 6.5) {
+        qDebug() << "dispersion" << dispersion << "snr" << snr << "point" << offset << "module" << module << "ray" << ray;
+        for (int i = 0; i < autoCorrelation.size(); i++)
+            if (i != mxAt)
+                autoCorrelation[i] /= autoCorrelation[mxAt];
+
+        autoCorrelation[mxAt] = 1;
+        dumpTransient(autoCorrelation, data, offset, block, module, ray, dispersion, snr);
+    }
+}
+
 void FileSummator::findFiles(QString path, QStringList &names, const QStringList &extensions) {
     QDir dir(path);
     printf("scanning %s\n", path.toUtf8().constData());
@@ -466,12 +498,8 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
 }
 
 bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion, double snr) {
-    double realSeconds;
-    StarTime::StarTime(rawData, startPoint, &realSeconds);
-
     QMap<QString, QString> headerAddition;
     headerAddition["native_datetime"] = rawData.name;
-    headerAddition["star_time"] = QString::number(realSeconds, 'g', 10);
     headerAddition["module"] = QString::number(module + 1);
     headerAddition["ray"] = QString::number(ray + 1);
     headerAddition["rays"] = "1";
@@ -486,6 +514,11 @@ bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     int start = startPoint + dispersion * 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * 32 / rawData.oneStep - 10;
     int end = startPoint + 17;
 
+    if (FRBmode) {
+        start = startPoint;
+        end = startPoint + CROSS_CORRELATION_SIZE;
+    }
+
     Data res = rawData;
     res.modules = 1;
     res.channels = 33;
@@ -493,21 +526,39 @@ bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     res.npoints = end - start;
     res.init();
 
-    QVector<double> chk(end - start, 0);
-    double chkMx = 0;
-    for (int i = start; i < end; i++)
-        for (int j = 0; j < rawData.channels - 1; j++) {
-            chk[i - start] += rawData.data[module][j][ray][i];
-            chkMx = std::max(chkMx, chk[i - start] / (rawData.channels - 1));
+    if (!FRBmode) {
+        QVector<double> chk(end - start, 0);
+        double chkMx = 0;
+        for (int i = start; i < end; i++)
+            for (int j = 0; j < rawData.channels - 1; j++) {
+                chk[i - start] += rawData.data[module][j][ray][i];
+                chkMx = std::max(chkMx, chk[i - start] / (rawData.channels - 1));
+            }
+
+        if (data[startPoint] < chkMx * TRANSIENT_FILTER_AMPLIFICATION_TRESH) {
+            res.releaseData();
+            return false;
         }
 
-    if (data[startPoint] < chkMx * TRANSIENT_FILTER_AMPLIFICATION_TRESH) {
-        res.releaseData();
-        return false;
+        for (int i = start; i < end; i++)
+            res.data[0][32][0][i - start] = data[i];
+    } else {
+        int i = 0;
+        int curValue = 0;
+        while (i < res.npoints - 5) {
+            for (int k = 0; k < CROSS_CORRELATION_WINDOW; k++)
+                if (curValue >= data.size())
+                    res.data[0][32][0][i++] = 0;
+                else
+                    res.data[0][32][0][i++] = data[curValue];
+
+            curValue++;
+        }
+
+        for (int i = res.npoints - 5; i < res.npoints; i++)
+            res.data[0][32][0][i] = 0;
     }
 
-    for (int i = start; i < end; i++)
-        res.data[0][32][0][i - start] = data[i];
 
     for (int i = start; i < end; i++)
         for (int channel = 0; channel < 32; channel++)
@@ -800,10 +851,24 @@ void FileSummator::transientProcess(Data &data) {
 
     QVector<int> transientsCount(500, 0);
     int total = 0;
+    const int offset = 3000;
     for (int module = 0; module < data.modules; module++)
         for (int ray = 0; ray < data.rays; ray++) {
             printf(".");
             fflush(stdout);
+
+            if (FRBmode) {
+                for (int i = offset; i < data.npoints - offset; i += CROSS_CORRELATION_SIZE / 2) {
+                    QVector<double> cr = CrossCorrelation().process(data, module, ray, i);
+                    double realPart;
+                    StarTime::StarTime(data, i, &realPart);
+                    int startPoint = realPart / data.oneStep;
+                    int offset = PC - startPoint % PC;
+                    int block = (startPoint + offset) / PC;
+                    processFRB(data, module, ray, i, cr, block);
+                }
+                continue;
+            }
 
             const int step =  INTERVAL / data.oneStep;
             for (int channel = 0; channel < data.channels; channel++) {
@@ -814,7 +879,6 @@ void FileSummator::transientProcess(Data &data) {
             for (int disp = firstDispersion; disp <= lastDispersion; disp++) {
                 QVector<double> res = applyDispersion(data, disp, module, ray);
                 double noise = 0;
-                int offset = 3000;
                 for (int i = offset / 2; i < offset * 3 / 2; i++)
                     noise += res[i] * res[i] / offset;
 

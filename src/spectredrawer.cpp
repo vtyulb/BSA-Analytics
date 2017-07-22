@@ -30,6 +30,7 @@ SpectreDrawer::SpectreDrawer():
     ui(NULL)
 {
     addFromMem = false;
+    isWorking = false;
     restoreGeometry(QSettings().value("SpectreGeometry").toByteArray());
     setAttribute(Qt::WA_DeleteOnClose);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
@@ -85,6 +86,7 @@ void SpectreDrawer::drawSpectre(int module, int ray, QString fileName, QTime tim
 }
 
 void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime time, double period, int startPoint) {
+    isWorking = true;
     if (data.isValid())
         data.releaseData();
 
@@ -156,6 +158,8 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
 
     this->reDraw();
     this->show();
+    qApp->processEvents();
+    isWorking = false;
 }
 
 void SpectreDrawer::reDraw() {
@@ -177,11 +181,6 @@ void SpectreDrawer::reDraw() {
 
     rawRes.clear();
     for (int  i = 0; i < data.channels / chs - 1; i++) {
-        if (Settings::settings()->getProgressBar()) {
-            Settings::settings()->getProgressBar()->setValue(i * 100 / (data.channels / chs));
-            qApp->processEvents();
-        }
-
         QVector<double> res;
         for (int j = 0; j < r[0].size() - tms; j++) {
             double  sum = 0;

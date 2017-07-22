@@ -229,6 +229,11 @@ void PulsarList::keyPressEvent(QKeyEvent *event) {
     if (!selectionModel()->selection().indexes().size())
         return;
 
+    if (Settings::settings()->transientAnalytics())
+        if (Settings::settings()->getSpectreDrawer())
+            if (Settings::settings()->getSpectreDrawer()->isWorking)
+                return;
+
     int current = selectionModel()->selection().indexes().at(0).row();
     if (event->key() == Qt::Key_Insert) {
         markObject();

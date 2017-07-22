@@ -123,6 +123,10 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
         QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
         QObject::connect(ui->hideButton, SIGNAL(clicked()), this, SLOT(hide()));
+
+        QAction *saveAsAction = new QAction("Save as...");
+        QObject::connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
+        ui->drawer->addAction(saveAsAction);
     }
 
     if (!Settings::settings()->transientAnalytics())
@@ -337,6 +341,7 @@ void SpectreDrawer::saveAs() {
             savePath += ".png";
 
         ui->drawer->spectre.save(savePath);
+        QDesktopServices::openUrl(QUrl::fromLocalFile(savePath));
     }
 }
 

@@ -7,6 +7,7 @@
 NativeSpectreDrawer::NativeSpectreDrawer(QWidget *parent):
     QWidget(parent)
 {
+    setContextMenuPolicy(Qt::ActionsContextMenu);
 }
 
 void NativeSpectreDrawer::paintEvent(QPaintEvent*) {

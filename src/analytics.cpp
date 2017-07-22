@@ -1648,16 +1648,21 @@ void Analytics::transientSaveImage(bool forPublication) {
         for (int j = 0; j < 50; j++)
             res.setPixel(j, i, QColor(255, 255, 255).rgb());
 
-    QString data = "Block: " + QString::number(ui->fourierBlockNo->value()) + "\n" +
-                   "Impulse time: " + p->data.time.time().toString() + "\n" +
-                   "Module: " + QString::number(p->module) + "\n" +
+    bool shrt = Settings::settings()->getTransientImpulseTime().size() < 10;
+    QString data = "Block: " + QString::number(ui->fourierBlockNo->value()) + "\n";
+    if (shrt)
+        data +=    "Impulse time: " + p->data.time.time().toString() + "\n";
+    data +=        "Module: " + QString::number(p->module) + "\n" +
                    "Ray: " + QString::number(p->ray) + "\n" +
-                   "Dispersion: " + QString::number(p->dispersion) + "\n" +
-                   "Original file name: " + p->data.previousLifeName.split(" ").last() + "\n" +
+                   "Dispersion: " + QString::number(p->dispersion) + "\n";
+    if (shrt) {
+        data +=    "Original file name: " + p->data.previousLifeName.split(" ").last() + "\n" +
                    "Point: " + QString::number(-p->data.sigma, 'f', 0) + "\n" +
                    "File name in block: " + QString(p->data.previousLifeName.split(" ").at(1) + p->data.previousLifeName.split(" ").at(2)).replace("from", "") + "\n";
-
-    data += Settings::settings()->getTransientImpulseTime();
+    } else {
+        data += QString("Ground: ") + (list->currentPulsar->data.previousLifeName.contains("N1") ? "N1" : "N2") + "\n";
+        data += Settings::settings()->getTransientImpulseTime();
+    }
 
     if (forPublication)
         res = res.copy(50, 0, res.width() - 50, res.height());

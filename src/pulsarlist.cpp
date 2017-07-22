@@ -395,7 +395,7 @@ void PulsarList::sumUpMarked() {
     av /= times.count();
 
     QString resTime = "\n" + QString::number(times.size()) + " impulses summed up\n";
-    resTime += "Strong star time: ";
+    resTime += "Average star time: ";
     resTime += QString::number(av / 60 / 60) + ":" + QString::number(av / 60 % 60) + ":" + QString::number(av % 60);
     resTime += QString::fromUtf8("\u00B1");
     double diff = 0;

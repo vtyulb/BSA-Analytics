@@ -218,7 +218,8 @@ void FileSummator::run() {
             data.releaseData();
 
             filesProcessed.insert(fileNames[i]);
-            saveCuttingState();
+            if (i % 300 == 0)
+                saveCuttingState();
         }
 
         if (fileNames.size()) {
@@ -605,6 +606,7 @@ void FileSummator::saveCuttingState() {
         for (QSet<QString>::Iterator i = filesProcessed.begin(); i != filesProcessed.end(); i++)
             stream << (*i) << "\n";
 
+        dumpStairs(stairs, stairsNames);
         f.close();
     }
 }

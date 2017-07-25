@@ -130,7 +130,7 @@ void pulsarEngine(int argc, char **argv) {
                "\t\t[--normalize] [--period-tester] [--single-period] [--flux-density] [--run-analytics-after]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("BSA-Analytics --data-checker <path to data>\n");
-        printf("BSA-Analytics --data-renamer <path to data>\n");
+        printf("BSA-Analytics --data-renamer <path to data>[,path2[,path3...]]\n");
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double> --time <09:01:00>\n");
         printf("BSA-Analytics --file-summator\n");
         printf("BSA-Analytics --flowing-window input-file output-file number-of-points\n");

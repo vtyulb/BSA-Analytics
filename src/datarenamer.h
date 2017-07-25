@@ -9,7 +9,7 @@ public:
     DataRenamer() {};
 
     void run(QString path);
-    void repairDir(QString path);
+    void repairDir(QStringList paths, int block);
 };
 
 #endif // DATARENAMER_H

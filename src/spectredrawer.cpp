@@ -126,7 +126,7 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
         QObject::connect(ui->hideButton, SIGNAL(clicked()), this, SLOT(hide()));
 
-        QAction *saveAsAction = new QAction("Save as...");
+        QAction *saveAsAction = new QAction("Save as...", this);
         QObject::connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
         ui->drawer->addAction(saveAsAction);
     }

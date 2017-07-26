@@ -46,6 +46,7 @@ private:
     int maxRay;
     bool fourier;
     bool transient;
+    bool frb;
     bool transientWhitezoneEnabled = true;
     int fourierSpectreSize;
     bool longData;
@@ -105,6 +106,7 @@ private slots:
 
     void applyFourierFilters();
     void applyTransientFilters();
+    void applyFRBFilters();
 
     void findTransientPeriod();
 
@@ -123,6 +125,11 @@ private slots:
     void applyTransientTrashDays();
     void applyTransientAllowedDays();
     void applyTransientGraphicFilter();
+
+    void applyFRBnegativeProfiles();
+    void applyFRBstandardDispersions();
+    void applyFRBtooWhiteSpectres();
+    void applyFRBinverseDecision();
 
     void enableTransientWhitezone(bool);
 

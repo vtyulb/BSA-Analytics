@@ -29,7 +29,7 @@
       <item>
        <layout class="QGridLayout" name="gridLayout">
         <item row="0" column="0">
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="periodLabel">
           <property name="text">
            <string>Period</string>
           </property>
@@ -132,7 +132,7 @@
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="label_13">
+         <widget class="QLabel" name="periodRangeLabel">
           <property name="text">
            <string>Period range</string>
           </property>
@@ -1024,6 +1024,46 @@
           <number>0</number>
          </property>
         </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="FRBGroupBox">
+     <property name="title">
+      <string>FRB filters</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_8">
+      <item>
+       <widget class="QCheckBox" name="frbNegativeProfiles">
+        <property name="text">
+         <string>Block negative profiles</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="frbStandardDispersions">
+        <property name="text">
+         <string>Ban standard dispersions</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="frbWhiteSpectres">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Too white spectres</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="frbInverse">
+        <property name="text">
+         <string>Inverse decision</string>
+        </property>
        </widget>
       </item>
      </layout>

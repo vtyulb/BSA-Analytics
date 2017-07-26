@@ -37,6 +37,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     pulsars(new QVector<Pulsar>),
     fourier(fourier),
     transient(false),
+    frb(false),
     longData(false),
     totalFilesLoaded(0),
     cacheLoaded(false)
@@ -77,12 +78,16 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     fileNames.push_back("all files");
 
     setAttribute(Qt::WA_DeleteOnClose);
+    ui->FRBGroupBox->hide();
 
     if (QDir(folder).entryList().contains("noises.pnt") || QDir(folder).entryList().contains("noises.pnthr"))
         fourier = true, this->fourier = true;
 
     if (QDir(folder).entryList().contains("transients"))
         fourier = true, this->fourier = true, transient = true;
+
+    if (QDir(folder).entryList().contains("FRB"))
+        frb = true;
 
     if (fourier) {
         Settings::settings()->setFourierAnalytics(true);
@@ -151,6 +156,15 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         Settings::settings()->setTransientAnalytics(true);
     } else
         ui->transientGroupBox->hide();
+
+    if (frb) {
+        ui->transinetGraphicFilter->setChecked(false);
+        ui->FRBGroupBox->show();
+
+        ui->period->hide();
+        ui->periodCheckBox->hide();
+        ui->periodLabel->hide();
+    }
 
     this->restoreGeometry(QSettings().value("AnalyticsGeometry").toByteArray());
 
@@ -379,6 +393,9 @@ void Analytics::apply(bool fullFilters) {
 
     if (transient)
         applyTransientFilters();
+
+    if (frb)
+        applyFRBFilters();
 
     Pulsars pl = new QVector<Pulsar>;
     for (int i = 0; i < pulsars->size(); i++)
@@ -1049,6 +1066,20 @@ void Analytics::applyTransientFilters() {
 
     if (ui->transinetGraphicFilter->isChecked())
         applyTransientGraphicFilter();
+}
+
+void Analytics::applyFRBFilters() {
+    if (ui->frbNegativeProfiles->isChecked())
+        applyFRBnegativeProfiles();
+
+    if (ui->frbStandardDispersions->isChecked())
+        applyFRBstandardDispersions();
+
+    if (ui->frbWhiteSpectres->isChecked())
+        applyFRBtooWhiteSpectres();
+
+    if (ui->frbInverse->isChecked())
+        applyFRBinverseDecision();
 }
 
 void Analytics::applyFourierFilters() {
@@ -1737,6 +1768,36 @@ void Analytics::buildTransientWhitezone(Pulsars &res) {
 
 void Analytics::enableTransientWhitezone(bool b) {
     transientWhitezoneEnabled = b;
+}
+
+void Analytics::applyFRBinverseDecision() {
+    for (int i = 0; i < pulsars->size(); i++)
+        pulsarsEnabled[i] = !pulsarsEnabled[i];
+}
+
+void Analytics::applyFRBnegativeProfiles() {
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i]) {
+            Pulsar p = pulsars->at(i);
+            for (int j = 0; j < p.data.npoints; j++)
+                if (p.data.data[0][32][0][j] < -10) {
+                    pulsarsEnabled[i] = false;
+                    break;
+                }
+
+        }
+}
+
+void Analytics::applyFRBstandardDispersions() {
+    QSet<int> dispersions;
+    dispersions << 300 << 600;
+    for (int i = 0; i < pulsars->size(); i++)
+        if (dispersions.contains(pulsars->at(i).dispersion))
+            pulsarsEnabled[i] = false;
+}
+
+void Analytics::applyFRBtooWhiteSpectres() {
+
 }
 
 void Analytics::applyTransientLoneObjects() {

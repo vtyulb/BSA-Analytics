@@ -388,8 +388,11 @@ void FileSummator::processFRB(Data &data, int module, int ray, int offset, QVect
     if (snr > 6.5) {
         qDebug() << "dispersion" << dispersion << "snr" << snr << "point" << offset << "module" << module << "ray" << ray;
         for (int i = 0; i < autoCorrelation.size(); i++)
-            if (i != mxAt)
+            if (i != mxAt) {
                 autoCorrelation[i] /= autoCorrelation[mxAt];
+                if (autoCorrelation[i] < -10)
+                    return;
+            }
 
         autoCorrelation[mxAt] = 1;
         dumpTransient(autoCorrelation, data, offset, block, module, ray, dispersion, snr);

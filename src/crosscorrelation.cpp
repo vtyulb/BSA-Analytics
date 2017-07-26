@@ -107,3 +107,39 @@ void CrossCorrelation::subtractNull(QVector<double> &data) {
 
     data = res;
 }
+
+Data CrossCorrelation::determinePreciseInterval(const Data &data, int &dispersion) {
+    int mxd = abs(int(4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * dispersion * 32 / 0.0124928 + 0.5)) + 10;
+
+    double globalMax = -1e+10;
+    int bestOffset = 0;
+    int bestDispersion = 0;
+
+    for (int offset = 0; offset < data.npoints - mxd; offset++) {
+        for (int i = 0; i < 32; i++)
+            profile[i].clear();
+
+        for (int i = 0; i < mxd; i++)
+            for (int channel = 0; channel < 32; channel++)
+                profile[channel].push_back(data.data[0][channel][0][offset + i]);
+
+        for (int disp = dispersion - 5; disp < dispersion + 5; disp++) {
+            double corr = correlation(disp);
+            if (corr > globalMax) {
+                globalMax = corr;
+                bestOffset = offset;
+                bestDispersion = disp;
+            }
+        }
+    }
+
+    Data res = data;
+    res.npoints = mxd;
+    res.fork();
+    for (int i = 0; i < mxd; i++)
+        for (int channel = 0; channel < 33; channel++)
+            res.data[0][channel][0][i] = data.data[0][channel][0][i + bestOffset];
+
+    dispersion = bestDispersion;
+    return res;
+}

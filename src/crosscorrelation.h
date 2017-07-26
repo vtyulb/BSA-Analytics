@@ -12,6 +12,7 @@ class CrossCorrelation
 {
 public:
     QVector<double> process(const Data &data, int module, int ray, int offset);
+    Data determinePreciseInterval(const Data &data, int &dispersion);
 
 private:
     QVector<float> profile[32];

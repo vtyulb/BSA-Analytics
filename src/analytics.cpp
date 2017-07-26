@@ -1,11 +1,12 @@
 #include "analytics.h"
 #include "ui_analytics.h"
 
+#include <crosscorrelation.h>
+#include <fourier.h>
+#include <pulsarlist.h>
 #include <pulsarreader.h>
 #include <pulsarworker.h>
-#include <pulsarlist.h>
 #include <settings.h>
-#include <fourier.h>
 #include <transientdetalizator.h>
 #include <transientperiod.h>
 
@@ -164,6 +165,12 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->period->hide();
         ui->periodCheckBox->hide();
         ui->periodLabel->hide();
+
+        ui->time->hide();
+        ui->timeCheckBox->hide();
+        ui->timeLabel->hide();
+
+        QObject::connect(ui->frbPreciseDetermine, SIGNAL(clicked()), this, SLOT(applyFRBpreciseDetermine()));
     }
 
     this->restoreGeometry(QSettings().value("AnalyticsGeometry").toByteArray());
@@ -1784,7 +1791,6 @@ void Analytics::applyFRBnegativeProfiles() {
                     pulsarsEnabled[i] = false;
                     break;
                 }
-
         }
 }
 
@@ -1799,6 +1805,13 @@ void Analytics::applyFRBstandardDispersions() {
 
 void Analytics::applyFRBtooWhiteSpectres() {
 
+}
+
+void Analytics::applyFRBpreciseDetermine() {
+    Pulsar p = *list->currentPulsar;
+    p.data = CrossCorrelation().determinePreciseInterval(p.data, p.dispersion);
+    list->drawSpectre(p);
+    window->regenerate(p.data);
 }
 
 void Analytics::applyTransientLoneObjects() {

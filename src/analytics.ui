@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>320</width>
-    <height>1884</height>
+    <height>2038</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -57,7 +57,7 @@
          </widget>
         </item>
         <item row="5" column="0">
-         <widget class="QLabel" name="label_5">
+         <widget class="QLabel" name="timeLabel">
           <property name="text">
            <string>Time</string>
           </property>
@@ -1064,6 +1064,41 @@
         <property name="text">
          <string>Inverse decision</string>
         </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QWidget" name="widget_17" native="true">
+        <layout class="QHBoxLayout" name="horizontalLayout_13">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="frbPreciseDetermine">
+           <property name="text">
+            <string>Determine precise interval</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="frbPreciseDetermineAutorun">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
+           <property name="text">
+            <string>autorun</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

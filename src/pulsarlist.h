@@ -20,6 +20,7 @@ public:
     Pulsar *currentPulsar;
     void init(Pulsars pl, bool removeBadData);
     QString exportObjectsForPeriodDetalization();
+    void drawSpectre(const Pulsar &pl);
 
 private:
     Pulsars pulsars;
@@ -34,8 +35,6 @@ private:
     bool sameFile(int, int);
 
     void saveSettings();
-
-    void drawSpectre(const Pulsar &pl);
 
     void resetColors(const Pulsar &pulsar, int row);
 

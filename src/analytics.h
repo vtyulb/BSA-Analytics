@@ -130,6 +130,7 @@ private slots:
     void applyFRBstandardDispersions();
     void applyFRBtooWhiteSpectres();
     void applyFRBinverseDecision();
+    void applyFRBpreciseDetermine();
 
     void enableTransientWhitezone(bool);
 

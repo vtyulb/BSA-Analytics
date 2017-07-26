@@ -1777,7 +1777,7 @@ void Analytics::applyFRBinverseDecision() {
 
 void Analytics::applyFRBnegativeProfiles() {
     for (int i = 0; i < pulsars->size(); i++)
-        if (pulsarsEnabled[i]) {
+        if (pulsarsEnabled[i] && pulsars->at(i).filtered) {
             Pulsar p = pulsars->at(i);
             for (int j = 0; j < p.data.npoints; j++)
                 if (p.data.data[0][32][0][j] < -10) {
@@ -1790,7 +1790,8 @@ void Analytics::applyFRBnegativeProfiles() {
 
 void Analytics::applyFRBstandardDispersions() {
     QSet<int> dispersions;
-    dispersions << 300 << 600;
+    dispersions << 150 << 294 << 297 << 300 << 594 << 597 << 600 << 900;
+    qDebug() << "banning FRB dispersions" << dispersions;
     for (int i = 0; i < pulsars->size(); i++)
         if (dispersions.contains(pulsars->at(i).dispersion))
             pulsarsEnabled[i] = false;

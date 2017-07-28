@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>320</width>
-    <height>2038</height>
+    <height>2078</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1052,7 +1052,7 @@
       <item>
        <widget class="QCheckBox" name="frbWhiteSpectres">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>Too white spectres</string>

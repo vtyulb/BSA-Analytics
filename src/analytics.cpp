@@ -160,6 +160,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
 
     if (frb) {
         ui->transinetGraphicFilter->setChecked(false);
+        ui->transinetGraphicFilter->hide();
         ui->FRBGroupBox->show();
 
         ui->period->hide();
@@ -1799,12 +1800,33 @@ void Analytics::applyFRBstandardDispersions() {
     dispersions << 150 << 294 << 297 << 300 << 594 << 597 << 600 << 900;
     qDebug() << "banning FRB dispersions" << dispersions;
     for (int i = 0; i < pulsars->size(); i++)
-        if (dispersions.contains(pulsars->at(i).dispersion))
+        if (pulsars->at(i).filtered && dispersions.contains(pulsars->at(i).dispersion))
             pulsarsEnabled[i] = false;
 }
 
 void Analytics::applyFRBtooWhiteSpectres() {
+    const int probe = 3;
+    for (int i = 0; i < pulsars->size(); i++)
+        if (pulsarsEnabled[i] & pulsars->at(i).filtered) {
+            Pulsar p = pulsars->at(i);
+            QVector<int> badColumnCount(p.data.npoints, 0);
 
+            for (int channel = 0; channel < 32; channel++) {
+                QVector<QPair<float, int> > row;
+                for (int j = 0; j < p.data.npoints; j++)
+                    row.push_back(QPair<float, int>(p.data.data[0][channel][0][j], j));
+
+                std::sort(row.begin(), row.end());
+                for (int k = 0; k < 10; k++)
+                    badColumnCount[row[row.size() - k - 1].second]++;
+            }
+
+            int badColumns = 0;
+            for (int i = 0; i < badColumnCount.size(); i++)
+                badColumns += badColumnCount[i] > 16;
+
+            pulsarsEnabled[i] = badColumns < 2;
+        }
 }
 
 void Analytics::applyFRBpreciseDetermine() {

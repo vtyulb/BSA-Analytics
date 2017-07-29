@@ -5,7 +5,7 @@
 
 #include <data.h>
 
-const int CROSS_CORRELATION_SIZE = 2048;
+const int CROSS_CORRELATION_SIZE = 1024;
 const int CROSS_CORRELATION_WINDOW = 3;
 
 class CrossCorrelation

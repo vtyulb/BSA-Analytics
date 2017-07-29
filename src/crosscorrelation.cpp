@@ -12,7 +12,7 @@
 const int window = CROSS_CORRELATION_WINDOW;
 const int size = CROSS_CORRELATION_SIZE;
 const int FIRST_DISPERSION = 0;
-const int LAST_DISPERSION = 350;
+const int LAST_DISPERSION = 550;
 const double v1 = 109.0390625;
 const double v2 = 109.1171875;
 
@@ -36,7 +36,7 @@ QVector<double> CrossCorrelation::process(const Data &data, int module, int ray,
             profile[channel].push_back(cur);
         }
 
-    for (int disp = FIRST_DISPERSION; disp <= LAST_DISPERSION; disp++)
+    for (int disp = FIRST_DISPERSION; disp <= LAST_DISPERSION / window; disp++)
         res.push_back(correlation(disp));
 
     subtractNull(res);

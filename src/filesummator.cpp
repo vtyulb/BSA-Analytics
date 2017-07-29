@@ -76,10 +76,10 @@ void FileSummator::run() {
                 firstDispersion = 2;
                 lastDispersion = 100;
 
-                printf("Do you want to search for FRB instead of transients (dispersions 100-1000)? [y/N] ");
+                printf("Do you want to search for FRB instead of transients (dispersions 100-%d)? [y/N] ", CROSS_CORRELATION_LAST_DISPERSION);
                 if (input.readLine().toUpper() == "Y") {
                     firstDispersion = 100;
-                    lastDispersion = 1000;
+                    lastDispersion = CROSS_CORRELATION_LAST_DISPERSION;
                     FRBmode = true;
                 }
 

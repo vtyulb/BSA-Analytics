@@ -89,13 +89,15 @@ void FileSummator::run() {
                     cutterPath = input.readLine();
                     QDir dir(cutterPath);
                     cutterPath = dir.absolutePath() + "/result/";
-                    if (dir.mkdir("result"))
+                    if (dir.mkdir("result") || QDir(cutterPath).exists()) {
+                        loadCuttingState();
                         if (QFile(cutterPath + "transients").open(QIODevice::WriteOnly)) {
                             if (FRBmode)
                                 QFile(cutterPath + "FRB").open(QIODevice::WriteOnly);
 
                             break;
                         }
+                    }
                 }
 
                 printf("Path [%s] accepted\n\n", cutterPath.toLocal8Bit().constData());
@@ -204,6 +206,7 @@ void FileSummator::run() {
             if (transientSearch) {
                 transientProcess(data);
                 data.releaseData();
+                saveCuttingState();
                 continue;
             }
 
@@ -212,14 +215,13 @@ void FileSummator::run() {
             else
                 processData(data);
 
-            if (i % 100 == 0)
-                dumpStairs(stairs, stairsNames);
-
             data.releaseData();
 
             filesProcessed.insert(fileNames[i]);
-            if (i % 300 == 0)
+            if (i % 300 == 0) {
                 saveCuttingState();
+                dumpStairs(stairs, stairsNames);
+            }
         }
 
         if (fileNames.size()) {
@@ -597,7 +599,9 @@ void FileSummator::loadCuttingState() {
 }
 
 void FileSummator::saveCuttingState() {
-    QFile f(cutterPath + "state.txt");
+    QString stateFile = cutterPath + "state.txt";
+    QFile(stateFile).rename(stateFile + "_backup");
+    QFile f(stateFile);
     if (f.open(QIODevice::WriteOnly)) {
         QTextStream stream(&f);
         stream << "Last state change: " << QDateTime::currentDateTime().toString() << "\n";
@@ -663,6 +667,7 @@ void FileSummator::dumpStairs(const Data &stairs, const QStringList &stairsNames
     for (int i = 1; i < stairsNames.size(); i++)
         names += "," + stairsNames[i];
 
+    QFile(stairsResName).rename(stairsResName + "_backup");
     QFile out(stairsResName);
     out.open(QIODevice::WriteOnly);
 

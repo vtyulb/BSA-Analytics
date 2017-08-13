@@ -600,6 +600,7 @@ void FileSummator::loadCuttingState() {
 
 void FileSummator::saveCuttingState() {
     QString stateFile = cutterPath + "state.txt";
+    QFile(stateFile + "_backup").remove();
     QFile(stateFile).rename(stateFile + "_backup");
     QFile f(stateFile);
     if (f.open(QIODevice::WriteOnly)) {
@@ -613,7 +614,6 @@ void FileSummator::saveCuttingState() {
         for (QSet<QString>::Iterator i = filesProcessed.begin(); i != filesProcessed.end(); i++)
             stream << (*i) << "\n";
 
-        dumpStairs(stairs, stairsNames);
         f.close();
     }
 }
@@ -667,6 +667,7 @@ void FileSummator::dumpStairs(const Data &stairs, const QStringList &stairsNames
     for (int i = 1; i < stairsNames.size(); i++)
         names += "," + stairsNames[i];
 
+    QFile(stairsResName + "_backup").remove();
     QFile(stairsResName).rename(stairsResName + "_backup");
     QFile out(stairsResName);
     out.open(QIODevice::WriteOnly);

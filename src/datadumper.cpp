@@ -42,8 +42,13 @@ void DataDumper::dump(const Data &data, QFile &f, QMap<QString, QString> headerA
     for (int i = 0; i < data.npoints; i++)
         for (int m = 0; m < data.modules; m++)
             for (int j = 0; j < data.rays; j++)
-                for (int k = 0; k < data.channels; k++)
+                for (int k = 0; k < data.channels; k++) {
                     res.push_back(data.data[m][k][j][i]);
+                    if (res.size() == 1024 * 1024) {
+                        f.write((char*)res.data(), res.size() * sizeof(float));
+                        res.clear();
+                    }
+                }
 
     f.write((char*)res.data(), res.size() * sizeof(float));
     f.close();

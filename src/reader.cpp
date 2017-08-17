@@ -45,7 +45,9 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, QDateTime tim
     }
 
     bool disableFirstRay = false;
-    QList<QByteArray> res = s.split(' ');
+    const char SPLITTER = s.contains(' ') ? ' ' : ';';
+
+    QList<QByteArray> res = s.split(SPLITTER);
     res.removeAll("");
     if (int(slowNumber(res[0])) == 1)
         disableFirstRay = true;
@@ -62,13 +64,13 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, QDateTime tim
     }
 
     data.npoints = input.size();
-    QStringList l = input[0].split(' ');
+    QStringList l = input[0].split(SPLITTER);
     l.removeAll("");
     data.rays = l.size() - disableFirstRay;
     data.init();
 
     for (int i = 0; i < data.npoints; i++) {
-        QStringList l = input[i].split(' ');
+        QStringList l = input[i].split(SPLITTER);
         l.removeAll("");
         for (int j = disableFirstRay; j < data.rays + disableFirstRay; j++)
             data.data[0][0][j - disableFirstRay][i] = slowNumber(l[j].toUtf8());

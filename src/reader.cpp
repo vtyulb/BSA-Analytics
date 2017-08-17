@@ -141,6 +141,9 @@ Data Reader::readBinaryFile(QString file) {
     if (header.contains("star_time"))
         data.time.setTime(QTime::fromString(header["star_time"], "HH:mm:ss"));
 
+    if (header.contains("stairs_names"))
+        data.time = QDateTime();
+
     data.oneStep = header["tresolution"].toDouble() / 1000;
     data.delta_lucha = 0.89;
     data.name = QFileInfo(file).fileName();

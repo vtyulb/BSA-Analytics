@@ -42,6 +42,7 @@ MainWindow::MainWindow(QString file, QWidget *parent) :
     QObject::connect(ui->actionPulsar_fourier_analytics, SIGNAL(triggered()), this, SLOT(openFourierAnalytics()));
     QObject::connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
     QObject::connect(ui->actionSave, SIGNAL(triggered()), this, SLOT(saveFile()));
+    QObject::connect(ui->actionExport_to_CSV, SIGNAL(triggered()), this, SLOT(runCSVexport()));
     QObject::connect(ui->actionAutoDraw, SIGNAL(triggered(bool)), this, SLOT(autoDraw(bool)));
     QObject::connect(ui->actionAxes, SIGNAL(triggered(bool)), this, SLOT(drawAxes(bool)));
     QObject::connect(ui->actionNull_on_OY_axe, SIGNAL(triggered(bool)), this, SLOT(drawNullOnOYaxis(bool)));
@@ -246,6 +247,11 @@ void MainWindow::saveFile() {
 
     if (path != "")
         drawer->saveFile(path);
+}
+
+void MainWindow::runCSVexport() {
+    if (drawer)
+        drawer->drawer->exportDataToCSV();
 }
 
 void MainWindow::autoDraw(bool b) {

@@ -545,7 +545,10 @@ void NativeDrawer::exportDataToCSV() {
     QStringList names = Settings::settings()->getLastHeader()["stairs_names"].split(",");
     for (int i = 0; i < data.npoints; i++) {
         if (names.size() <= 1)
-            file.write(StarTime::StarTime(data, i).toUtf8() + S);
+            if (data.time.isValid())
+                file.write(StarTime::StarTime(data, i).toUtf8() + S);
+            else
+                file.write(QString::number(i + 1).toUtf8() + S);
         else
             file.write(names[i].toUtf8() + S);
 

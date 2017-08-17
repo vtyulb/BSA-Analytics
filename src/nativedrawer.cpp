@@ -558,5 +558,6 @@ void NativeDrawer::exportDataToCSV() {
     file.close();
 
     QMessageBox::information(this, "Success",
-                             "Export to " + csvFile + " was completed successfully!");
+                             "Export to " + csvFile + " was completed successfully!\n"
+                             "Be sure to use correct decimal separator (, or .)");
 }

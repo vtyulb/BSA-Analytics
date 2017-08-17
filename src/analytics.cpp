@@ -1810,7 +1810,6 @@ void Analytics::applyFRBstandardDispersions() {
 }
 
 void Analytics::applyFRBtooWhiteSpectres() {
-    const int probe = 3;
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsarsEnabled[i] & pulsars->at(i).filtered) {
             Pulsar p = pulsars->at(i);

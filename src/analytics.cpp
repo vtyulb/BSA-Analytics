@@ -102,6 +102,11 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
         ui->infoButton->hide();
         ui->addPulsarCatalog->hide();
 
+        if (analyticsPath.contains("high"))
+            Settings::settings()->setFourierHighGround(true);
+        else if (analyticsPath.contains("low"))
+            Settings::settings()->setFourierHighGround(false);
+
         ui->doublePeriods->hide();
         ui->duplicatesIterations->hide();
         ui->label_9->hide();

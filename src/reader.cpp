@@ -66,6 +66,7 @@ Data Reader::readFile(QString fileName, int skip, int firstColumn, QDateTime tim
     data.npoints = input.size();
     QStringList l = input[0].split(SPLITTER);
     l.removeAll("");
+    l.removeAll("\n");
     data.rays = l.size() - disableFirstRay;
     data.init();
 

@@ -80,6 +80,7 @@ public slots:
     void resetVisibleRectangle(bool repaint = true, bool resetLeftRight = true);
     void print();
     void saveFile(QString file = "");
+    void exportDataToCSV();
 
 private slots:
     void nativePrint(QPrinter *);

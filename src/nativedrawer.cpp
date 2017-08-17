@@ -38,6 +38,10 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     addAction(saveImage);
     QObject::connect(saveImage, SIGNAL(triggered()), this, SLOT(saveFile()));
 
+    QAction *exportDataToCSVaction = new QAction("Export to CSV...", this);
+    addAction(exportDataToCSVaction);
+    QObject::connect(exportDataToCSVaction, SIGNAL(triggered()), this, SLOT(exportDataToCSV()));
+
     setMouseTracking(true);
     setMinimumSize(100, 100);
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored));
@@ -495,4 +499,64 @@ void NativeDrawer::sourceDetect(int a, int b) {
     resStr = "Ray: " + QString::number(ray + 1) + "\n" + resStr;
 
     QMessageBox::information(this, "source height", resStr);
+}
+
+void NativeDrawer::exportDataToCSV() {
+    QString csvFile = QFileDialog::getSaveFileName(this);
+    if (csvFile == "")
+        return;
+
+    if (!csvFile.endsWith(".csv"))
+        csvFile += ".csv";
+
+    QFile file(csvFile);
+    if (!file.open(QIODevice::WriteOnly)) {
+        QMessageBox::warning(this, "Problem", "can't open file " + csvFile + " for writing");
+        return;
+    }
+
+    char S = ';'; // splitter
+
+    int ray = 0;
+    for (int i = 0; i < data.rays; i++)
+        if (rayVisibles[i])
+            ray = i;
+
+    file.write(QString::asprintf("Name \\ Module %d", module + 1).toUtf8());
+
+    QVector<float*> dataRays;
+
+    if (data.channels == 1) {
+        file.write(&S, 1);
+        for (int ray = 0; ray < data.rays; ray++) {
+            file.write("R" + QString::number(ray + 1).toUtf8() + S);
+            dataRays.push_back(data.data[module][0][ray]);
+        }
+    } else {
+        file.write(QString::asprintf(" Ray %d%c", ray + 1, S).toUtf8());
+        for (int channel = 0; channel < data.channels; channel++) {
+            file.write("C" + QString::number(channel + 1).toUtf8() + S);
+            dataRays.push_back(data.data[module][channel][ray]);
+        }
+    }
+
+    file.write("\n");
+
+    QStringList names = Settings::settings()->getLastHeader()["stairs_names"].split(",");
+    for (int i = 0; i < data.npoints; i++) {
+        if (names.size() <= 1)
+            file.write(StarTime::StarTime(data, i).toUtf8() + S);
+        else
+            file.write(names[i].toUtf8() + S);
+
+        for (int j = 0; j < dataRays.size(); j++)
+            file.write(QString::number(dataRays[j][i], 'f').toUtf8() + S);
+
+        file.write("\n");
+    }
+
+    file.close();
+
+    QMessageBox::information(this, "Success",
+                             "Export to " + csvFile + " was completed successfully!");
 }

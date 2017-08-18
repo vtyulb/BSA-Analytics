@@ -168,8 +168,8 @@ void PreciseSearchGui::determineSearchMode() {
     }
 
     if (ui->fluxDensity->isChecked()) {
-        if (!QSettings().contains("LongStair") || !QSettings().contains("ShortStair")) {
-            QMessageBox::warning(this, "We need more stairs!", "Please do set stairs in both long and short data!\n"
+        if (!QFile::exists(SHORT_STAIRS) || !QFile::exists(LONG_STAIRS)) {
+            QMessageBox::warning(this, "We need more stairs!", "Please do install BSA-Analytics-stairs-pack!\n"
                                                                "I can't run flux density without stairs.");
             ui->preciseSearch->click();
             return;

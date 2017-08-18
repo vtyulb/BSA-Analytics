@@ -1,4 +1,4 @@
-#include "filesummator.h"
+#include "massprocessor.h"
 
 #include <QString>
 #include <QVector>
@@ -26,10 +26,9 @@ namespace {
     }
 }
 
-FileSummator::FileSummator() {}
+MassProcessor::MassProcessor() {}
 
-void FileSummator::run() {
-
+void MassProcessor::runInteractive() {
     QTextStream input(stdin);
     QStringList extensions;
     QStringList fileNames;
@@ -253,7 +252,7 @@ void FileSummator::run() {
     printf("\nAll files were processed\n");
 }
 
-bool FileSummator::processData(Data &data) {
+bool MassProcessor::processData(Data &data) {
     // Hello pulsarworker::clearAveraNge(), i know you are here
 
     if (!Settings::settings()->loadStair())
@@ -309,7 +308,7 @@ bool FileSummator::processData(Data &data) {
     return true;
 }
 
-bool FileSummator::processLongData(Data &data) {
+bool MassProcessor::processLongData(Data &data) {
     QVector<float> buf(data.npoints);
 
     if (!Settings::settings()->loadStair())
@@ -370,7 +369,7 @@ bool FileSummator::processLongData(Data &data) {
     return true;
 }
 
-void FileSummator::processFRB(Data &data, int module, int ray, int offset, QVector<double> &autoCorrelation, int block) {
+void MassProcessor::processFRB(Data &data, int module, int ray, int offset, QVector<double> &autoCorrelation, int block) {
     double sigma = 0;
     QVector<double> r = autoCorrelation;
     std::sort(r.begin(), r.end());
@@ -401,7 +400,7 @@ void FileSummator::processFRB(Data &data, int module, int ray, int offset, QVect
     }
 }
 
-void FileSummator::findFiles(QString path, QStringList &names, const QStringList &extensions) {
+void MassProcessor::findFiles(QString path, QStringList &names, const QStringList &extensions) {
     QDir dir(path);
     printf("scanning %s\n", path.toUtf8().constData());
     QFileInfoList files = dir.entryInfoList();
@@ -417,7 +416,7 @@ void FileSummator::findFiles(QString path, QStringList &names, const QStringList
         }
 }
 
-void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber) {
+void MassProcessor::dumpCuttedPiece(const Data &data, int startPoint, int pieceNumber) {
     if (CuttingPC != PC && CuttingPCLong != PC)
         return;
 
@@ -503,7 +502,7 @@ void FileSummator::dumpCuttedPiece(const Data &data, int startPoint, int pieceNu
     res.releaseData();
 }
 
-bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion, double snr) {
+bool MassProcessor::dumpTransient(const QVector<double> &data, const Data &rawData, int startPoint, int pieceNumber, int module, int ray, int dispersion, double snr) {
     QMap<QString, QString> headerAddition;
     headerAddition["native_datetime"] = rawData.name;
     headerAddition["module"] = QString::number(module + 1);
@@ -580,7 +579,7 @@ bool FileSummator::dumpTransient(const QVector<double> &data, const Data &rawDat
     return true;
 }
 
-void FileSummator::loadCuttingState() {
+void MassProcessor::loadCuttingState() {
     QFile f(cutterPath + "state.txt");
     if (f.open(QIODevice::ReadOnly)) {
         printf("\nFound previous cutting data\n");
@@ -598,7 +597,7 @@ void FileSummator::loadCuttingState() {
     }
 }
 
-void FileSummator::saveCuttingState() {
+void MassProcessor::saveCuttingState() {
     QString stateFile = cutterPath + "state.txt";
     QFile(stateFile + "_backup").remove();
     QFile(stateFile).rename(stateFile + "_backup");
@@ -618,7 +617,7 @@ void FileSummator::saveCuttingState() {
     }
 }
 
-void FileSummator::addStair(Data &stairs) {
+void MassProcessor::addStair(Data &stairs) {
     static int realSize = 0;
     Data res = stairs;
     res.npoints++;
@@ -647,7 +646,7 @@ void FileSummator::addStair(Data &stairs) {
     stairs = res;
 }
 
-QString FileSummator::getStairsName(const Data &stairs) {
+QString MassProcessor::getStairsName(const Data &stairs) {
     if (stairsNameOverride != "")
         return stairsNameOverride;
 
@@ -657,7 +656,7 @@ QString FileSummator::getStairsName(const Data &stairs) {
         return "./ShortStairs.pnt";
 }
 
-void FileSummator::dumpStairs(const Data &stairs, const QStringList &stairsNames) {
+void MassProcessor::dumpStairs(const Data &stairs, const QStringList &stairsNames) {
     QString stairsResName = getStairsName(stairs);
 
     if (stairsNames.isEmpty())
@@ -678,7 +677,7 @@ void FileSummator::dumpStairs(const Data &stairs, const QStringList &stairsNames
     DataDumper::dump(stairs, out, m);
 }
 
-void FileSummator::initStairs(Data &stairs, QStringList &names) {
+void MassProcessor::initStairs(Data &stairs, QStringList &names) {
     QString stairsResName = getStairsName(stairs);
     Data tmp = Reader().readBinaryFile(stairsResName);
     if (tmp.isValid()) {
@@ -712,7 +711,7 @@ void FileSummator::initStairs(Data &stairs, QStringList &names) {
         qDebug() << "previous stairs search not found. Starting from scratch";
 }
 
-void FileSummator::sortStairs(Data &stairs, QStringList &names) {
+void MassProcessor::sortStairs(Data &stairs, QStringList &names) {
     qDebug() << "sorting stairs";
     QVector<QPair<QDateTime, int>> hlp;
     for (int i = 0; i < names.size(); i++)
@@ -737,7 +736,7 @@ void FileSummator::sortStairs(Data &stairs, QStringList &names) {
     names = newNames;
 }
 
-bool FileSummator::findStair(Data &data, int &start, int &end) {
+bool MassProcessor::findStair(Data &data, int &start, int &end) {
     QVector<QPair<double, int> > values;
     for (int i = 0; i < data.npoints; i++)
         values.push_back(QPair<double, int>(data.data[0][data.channels - 1][0][i], i));
@@ -759,7 +758,7 @@ bool FileSummator::findStair(Data &data, int &start, int &end) {
         return false;
 }
 
-void FileSummator::checkStairs(Data &stairs, QStringList &names) {
+void MassProcessor::checkStairs(Data &stairs, QStringList &names) {
     qDebug() << "searching for bad data";
     for (int i = 0; i < stairs.npoints; i++) {
         bool good = true;
@@ -797,7 +796,7 @@ void FileSummator::checkStairs(Data &stairs, QStringList &names) {
     }
 }
 
-QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int ray) {
+QVector<double> MassProcessor::applyDispersion(Data &data, int D, int module, int ray) {
     double v1 = data.fbands[0];
     double v2 = data.fbands[1];
     double mxd = (4.1488) * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * D;
@@ -835,7 +834,7 @@ QVector<double> FileSummator::applyDispersion(Data &data, int D, int module, int
     return rr;
 }
 
-bool FileSummator::transientCheckAmplification(const Data &data, int point, int module, int ray, int dispersion) {
+bool MassProcessor::transientCheckAmplification(const Data &data, int point, int module, int ray, int dispersion) {
     double v1 = data.fbands[0];
     double v2 = data.fbands[1];
 
@@ -850,7 +849,7 @@ bool FileSummator::transientCheckAmplification(const Data &data, int point, int 
     return mx * TRANSIENT_AMPLIFICATION_TRESH < sum;
 }
 
-void FileSummator::transientProcess(Data &data) {
+void MassProcessor::transientProcess(Data &data) {
     if (!Settings::settings()->loadStair())
         qDebug() << "can't normalize current data";
 

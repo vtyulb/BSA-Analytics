@@ -39,7 +39,6 @@ SOURCES += main.cpp\
     precisetiming.cpp \
     preciseperioddetecter.cpp \
     flowdetecter.cpp \
-    filesummator.cpp \
     datadumper.cpp \
     flowingwindow.cpp \
     fourier.cpp \
@@ -50,7 +49,8 @@ SOURCES += main.cpp\
     transientperiod.cpp \
     datarenamer.cpp \
     transientdetalizator.cpp \
-    crosscorrelation.cpp
+    crosscorrelation.cpp \
+    massprocessor.cpp
 
 HEADERS  += mainwindow.h \
     drawer.h \
@@ -80,7 +80,6 @@ HEADERS  += mainwindow.h \
     precisetiming.h \
     preciseperioddetecter.h \
     flowdetecter.h \
-    filesummator.h \
     datadumper.h \
     flowingwindow.h \
     fourier.h \
@@ -91,7 +90,8 @@ HEADERS  += mainwindow.h \
     transientperiod.h \
     datarenamer.h \
     transientdetalizator.h \
-    crosscorrelation.h
+    crosscorrelation.h \
+    massprocessor.h
 
 FORMS    += mainwindow.ui \
     customopendialog.ui \

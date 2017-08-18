@@ -1,5 +1,5 @@
-#ifndef FILEQSUMMATOR_H
-#define FILESUMMATOR_H
+#ifndef MASSPROCESSOR_H
+#define MASSPROCESSOR_H
 
 #include <QStringList>
 #include <QVector>
@@ -7,12 +7,12 @@
 
 #include <data.h>
 
-class FileSummator
+class MassProcessor
 {
 public:
-    FileSummator();
+    MassProcessor();
 
-    void run();
+    void runInteractive();
 
 private:
     void findFiles(QString path, QStringList &names, const QStringList &extensions);
@@ -52,4 +52,4 @@ private:
     QSet<QString> filesProcessed;
 };
 
-#endif // FILESUMMATOR_H
+#endif // MASSPROCESSOR_H

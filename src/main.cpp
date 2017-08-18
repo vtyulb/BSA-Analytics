@@ -133,7 +133,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --data-checker <path to data>\n");
         printf("BSA-Analytics --data-renamer <path to data>[,path2[,path3...]]\n");
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double> --time <09:01:00>\n");
-        printf("BSA-Analytics [--file-summator | --mass-processor]\n");
+        printf("BSA-Analytics [--file-summator | --mass-processing]\n");
         printf("BSA-Analytics --flowing-window input-file output-file number-of-points\n");
         printf("\nOptions:\n");
         printf("\t-h --help  for this message\n");
@@ -226,7 +226,7 @@ void pulsarEngine(int argc, char **argv) {
             Settings::settings()->setLongRoads(true);
         else if (strcmp(argv[i], "--period-tester") == 0)
             Settings::settings()->setPeriodTester(true);
-        else if (strcmp(argv[i], "--file-summator") == 0 || strcmp(argv[i], "--mass-processor") == 0) {
+        else if (strcmp(argv[i], "--file-summator") == 0 || strcmp(argv[i], "--mass-processing") == 0) {
             makeConsoleApp(argc, argv);
             MassProcessor processor;
             processor.runInteractive();

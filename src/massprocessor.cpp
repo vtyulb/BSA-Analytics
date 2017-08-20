@@ -961,6 +961,7 @@ void MassProcessor::runFluxDensity(QString path, int module, int ray, QTime time
         data = Reader().readBinaryFile(names[i]);
         QVector<double> fluxDensity = sourceAutoDetect(data, module, ray, time);
         addStair(flux);
+        flux.fbands = data.fbands;
         for (int i = 0; i < fluxDensity.size(); i++)
             flux.data[0][i][0][flux.npoints - 1] = fluxDensity[i];
 
@@ -974,7 +975,7 @@ void MassProcessor::runFluxDensity(QString path, int module, int ray, QTime time
 
     qDebug() << "\n\nSaving flux density to" << name;
 
-    sortStairs(stairs, srcFiles);
+    sortStairs(flux, srcFiles);
 
     QFile out(name);
     out.open(QIODevice::WriteOnly);

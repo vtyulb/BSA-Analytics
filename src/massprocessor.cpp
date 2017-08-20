@@ -974,6 +974,8 @@ void MassProcessor::runFluxDensity(QString path, int module, int ray, QTime time
 
     qDebug() << "\n\nSaving flux density to" << name;
 
+    sortStairs(stairs, srcFiles);
+
     QFile out(name);
     out.open(QIODevice::WriteOnly);
 

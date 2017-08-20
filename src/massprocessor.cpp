@@ -913,7 +913,7 @@ void MassProcessor::transientProcess(Data &data) {
                             }
 
 
-                            if (transientsCount[block] > TRANSIENT_COUNT_TRESH * (lastDispersion - firstDispersion) / 100 && lastDispersion < 150) {
+                            if (transientsCount[block]  > TRANSIENT_COUNT_TRESH * (lastDispersion - firstDispersion) / 100 && lastDispersion < 150) {
                                 printf("X");
                                 int last = numberOfPieces[block];
                                 numberOfPieces[block] -= transientsCount[block];
@@ -934,4 +934,96 @@ void MassProcessor::transientProcess(Data &data) {
         }
 
     printf("%d objects found\n", total);
+}
+
+void MassProcessor::runFluxDensity(QString path, int module, int ray, QTime time) {
+    QStringList names;
+    findFiles(path, names, {"pnt"});
+
+    Data flux;
+    flux.modules = 1;
+    flux.channels = 7;
+    flux.rays = 1;
+    flux.npoints = 0;
+
+    QStringList srcFiles;
+
+    for (int i = 0; i < names.size(); i++) {
+        clearLine();
+        printf("\r%s", names[i].toUtf8().constData());
+        fflush(stdout);
+
+        Data data = Reader().readBinaryFile(names[i], true);
+        QTime begin = QTime::fromString(StarTime::StarTime(data, 1), "hh:mm:ss");
+        if (!(begin.secsTo(time) > 300 && begin.secsTo(time) < 3600 - 300))
+            continue;
+
+        data = Reader().readBinaryFile(names[i]);
+        QVector<double> fluxDensity = sourceAutoDetect(data, module, ray, time);
+        addStair(flux);
+        for (int i = 0; i < fluxDensity.size(); i++)
+            flux.data[0][i][0][flux.npoints - 1] = fluxDensity[i];
+
+        srcFiles.push_back(names[i]);
+        printf("\n");
+    }
+
+    QString name = QDir::tempPath() + "/FluxDensity_" + QString::number(module) + "_" +
+                    QString::number(ray) + "_" + QTime::currentTime().toString("HH-mm-ss") + ".pnt";
+
+    qDebug() << "\n\nSaving flux density to" << name;
+
+    QFile out(name);
+    out.open(QIODevice::WriteOnly);
+
+    QString stairs_names = srcFiles[0];
+    for (int i = 1; i < srcFiles.size(); i++)
+        stairs_names += "," + srcFiles[i];
+
+    QMap<QString, QString> m;
+    m["stairs_names"] = stairs_names;
+    m["rays"] = "1";
+
+    DataDumper::dump(flux, out, m);
+}
+
+QVector<double> MassProcessor::sourceAutoDetect(Data &data, int module, int ray, QTime time) {
+    int start = 0;
+    while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > 1)
+        start += 5;
+
+    Settings::settings()->loadStair();
+    for (int i = 0; i < data.npoints; i++)
+        for (int channel = 0; channel < data.channels; channel++)
+            data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
+
+    int begin = start - 250 / data.oneStep;
+    int end = start + 250 / data.oneStep;
+
+    QVector<double> res;
+
+    const int window = 20;
+    for (int channel = 0; channel < data.channels; channel++) {
+        double current = 0;
+        double minLeft = 1e+100;
+        double minRight = 1e+100;
+        double maxCenter = 0;
+        for (int i = begin - window; i < begin; i++)
+            current += data.data[module][channel][ray][i] / window;
+
+        for (int i = begin; i < end; i++) {
+            current += data.data[module][channel][ray][i] / window;
+            current -= data.data[module][channel][ray][i - window] / window;
+
+            maxCenter = std::max(maxCenter, current);
+            minRight = std::min(minRight, current);
+            if (i == (begin + end) / 2)
+                std::swap(minLeft, minRight);
+        }
+
+
+        res.push_back(maxCenter - (minLeft + minRight) / 2.0);
+    }
+
+    return res;
 }

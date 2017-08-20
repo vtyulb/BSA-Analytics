@@ -102,7 +102,6 @@ struct Data {
         sigma = -1;
         releaseProtected = false;
         data = new float***[modules];
-        fbands.resize(channels);
         for (int j = 0; j < modules; j++) {
             data[j] = new float**[channels];
             for (int i = 0; i < channels; i++) {

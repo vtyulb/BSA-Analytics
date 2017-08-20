@@ -266,6 +266,13 @@ void pulsarEngine(int argc, char **argv) {
         }
     }
 
+    if (massFluxDensity) {
+        makeConsoleApp(argc, argv);
+        MassProcessor processor;
+        processor.runFluxDensity(dataPath, module, ray, time);
+        exit(0);
+    }
+
     if (flowDetecter) {
 #ifdef WIN32
         if (!debug)

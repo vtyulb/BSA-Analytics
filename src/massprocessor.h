@@ -13,6 +13,7 @@ public:
     MassProcessor();
 
     void runInteractive();
+    void runFluxDensity(QString path, int module, int ray, QTime time);
 
 private:
     void findFiles(QString path, QStringList &names, const QStringList &extensions);
@@ -31,6 +32,9 @@ private:
     void dumpStairs(const Data &stairs, const QStringList &names);
     void initStairs(Data &stairs, QStringList &names);
     QString getStairsName(const Data &data);
+
+    QVector<double> sourceAutoDetect(Data &data, int module, int ray, QTime time);
+
 
     void saveCuttingState();
     void loadCuttingState();

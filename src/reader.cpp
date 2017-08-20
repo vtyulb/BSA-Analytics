@@ -103,7 +103,7 @@ float Reader::slowNumber(QByteArray a) {
     return QString(a).toFloat();
 }
 
-Data Reader::readBinaryFile(QString file) {
+Data Reader::readBinaryFile(QString file, bool readOnlyHeader) {
     QFile f(file);
     if (!f.open(QIODevice::ReadOnly)) {
         qDebug() << "can't open file" << file << "for reading";
@@ -147,6 +147,14 @@ Data Reader::readBinaryFile(QString file) {
     if (header.contains("stairs_names"))
         data.time = QDateTime();
 
+    data.previousLifeName = header["native_datetime"];
+    if (data.previousLifeName == "")
+        data.previousLifeName = data.name;
+
+    QStringList fbands = header["fbands"].split(" ");
+    for (int i = 0; i < fbands.size(); i++)
+        data.fbands.push_back(fbands[i].toDouble());
+
     data.oneStep = header["tresolution"].toDouble() / 1000;
     data.delta_lucha = 0.89;
     data.name = QFileInfo(file).fileName();
@@ -154,15 +162,10 @@ Data Reader::readBinaryFile(QString file) {
     data.modules = modulus;
     data.rays = rays;
     data.npoints = npoints;
+    if (readOnlyHeader)
+        return data;
+
     data.init();
-
-    data.previousLifeName = header["native_datetime"];
-    if (data.previousLifeName == "")
-        data.previousLifeName = data.name;
-
-    QStringList fbands = header["fbands"].split(" ");
-    for (int i = 0; i < fbands.size(); i++)
-        data.fbands[i] = fbands[i].toDouble();
 
     QDateTime startTime = QDateTime::currentDateTime();
 

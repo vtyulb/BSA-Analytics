@@ -13,7 +13,7 @@ public:
     explicit Reader(QObject *parent = 0);
 
     Data readFile(QString, int skip, int firstColumn, QDateTime = QDateTime(), bool binary = false); // 0 - true; 1 - false; 2 - autodetect
-    Data readBinaryFile(QString);
+    Data readBinaryFile(QString, bool readOnlyHeader = false);
 
     static void repairWrongChannels(Data &data);
 

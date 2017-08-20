@@ -34,6 +34,7 @@ private:
     QString getStairsName(const Data &data);
 
     QVector<double> sourceAutoDetect(Data &data, int module, int ray, QTime time);
+    float median(float *data, int element);
 
 
     void saveCuttingState();

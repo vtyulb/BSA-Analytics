@@ -1012,11 +1012,11 @@ QVector<double> MassProcessor::sourceAutoDetect(Data &data, int module, int ray,
         double minRight = 1e+100;
         double maxCenter = 0;
         for (int i = begin - window; i < begin; i++)
-            current += data.data[module][channel][ray][i] / window;
+            current += median(data.data[module][channel][ray], i) / window;
 
         for (int i = begin; i < end; i++) {
-            current += data.data[module][channel][ray][i] / window;
-            current -= data.data[module][channel][ray][i - window] / window;
+            current += median(data.data[module][channel][ray], i) / window;
+            current -= median(data.data[module][channel][ray], i - window) / window;
 
             maxCenter = std::max(maxCenter, current);
             minRight = std::min(minRight, current);
@@ -1029,4 +1029,13 @@ QVector<double> MassProcessor::sourceAutoDetect(Data &data, int module, int ray,
     }
 
     return res;
+}
+
+float MassProcessor::median(float *data, int element) {
+    if (data[element - 1] < data[element] && data[element] < data[element + 1])
+        return data[element];
+    else if (data[element] < data[element - 1] && data[element - 1] < data[element + 1])
+        return data[element - 1];
+    else
+        return data[element + 1];
 }

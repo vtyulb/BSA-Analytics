@@ -964,6 +964,7 @@ void MassProcessor::runFluxDensity(QString path, int module, int ray, QTime time
         for (int i = 0; i < fluxDensity.size(); i++)
             flux.data[0][i][0][flux.npoints - 1] = fluxDensity[i];
 
+        data.releaseData();
         srcFiles.push_back(names[i]);
         printf("\n");
     }

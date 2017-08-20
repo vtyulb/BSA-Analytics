@@ -960,12 +960,15 @@ void MassProcessor::runFluxDensity(QString path, int module, int ray, QTime time
 
         data = Reader().readBinaryFile(names[i]);
         QVector<double> fluxDensity = sourceAutoDetect(data, module, ray, time);
+        data.releaseData();
+        if (fluxDensity.empty())
+            continue;
+
         addStair(flux);
         flux.fbands = data.fbands;
         for (int i = 0; i < fluxDensity.size(); i++)
             flux.data[0][i][0][flux.npoints - 1] = fluxDensity[i];
 
-        data.releaseData();
         for (int j = names[i].size() - 1; j >= 0; j--)
             if (j == 0 || names[i][j] == '/') {
                 srcFiles.push_back(names[i].right(names[i].size() - j - 1));
@@ -1001,7 +1004,9 @@ QVector<double> MassProcessor::sourceAutoDetect(Data &data, int module, int ray,
     while (abs(time.secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > 1)
         start += 5;
 
-    Settings::settings()->loadStair();
+    if (!Settings::settings()->loadStair())
+        return QVector<double>();
+
     for (int i = 0; i < data.npoints; i++)
         for (int channel = 0; channel < data.channels; channel++)
             data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;

@@ -975,8 +975,8 @@ void MassProcessor::runFluxDensity(QString path, int module, int ray, QTime time
         printf("\n");
     }
 
-    QString name = QDir::tempPath() + "/FluxDensity_" + QString::number(module) + "_" +
-                    QString::number(ray) + "_" + time.toString("hh-mm-ss") + ".pnt";
+    QString name = QDir::tempPath() + "/FluxDensity_" + QString::number(module + 1) + "_" +
+                    QString::number(ray + 1) + "_" + time.toString("hh-mm-ss") + ".pnt";
 
     qDebug() << "\n\nSaving flux density to" << name;
 

@@ -1059,20 +1059,20 @@ float MassProcessor::median(float *data, int element) {
 
 void MassProcessor::fluxCheck(Data &stairs, QStringList &names) {
     const int MAX_DIFF = 4;
-    const int lc = stairs.channels - 1;
-    for (int i = 1; i < names.size() - 1; i++) {
-        double v = stairs.data[0][lc][0][i];
-        double left = stairs.data[0][lc][0][i - 1];
-        double right = stairs.data[0][lc][0][i + 1];
-        if (v > left && v > right)
-            if (v / left > MAX_DIFF && v / right > MAX_DIFF) {
-                std::swap(names[i], names.last());
-                for (int j = 0; j < stairs.channels; j++)
-                    std::swap(stairs.data[0][j][0][i], stairs.data[0][j][0][stairs.npoints - 1]);
+    for (int lc = 0; lc < stairs.channels; lc++)
+        for (int i = 1; i < names.size() - 1; i++) {
+            double v = stairs.data[0][lc][0][i];
+            double left = stairs.data[0][lc][0][i - 1];
+            double right = stairs.data[0][lc][0][i + 1];
+            if (v > left && v > right)
+                if (v / left > MAX_DIFF && v / right > MAX_DIFF) {
+                    std::swap(names[i], names.last());
+                    for (int j = 0; j < stairs.channels; j++)
+                        std::swap(stairs.data[0][j][0][i], stairs.data[0][j][0][stairs.npoints - 1]);
 
-                stairs.npoints--;
-                names.removeLast();
-                i++;
-            }
-    }
+                    stairs.npoints--;
+                    names.removeLast();
+                    i++;
+                }
+        }
 }

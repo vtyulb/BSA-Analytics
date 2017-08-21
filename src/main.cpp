@@ -128,7 +128,7 @@ void pulsarEngine(int argc, char **argv) {
         printf("BSA-Analytics --precise-pulsar-search <file name> [--draw-spectre] --module <int> --ray <int> --period <double>\n"
                "\t\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads]\n"
                "\t\t[--normalize] [--period-tester] [--single-period] [--flux-density] [--run-analytics-after]\n");
-        printf("BSA-Analytics --mass-flux-density <path-to-ground> --module <int> --ray <int> --time <09:01:00>\n");
+        printf("BSA-Analytics --mass-flux-density <path-to-ground> --module <int> --ray <int> --time <09:01:00> [--do-not-clear-noise]\n");
         printf("BSA-Analytics --precise-packet <file name>\n");
         printf("BSA-Analytics --data-checker <path to data>\n");
         printf("BSA-Analytics --data-renamer <path to data>[,path2[,path3...]]\n");

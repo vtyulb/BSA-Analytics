@@ -33,6 +33,7 @@ private:
     void initStairs(Data &stairs, QStringList &names);
     QString getStairsName(const Data &data);
 
+    void fluxCheck(Data &flux, QStringList &names);
     QVector<double> sourceAutoDetect(Data &data, int module, int ray, QTime time);
     float median(float *data, int element);
 

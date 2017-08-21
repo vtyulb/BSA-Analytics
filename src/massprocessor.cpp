@@ -984,6 +984,12 @@ void MassProcessor::runFluxDensity(QString path, int module, int ray, QTime time
     qDebug() << "\n\nSaving flux density to" << name;
 
     sortStairs(flux, srcFiles);
+    if (!Settings::settings()->doNotClearNoise()) {
+        fluxCheck(flux, srcFiles);
+        sortStairs(flux, srcFiles);
+        fluxCheck(flux, srcFiles);
+        sortStairs(flux, srcFiles);
+    }
 
     QFile out(name);
     out.open(QIODevice::WriteOnly);
@@ -1049,4 +1055,24 @@ float MassProcessor::median(float *data, int element) {
         return data[element - 1];
     else
         return data[element + 1];
+}
+
+void MassProcessor::fluxCheck(Data &stairs, QStringList &names) {
+    const int MAX_DIFF = 4;
+    const int lc = stairs.channels - 1;
+    for (int i = 1; i < names.size() - 1; i++) {
+        double v = stairs.data[0][lc][0][i];
+        double left = stairs.data[0][lc][0][i - 1];
+        double right = stairs.data[0][lc][0][i + 1];
+        if (v > left && v > right)
+            if (v / left > MAX_DIFF && v / right > MAX_DIFF) {
+                std::swap(names[i], names.last());
+                for (int j = 0; j < stairs.channels; j++)
+                    std::swap(stairs.data[0][j][0][i], stairs.data[0][j][0][stairs.npoints - 1]);
+
+                stairs.npoints--;
+                names.removeLast();
+                i++;
+            }
+    }
 }

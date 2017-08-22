@@ -371,7 +371,7 @@ void pulsarEngine(int argc, char **argv) {
     }
 
     if (argc == 2) {
-        QString data = argv[1];
+        QString data = QString::fromLocal8Bit(argv[1]);
         if (data.endsWith(".pnt") || data.endsWith(".pnthr")) {
             makeApp(argc, argv);
 

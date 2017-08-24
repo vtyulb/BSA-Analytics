@@ -84,6 +84,7 @@ public slots:
 
 private slots:
     void nativePrint(QPrinter *);
+    void applyMedianFilter();
 
 };
 

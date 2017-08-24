@@ -42,6 +42,10 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     addAction(exportDataToCSVaction);
     QObject::connect(exportDataToCSVaction, SIGNAL(triggered()), this, SLOT(exportDataToCSV()));
 
+    QAction *applyMedianFiltration = new QAction("Apply median filtration");
+    addAction(applyMedianFiltration);
+    QObject::connect(applyMedianFiltration, SIGNAL(triggered()), this, SLOT(applyMedianFilter()));
+
     setMouseTracking(true);
     setMinimumSize(100, 100);
     setSizePolicy(QSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Ignored));
@@ -563,4 +567,26 @@ void NativeDrawer::exportDataToCSV() {
     QMessageBox::information(this, "Success",
                              "Export to " + csvFile + " was completed successfully!\n"
                              "Be sure to use correct decimal separator (, or .)");
+}
+
+void NativeDrawer::applyMedianFilter() {
+    Data prev = data;
+    data.fork();
+
+    const int rad = 3;
+    for (int module = 0; module < data.modules; module++)
+        for (int channel = 0; channel < data.channels; channel++)
+            for (int ray = 0; ray < data.rays; ray++)
+                for (int i = rad; i < prev.npoints - rad; i++) {
+                    QVector<float> tmp;
+                    for (int j = -rad; j <= rad; j++)
+                        tmp.push_back(prev.data[module][channel][ray][i + j]);
+
+                    std::sort(tmp.begin(), tmp.end());
+                    data.data[module][channel][ray][i] = tmp[tmp.size() / 2];
+                }
+
+    data.message += "!Modified by median filter!";
+    prev.releaseData();
+    resetVisibleRectangle();
 }

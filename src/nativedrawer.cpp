@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QAction>
 #include <QClipboard>
+#include <qdialogbuttonbox.h>
 #include <QFileDialog>
 #include <QFontMetrics>
 #include <QMessageBox>
@@ -573,10 +574,28 @@ void NativeDrawer::applyMedianFilter() {
     Data prev = data;
     data.fork();
 
+    if (data.name.endsWith(".pnthr")) {
+        QDialogButtonBox *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
+        QDialog *dialog = new QDialog;
+        dialog->setWindowTitle("Long operation pending");
+
+        QVBoxLayout *layout = new QVBoxLayout(dialog);
+        layout->addWidget(new QLabel("This will take a while.\nShould I continue?"));
+        layout->addWidget(buttons);
+
+        QObject::connect(buttons, SIGNAL(accepted()), dialog, SLOT(accept()));
+        QObject::connect(buttons, SIGNAL(rejected()), dialog, SLOT(reject()));
+        int res = dialog->exec();
+        delete dialog;
+        if (res == QDialog::Rejected)
+            return;
+    }
+
     const int rad = 3;
     for (int module = 0; module < data.modules; module++)
         for (int channel = 0; channel < data.channels; channel++)
-            for (int ray = 0; ray < data.rays; ray++)
+            for (int ray = 0; ray < data.rays; ray++) {
+                Settings::settings()->getProgressBar()->setValue((ray + channel * data.rays + module * data.rays * data.channels) * 100 / (data.rays*data.modules*data.channels));
                 for (int i = rad; i < prev.npoints - rad; i++) {
                     QVector<float> tmp;
                     for (int j = -rad; j <= rad; j++)
@@ -585,6 +604,7 @@ void NativeDrawer::applyMedianFilter() {
                     std::sort(tmp.begin(), tmp.end());
                     data.data[module][channel][ray][i] = tmp[tmp.size() / 2];
                 }
+            }
 
     data.message += "!Modified by median filter!";
     prev.releaseData();

@@ -43,7 +43,7 @@ NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     addAction(exportDataToCSVaction);
     QObject::connect(exportDataToCSVaction, SIGNAL(triggered()), this, SLOT(exportDataToCSV()));
 
-    QAction *applyMedianFiltration = new QAction("Apply median filtration");
+    QAction *applyMedianFiltration = new QAction("Apply median filtration", this);
     addAction(applyMedianFiltration);
     QObject::connect(applyMedianFiltration, SIGNAL(triggered()), this, SLOT(applyMedianFilter()));
 

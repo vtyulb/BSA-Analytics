@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QFontMetrics>
 #include <QMessageBox>
+#include <QtSvg>
 #include <QTimer>
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
@@ -107,7 +108,7 @@ void NativeDrawer::paintEvent(QPaintEvent *event) {
     event->accept();
 }
 
-void NativeDrawer::nativePaint(bool forPrinter) {
+void NativeDrawer::nativePaint(bool forPrinter, bool svgFormat) {
     if (!allowDrawing)
         return;
 
@@ -119,20 +120,35 @@ void NativeDrawer::nativePaint(bool forPrinter) {
         return;
     }
 
-    if (!forPrinter) {
+    if (!forPrinter && !svgFormat) {
         delete art;
         art = new QImage(this->width(), this->height(), QImage::Format_RGB32);
     }
 
-    QPainter p(art);
+    QSvgGenerator *svgGenerator;
+    if (svgFormat) {
+        svgGenerator = new QSvgGenerator();
+        svgGenerator->setFileName(QDir::tempPath() + "/bsa-analytics_tmp.svg");
+        svgGenerator->setSize(QSize(width(), height()));
+        svgGenerator->setViewBox(QRect(0, 0, width(), height()));
+        svgGenerator->setTitle(tr("SVG Generator Example Drawing"));
+        svgGenerator->setDescription(tr("An SVG drawing created by the SVG Generator "
+                                        "Example provided with Qt."));
+    }
+
+
+    QPainter p;
+    if (svgFormat)
+        p.begin(svgGenerator);
+    else
+        p.begin(art);
+
     p.setBrush(QBrush(QColor("white")));
     p.setPen(QColor("white"));
     p.drawRect(0, 0, art->width(), art->height());
     p.setPen(QPen("black"));
-    p.end();
 
-    drawAxes();
-    p.begin(art);
+    drawAxes(p);
 
     int rays = data.rays;
     for (int k = 0; k < data.npoints / 50000 + 1; k++) {
@@ -164,8 +180,8 @@ void NativeDrawer::nativePaint(bool forPrinter) {
     p.drawText(20, 20, data.message);
 
     emit progress(100);
+    drawAxes(p);
     p.end();
-    drawAxes();
 
     drawing.unlock();
     if (width() > 100 || height() > 100)
@@ -355,18 +371,22 @@ void NativeDrawer::saveFile(QString file) {
     if (ext.size() > 6)
         file += ".png";
 
-    art->save(file);
+    if (ext == "svg") {
+        nativePaint(false, true);
+        QFile(file).remove();
+        QFile(QDir::tempPath() + "/bsa-analytics_tmp.svg").rename(file);
+        nativePaint();
+    } else
+        art->save(file);
 }
 
 void NativeDrawer::setColors(QVector<QString> c) {
     colors = c;
 }
 
-void NativeDrawer::drawAxes() {
+void NativeDrawer::drawAxes(QPainter &p) {
     if (!drawAxesFlag || !art)
         return;
-
-    QPainter p(art);
 
     p.setBrush(QBrush(QColor("white")));
     p.setPen(QColor("black"));
@@ -420,8 +440,6 @@ void NativeDrawer::drawAxes() {
             bigDash = 0;
         }
     }
-
-    p.end();
 }
 
 QPoint NativeDrawer::mirr(QPoint p) {

@@ -271,6 +271,5 @@ void Drawer::timeToDie() {
 void Drawer::deltaChanged(double d) {
     drawer->data.delta_lucha = d;
     controller->resetSky(drawer->data, drawer->module, raysEnabled);
-    drawer->drawAxes();
     drawer->repaint();
 }

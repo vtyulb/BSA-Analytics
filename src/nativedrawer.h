@@ -25,8 +25,8 @@ public:
     void setData(const Data &newData);
     void setRayVisibles(QVector<bool>);
     void setColors(QVector<QString>);
-    void nativePaint(bool forPrinter = false);
-    void drawAxes();
+    void nativePaint(bool forPrinter = false, bool svgFormat = false);
+    void drawAxes(QPainter&);
 
     bool allowDrawing;
     bool autoDrawing;

@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui printsupport network
+QT       += core gui printsupport network svg
 
 CONFIG += console c++11
 

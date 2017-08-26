@@ -955,7 +955,7 @@ void MassProcessor::runFluxDensity(QString path, int module, int ray, QTime time
 
         Data data = Reader().readBinaryFile(names[i], true);
         QTime begin = QTime::fromString(StarTime::StarTime(data, 1), "hh:mm:ss");
-        if (!(begin.secsTo(time) > 300 && begin.secsTo(time) < 3600 - 300))
+        if (!(begin.secsTo(time) > 300 && begin.secsTo(time) < data.npoints * data.oneStep - 300))
             continue;
 
         data = Reader().readBinaryFile(names[i]);

@@ -338,7 +338,7 @@ static inline QString getPulsarJName(int module, int ray, QTime time) {
         ray = 7;
 
     QString numb = degree[module][ray];
-    if (!Settings::settings()->getFourierHighGround())
+    if (!Settings::settings()->getFourierHighGround() || Settings::settings()->getLastData().name.contains("_N2_"))
         numb = lowDegree[module][ray];
 
     int minutes = numb.right(2).toInt();

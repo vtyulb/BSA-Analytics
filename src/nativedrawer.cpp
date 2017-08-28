@@ -130,7 +130,7 @@ void NativeDrawer::nativePaint(bool forPrinter, bool svgFormat) {
     QSvgGenerator *svgGenerator;
     if (svgFormat) {
         delete art;
-        art = new QImage(200, 200, QImage::Format_ARGB32);
+        art = new QImage(300, 300, QImage::Format_ARGB32);
 
         svgGenerator = new QSvgGenerator();
         svgGenerator->setFileName(TEMPORARY_SVG_FILE);

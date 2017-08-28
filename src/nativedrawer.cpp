@@ -20,6 +20,8 @@
 
 using std::min;
 
+const QString TEMPORARY_SVG_FILE = QDir::tempPath() + "/bsa-analytics.svg";
+
 NativeDrawer::NativeDrawer(const Data &data, QWidget *parent) :
     QWidget(parent),
     allowDrawing(false),
@@ -127,15 +129,17 @@ void NativeDrawer::nativePaint(bool forPrinter, bool svgFormat) {
 
     QSvgGenerator *svgGenerator;
     if (svgFormat) {
+        delete art;
+        art = new QImage(200, 200, QImage::Format_ARGB32);
+
         svgGenerator = new QSvgGenerator();
-        svgGenerator->setFileName(QDir::tempPath() + "/bsa-analytics_tmp.svg");
-        svgGenerator->setSize(QSize(width(), height()));
+        svgGenerator->setFileName(TEMPORARY_SVG_FILE);
+        svgGenerator->setSize(QSize(art->width(), art->height()));
         svgGenerator->setViewBox(QRect(0, 0, width(), height()));
         svgGenerator->setTitle(tr("SVG Generator Example Drawing"));
         svgGenerator->setDescription(tr("An SVG drawing created by the SVG Generator "
                                         "Example provided with Qt."));
     }
-
 
     QPainter p;
     if (svgFormat)
@@ -372,9 +376,14 @@ void NativeDrawer::saveFile(QString file) {
         file += ".png";
 
     if (ext == "svg") {
+        bool axisesFlag = drawAxesFlag;
+        drawAxesFlag = false;
         nativePaint(false, true);
         QFile(file).remove();
-        QFile(QDir::tempPath() + "/bsa-analytics_tmp.svg").rename(file);
+        QFile(TEMPORARY_SVG_FILE).copy(file);
+        QFile(TEMPORARY_SVG_FILE).remove();
+
+        drawAxesFlag = axisesFlag;
         nativePaint();
     } else
         art->save(file);

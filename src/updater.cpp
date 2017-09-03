@@ -101,7 +101,7 @@ void Updater::runSetup() {
 void Updater::checkForUpdates(bool silence) {
     silentMode = silence;
     bool stable = QSettings().value("Stable", QVariant(true)).toBool();
-    if (QSettings().value("LastTimeCheckedForUpdates").toDate().daysTo(QDate::currentDate()) < 1 + stable * 3 && silentMode) {
+    if (QSettings().value("LastTimeCheckedForUpdates", QDate(2000, 1, 1)).toDate().daysTo(QDate::currentDate()) < 1 + stable * 3 && silentMode) {
         qDebug() << "already checked for updates today";
         return;
     }

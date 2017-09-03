@@ -45,6 +45,11 @@ PulsarProcess::~PulsarProcess() {
 
 
 void PulsarProcess::run() {
+    if (!data.isValid()) {
+        qDebug() << "No valid data available";
+        return;
+    }
+
     QVector<PulsarWorker*> workers;
     QThreadPool *pool = CalculationPool::pool();
     qDebug() << "splitting to" << pool->maxThreadCount() << "processes";

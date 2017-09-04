@@ -1655,7 +1655,7 @@ void Analytics::transientSaveImage(bool forPublication) {
 
     QString lastPath = QSettings().value("TransientsDirectory").toString();
     lastPath += "/" + getPulsarJName(p->module, p->ray, p->nativeTime) + "___" + QUuid::createUuid().toString().replace("{", "").replace("}", "").replace("-", "").left(6) + ".png";
-    QString savePath = QFileDialog::getSaveFileName(this, "Spectre & profile filename", lastPath, "Image *.png;;Vector image *.svg");
+    QString savePath = QFileDialog::getSaveFileName(this, "Spectre & profile filename", lastPath, "Image *.png;;Vector Image *.svg");
     if (savePath == "")
         return;
 

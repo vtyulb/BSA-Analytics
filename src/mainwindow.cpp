@@ -243,7 +243,7 @@ void MainWindow::readProgressChanged(double progress) {
 }
 
 void MainWindow::saveFile() {
-    QString path = QFileDialog::getSaveFileName(this, "", "", "Image *.png;;Vector image *.svg");
+    QString path = QFileDialog::getSaveFileName(this, "", "", "Image *.png;;Vector Image *.svg");
 
     if (path != "")
         drawer->saveFile(path);

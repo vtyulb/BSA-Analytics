@@ -379,7 +379,7 @@ void NativeDrawer::resizeEvent(QResizeEvent *event) {
 
 void NativeDrawer::saveFile(QString file) {
     if (file == "") {
-        file = QFileDialog::getSaveFileName(this, "", "", "Image *.png;;Vector image *.svg");
+        file = QFileDialog::getSaveFileName(this, "", "", "Image *.png;;Vector Image *.svg");
         if (file == "")
             return;
     }

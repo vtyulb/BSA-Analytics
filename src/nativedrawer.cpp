@@ -135,7 +135,7 @@ void NativeDrawer::nativePaint(bool forPrinter, bool svgFormat) {
         svgGenerator = new QSvgGenerator();
         svgGenerator->setFileName(TEMPORARY_SVG_FILE);
         svgGenerator->setSize(QSize(art->width(), art->height()));
-        svgGenerator->setViewBox(QRect(0, 0, width(), height()));
+        svgGenerator->setViewBox(QRect(0, 0, art->width(), art->height()));
         svgGenerator->setTitle(tr("SVG Generator Example Drawing"));
         svgGenerator->setDescription(tr("An SVG drawing created by the SVG Generator "
                                         "Example provided with Qt."));

@@ -23,6 +23,8 @@
 #include <QStandardPaths>
 #include <QDesktopServices>
 #include <QUuid>
+#include <QSvgGenerator>
+#include <QSvgRenderer>
 
 #include <algorithm>
 
@@ -1657,11 +1659,11 @@ void Analytics::transientSaveImage(bool forPublication) {
     if (savePath == "")
         return;
 
-    if (!savePath.endsWith(".png"))
+    if (!savePath.endsWith(".png") && !savePath.endsWith(".svg"))
         savePath += ".png";
 
     QImage im1 = Settings::settings()->getSpectreDrawer()->ui->drawer->spectre;
-    QString tmpFile = QDir::tempPath() + "/bsa-analytics-screen.png";
+    QString tmpFile = QDir::tempPath() + "/bsa-analytics-screen." + savePath.right(3);
     window->generateImage(tmpFile);
     QImage im2(tmpFile);
 
@@ -1677,25 +1679,43 @@ void Analytics::transientSaveImage(bool forPublication) {
     im2 = im2.copy(mn, 0, mx - mn, im2.height());
     im2 = im2.scaled(im1.width() - 50, im1.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    QImage res(im1.width(), im1.height() * 2, QImage::Format_ARGB32);
+    QPaintDevice *res;
+    QImage *resImage;
+    QSvgGenerator *svgGenerator;
+    if (!savePath.endsWith(".svg")) {
+        resImage = new QImage(im1.width(), im1.height() * 2, QImage::Format_ARGB32);
+        res = resImage;
+    } else {
+        svgGenerator = new QSvgGenerator();
+        svgGenerator->setFileName(savePath);
+        svgGenerator->setSize(QSize(im1.width(), im1.height() * 2));
+        svgGenerator->setViewBox(QRect(0, 0, im1.width(), im1.height() * 2));
+        svgGenerator->setTitle(tr("SVG Generator Example Drawing"));
+        svgGenerator->setDescription("An SVG drawing created by the SVG Generator ");
+
+        res = svgGenerator;
+    }
     std::swap(im1, im2);
 
-    for (int i = 0; i < im1.height(); i++)
-        for (int j = 0; j < im1.width(); j++)
-            res.setPixel(j + 50, i, im1.pixel(j, i));
+    QPainter painter;
+    painter.begin(res);
 
-    for (int i = 0; i < im2.height(); i++)
-        for (int j = 0; j < im2.width(); j++)
-            res.setPixel(j, i + im1.height(), im2.pixel(j, i));
+    if (savePath.endsWith(".svg"))
+        QSvgRenderer(tmpFile).render(&painter, QRectF(50, 0, res->width() - 50, res->height() / 2));
+    else
+        painter.drawImage(50, 0, im1);
 
-    for (int i = 0; i < im1.height(); i++)
-        for (int j = 0; j < 50; j++)
-            res.setPixel(j, i, QColor(255, 255, 255).rgb());
+    painter.drawImage(0, im1.height(), im2);
+    painter.setBrush(QBrush(QColor("white")));
+    painter.setPen(QColor("white"));
+    painter.drawRect(0, 0, 50, im1.height());
+    painter.setPen(QColor("black"));
 
     bool shrt = Settings::settings()->getTransientImpulseTime().size() < 10;
     QString data = "Block: " + QString::number(ui->fourierBlockNo->value()) + "\n";
     if (shrt)
         data +=    "Impulse time: " + p->data.time.time().toString() + "\n";
+
     data +=        "Module: " + QString::number(p->module) + "\n" +
                    "Ray: " + QString::number(p->ray) + "\n" +
                    "Dispersion: " + QString::number(p->dispersion) + "\n";
@@ -1708,15 +1728,22 @@ void Analytics::transientSaveImage(bool forPublication) {
         data += Settings::settings()->getTransientImpulseTime();
     }
 
-    if (forPublication)
-        res = res.copy(50, 0, res.width() - 50, res.height());
-    else {
-        QPainter painter(&res);
+    if (forPublication) {
+        painter.end();
+        if (savePath.endsWith(".svg")) {
+            QRect rect = svgGenerator->viewBox();
+            rect.setLeft(50);
+            svgGenerator->setViewBox(rect);
+        } else
+            *resImage = resImage->copy(50, 0, resImage->width() - 50, resImage->height());
+    } else {
         painter.drawText(QRectF(5, 20, im1.width(), im1.height()), Qt::AlignLeft, data);
         painter.end();
     }
 
-    res.save(savePath);
+    if (!savePath.endsWith(".svg"))
+        resImage->save(savePath);
+
     QSettings().setValue("TransientsDirectory", QFileInfo(savePath).absoluteDir().absolutePath());
     QDesktopServices::openUrl(QUrl::fromLocalFile(savePath));
 }

@@ -130,7 +130,8 @@ void NativeDrawer::nativePaint(bool forPrinter, bool svgFormat) {
     QSvgGenerator *svgGenerator;
     if (svgFormat) {
         delete art;
-        art = new QImage(300, 300, QImage::Format_ARGB32);
+        int size = data.npoints < 1000 ? 300 : 1024;
+        art = new QImage(size, size, QImage::Format_ARGB32);
 
         svgGenerator = new QSvgGenerator();
         svgGenerator->setFileName(TEMPORARY_SVG_FILE);
@@ -139,6 +140,12 @@ void NativeDrawer::nativePaint(bool forPrinter, bool svgFormat) {
         svgGenerator->setTitle(tr("SVG Generator Example Drawing"));
         svgGenerator->setDescription(tr("An SVG drawing created by the SVG Generator "
                                         "Example provided with Qt."));
+
+        screens.push_back(screen);
+        if (data.npoints < 1000) {
+            screen.setLeft(0);
+            screen.setRight(data.npoints - 1);
+        }
     }
 
     QPainter p;
@@ -186,6 +193,11 @@ void NativeDrawer::nativePaint(bool forPrinter, bool svgFormat) {
     emit progress(100);
     drawAxes(p);
     p.end();
+
+    if (svgFormat) {
+        screen = screens.last();
+        screens.removeLast();
+    }
 
     drawing.unlock();
     if (width() > 100 || height() > 100)

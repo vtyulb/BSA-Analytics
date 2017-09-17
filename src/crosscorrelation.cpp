@@ -73,12 +73,10 @@ double CrossCorrelation::correlation(int disp) {
             tmp.push_back(profile[j][(i+dt+msz) % sz]);
         }
 
-        for (int j = 0; j < 31; j++)
-            if (tmp[j] > tmp[j + 1])
-                std::swap(tmp[j], tmp[j + 1]);
+        std::sort(tmp.begin(), tmp.end());
 
         double cur = 1;
-        for (int j = 0; j < 31; j++)
+        for (int j = 2; j < 30; j++)
             cur *= tmp[j];
 
         res += cur;

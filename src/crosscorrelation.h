@@ -5,16 +5,13 @@
 
 #include <data.h>
 
-const int CROSS_CORRELATION_SIZE = 1024;
-const int CROSS_CORRELATION_WINDOW = 1;
-const int CROSS_CORRELATION_FIRST_DISPERSION = 0;
-const int CROSS_CORRELATION_LAST_DISPERSION = 550;
-
 class CrossCorrelation
 {
 public:
     QVector<double> process(const Data &data, int module, int ray, int offset);
     Data determinePreciseInterval(const Data &data, int &dispersion);
+
+    static int window();
 
 private:
     QVector<float> profile[32];

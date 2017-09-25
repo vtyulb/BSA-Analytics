@@ -55,6 +55,14 @@ bool Settings::longRoads() {
     return _longRoads;
 }
 
+void Settings::setCrossCorrelationWindowSize(int size) {
+    _crossCorrelationWindowSize = size;
+}
+
+int Settings::crossCorrelationWindowSize() {
+    return _crossCorrelationWindowSize;
+}
+
 void Settings::setDispersion(double d) {
     _dispersion = d + 1e-9;
 }

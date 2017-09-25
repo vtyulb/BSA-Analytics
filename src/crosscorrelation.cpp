@@ -9,34 +9,32 @@
 #include <QDebug>
 #include <QApplication>
 
-const int window = CROSS_CORRELATION_WINDOW;
-const int size = CROSS_CORRELATION_SIZE;
-const int FIRST_DISPERSION = CROSS_CORRELATION_FIRST_DISPERSION;
-const int LAST_DISPERSION = CROSS_CORRELATION_LAST_DISPERSION;
 const double v1 = 109.0390625;
 const double v2 = 109.1171875;
-
 
 QVector<double> CrossCorrelation::process(const Data &data, int module, int ray, int offset) {
     QVector<double> res;
 
-    for (int i = 0; i < FIRST_DISPERSION; i++)
+    for (int i = 0; i < 0; i++)
         res.push_back(0);
 
     for (int i = 0; i < 32; i++)
         profile[i].clear();
 
-    for (int i = 0; i < size - window; i += window)
+    const int size = Settings::settings()->crossCorrelationWindowSize();
+    const int lastDispersion = size / 2;
+
+    for (int i = 0; i < size - window(); i += window())
         for (int channel = 0; channel < 32; channel++) {
             float cur = 0;
-            for (int k = 0; k < window; k++)
+            for (int k = 0; k < window(); k++)
                 cur += data.data[module][channel][ray][offset + i + k];
 
-            cur /= window;
+            cur /= window();
             profile[channel].push_back(cur);
         }
 
-    for (int disp = FIRST_DISPERSION; disp <= LAST_DISPERSION / window; disp++)
+    for (int disp = 0; disp <= lastDispersion / window(); disp++)
         res.push_back(correlation(disp));
 
     subtractNull(res);
@@ -82,7 +80,7 @@ double CrossCorrelation::correlation(int disp) {
         res += cur;
     }
 
-    return res * window;
+    return res * window();
 }
 
 void CrossCorrelation::subtractNull(QVector<double> &data) {
@@ -140,4 +138,9 @@ Data CrossCorrelation::determinePreciseInterval(const Data &data, int &dispersio
 
     dispersion = bestDispersion;
     return res;
+}
+
+int CrossCorrelation::window() {
+    const int size = Settings::settings()->crossCorrelationWindowSize();
+    return qMax(size / 2048, 1);
 }

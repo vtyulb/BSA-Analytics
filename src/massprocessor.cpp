@@ -75,10 +75,15 @@ void MassProcessor::runInteractive() {
                 firstDispersion = 2;
                 lastDispersion = 100;
 
-                printf("Do you want to search for FRB instead of transients (dispersions 100-%d)? [y/N] ", CROSS_CORRELATION_LAST_DISPERSION);
+                printf("Do you want to search for FRB instead of transients (dispersions up to 2000 available)? [y/N] ");
                 if (input.readLine().toUpper() == "Y") {
-                    firstDispersion = 100;
-                    lastDispersion = CROSS_CORRELATION_LAST_DISPERSION;
+                    firstDispersion = 0;
+                    printf("\nCross correlation window size available: 512 <- best for FRB,1024,2048,4096,8192 <- best for pulsars\n");
+                    printf("Actual dispersion will be from 0 to size/2\n");
+                    printf("Please enter cross correlation window size: ");
+                    Settings::settings()->setCrossCorrelationWindowSize(input.readLine().toInt());
+                    printf("Sliding window set to %d points\n", CrossCorrelation::window());
+                    lastDispersion = Settings::settings()->crossCorrelationWindowSize() / 2;
                     FRBmode = true;
                 }
 
@@ -385,7 +390,7 @@ void MassProcessor::processFRB(Data &data, int module, int ray, int offset, QVec
             mxAt = i;
 
     double snr = autoCorrelation[mxAt] / sigma;
-    int dispersion = mxAt * CROSS_CORRELATION_WINDOW;
+    int dispersion = mxAt * CrossCorrelation::window();
     if (snr > 6.5) {
         qDebug() << "dispersion" << dispersion << "snr" << snr << "point" << offset << "module" << module << "ray" << ray;
         for (int i = 0; i < autoCorrelation.size(); i++)
@@ -521,7 +526,7 @@ bool MassProcessor::dumpTransient(const QVector<double> &data, const Data &rawDa
 
     if (FRBmode) {
         start = startPoint;
-        end = startPoint + CROSS_CORRELATION_SIZE;
+        end = startPoint + Settings::settings()->crossCorrelationWindowSize();
     }
 
     Data res = rawData;
@@ -551,7 +556,7 @@ bool MassProcessor::dumpTransient(const QVector<double> &data, const Data &rawDa
         int i = 0;
         int curValue = 0;
         while (i < res.npoints - 5) {
-            for (int k = 0; k < CROSS_CORRELATION_WINDOW; k++)
+            for (int k = 0; k < CrossCorrelation::window(); k++)
                 if (curValue >= data.size())
                     res.data[0][32][0][i++] = 0;
                 else
@@ -868,7 +873,7 @@ void MassProcessor::transientProcess(Data &data) {
             fflush(stdout);
 
             if (FRBmode) {
-                for (int i = offset; i < data.npoints - offset; i += CROSS_CORRELATION_SIZE / 2) {
+                for (int i = offset; i < data.npoints - offset; i += Settings::settings()->crossCorrelationWindowSize() / 2) {
                     QVector<double> cr = CrossCorrelation().process(data, module, ray, i);
                     double realPart;
                     StarTime::StarTime(data, i, &realPart);

@@ -55,6 +55,7 @@ public:
     bool nullOnOYaxis();
     bool periodTester();
     QProgressBar *getProgressBar();
+    int crossCorrelationWindowSize();
     double dispersion();
     QVector<double> dispersionData();
     QVector<double> profileData(int dispersion);
@@ -98,6 +99,7 @@ public:
     void setPeriod(double);
     void setTime(QTime);
     void setNoMultiplePeriods(bool);
+    void setCrossCorrelationWindowSize(int);
     void setDispersion(double);
     void setDispersionData(const QVector<double>&);
     void setProfileData(const QVector<double> &profile, int dispersion);
@@ -139,6 +141,7 @@ private:
     bool _doNotClearNoise;
     bool _longRoads;
     QTime _time;
+    int _crossCorrelationWindowSize;
     double _period;
     double _dispersion;
     bool _fourierAnalytics;

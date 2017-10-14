@@ -1679,9 +1679,9 @@ void Analytics::transientSaveImage(bool forPublication) {
     im2 = im2.copy(mn, 0, mx - mn, im2.height());
     im2 = im2.scaled(im1.width() - 50, im1.height(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-    QPaintDevice *res;
-    QImage *resImage;
-    QSvgGenerator *svgGenerator;
+    QPaintDevice *res = NULL;
+    QImage *resImage = NULL;
+    QSvgGenerator *svgGenerator = NULL;
     if (!savePath.endsWith(".svg")) {
         resImage = new QImage(im1.width(), im1.height() * 2, QImage::Format_ARGB32);
         res = resImage;

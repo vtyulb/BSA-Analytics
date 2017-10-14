@@ -69,3 +69,6 @@ Root: HKCR; Subkey: "BSAPulsar\shell\open\command"; ValueType: string; ValueName
 
 Root: HKCR; Subkey: "Directory\shell\Run BSA-Analytics"; ValueType: string; ValueName: ""; ValueData: "Run BSA-Analytics"; Flags: uninsdeletevalue
 Root: HKCR; Subkey: "Directory\shell\Run BSA-Analytics\command"; ValueType: string; ValueName: ""; ValueData: """{app}\BSA-Analytics.exe"" ""--analytics"" ""%1"""; Flags: uninsdeletevalue
+
+Root: HKCU; Subkey: "Software\vtyulb\BSA-Analytics\"; ValueName: "LastTimeCheckedForUpdates"; ValueType: none; Flags: deletevalue;
+Root: HKCU; Subkey: "Software\vtyulb\BSA-Analytics\"; ValueName: "Stable"; ValueType: none; Flags: deletevalue;

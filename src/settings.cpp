@@ -435,7 +435,8 @@ bool Settings::getNormalize() {
 
 QString Settings::version() {
     return "Compiled at " + QFileInfo(qApp->applicationFilePath()).lastModified().toString("MM.dd.yyyy hh:mm") +
-           "\nGit revision: " + QString(GIT_VERSION) + "\n";
+           "\nGit revision: " + QString(GIT_VERSION) +
+           "\nVersion: " + (STABLE_VERSION ? "stable" : "nightly") + "\n";
 }
 
 void Settings::setNullOnOYaxis(bool b) {

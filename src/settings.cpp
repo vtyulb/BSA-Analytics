@@ -434,7 +434,7 @@ bool Settings::getNormalize() {
 }
 
 QString Settings::version() {
-    return "Compiled at " + QFileInfo(qApp->applicationFilePath()).lastModified().toString("MM.dd.yyyy hh:mm") +
+    return "Compiled at " + QFileInfo(qApp->applicationFilePath()).lastModified().toString("dd.MM.yyyy hh:mm") +
            "\nGit revision: " + QString(GIT_VERSION) +
            "\nVersion: " + (STABLE_VERSION ? "stable" : "nightly") + "\n";
 }

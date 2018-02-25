@@ -1027,7 +1027,7 @@ QVector<double> MassProcessor::sourceAutoDetect(Data &data, int module, int ray,
 
     QVector<double> res;
 
-    const int window = 20;
+    const int window = 300;
     for (int channel = 0; channel < data.channels; channel++) {
         double current = 0;
         double minLeft = 1e+100;
@@ -1054,12 +1054,12 @@ QVector<double> MassProcessor::sourceAutoDetect(Data &data, int module, int ray,
 }
 
 float MassProcessor::median(float *data, int element) {
-    if (data[element - 1] < data[element] && data[element] < data[element + 1])
+    if (data[element - 5] < data[element] && data[element] < data[element + 5])
         return data[element];
-    else if (data[element] < data[element - 1] && data[element - 1] < data[element + 1])
-        return data[element - 1];
+    else if (data[element] < data[element - 5] && data[element - 5] < data[element + 5])
+        return data[element - 5];
     else
-        return data[element + 1];
+        return data[element + 5];
 }
 
 void MassProcessor::fluxCheck(Data &stairs, QStringList &names) {

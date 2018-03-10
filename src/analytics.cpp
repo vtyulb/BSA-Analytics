@@ -1231,9 +1231,10 @@ void Analytics::applyFourierFilters() {
 
             pl.findFourierData(ui->fourierPointsToSkip->value());
             pl.data.sigma = pl.firstPoint;
-            whiteZone->push_front(pl);
+            if (!ui->fourierAllPeaks->isChecked() || pl.snr > FOURIER_PULSAR_LEVEL_SNR)
+                whiteZone->push_front(pl);
 
-            if (ui->fourierAllPeaks->isChecked())
+            if (ui->fourierAllPeaks->isChecked()) {
                 while (pl.snr > FOURIER_PULSAR_LEVEL_SNR) {
                     pl.data.fork();
                     pl.data.releaseProtected = true;
@@ -1248,6 +1249,13 @@ void Analytics::applyFourierFilters() {
                         break;
                     }
                 }
+
+                pl.data.fork();
+                pl.data.releaseProtected = true;
+                pl.snr = 1;
+                pl.data.sigma = 100000;
+                whiteZone->push_front(pl);
+            }
         }
 
     for (int i = 0; i < pulsars->size(); i++)

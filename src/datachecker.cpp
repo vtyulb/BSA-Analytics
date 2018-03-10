@@ -51,8 +51,9 @@ void DataChecker::processWithFilter(QString filter) {
         if (lst[i - 1].secsTo(lst[i]) > 5000) {
             QDateTime mBegin = lst[i - 1].addSecs(3600);
             QDateTime mEnd = lst[i].addSecs(-3600);
-            printf("Missing interval: %s - %s\n", dateToString(mBegin, filter).toLocal8Bit().constData(),
-                                                  dateToString(mEnd, filter).toLocal8Bit().constData());
+            printf("Missing interval: %s - %s. Lost %lld hours.\n", dateToString(mBegin, filter).toLocal8Bit().constData(),
+                                                                  dateToString(mEnd, filter).toLocal8Bit().constData(),
+                                                                  mBegin.secsTo(mEnd) / 3600 + 1);
         }
 
     printf("------------\n");

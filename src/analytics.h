@@ -88,6 +88,7 @@ private:
     void destroyPeak(Data &spectre, int point);
 
     void buildTransientWhitezone(Pulsars &res);
+    void updateTransientWhitezone(Pulsars &res);
 
     void preciseDataMode();
     void compressLayout();

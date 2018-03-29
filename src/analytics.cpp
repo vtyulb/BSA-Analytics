@@ -1081,6 +1081,9 @@ void Analytics::applyTransientFilters() {
 
     if (ui->transinetGraphicFilter->isChecked())
         applyTransientGraphicFilter();
+
+    if (transientWhitezoneEnabled)
+        updateTransientWhitezone(pulsars);
 }
 
 void Analytics::applyFRBFilters() {
@@ -1810,6 +1813,38 @@ void Analytics::buildTransientWhitezone(Pulsars &res) {
             else {
                 whitezone[i][j].releaseProtected = false;
                 whitezone[i][j].releaseData();
+            }
+        }
+}
+
+void Analytics::updateTransientWhitezone(Pulsars &res)
+{
+    Data whitezone[6][8];
+    Pulsar *whitezonePulsars[6][8];
+    for (int i = 0; i < pulsars->size(); i++)
+        if (!pulsars->at(i).filtered) {
+            int module = pulsars->at(i).module - 1;
+            int ray = pulsars->at(i).ray - 1;
+            whitezone[module][ray] = pulsars->at(i).data;
+            whitezonePulsars[module][ray] = &(*pulsars)[i];
+            whitezonePulsars[module][ray]->snr = 0;
+            for (int j = 0; j < whitezone[module][ray].npoints; j++)
+                whitezone[module][ray].data[0][0][0][j] = 0;
+        }
+
+    for (int i = 0; i < res->size(); i++)
+        if (res->at(i).filtered && pulsarsEnabled[i]) {
+            int module = res->at(i).module - 1;
+            int ray = res->at(i).ray - 1;
+
+            if (whitezone[module][ray].modules != 1)
+                continue;
+
+            int snr = whitezone[module][ray].data[0][0][0][res->at(i).dispersion];
+            whitezone[module][ray].data[0][0][0][res->at(i).dispersion] += 1;
+            if (snr >= whitezonePulsars[module][ray]->snr) {
+                whitezonePulsars[module][ray]->snr = snr;
+                whitezonePulsars[module][ray]->dispersion = res->at(i).dispersion;
             }
         }
 }

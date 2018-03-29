@@ -156,6 +156,11 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         }
     }
 
+    if (Settings::settings()->dispersion() > 200) {
+        ui->time->setValue(Settings::settings()->dispersion() / 100);
+        ui->time->setMinimum(Settings::settings()->dispersion() / 100);
+    }
+
     this->reDraw();
     this->show();
     qApp->processEvents();
@@ -194,7 +199,18 @@ void SpectreDrawer::reDraw() {
                     }
 
             }
-            res.push_back(sum / n);
+
+            if (!ui || ui->dispersion->value() <= 200)
+                res.push_back(sum / n);
+            else if (ui) {
+                int dispersion = ui->dispersion->value();
+                int ratio = dispersion / 100;
+                if (j % ratio == 0)
+                    res.push_back(sum / n);
+
+                ui->message->setText(QString("Showing 1 of every %1 points").arg(ratio));
+            }
+
         }
 
         rawRes.push_back(res);
@@ -285,10 +301,12 @@ QImage SpectreDrawer::drawDispersion(QImage src) {
 
     QPainter p(&src);
     if (ui->showDispersion->isChecked()) {
-        p.setPen(QPen(QBrush("red"), 3, Qt::SolidLine));
+        p.setPen(QPen(QBrush("red"), 3 + ui->dispersion->value() / 200, Qt::SolidLine));
         double v1 = data.fbands[0];
         double v2 = data.fbands[1];
         double dsp = 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * 32 * ui->dispersion->value() / 0.0124928;
+        if (ui->dispersion->value() > 200)
+            dsp /= (ui->dispersion->value() / 100);
 
         p.drawLine(offset + ((src.width()-offset)/nrm - 10 + 0.5) * nrm, nrm / 2, offset + ((src.width()-offset)/nrm - 10 + dsp + 0.5) * nrm, src.height() - nrm / 2 - 1);
     }

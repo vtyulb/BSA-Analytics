@@ -68,7 +68,7 @@
             <number>1</number>
            </property>
            <property name="maximum">
-            <number>10</number>
+            <number>40</number>
            </property>
           </widget>
          </item>
@@ -154,6 +154,13 @@
            </property>
            <property name="singleStep">
             <double>0.200000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QLabel" name="message">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>

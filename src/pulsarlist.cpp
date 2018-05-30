@@ -4,6 +4,7 @@
 #include <spectredrawer.h>
 #include <mainwindow.h>
 
+#include <QClipboard>
 #include <QDebug>
 #include <QKeyEvent>
 #include <QTimer>
@@ -32,7 +33,7 @@ PulsarList::PulsarList(QWidget *parent) :
 
     QAction *showUTCtime = new QAction("Show UTC time", this);
     QObject::connect(showUTCtime, SIGNAL(triggered()), this, SLOT(showTime()));
-    if (!Settings::settings()->fourierAnalytics())
+    if (!Settings::settings()->fourierAnalytics() || Settings::settings()->transientAnalytics())
         addAction(showUTCtime);
 
     QAction *showComment = new QAction("Show comment", this);
@@ -185,7 +186,24 @@ void PulsarList::selectionChanged() {
 }
 
 void PulsarList::showTime() {
-    QMessageBox::information(this, "Peak UTC time", currentPulsar->UTCtime());
+    if (!Settings::settings()->transientAnalytics())
+        QMessageBox::information(this, "Peak UTC time", currentPulsar->UTCtime());
+    else {
+        QVector<Pulsar> pulsarsSelection;
+        if (!currentPulsar->marked)
+            markObject();
+
+        for (int i = 0; i < pulsars->size(); i++)
+            if (pulsars->at(i).marked)
+                pulsarsSelection << pulsars->at(i);
+
+        QString message;
+        foreach (Pulsar pulsar, pulsarsSelection)
+            message += stringDateToDate(pulsar.data.previousLifeName.right(21), false).addMSecs(12.4928 * pulsar.firstPoint).toString("dd.MM.yyyy hh:mm:ss.zzz") + "\n";
+
+        QMessageBox::information(this, "Peaks Moscow time", "Peaks Moscow time (copied to clipboard already):\n\n" + message);
+        qApp->clipboard()->setText(message);
+    }
 }
 
 void PulsarList::showComment() {

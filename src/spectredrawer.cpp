@@ -1,5 +1,6 @@
 #include "spectredrawer.h"
 
+#include <QAction>
 #include <QButtonGroup>
 #include <QVector>
 #include <QImage>

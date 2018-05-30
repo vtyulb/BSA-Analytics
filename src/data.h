@@ -143,14 +143,17 @@ struct Data {
     }
 };
 
-static inline QDateTime stringDateToDate(QString name) {
+static inline QDateTime stringDateToDate(QString name, bool addYearsDependingOnGround = true) {
     int day = name.left(2).toInt();
     int month = name.left(4).right(2).toInt();
     int year = name.left(6).right(2).toInt();
     int hour = name.left(9).right(2).toInt();
     int ground = name.left(12).right(1).toInt();
 
-    year += ground * 100;
+    if (addYearsDependingOnGround)
+        year += ground * 100;
+    else
+        year += 2000;
 
     return QDateTime(QDate(year, month, day), QTime(hour, 0));
 }

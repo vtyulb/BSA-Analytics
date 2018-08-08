@@ -12,6 +12,9 @@
 class SpectreDrawer: public QWidget
 {
     Q_OBJECT
+
+    enum ColorModels { grayScale, jet, thermal } colorModel;
+
 public:
     SpectreDrawer();
     ~SpectreDrawer();
@@ -24,8 +27,10 @@ public:
 
 private:
     QVector<double> getAnswer(const Data &data, int channel, int startPoint = -1);
-    QImage drawImage(QVector<QVector<int> > matrix, const Data &data);
+    QImage drawImage(QVector<QVector<double> > matrix, const Data &data);
     QImage drawDispersion(QImage);
+    QColor jetModel(double value);
+    QColor interpolate(QColor a, QColor b, double value);
 
     Data data;
     int module, ray;
@@ -46,6 +51,7 @@ private slots:
     void reDrawDispersion();
     void reDraw();
     void saveAs();
+    void changeModel(int newModel);
 };
 
 #endif // SPECTREDRAWER_H

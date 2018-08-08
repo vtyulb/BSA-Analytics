@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
-    <height>238</height>
+    <width>621</width>
+    <height>395</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
      <property name="maximumSize">
       <size>
        <width>16777215</width>
-       <height>120</height>
+       <height>140</height>
       </size>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -48,6 +48,13 @@
          </size>
         </property>
         <layout class="QGridLayout" name="gridLayout">
+         <item row="2" column="3">
+          <widget class="QPushButton" name="mem">
+           <property name="text">
+            <string>Mem</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="3">
           <widget class="QPushButton" name="saver">
            <property name="text">
@@ -99,20 +106,6 @@
            </property>
           </widget>
          </item>
-         <item row="2" column="3">
-          <widget class="QPushButton" name="mem">
-           <property name="text">
-            <string>Mem</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="3">
-          <widget class="QPushButton" name="memPlus">
-           <property name="text">
-            <string>M+</string>
-           </property>
-          </widget>
-         </item>
          <item row="0" column="2">
           <widget class="QRadioButton" name="local">
            <property name="text">
@@ -131,13 +124,6 @@
           <widget class="QCheckBox" name="showDispersion">
            <property name="text">
             <string>show</string>
-           </property>
-          </widget>
-         </item>
-         <item row="3" column="4">
-          <widget class="QPushButton" name="hideButton">
-           <property name="text">
-            <string>hide</string>
            </property>
           </widget>
          </item>
@@ -161,6 +147,40 @@
           <widget class="QLabel" name="message">
            <property name="text">
             <string/>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QPushButton" name="memPlus">
+           <property name="text">
+            <string>M+</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QSpinBox" name="shiftDispersion">
+           <property name="minimum">
+            <number>-1000</number>
+           </property>
+           <property name="maximum">
+            <number>1000</number>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Shift</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="2">
+          <widget class="QComboBox" name="modelComboBox"/>
+         </item>
+         <item row="4" column="3">
+          <widget class="QPushButton" name="hideButton">
+           <property name="text">
+            <string>hide</string>
            </property>
           </widget>
          </item>

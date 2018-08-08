@@ -27,8 +27,9 @@ const int nrm = 10;
 const int offset = 50;
 
 SpectreDrawer::SpectreDrawer():
-    QWidget(NULL),
-    ui(NULL)
+    QWidget(nullptr),
+    colorModel(grayScale),
+    ui(nullptr)
 {
     addFromMem = false;
     isWorking = false;
@@ -118,6 +119,10 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         if (!Settings::settings()->transientAnalytics())
             ui->hideButton->hide();
 
+        ui->modelComboBox->addItem("   GrayScale");
+        ui->modelComboBox->addItem("   Jet");
+        ui->modelComboBox->addItem("   Thermal");
+
         QObject::connect(group, SIGNAL(buttonClicked(int)), this, SLOT(reDraw()));
         QObject::connect(ui->channels, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
         QObject::connect(ui->time, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
@@ -126,6 +131,8 @@ void SpectreDrawer::drawSpectre(int module, int ray, const Data &_data, QTime ti
         QObject::connect(ui->memPlus, SIGNAL(clicked()), this, SLOT(memPlus()));
         QObject::connect(ui->mem, SIGNAL(clicked()), this, SLOT(mem()));
         QObject::connect(ui->hideButton, SIGNAL(clicked()), this, SLOT(hide()));
+        QObject::connect(ui->modelComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(changeModel(int)));
+        QObject::connect(ui->shiftDispersion, SIGNAL(valueChanged(int)), this, SLOT(reDraw()));
 
         QAction *saveAsAction = new QAction("Save as...", this);
         QObject::connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
@@ -179,7 +186,7 @@ void SpectreDrawer::reDraw() {
     if (fabs(data.oneStep) < 0.0001)
         data.oneStep = 0.0124928;
 
-    QVector<QVector<int> > matrix;
+    QVector<QVector<double> > matrix;
 
     int chs = ui->channels->value();
     int tms = ui->time->value();
@@ -258,9 +265,9 @@ void SpectreDrawer::reDraw() {
                 min = rawRes[channel][i];
         }
 
-        QVector<int> norm;
+        QVector<double> norm;
         for (int i = 0; i < rawRes[channel].size(); i++)
-            norm.push_back(255 * (rawRes[channel][i] - min) / (max - min));
+            norm.push_back((rawRes[channel][i] - min) / (max - min));
 
         matrix.push_back(norm);
     }
@@ -269,7 +276,7 @@ void SpectreDrawer::reDraw() {
     ui->drawer->repaint();
 }
 
-QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data) {
+QImage SpectreDrawer::drawImage(QVector<QVector<double> > matrix, const Data &data) {
     const int maxMinWidth = Settings::settings()->transientAnalytics() ? 480 : 1024;
 
     QImage image(matrix[0].size() * nrm + offset, matrix.size() * nrm, QImage::Format_ARGB32);
@@ -279,9 +286,9 @@ QImage SpectreDrawer::drawImage(QVector<QVector<int> > matrix, const Data &data)
 
     for (int i = 0; i < matrix.size(); i++)
         for (int j = 0; j < matrix[i].size(); j++) {
-            int color = 255 - matrix[i][j];
-            p.setPen(QColor(color, color, color));
-            p.setBrush(QBrush(QColor(color, color, color)));
+            QColor color = jetModel(matrix[i][j]);
+            p.setPen(color);
+            p.setBrush(QBrush(color));
             p.drawRect(j * nrm + offset, i * nrm, nrm, nrm);
         }
 
@@ -302,6 +309,7 @@ QImage SpectreDrawer::drawDispersion(QImage src) {
 
     QPainter p(&src);
     if (ui->showDispersion->isChecked()) {
+        p.setRenderHint(QPainter::Antialiasing, true);
         p.setPen(QPen(QBrush("red"), 3 + ui->dispersion->value() / 200, Qt::SolidLine));
         double v1 = data.fbands[0];
         double v2 = data.fbands[1];
@@ -309,7 +317,10 @@ QImage SpectreDrawer::drawDispersion(QImage src) {
         if (ui->dispersion->value() > 200)
             dsp /= (ui->dispersion->value() / 100);
 
-        p.drawLine(offset + ((src.width()-offset)/nrm - 10 + 0.5) * nrm, nrm / 2, offset + ((src.width()-offset)/nrm - 10 + dsp + 0.5) * nrm, src.height() - nrm / 2 - 1);
+        p.drawLine(offset - ui->shiftDispersion->value() + ((src.width()-offset)/nrm - 10 + 0.5) * nrm,
+                   nrm / 2,
+                   offset - ui->shiftDispersion->value() + ((src.width()-offset)/nrm - 10 + dsp + 0.5) * nrm,
+                   src.height() - nrm / 2 - 1);
     }
 
     p.end();
@@ -374,5 +385,52 @@ void SpectreDrawer::mem() {
 
 void SpectreDrawer::memPlus() {
     addFromMem = true;
+    reDraw();
+}
+
+QColor SpectreDrawer::jetModel(double value)
+{
+    QList<QColor> colors;
+    QList<double> stops;
+    if (colorModel == thermal) {
+        colors = QList<QColor>() << QColor(0, 0, 50)
+                                << QColor(20, 0, 120)
+                                << QColor(200, 30, 140)
+                                << QColor(255, 100, 0)
+                                << QColor(255, 255, 40)
+                                << QColor(255, 255, 255);
+        stops = QList<double>() << 0 << 0.15 << 0.33 << 0.6 << 0.85 << 1;
+    } else if (colorModel == grayScale) {
+        value = 1.0 - value;
+        colors = QList<QColor>() << QColor(0, 0, 0) << QColor(255, 255, 255);
+        stops = QList<double>() << 0 << 1;
+    } else if (colorModel == jet) {
+        colors = QList<QColor>() << QColor(0, 0, 100)
+                                 << QColor(0, 50, 255)
+                                 << QColor(0, 255, 255)
+                                 << QColor(255, 255, 0)
+                                 << QColor(255, 30, 0)
+                                 << QColor(100, 0, 0);
+        stops = QList<double>() << 0 << 0.15 << 0.35 << 0.65 << 0.85 << 1;
+    }
+    if (value <= 0)
+        return colors.first();
+
+    for (int i = 0; i < stops.size(); i++)
+        if (value <= stops.at(i))
+            return interpolate(colors.at(i - 1), colors.at(i), (value - stops.at(i - 1)) / (stops.at(i) - stops.at(i - 1)));
+}
+
+QColor SpectreDrawer::interpolate(QColor a, QColor b, double value)
+{
+    double rval = 1.0 - value;
+    return QColor(a.red() * rval + b.red() * value,
+                  a.green() * rval + b.green() * value,
+                  a.blue() * rval + b.blue() * value);
+}
+
+void SpectreDrawer::changeModel(int newModel)
+{
+    colorModel = static_cast<ColorModels>(newModel);
     reDraw();
 }

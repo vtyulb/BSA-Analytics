@@ -25,7 +25,6 @@
 #include <fourier.h>
 #include <fouriersearch.h>
 
-#include <sys/unistd.h>
 #include <sys/types.h>
 #include <time.h>
 #include <stdlib.h>
@@ -33,6 +32,7 @@
 
 #ifdef Q_OS_LINUX
     #include <execinfo.h>
+    #include <sys/unistd.h>
 #else
     #include <windows.h>
 #endif

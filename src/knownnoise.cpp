@@ -7,10 +7,9 @@
 
 
 KnownNoise::KnownNoise(QWidget *parent) :
-    QWidget(NULL),
+    QWidget(parent),
     ui(new Ui::KnownNoise)
 {
-    QObject::setParent(parent);
     ui->setupUi(this);
 
     reload();

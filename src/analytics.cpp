@@ -615,7 +615,11 @@ void Analytics::applyDuplicatesFilter() {
 
     QSet<QString> *set = new QSet<QString>[pulsars->size()];
 
+#ifdef Q_OS_LINUX
     QVector<int> pl[maxModule][maxRay];
+#else
+    QVector<int> pl[6][8];
+#endif
     for (int i = 0; i < pulsars->size(); i++)
         if (pulsarsEnabled[i])
             pl[pulsars->at(i).module - 1][pulsars->at(i).ray - 1].push_back(i);
@@ -1239,6 +1243,7 @@ void Analytics::applyFourierFilters() {
 
             if (ui->fourierAllPeaks->isChecked()) {
                 while (pl.snr > FOURIER_PULSAR_LEVEL_SNR) {
+                    Data backup = pl.data;
                     pl.data.fork();
                     pl.data.releaseProtected = true;
                     pl.snr = -777;
@@ -1249,6 +1254,7 @@ void Analytics::applyFourierFilters() {
                     else {
                         pl.data.releaseProtected = false;
                         pl.data.releaseData();
+                        pl.data = backup;
                         break;
                     }
                 }

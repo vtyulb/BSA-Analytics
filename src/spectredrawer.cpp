@@ -419,6 +419,9 @@ QColor SpectreDrawer::jetModel(double value)
     for (int i = 0; i < stops.size(); i++)
         if (value <= stops.at(i))
             return interpolate(colors.at(i - 1), colors.at(i), (value - stops.at(i - 1)) / (stops.at(i) - stops.at(i - 1)));
+
+    qWarning() << Q_FUNC_INFO << "something really wrong";
+    return QColor::Invalid;
 }
 
 QColor SpectreDrawer::interpolate(QColor a, QColor b, double value)

@@ -313,7 +313,7 @@ QImage SpectreDrawer::drawDispersion(QImage src) {
         p.setPen(QPen(QBrush("red"), 3 + ui->dispersion->value() / 200, Qt::SolidLine));
         double v1 = data.fbands[0];
         double v2 = data.fbands[1];
-        double dsp = 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * 32 * ui->dispersion->value() / 0.0124928;
+        double dsp = 4.1488 * (1e+3) * (1 / v2 / v2 - 1 / v1 / v1) * 31 * ui->dispersion->value() / 0.0124928;
         if (ui->dispersion->value() > 200)
             dsp /= (ui->dispersion->value() / 100);
 

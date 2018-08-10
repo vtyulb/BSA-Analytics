@@ -6,7 +6,7 @@
 #include <QSettings>
 
 
-KnownNoise::KnownNoise(QWidget *parent) :
+KnownNoise::KnownNoise() :
     QWidget(NULL),
     ui(new Ui::KnownNoise)
 {

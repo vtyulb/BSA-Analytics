@@ -34,7 +34,7 @@ Analytics::Analytics(QString analyticsPath, bool fourier, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::Analytics),
     list(NULL),
-    knownNoises(new KnownNoise(this)),
+    knownNoises(new KnownNoise()),
     folder(QDir().absoluteFilePath(analyticsPath)),
     oneWindowMode(false),
     pulsars(new QVector<Pulsar>),

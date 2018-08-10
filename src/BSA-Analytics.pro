@@ -97,7 +97,6 @@ FORMS    += mainwindow.ui \
     customopendialog.ui \
     analytics.ui \
     precisesearchgui.ui \
-    precisepacket.ui \
     knownnoise.ui \
     spectre.ui \
     precisetiming.ui \

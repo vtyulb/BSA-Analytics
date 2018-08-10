@@ -71,34 +71,6 @@ void catchSigSegv(int signal) {
     exit(2);
 }
 
-void precisePacket(QString me, QString fileName) {
-    QFile f(fileName);
-    if (f.open(QIODevice::ReadOnly)) {
-        while (!f.atEnd()) {
-            QString line = f.readLine();
-            if (line.size() < 15 || line[0] == '#')
-                continue;
-
-            QTextStream s(&line, QIODevice::ReadOnly);
-            double period;
-            int module, ray, D;
-            QString time, name;
-            s >> period >> module >> ray >> D >> time >> name;
-            QStringList l;
-            l << "--precise-pulsar-search" << name;
-            l << "--module" << QString::number(module);
-            l << "--ray" << QString::number(ray);
-            l << "--period" << QString::number(period);
-            l << "--dispersion" << QString::number(D);
-            l << "--time" << time;
-            l << "--no-multiple-periods";
-
-            QProcess p;
-            p.execute(me, l);
-        }
-    }
-}
-
 void makeConsoleApp(int &argc, char **argv) {
     QCoreApplication *a = new QCoreApplication(argc, argv);
     a->setOrganizationDomain("bsa.vtyulb.ru");
@@ -129,7 +101,6 @@ void pulsarEngine(int argc, char **argv) {
                "\t\t[--no-multiple-periods] [--dispersion <int> ] --time <09:01:00> [--do-not-clear-noise] [--long-roads]\n"
                "\t\t[--normalize] [--period-tester] [--single-period] [--flux-density] [--run-analytics-after]\n");
         printf("BSA-Analytics --mass-flux-density <path-to-ground> --module <int> --ray <int> --time <09:01:00> [--do-not-clear-noise]\n");
-        printf("BSA-Analytics --precise-packet <file name>\n");
         printf("BSA-Analytics --data-checker <path to data>\n");
         printf("BSA-Analytics --data-renamer <path to data>[,path2[,path3...]]\n");
         printf("BSA-Analytics --precise-timing file1 file2 file3 --module <int> --ray <int> --dispersion <int> --period <double> --time <09:01:00>\n");
@@ -213,10 +184,7 @@ void pulsarEngine(int argc, char **argv) {
             Settings::settings()->setNoMultiplePeriods(true);
         else if (strcmp(argv[i], "--dispersion") == 0)
             Settings::settings()->setDispersion(next.toDouble());
-        else if (strcmp(argv[i], "--precise-packet") == 0) {
-            precisePacket(argv[0], next);
-            exit(0);
-        } else if (strcmp(argv[i], "--do-not-clear-noise") == 0)
+        else if (strcmp(argv[i], "--do-not-clear-noise") == 0)
             Settings::settings()->setDoNotClearNoise(true);
         else if (strcmp(argv[i], "--single-period") == 0)
             Settings::settings()->setSinglePeriod(true);

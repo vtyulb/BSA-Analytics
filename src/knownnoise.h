@@ -13,7 +13,7 @@ class KnownNoise : public QWidget
     Q_OBJECT
 
 public:
-    explicit KnownNoise(QWidget *parent = 0);
+    explicit KnownNoise();
     ~KnownNoise();
 
     bool contains(double);

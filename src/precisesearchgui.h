@@ -18,7 +18,6 @@ public:
 private slots:
     void selectFile();
     void runSearcher();
-    void runPacketSearcher();
 
     void determineSearchMode();
 

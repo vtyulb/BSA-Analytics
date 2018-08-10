@@ -24,7 +24,7 @@ const QColor filteredColor("lightgray");
 const QColor markedColor(50, 50, 240);
 
 PulsarList::PulsarList(QWidget *parent) :
-    QTableWidget(parent)
+    QTableWidget(NULL)
 {
     QObject::connect(parent, SIGNAL(destroyed()), this, SLOT(deleteLater()));
     QObject::connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)), this, SLOT(selectionChanged()));

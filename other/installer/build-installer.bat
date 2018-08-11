@@ -11,7 +11,5 @@ C:\Qt\5.11.1\msvc2017_64\bin\qmake.exe ..\src -spec win32-msvc
 nmake
 
 move release\BSA-Analytics.exe E:\work\bsa\BSA-Analytics-x64\
-"C:\Program Files (x86)\Inno Setup 5\ISCC.exe" C:\bsa-installation-script-x64.iss
+"C:\Program Files (x86)\Inno Setup 5\ISCC.exe" E:\work\bsa\BSA-Analytics\other\installer\bsa-installation-script-x64.iss
 move C:\Output\BSA-Analytics-x64.exe E:\work\bsa\
-
-pause

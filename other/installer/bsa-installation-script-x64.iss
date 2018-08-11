@@ -2,10 +2,13 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "BSA-Analytics"
-#define MyAppVersion "1.0"
+#define MyAppVersion "2.0"
 #define MyAppPublisher "vtyulb"
-#define MyAppURL "bsa.prao.ru"
+#define MyAppURL "bsa.vtyulb.ru"
 #define MyAppExeName "BSA-Analytics.exe"
+
+#include "scripts\lang\russian.iss"
+#include "scripts\lang\english.iss"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -28,11 +31,8 @@ OutputBaseFilename=BSA-Analytics-x64
 Compression=lzma
 SolidCompression=yes
 ArchitecturesAllowed=x64
+ArchitecturesInstallIn64BitMode=x64
 ChangesAssociations=yes
-
-[Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "russian"; MessagesFile: "compiler:Languages\Russian.isl"
 
 [Tasks]
 Name: "mainassociations"; Description: "Проассоциировать с файлами *.pnt, *.pnthr и *.pulsar"
@@ -41,9 +41,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "E:\work\bsa\BSA-Analytics-x64-msvc\BSA-Analytics.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "E:\work\bsa\BSA-Analytics-x64-msvc\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
-; NOTE: Don't use "Flags: ignoreversion" on any shared system files
+Source: "E:\work\bsa\BSA-Analytics-x64\BSA-Analytics.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "E:\work\bsa\BSA-Analytics-x64\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
@@ -53,6 +52,9 @@ Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\{#MyAppName}"; Fil
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[CustomMessages]
+DependenciesDir=MyProgramDependencies
 
 [Registry]
 Root: HKCR; Subkey: ".pnt"; ValueType: string; ValueName: ""; ValueData: "BSAShortData"; Flags: uninsdeletevalue; Tasks: mainassociations
@@ -75,3 +77,26 @@ Root: HKCR; Subkey: "Directory\shell\Run BSA-Analytics\command"; ValueType: stri
 
 Root: HKCU; Subkey: "Software\vtyulb\BSA-Analytics\"; ValueName: "LastTimeCheckedForUpdates"; ValueType: none; Flags: deletevalue;
 Root: HKCU; Subkey: "Software\vtyulb\BSA-Analytics\"; ValueName: "Stable"; ValueType: none; Flags: deletevalue;
+
+; shared code for installing the products
+#include "scripts\products.iss"
+
+; helper functions
+#include "scripts\products\stringversion.iss"
+#include "scripts\products\winversion.iss"
+#include "scripts\products\fileversion.iss"
+#include "scripts\products\dotnetfxversion.iss"
+
+#include "scripts\products\msiproduct.iss"
+#include "scripts\products\vcredist2017.iss"
+
+[Code]
+function InitializeSetup(): boolean;
+begin
+	initwinversion();
+
+	vcredist2017('14'); // min allowed version is 14.0
+	
+	Result := true;
+end;
+

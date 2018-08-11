@@ -1,6 +1,5 @@
 #include "precisesearchgui.h"
 #include "ui_precisesearchgui.h"
-#include "ui_precisepacket.h"
 #include <flowdetecter.h>
 #include <spectredrawer.h>
 #include <settings.h>

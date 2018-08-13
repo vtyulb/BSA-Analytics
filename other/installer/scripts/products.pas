@@ -276,7 +276,7 @@ function IsX64: boolean;
 	Gets whether the computer is x64 (64 bits).
 }
 begin
-	Result := (not isForcedX86) and Is64BitInstallMode and (ProcessorArchitecture = paX64);
+	Result := (not isForcedX86) and (ProcessorArchitecture = paX64);
 end;
 
 function IsIA64: boolean;

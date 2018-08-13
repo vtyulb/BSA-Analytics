@@ -17,9 +17,10 @@ make
 ### ArchLinux
 AUR package: https://aur.archlinux.org/packages/bsa-analytics-git
 
-### Windows builds & sample data
+### Project description, windows builds & sample data
 https://bsa.vtyulb.ru
 
 ### Windows InnoSetup script & icons
-other/*.iss  
-x86 version is deprecated, because of high memory usage
+other/installer/*   
+x86 version is deprecated, because of high memory usage  
+[Innodependencyinstaller](https://github.com/stfx/innodependencyinstaller) was used in windows installer

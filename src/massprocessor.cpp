@@ -75,16 +75,22 @@ void MassProcessor::runInteractive() {
                 firstDispersion = 2;
                 lastDispersion = 100;
 
-                printf("Do you want to search for FRB instead of transients (dispersions up to 2000 available)? [y/N] ");
+                printf("Do you want to search for transients on higher dispersions [100-300]? [y/N] ");
                 if (input.readLine().toUpper() == "Y") {
-                    firstDispersion = 0;
-                    printf("\nCross correlation window size available: 512 <- best for FRB,1024,2048,4096,8192 <- best for pulsars\n");
-                    printf("Actual dispersion will be from 0 to size/2\n");
-                    printf("Please enter cross correlation window size: ");
-                    Settings::settings()->setCrossCorrelationWindowSize(input.readLine().toInt());
-                    printf("Sliding window set to %d points\n", CrossCorrelation::window());
-                    lastDispersion = Settings::settings()->crossCorrelationWindowSize() / 2;
-                    FRBmode = true;
+                    firstDispersion = 100;
+                    lastDispersion = 300;
+                } else {
+                    printf("Do you want to search for FRB instead of transients with cross-correlation algo (dispersions up to 2000 available)? [y/N] ");
+                    if (input.readLine().toUpper() == "Y") {
+                        firstDispersion = 0;
+                        printf("\nCross correlation window size available: 512 <- best for FRB,1024,2048,4096,8192 <- best for pulsars\n");
+                        printf("Actual dispersion will be from 0 to size/2\n");
+                        printf("Please enter cross correlation window size: ");
+                        Settings::settings()->setCrossCorrelationWindowSize(input.readLine().toInt());
+                        printf("Sliding window set to %d points\n", CrossCorrelation::window());
+                        lastDispersion = Settings::settings()->crossCorrelationWindowSize() / 2;
+                        FRBmode = true;
+                    }
                 }
 
                 printf("\nPrepared to start search on dispersions %d-%d\n\n", firstDispersion, lastDispersion);
@@ -205,19 +211,28 @@ void MassProcessor::runInteractive() {
             if (!data.isValid())
                 continue;
 
-            Reader().repairWrongChannels(data);
+            if (Settings::settings()->loadStair()) {
+                for (int module = 0; module < data.modules; module++)
+                    for (int channel = 0; channel < data.channels; channel++)
+                        for (int ray = 0; ray < data.rays; ray++)
+                            for (int i = 0; i < data.npoints; i++)
+                                data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
 
-            if (transientSearch) {
-                transientProcess(data);
-                data.releaseData();
-                saveCuttingState();
-                continue;
-            }
+                Reader().repairWrongChannels(data);
 
-            if (longData)
-                processLongData(data);
-            else
-                processData(data);
+                if (transientSearch) {
+                    transientProcess(data);
+                    data.releaseData();
+                    saveCuttingState();
+                    continue;
+                }
+
+                if (longData)
+                    processLongData(data);
+                else
+                    processData(data);
+            } else
+                qDebug() << "can't normalize current data";
 
             data.releaseData();
 
@@ -259,15 +274,6 @@ void MassProcessor::runInteractive() {
 
 bool MassProcessor::processData(Data &data) {
     // Hello pulsarworker::clearAveraNge(), i know you are here
-
-    if (!Settings::settings()->loadStair())
-        return false;
-
-    for (int module = 0; module < data.modules; module++)
-        for (int channel = 0; channel < data.channels; channel++)
-            for (int ray = 0; ray < data.rays; ray++)
-                for (int i = 0; i < data.npoints; i++)
-                    data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
 
     QVector<float> buf(data.npoints);
     noises.clear();
@@ -315,15 +321,6 @@ bool MassProcessor::processData(Data &data) {
 
 bool MassProcessor::processLongData(Data &data) {
     QVector<float> buf(data.npoints);
-
-    if (!Settings::settings()->loadStair())
-        return false;
-
-    for (int module = 0; module < data.modules; module++)
-        for (int channel = 0; channel < data.channels; channel++)
-            for (int ray = 0; ray < data.rays; ray++)
-                for (int i = 0; i < data.npoints; i++)
-                    data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
 
     noises.clear();
     noises.resize(data.modules);
@@ -855,15 +852,6 @@ bool MassProcessor::transientCheckAmplification(const Data &data, int point, int
 }
 
 void MassProcessor::transientProcess(Data &data) {
-    if (!Settings::settings()->loadStair())
-        qDebug() << "can't normalize current data";
-
-    for (int module = 0; module < data.modules; module++)
-        for (int channel = 0; channel < data.channels; channel++)
-            for (int ray = 0; ray < data.rays; ray++)
-                for (int i = 0; i < data.npoints; i++)
-                    data.data[module][channel][ray][i] /= Settings::settings()->getStairHeight(module, ray, channel) / 2100.0;
-
     QVector<int> transientsCount(500, 0);
     int total = 0;
     const int offset = 3000;

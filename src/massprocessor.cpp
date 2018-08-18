@@ -564,7 +564,7 @@ bool MassProcessor::dumpTransient(const QVector<double> &data, const Data &rawDa
             for (int i = 0; i < 32; i++)
                 count += data[i] > sorted[i][sorted[i].size() - 10];
 
-            if (count < 16) {
+            if (count <= 20) {
                 res.releaseData();
                 return false;
             }

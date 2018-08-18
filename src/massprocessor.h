@@ -45,6 +45,7 @@ private:
 
     bool longData = false;
     bool FRBmode = false;
+    bool basicGraphicFilterEnabled = false;
     int PC;
     int firstDispersion, lastDispersion;
     QString cutterPath;

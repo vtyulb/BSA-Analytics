@@ -79,6 +79,10 @@ void MassProcessor::runInteractive() {
                 if (input.readLine().toUpper() == "Y") {
                     firstDispersion = 100;
                     lastDispersion = 300;
+
+                    printf("Should I enable basic graphic filter during the search? [Y/n] ");
+                    if (input.readLine().toUpper() != "N")
+                        basicGraphicFilterEnabled = true;
                 } else {
                     printf("Do you want to search for FRB instead of transients with cross-correlation algo (dispersions up to 2000 available)? [y/N] ");
                     if (input.readLine().toUpper() == "Y") {
@@ -545,6 +549,25 @@ bool MassProcessor::dumpTransient(const QVector<double> &data, const Data &rawDa
         if (data[startPoint] < chkMx * TRANSIENT_FILTER_AMPLIFICATION_TRESH) {
             res.releaseData();
             return false;
+        }
+
+        if (basicGraphicFilterEnabled) {
+            QVector<float> sorted[32];
+            for (int i = start; i < end; i++)
+                for (int j = 0; j < 32; j++)
+                    sorted[j].append(rawData.data[module][j][ray][i]);
+
+            for (int i = 0; i < 32; i++)
+                std::sort(sorted[i].begin(), sorted[i].end());
+
+            int count = 0;
+            for (int i = 0; i < 32; i++)
+                count += data[i] > sorted[i][sorted[i].size() - 10];
+
+            if (count < 16) {
+                res.releaseData();
+                return false;
+            }
         }
 
         for (int i = start; i < end; i++)

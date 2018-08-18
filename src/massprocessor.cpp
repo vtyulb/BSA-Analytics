@@ -929,7 +929,7 @@ void MassProcessor::transientProcess(Data &data) {
                             }
 
 
-                            if (transientsCount[block]  > TRANSIENT_COUNT_TRESH * (lastDispersion - firstDispersion) / 100 && lastDispersion < 150) {
+                            if (transientsCount[block]  > TRANSIENT_COUNT_TRESH * (lastDispersion - firstDispersion) / 100 && lastDispersion < 500) {
                                 printf("X");
                                 int last = numberOfPieces[block];
                                 numberOfPieces[block] -= transientsCount[block];

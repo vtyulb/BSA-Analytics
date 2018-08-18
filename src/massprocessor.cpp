@@ -80,8 +80,8 @@ void MassProcessor::runInteractive() {
                     firstDispersion = 100;
                     lastDispersion = 300;
 
-                    printf("Should I enable basic graphic filter during the search? [Y/n] ");
-                    if (input.readLine().toUpper() != "N")
+                    printf("Should I enable basic graphic filter during the search? [y/N] ");
+                    if (input.readLine().toUpper() != "Y")
                         basicGraphicFilterEnabled = true;
                 } else {
                     printf("Do you want to search for FRB instead of transients with cross-correlation algo (dispersions up to 2000 available)? [y/N] ");

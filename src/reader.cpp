@@ -196,14 +196,14 @@ Data Reader::readBinaryFile(QString file, bool readOnlyHeader) {
                                 return Data();
                             }
                         }
-                        if (startTime.secsTo(QDateTime::currentDateTime()) > 1200) {
+                        if (startTime.secsTo(QDateTime::currentDateTime()) > 3600) {
                             if (qApp->topLevelWidgets().size()) {
                                 QMessageBox::information(NULL, "Very slow reading",
                                                          "You just can't live like that.\n"
                                                          "This warning won't show again.");
                                 startTime = startTime.addSecs(1000*1000*1000);
                             } else {
-                                printf("File %s is dead. More than 20mins to read. Aborting\n", file.toLocal8Bit().constData());
+                                printf("File %s is dead. More than 60mins to read. Aborting\n", file.toLocal8Bit().constData());
                                 data.releaseData();
                                 return Data();
                             }

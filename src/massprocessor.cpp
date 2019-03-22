@@ -159,8 +159,10 @@ void MassProcessor::runInteractive() {
             multifile.releaseData();
             multifileInited = true;
 
-            numberOfPieces.resize(multifile.npoints / PC * 2);
-            numberOfPieces.fill(0);
+            if (numberOfPieces.size() < 450) {
+                numberOfPieces.resize(multifile.npoints / PC * 2);
+                numberOfPieces.fill(0);
+            }
 
             printf("memory allocated.\n");
             Settings::settings()->loadStair();
@@ -614,6 +616,8 @@ void MassProcessor::loadCuttingState() {
         numberOfPieces.resize(500);
         for (int i = 0; i < 500; i++)
             stream >> numberOfPieces[i];
+
+	printf("~%d pieces per block loaded\n", numberOfPieces[100]);
 
         while (!stream.atEnd())
             filesProcessed.insert(stream.readLine().replace("\n", ""));

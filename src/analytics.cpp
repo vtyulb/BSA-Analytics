@@ -1186,6 +1186,8 @@ void Analytics::applyFourierFilters() {
         }
     }
 
+    for (int i = 0; i < pulsars->size(); i++)
+        fourierGood[i] &= pulsars->at(i).snr != -555;
 
     for (int i = 0; i < pulsars->size(); i++) {
         if (ui->fourierPeak->isChecked())

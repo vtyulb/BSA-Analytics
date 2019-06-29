@@ -226,6 +226,7 @@ void Analytics::loadKnownPulsars() {
             QByteArray line = f.readLine();
             line.replace("\t", " ");
             line.replace("\n", " ");
+            line.replace("\r", "");
             if (line[0] == '#') {
                 line.replace("#", "");
                 lastComment = QString::fromLocal8Bit(line);

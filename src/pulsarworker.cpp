@@ -42,7 +42,7 @@ QVector<Pulsar> PulsarWorker::searchIn() {
     int end = res.size() - interval / data.oneStep;
     if (Settings::settings()->preciseSearch()) {
         while (abs(Settings::settings()->getTime().secsTo(QTime::fromString(StarTime::StarTime(data, start)))) > 180)
-            start++;
+            start += 30;
 
         Settings::settings()->getTime().secsTo(QTime::fromString(StarTime::StarTime(data, start)));
 
